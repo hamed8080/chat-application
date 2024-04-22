@@ -54,18 +54,11 @@ struct MapImageDownloader: View {
     @EnvironmentObject var messageVM: MessageRowViewModel
 
     var body: some View {
-
-        /// We use max to at least have a width, because there are times that maxWidth is nil.
-        let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
-        /// We use max to at least have a width, because there are times that maxWidth is nil.
-        /// We use min to prevent the image gets bigger than 320 if it's bigger.
-        let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
-
         Image(uiImage: image)
             .interpolation(.none)
             .resizable()
             .scaledToFill()
-            .frame(width: width, height: height)
+            .frame(width: messageVM.mapWidth, height: messageVM.mapHeight)
             .clipped()
             .zIndex(0)
             .opacity(opacity)

@@ -76,12 +76,21 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var groupMessageParticipantName: String?
     public var avatarImageLoader: ImageLoaderViewModel?
     public var replyContainerWidth: CGFloat?
+    public var forwardContainerWidth: CGFloat?
     private var cancelable: AnyCancellable?
     public var paddings = MessagePaddings()
     public var rowType = MessageViewRowType()
     public var width: CGFloat? = nil
     public var height: CGFloat? = nil
     public private(set) var isPreparingThumbnailImageForUploadedImage = false
+
+    public static let tailSize: CGSize = .init(width: 6, height: 12)
+
+    /// We use max to at least have a width, because there are times that maxWidth is nil.
+    public let mapWidth = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowViewModel.tailSize.width)
+    /// We use max to at least have a width, because there are times that maxWidth is nil.
+    /// We use min to prevent the image gets bigger than 320 if it's bigger.
+    public let mapHeight = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
 
     public var isDownloadCompleted: Bool {
         downloadFileVM?.state == .completed
@@ -183,6 +192,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         localizedReplyFileName = calculateLocalizeReplyFileName()
         calculateGroupParticipantName()
         replyContainerWidth = await calculateReplyContainerWidth()
+        forwardContainerWidth = await calculateForwardContainerWidth()
         calculateSpacingPaddings()
         setAvatarColor()
     }
@@ -435,6 +445,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let space: CGFloat = 1.5 + 32 /// 1.5 bar + 8 for padding + 8 for space between image and leading bar + 8 between image and sender name + 16 for padding
         let senderNameWithImageSize = senderNameWidth + space + iconWidth
         return senderNameWithImageSize
+    }
+
+    private func calculateForwardContainerWidth() async -> CGFloat? {
+        if rowType.isMap {
+            return mapWidth - 8
+        }
+        return .infinity
     }
 
     public func setHighlight() {

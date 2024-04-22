@@ -43,7 +43,7 @@ struct ForwardMessageRow: View {
                         .frame(maxWidth: 1.5)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: viewModel.forwardContainerWidth, alignment: .leading)
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
             .buttonStyle(.borderless)
             .truncationMode(.tail)
