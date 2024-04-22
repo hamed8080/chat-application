@@ -114,7 +114,7 @@ struct EditCreatedConversationDetail: View {
         List {
             HStack {
                 imagePickerButton
-                TextField(viewModel.createConversationType == .normal ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName" , text: $viewModel.conversationTitle)
+                TextField(viewModel.createConversationType?.isGroupType == true ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName" , text: $viewModel.conversationTitle)
                     .textContentType(.name)
                     .padding()
                     .font(.iransansBody)
@@ -129,7 +129,7 @@ struct EditCreatedConversationDetail: View {
                 .listRowSeparator(.hidden)
 
             let type = viewModel.createConversationType
-            let isChannel = type == .channel || type == .publicChannel
+            let isChannel = type?.isChannelType == true
             let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
             let localizedPublic = String(localized: .init("Thread.public"))
 
@@ -165,7 +165,7 @@ struct EditCreatedConversationDetail: View {
                 .foregroundStyle(Color.App.accent)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
+            SubmitBottomButton(text: viewModel.createConversationType?.isGroupType == true ? "Contacts.createGroup" : "Contacts.createChannel",
                                enableButton: .constant(!isLoading),
                                isLoading: .constant(isLoading))
             {

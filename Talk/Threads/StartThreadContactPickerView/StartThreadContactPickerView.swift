@@ -24,7 +24,7 @@ struct StartThreadContactPickerView: View {
                         ConversationBuilder()
                             .navigationBarBackButtonHidden(true)
                             .onAppear {
-                                viewModel.show(type: .normal)
+                                viewModel.show(type: .privateGroup)
                             }
 
                     } label: {
@@ -38,7 +38,7 @@ struct StartThreadContactPickerView: View {
                         ConversationBuilder()
                             .navigationBarBackButtonHidden(true)
                             .onAppear {
-                                viewModel.show(type: .channel)
+                                viewModel.show(type: .privateChannel)
                             }
                     } label: {
                         Label("Contacts.createChannel", systemImage: "megaphone")

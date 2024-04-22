@@ -271,7 +271,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func createP2PThread() {
         guard let coreuserId = navModel.userToCreateThread?.id else { return }
-        let req = CreateThreadRequest(invitees: [.init(id: "\(coreuserId)", idType: .coreUserId)], title: "")
+        let req = CreateThreadRequest(invitees: [.init(id: "\(coreuserId)", idType: .coreUserId)], title: "", type: StrictThreadTypeCreation.p2p.threadType)
         RequestsManager.shared.append(prepend: "CREATE-P2P", value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }

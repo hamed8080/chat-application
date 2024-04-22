@@ -11,10 +11,11 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import ChatModels
+import TalkModels
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-    @State private var type: ThreadTypes = .normal
+    @State private var type: StrictThreadTypeCreation = .p2p
     @State private var showBuilder = false
     @EnvironmentObject var builderVM: ConversationBuilderViewModel
 
@@ -41,7 +42,7 @@ struct ContactContentList: View {
             }
 
             Button {
-                type = .normal
+                type = .privateGroup
                 showBuilder.toggle()
             } label: {
                 Label("Contacts.createGroup", systemImage: "person.2")
@@ -51,7 +52,7 @@ struct ContactContentList: View {
             .listRowSeparatorTint(Color.App.dividerPrimary)
 
             Button {
-                type = .channel
+                type = .privateChannel
                 showBuilder.toggle()
             } label: {
                 Label("Contacts.createChannel", systemImage: "megaphone")

@@ -181,7 +181,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func fastMessage(_ invitee: Invitee, _ message: String) {
         isLoading = true
         let messageREQ = CreateThreadMessage(text: message, messageType: .text)
-        let req = CreateThreadWithMessage(invitees: [invitee], title: "", type: .normal, message: messageREQ)
+        let req = CreateThreadWithMessage(invitees: [invitee], title: "", type: StrictThreadTypeCreation.p2p.threadType, message: messageREQ)
         ChatManager.activeInstance?.conversation.create(req)
         animateObjectWillChange()
     }

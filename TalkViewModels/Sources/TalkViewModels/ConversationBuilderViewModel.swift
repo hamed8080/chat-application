@@ -24,7 +24,7 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     @Published public var isUploading: Bool = false
     private var uploadedImageFileMetaData: FileMetaData?
     @Published public var isCreateLoading = false
-    @Published public var createConversationType: ThreadTypes?
+    @Published public var createConversationType: StrictThreadTypeCreation?
     @Published var imageUploadingFailed: Bool = false
     /// Check public thread name.
     @Published public var isPublic: Bool = false
@@ -63,7 +63,7 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
             .store(in: &canceableSet)
     }
 
-    public func show(type: ThreadTypes) {
+    public func show(type: StrictThreadTypeCreation) {
         if contacts.isEmpty {
             getContacts()
         }
@@ -105,11 +105,12 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         guard let type = createConversationType else { return }
         isCreateLoading = true
         let invitees = selectedContacts.map { Invitee(id: "\($0.id ?? 0)", idType: .contactId) }
+        let calculatedType = isPublic ? type.toPublicType?.threadType ?? StrictThreadTypeCreation.privateGroup.threadType : type.threadType
         let req = CreateThreadRequest(description: threadDescription,
                                       image: uploadedImageFileMetaData?.file?.link,
                                       invitees: invitees,
                                       title: conversationTitle,
-                                      type: isPublic ? type.publicType : type,
+                                      type: calculatedType,
                                       uniqueName: isPublic ? UUID().uuidString : nil
         )
         RequestsManager.shared.append(prepend: "ConversationBuilder", value: req)

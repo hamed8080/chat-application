@@ -233,7 +233,7 @@ public extension AppState {
     }
 
     func openSelfThread() {
-        let req = CreateThreadRequest(title: String(localized: .init("Thread.selfThread")), type: .selfThread)
+        let req = CreateThreadRequest(title: String(localized: .init("Thread.selfThread")), type: StrictThreadTypeCreation.selfThread.threadType)
         RequestsManager.shared.append(prepend: "CREATE-SELF-THREAD", value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }
@@ -256,7 +256,7 @@ public extension AppState {
 
     private func openForwardConversation(coreUserId: Int, fromThread: Int, messageIds: [Int]) {
         let invitees = [Invitee(id: "\(coreUserId)", idType: .coreUserId)]
-        let req = CreateThreadRequest(invitees: invitees, title: "")
+        let req = CreateThreadRequest(invitees: invitees, title: "", type: StrictThreadTypeCreation.p2p.threadType)
         let request = ForwardCreateConversationRequest(uniqueId: req.uniqueId, from: fromThread, messageIds: messageIds, request: req)
         RequestsManager.shared.append(prepend: "FORWARD-CREATE-CONVERSATION", value: request)
         ChatManager.activeInstance?.conversation.create(req)
