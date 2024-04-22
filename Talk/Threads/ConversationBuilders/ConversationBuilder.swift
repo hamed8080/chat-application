@@ -291,6 +291,8 @@ struct ‌BuilderContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
+                BuilderContactRowRadioButton(contact: contact)
+                    .padding(.trailing, 8)
                 let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: String.splitedCharacter(contact.firstName ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config))
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
@@ -322,7 +324,6 @@ struct ‌BuilderContactRow: View {
                         .foregroundColor(Color.App.red)
                         .padding(.trailing, 4)
                 }
-                BuilderContactRowRadioButton(contact: contact)
             }
         }
         .contentShape(Rectangle())

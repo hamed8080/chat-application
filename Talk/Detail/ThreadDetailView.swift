@@ -34,7 +34,7 @@ struct ThreadDetailView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView(.vertical) {
-                LazyVStack(spacing: 0) {
+                VStack(spacing: 0) {
                     topView
                     CustomDetailTabView(tabs: tabs, tabButtons: { tabButtons } )
                         .environmentObject(viewModel.threadVM?.participantsViewModel ?? .init())

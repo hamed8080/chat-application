@@ -28,10 +28,10 @@ struct ThreadRow: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     if thread.type?.isChannelType == true {
-                        Image(systemName: "megaphone.fill")
+                        Image("ic_channel")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 12, height: 12)
+                            .frame(width: 16, height: 16)
                             .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
 

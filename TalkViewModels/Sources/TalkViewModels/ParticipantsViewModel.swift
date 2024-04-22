@@ -27,6 +27,8 @@ public final class ParticipantsViewModel: ObservableObject {
     @Published public var searchText: String = ""
     @Published public var searchType: SearchParticipantType = .name
     private var cancelable: Set<AnyCancellable> = []
+    private var timerRequestQueue: Timer?
+    private var lastRequestTime = Date()
 
     public init() {}
 
@@ -112,6 +114,22 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func getParticipants() {
+        if lastRequestTime + 0.5 > .now {
+            timerRequestQueue?.invalidate()
+            timerRequestQueue = nil
+            timerRequestQueue = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+                self?.loadByTimerQueue()
+            }
+            return
+        }
+        lastRequestTime = Date()
+        isLoading = true
+        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: offset, count: count)
+        RequestsManager.shared.append(prepend: "Load-Participants", value: req)
+        ChatManager.activeInstance?.conversation.participant.get(req)
+    }
+
+    private func loadByTimerQueue() {
         isLoading = true
         let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: offset, count: count)
         RequestsManager.shared.append(prepend: "Load-Participants", value: req)
@@ -141,7 +159,7 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func loadMore() {
-        if !hasNext { return }
+        if !hasNext || isLoading { return }
         preparePaginiation()
         getParticipants()
     }

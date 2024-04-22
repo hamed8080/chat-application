@@ -35,7 +35,7 @@
 "General.firstName" = "نام";
 "General.lastName" = "نام خانوادگی";
 "General.contact" = "مخاطب";
-"General.done" = "انجام";
+"General.done" = "اعمال";
 "General.nothingSelectedConversation" = "برای شروع یک گفتگو کلیک کنید.";
 "General.start" = "شروع";
 "General.appName" = "تاک";

@@ -26,6 +26,7 @@ public struct ConnectionStatusToolbar: View {
                     .fixedSize()
                     .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansFootnote)
+                    .fontWeight(.medium)
                     .onReceive(appstate.$connectionStatus) { newSate in
                         if EnvironmentValues.isTalkTest {
                             connectionStatus = newSate

@@ -35,6 +35,11 @@ struct SettingsView: View {
                     .listRowInsets(.zero)
                     .listRowSeparator(.hidden)
                 SavedMessageSection()
+                SettingNotificationSection()
+                    .listRowSeparator(.hidden)
+                StickyHeaderSection(header: "", height: 10)
+                    .listRowInsets(.zero)
+                    .listRowSeparator(.hidden)
                 DarkModeSection()
                 SettingLanguageSection()
                 SettingLogSection()
@@ -48,8 +53,6 @@ struct SettingsView: View {
                     AutomaticDownloadSection()
                     SettingAssistantSection()
                 }
-                SettingNotificationSection()
-                    .listRowSeparator(.hidden)
                 LoadTestsSection()
             }
 
@@ -59,6 +62,8 @@ struct SettingsView: View {
                     .listRowSeparator(.hidden)
 
                 SupportSection()
+
+                VersionNumberView()
             }
             .listRowSeparator(.hidden)
         }
@@ -484,6 +489,32 @@ struct LoadTestsSection: View {
             .listRowSeparatorTint(Color.App.dividerPrimary)
         }
     }
+}
+
+struct VersionNumberView: View {
+
+    var body: some View {
+        HStack(spacing: 2) {
+            Spacer()
+            Text("Support.title")
+            Text(String(format: String(localized: "Support.version"), localVersionNumber))
+            Spacer()
+        }
+        .foregroundStyle(Color.App.textSecondary)
+        .font(.iransansCaption2)
+        .listRowInsets(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .listRowBackground(Color.App.bgSecondary)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
+    }
+
+    private var localVersionNumber: String {
+        let version = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
+        let splited = version.split(separator: ".")
+        let numbers = splited.compactMap({Int($0)})
+        let localStr = numbers.compactMap{$0.localNumber()}
+        return localStr.joined(separator: ".")
+    }
+
 }
 
 struct SettingsMenu_Previews: PreviewProvider {

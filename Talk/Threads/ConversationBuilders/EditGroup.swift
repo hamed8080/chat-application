@@ -126,7 +126,12 @@ struct EditGroup: View {
                     .listRowInsets(.zero)
                     .noSeparators()
 
-                item(title: String(format: localizedMainString, typeName, localizedPublic), image: isChannel ? "megaphone" : "person.2")
+                if isChannel {
+                    item(title: String(format: localizedMainString, typeName, localizedPublic), image: "", assetImage: "ic_channel")
+                } else {
+                    item(title: String(format: localizedMainString, typeName, localizedPublic), image: "person.2")
+                }
+
 
                 let adminsCount = viewModel.adminCounts.localNumber(locale: Language.preferredLocale) ?? ""
                 item(title: String(localized: .init("EditGroup.admins")), image: "person.badge.shield.checkmark", rightLabelText: adminsCount)
@@ -168,7 +173,7 @@ struct EditGroup: View {
         .listStyle(.plain)
         .background(Color.App.bgSecondary)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            SubmitBottomButton(text: "General.edit", enableButton: Binding(get: {!viewModel.isLoading}, set: {_ in}), isLoading: $viewModel.isLoading) {
+            SubmitBottomButton(text: "General.done", enableButton: Binding(get: {!viewModel.isLoading}, set: {_ in}), isLoading: $viewModel.isLoading) {
                 viewModel.submitEditGroup()
             }
         }
@@ -215,6 +220,7 @@ struct EditGroup: View {
 
     @ViewBuilder private func item(title: String,
                                    image: String,
+                                   assetImage: String? = nil,
                                    rightLabelText: String = "",
                                    textColor: Color = Color.App.textPrimary,
                                    iconColor: Color = Color.App.textSecondary,
@@ -224,13 +230,23 @@ struct EditGroup: View {
             action?()
         } label: {
             HStack {
-                Image(systemName: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .clipped()
-                    .font(.iransansBody)
-                    .foregroundStyle(iconColor)
+                if let assetImage = assetImage {
+                    Image(assetImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .clipped()
+                        .font(.iransansBody)
+                        .foregroundStyle(iconColor)
+                } else {
+                    Image(systemName: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .clipped()
+                        .font(.iransansBody)
+                        .foregroundStyle(iconColor)
+                }
                 Text(title)
                     .foregroundStyle(textColor)
                 Spacer()

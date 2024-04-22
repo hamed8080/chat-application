@@ -20,6 +20,8 @@ struct ContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
+                ContactRowRadioButton(contact: contact)
+                    .padding(.trailing, 8)
                 let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: String.splitedCharacter(contact.firstName ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config), textFont: .iransansBoldBody)
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
@@ -51,7 +53,6 @@ struct ContactRow: View {
                         .foregroundColor(Color.App.red)
                         .padding(.trailing, 4)
                 }
-                ContactRowRadioButton(contact: contact)
             }
         }
         .contentShape(Rectangle())

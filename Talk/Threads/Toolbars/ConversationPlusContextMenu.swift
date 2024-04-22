@@ -34,24 +34,12 @@ struct ConversationPlusContextMenu: View {
 //            .clipped()
 //            .foregroundStyle(Color.App.toolbarButton)
 
-            Image("talk_logo")
+            Image("talk_logo_text")
                 .resizable()
                 .scaledToFit()
-                .frame(height: 22)
+                .frame(height: 12)
                 .foregroundStyle(Color.App.toolbarButton)
-
-            HStack(spacing: 0) {
-                if appstate.connectionStatus == .connected {
-                    Image("talk_logo_text")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 12)
-                        .foregroundStyle(Color.App.toolbarButton)
-
-                } else {
-                    ConnectionStatusToolbar()
-                }
-            }
+            ConnectionStatusToolbar()
         }
         .padding(.horizontal, 8)
         //

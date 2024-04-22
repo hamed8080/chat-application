@@ -161,11 +161,11 @@ struct MainSendButtons: View {
                 viewModel.showActionButtons.toggle()
             }
         } label: {
-            Image(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
+            Image(systemName: viewModel.showActionButtons ? "chevron.down" : "plus")
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
-                .frame(width: viewModel.showActionButtons ? 16 : 20, height: viewModel.showActionButtons ? 16 : 20)
+                .frame(width: 14, height: 14)
                 .symbolRenderingMode(.palette)
                 .foregroundStyle(Color.App.accent)
                 .fontWeight(.medium)
