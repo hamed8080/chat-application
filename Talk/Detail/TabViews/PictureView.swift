@@ -26,25 +26,26 @@ struct PictureView: View {
 
     var body: some View {
         StickyHeaderSection(header: "", height:  4)
-        if viewModel.isLoading || viewModel.messages.count > 0 {
-            LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
-                if viewWidth != 0 {
-                    MessageListPictureView(itemWidth: abs(itemWidth))
+        LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
+            if viewWidth != 0 {
+                MessageListPictureView(itemWidth: abs(itemWidth))
+            }
+        }
+        .padding(padding)
+        .environmentObject(viewModel)
+        .background(frameReader)
+        .overlay(alignment: .top) {
+            if !viewModel.isLoading && viewModel.messages.count == 0 && !viewModel.hasNext {
+                HStack {
+                    Spacer()
+                    EmptyResultViewInTabs()
+                        .padding(.top, 9)
+                    Spacer()
                 }
             }
-            .padding(padding)
-            .environmentObject(viewModel)
-            .background(frameReader)
-            .onAppear {
-                onLoad()
-            }
-        } else {
-            HStack {
-                Spacer()
-                EmptyResultViewInTabs()
-                    .padding(.top, 9)
-                Spacer()
-            }
+        }
+        .onAppear {
+            onLoad() //it is essential to kick of onload
         }
     }
 
@@ -107,17 +108,19 @@ struct MessageListPictureView: View {
 struct PictureRowView: View {
     let message: Message
     @EnvironmentObject var downloadVM: DownloadFileViewModel
-    @EnvironmentObject var appOverlayViewModel: AppOverlayViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: ThreadDetailViewModel
     let itemWidth: CGFloat
+    @EnvironmentObject var contextVM: ContextMenuModel
 
     var body: some View {
         DownloadPictureButtonView(itemWidth: itemWidth)
             .frame(width: itemWidth, height: itemWidth)
             .clipped()
             .onTapGesture {
-                appOverlayViewModel.galleryMessage = message
+                if !contextVM.isPresented {
+                    AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
+                }
             }
             .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
                 VStack {

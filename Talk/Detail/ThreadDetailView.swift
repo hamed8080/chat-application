@@ -458,7 +458,7 @@ struct InfoRowItem: View {
                     .font(.iransansCaption)
                     .foregroundStyle(Color.App.textSecondary)
                 Text(value)
-                    .font(.iransansSubtitle)
+                    .font(.iransansBody)
                     .foregroundStyle(Color.App.textPrimary)
                     .lineLimit(lineLimit)
                     .fixedSize(horizontal: false, vertical: true)
@@ -468,7 +468,7 @@ struct InfoRowItem: View {
             Spacer()
             button
         }
-        .padding()
+        .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
     }
 }
 
