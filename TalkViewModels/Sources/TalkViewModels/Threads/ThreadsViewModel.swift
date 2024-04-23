@@ -353,6 +353,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func updateThreadInfo(_ thread: Conversation) {
         if let index = firstIndex(thread.id) {
+            let title = thread.title ?? ""
+            let replacedEmoji = title.replacingOccurrences(of: NSRegularExpression.emojiRegEx, with: "\\\\u{$1}", options: .regularExpression)
+            threads[index].title = replacedEmoji
             threads[index].updateValues(thread)
             threads[index].animateObjectWillChange()
             animateObjectWillChange()

@@ -195,6 +195,11 @@ struct UserInformationSection: View {
                 if case let .user(response) = event, response.result != nil {
                     updateUI(user: response.result)
                 }
+
+                if case .setProfile(let response) = event {
+                    AppState.shared.user?.chatProfileVO?.bio = response.result?.bio ?? ""
+                    updateUI(user: AppState.shared.user)
+                }
             }
             .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notif in
                 /// We use this to fetch the user profile image once the active instance is initialized.
