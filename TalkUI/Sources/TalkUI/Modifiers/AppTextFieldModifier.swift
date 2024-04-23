@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TalkModels
 
 public struct AppTextFieldModifier: ViewModifier {
     let topPlaceholder: String
@@ -18,7 +19,7 @@ public struct AppTextFieldModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(String(localized: .init(topPlaceholder)))
+            Text(topPlaceholder)
                 .font(.iransansCaption)
                 .padding(.horizontal, 20)
                 .offset(y: 8)
@@ -38,7 +39,7 @@ public struct AppTextFieldModifier: ViewModifier {
                 }
 
             if let error {
-                Text(String(localized: .init(error)))
+                Text(error)
                     .font(.iransansCaption)
                     .padding(.horizontal, 20)
                     .offset(y: -8)
@@ -63,7 +64,7 @@ struct AppTextFieldModifier_Previews: PreviewProvider {
         @FocusState var focusState: AppTextFieldModifierTestFileds?
 
         var body: some View {
-            TextField("Contacts.Add.firstName", text: .constant("Value"))
+            TextField("Contacts.Add.firstName".localized(bundle: Language.preferedBundle), text: .constant("Value"))
                 .focused($focusState, equals: .firstName)
                 .keyboardType(.default)
                 .padding()

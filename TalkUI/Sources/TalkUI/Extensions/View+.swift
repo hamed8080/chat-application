@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import TalkModels
+
 extension View {
     @ViewBuilder
     func compatibleConfirmationDialog(_ isPresented: Binding<Bool>, message: String? = nil, title: String? = nil, _ buttons: [DialogButton]) -> some View {
@@ -42,4 +44,10 @@ struct DialogButton: Hashable, Identifiable {
     var title: String
     var action: () -> Void
     var id = UUID().uuidString
+}
+
+public extension Text {
+    init(_ key: String) {
+        self.init(.init(key), tableName: nil, bundle: Language.preferedBundle, comment: "")
+    }
 }

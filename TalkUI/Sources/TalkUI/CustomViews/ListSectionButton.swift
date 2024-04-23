@@ -49,7 +49,7 @@ public struct ListSectionButton: View {
                     .background(color)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
 
-                    Text(String(localized: .init(title)))
+                    Text(title)
                     Spacer()
                     if let trailingView {
                         trailingView

@@ -101,7 +101,7 @@ struct LogView: View {
                     if viewModel.type == item {
                         Image(systemName: "checkmark")
                     }
-                    Text(.init(localized: .init(item.title)))
+                    Text(item.title)
                 }
             }
         } label: {

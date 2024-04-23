@@ -290,7 +290,7 @@ struct EditContactInParticipantDetailView: View {
     }
 
     func optioanlAPpend(text: String) -> String {
-        "\(String(localized: .init(text))) \(String(localized: "General.optional"))"
+        "\(String(localized: .init(text), bundle: Language.preferedBundle)) \(String(localized: "General.optional", bundle: Language.preferedBundle))"
     }
 
     var toolbarView: some View {
@@ -368,14 +368,14 @@ struct ThreadInfoView: View {
 
                 let count = viewModel.threadVM?.participantsViewModel.thread?.participantCount
                 if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
-                    let label = String(localized: .init("Participant"))
+                    let label = String(localized: .init("Participant"), bundle: Language.preferedBundle)
                     Text("\(label) \(countString)")
                         .font(.iransansCaption3)
                         .foregroundStyle(Color.App.textSecondary)
                 }
 
                 if let notSeenString = viewModel.participantDetailViewModel?.notSeenString {
-                    let localized = String(localized: .init("Contacts.lastVisited"))
+                    let localized = String(localized: .init("Contacts.lastVisited"), bundle: Language.preferedBundle)
                     let formatted = String(format: localized, notSeenString)
                     Text(formatted)
                         .font(.iransansCaption3)
@@ -394,7 +394,7 @@ struct ThreadDescription: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        let description = viewModel.thread?.description.validateString ?? "General.noDescription".localized()
+        let description = viewModel.thread?.description.validateString ?? "General.noDescription".localized(bundle: Language.preferedBundle)
         InfoRowItem(key: "General.description", value: description, lineLimit: nil)
     }
 }
@@ -454,7 +454,7 @@ struct InfoRowItem: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(String(localized: .init(key)))
+                Text(key)
                     .font(.iransansCaption)
                     .foregroundStyle(Color.App.textSecondary)
                 Text(value)
@@ -582,7 +582,7 @@ struct SectionItem: View {
         Button {
             action()
         } label: {
-            Label(String(localized: .init(title)), systemImage: systemName)
+            Label(title, systemImage: systemName)
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36, alignment: .leading)
         }
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)

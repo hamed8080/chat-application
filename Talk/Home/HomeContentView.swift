@@ -41,6 +41,7 @@ struct HomeContentView: View {
                 .environmentObject(container.userProfileImageVM)
         }
         .modifier(ColorSchemeModifier())
+        .environment(\.layoutDirection, Language.isRTL ? .rightToLeft : .leftToRight)
         .contextMenuContainer()
     }
 }

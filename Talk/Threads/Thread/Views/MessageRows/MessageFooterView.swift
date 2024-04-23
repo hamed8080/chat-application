@@ -23,6 +23,12 @@ struct MessageFooterView: View {
         return message.id != nil
     }
 
+    private static var editedText: some View = {
+        Text("Messages.Footer.edited")
+            .foregroundColor(Color.App.textSecondary)
+            .font(.iransansCaption2)
+    }()
+
     var body: some View {
         HStack(spacing: 2) {
 
@@ -31,9 +37,7 @@ struct MessageFooterView: View {
             }
 
             if message.edited == true {
-                Text("Messages.Footer.edited")
-                    .foregroundColor(Color.App.textSecondary)
-                    .font(.iransansCaption2)
+                MessageFooterView.editedText
             }
 
             if viewModel.isMe {

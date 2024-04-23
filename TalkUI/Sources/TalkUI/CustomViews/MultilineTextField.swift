@@ -153,7 +153,7 @@ public struct MultilineTextField: View {
     var placeholderView: some View {
         Group {
             if showingPlaceholder {
-                Text(String(localized: .init(placeholder)))
+                Text(placeholder)
                     .font(.iransansBody)
                     .foregroundColor(placeholderColor)
                     .padding(EdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 0))

@@ -219,7 +219,7 @@ struct PreferenceView: View {
         List {
             Section("Tab.contacts") {
                 VStack(alignment: .leading, spacing: 2) {
-                    Toggle("Contacts.Sync.sync", isOn: $model.isSyncOn)
+                    Toggle("Contacts.Sync.sync".localized(bundle: Language.preferedBundle), isOn: $model.isSyncOn)
                     Text("Contacts.Sync.subtitle")
                         .foregroundColor(.gray)
                         .font(.iransansCaption3)
@@ -343,7 +343,7 @@ struct DarkModeSection: View {
             .frame(width: 28, height: 28)
             .background(Color.App.color1)
             .clipShape(RoundedRectangle(cornerRadius:(8)))
-            Toggle("Settings.darkModeEnabled", isOn: $isDarkModeEnabled)
+            Toggle("Settings.darkModeEnabled".localized(bundle: Language.preferedBundle), isOn: $isDarkModeEnabled)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.App.dividerPrimary)
         }
@@ -497,7 +497,7 @@ struct VersionNumberView: View {
         HStack(spacing: 2) {
             Spacer()
             Text("Support.title")
-            Text(String(format: String(localized: "Support.version"), localVersionNumber))
+            Text(String(format: String(localized: "Support.version", bundle: Language.preferedBundle), localVersionNumber))
             Spacer()
         }
         .foregroundStyle(Color.App.textSecondary)
@@ -511,7 +511,7 @@ struct VersionNumberView: View {
         let version = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
         let splited = version.split(separator: ".")
         let numbers = splited.compactMap({Int($0)})
-        let localStr = numbers.compactMap{$0.localNumber()}
+        let localStr = numbers.compactMap{$0.localNumber(locale: Language.preferredLocale)}
         return localStr.joined(separator: ".")
     }
 

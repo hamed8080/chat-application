@@ -179,7 +179,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         rowType.isAudio = message.isAudio
         rowType.isForward = message.forwardInfo != nil
         rowType.isUnSent = message.isUnsentMessage
-        callTypeKey = message.callHistory?.status?.key?.localized() ?? ""
+        callTypeKey = message.callHistory?.status?.key?.localized(bundle: Language.preferedBundle) ?? ""
         async let color = threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
         participantColor = await Color(uiColor: color ?? .clear)
         await downloadFileVM?.setup()
@@ -351,7 +351,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateLocalizeReplyFileName() -> String? {
         if let message = message.replyInfo?.message?.prefix(150).replacingOccurrences(of: "\n", with: " "), !message.isEmpty {
             return message
-        } else if let fileHint = message.replyFileStringName?.localized(), !fileHint.isEmpty {
+        } else if let fileHint = message.replyFileStringName?.localized(bundle: Language.preferedBundle), !fileHint.isEmpty {
             return fileHint
         } else {
             return nil
@@ -433,7 +433,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func replyStaticTextWidth() -> CGFloat {
-        let staticText = "Message.replyTo".localized()
+        let staticText = "Message.replyTo".localized(bundle: Language.preferedBundle)
         let font = UIFont(name: "IRANSansX-Bold", size: 12) ?? .systemFont(ofSize: 12)
         let width = staticText.widthOfString(usingFont: font) + 12
         return width

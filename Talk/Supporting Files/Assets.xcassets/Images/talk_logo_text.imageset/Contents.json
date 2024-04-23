@@ -1,8 +1,18 @@
 {
   "images" : [
     {
-      "filename" : "talk_logo_text.svg",
+      "filename" : "talk_logo_text.png",
       "idiom" : "universal"
+    },
+    {
+      "filename" : "talk_logo_text.svg",
+      "idiom" : "universal",
+      "locale" : "fa-IR"
+    },
+    {
+      "filename" : "talk_logo_text 1.png",
+      "idiom" : "universal",
+      "locale" : "en"
     }
   ],
   "info" : {
@@ -10,6 +20,7 @@
     "version" : 1
   },
   "properties" : {
+    "localizable" : true,
     "template-rendering-intent" : "template"
   }
 }

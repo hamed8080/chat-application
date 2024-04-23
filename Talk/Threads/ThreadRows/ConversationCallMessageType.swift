@@ -22,7 +22,7 @@ struct ConversationCallMessageType: View {
                 let date = Date(milliseconds: Int64(time))
                 HStack(spacing: 2) {
                     if let key = message.callHistory?.status?.key {
-                        Text(.init(localized: .init(key)))
+                        Text(key)
                         Text("\(date.localFormattedTime ?? "")")
                             .fontWeight(.bold)
                     }

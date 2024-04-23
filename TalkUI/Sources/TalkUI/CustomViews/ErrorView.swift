@@ -9,7 +9,7 @@ public struct ErrorView: View {
 
     public var body: some View {
         HStack {
-            Text(String(localized: .init(error)))
+            Text(error)
                 .font(.iransansCaption2)
                 .foregroundColor(.red.opacity(0.7))
         }

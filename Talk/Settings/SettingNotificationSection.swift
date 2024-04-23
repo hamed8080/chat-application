@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct SettingNotificationSection: View {
     @EnvironmentObject var navModel: NavigationModel
@@ -29,16 +30,16 @@ struct NotificationSettings: View {
     var body: some View {
         List {
             Group {
-                Toggle("Notification.Sound", isOn: $model.notificationSettings.soundEnable)
+                Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.soundEnable)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
                 if EnvironmentValues.isTalkTest {
-                    Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
+                    Toggle("Notification.ShowDetails".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.showDetails)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.dividerPrimary)
                 }
                 if EnvironmentValues.isTalkTest {
-                    Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
+                    Toggle("Notification.Vibration".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.vibration)
                         .listRowBackground(Color.App.bgPrimary)
                         .listSectionSeparator(.hidden)
                 }
@@ -101,7 +102,7 @@ struct PrivateNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound", isOn: $model.notificationSettings.privateChat.sound)
+            Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.privateChat.sound)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
@@ -121,7 +122,7 @@ struct GroupNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound", isOn: $model.notificationSettings.group.sound)
+            Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.group.sound)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
@@ -141,7 +142,7 @@ struct ChannelNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound", isOn: $model.notificationSettings.channel.sound)
+            Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.channel.sound)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }

@@ -9,6 +9,7 @@ import SwiftUI
 import AdditiveUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingContentView: View>: View {
     @ViewBuilder let leadingNavigationViews: LeadingContentView?
@@ -67,7 +68,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         .overlay(alignment: .center) {
             VStack(spacing: 2) {
                 if let title {
-                    Text(String(localized: String.LocalizationValue(title)))
+                    Text(title)
                         .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 48)
                         .font(.iransansBoldSubheadline)
                         .foregroundStyle(Color.App.toolbarButton)
@@ -118,7 +119,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
 
     @ViewBuilder var searchView: some View {
         if searchCompletion != nil {
-            TextField(String(localized: String.LocalizationValue(searchPlaceholder ?? "" )), text: $searchText)
+            TextField((searchPlaceholder ?? "" ).localized(bundle: Language.preferedBundle), text: $searchText)
                 .keyboardType(searchKeyboardType)
                 .font(.iransansBody)
                 .textFieldStyle(.clear)

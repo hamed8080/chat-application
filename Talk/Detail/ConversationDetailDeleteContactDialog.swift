@@ -9,6 +9,7 @@ import SwiftUI
 import ChatModels
 import TalkViewModels
 import TalkUI
+import TalkModels
 
 struct ConversationDetailDeleteContactDialog: View {
     let participant: Participant
@@ -55,7 +56,7 @@ struct ConversationDetailDeleteContactDialog: View {
     }
 
     private var attributedString: AttributedString {
-        let key = String(localized: .init("ConversationDetail.deleteContact"))
+        let key = String(localized: .init("ConversationDetail.deleteContact"), bundle: Language.preferedBundle)
         let contactName = participant.contactName ?? participant.name ?? ""
         let string = String(format: key, contactName)
         let attr = NSMutableAttributedString(string: string)

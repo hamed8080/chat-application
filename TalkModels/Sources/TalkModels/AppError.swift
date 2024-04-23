@@ -15,9 +15,9 @@ public enum AppErrorTypes: Int {
     public var localized: String {
         switch self {
         case .microphone_access_denied:
-            return String(localized: .init("Thread.accessMicrophonePermission"))
+            return String(localized: .init("Thread.accessMicrophonePermission"), bundle: Language.preferedBundle)
         case .location_access_denied:
-            return String(localized: .init("Thread.accessLocaitonPermission"))
+            return String(localized: .init("Thread.accessLocaitonPermission"), bundle: Language.preferedBundle)
         }
     }
 }

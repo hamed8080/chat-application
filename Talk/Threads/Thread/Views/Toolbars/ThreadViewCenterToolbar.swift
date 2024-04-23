@@ -42,7 +42,7 @@ struct ThreadViewCenterToolbar: View {
                     .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansCaption2)
             } else if thread.group == true, let participantsCount = participantsCount?.localNumber(locale: Language.preferredLocale) {
-                let localizedLabel = String(localized: "Thread.Toolbar.participants")
+                let localizedLabel = String(localized: "Thread.Toolbar.participants", bundle: Language.preferedBundle)
                 Text("\(localizedLabel) \(participantsCount)")
                     .fixedSize()
                     .foregroundColor(Color.App.toolbarSecondaryText)
@@ -100,7 +100,7 @@ struct P2PThreadLastSeenView : View {
     @State private var lastSeen = ""
 
     var body: some View {
-        let localized = String(localized: .init("Contacts.lastVisited"))
+        let localized = String(localized: .init("Contacts.lastVisited"), bundle: Language.preferedBundle)
         let formatted = String(format: localized, lastSeen)
         Text(lastSeen.isEmpty ? "" : formatted)
             .fixedSize()

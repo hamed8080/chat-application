@@ -10,6 +10,7 @@ import TalkUI
 import Chat
 import TalkViewModels
 import Logger
+import TalkModels
 
 struct ManuallyConnectionManagerView: View {
     @FocusState var isFocused
@@ -18,7 +19,7 @@ struct ManuallyConnectionManagerView: View {
 
     var body: some View {
         List {
-            TextField("token", text: $token)
+            TextField("token".localized(bundle: Language.preferedBundle), text: $token)
                 .focused($isFocused)
                 .keyboardType(.phonePad)
                 .font(.iransansBody)

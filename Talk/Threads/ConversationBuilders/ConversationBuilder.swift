@@ -10,6 +10,7 @@ import TalkViewModels
 import TalkUI
 import PhotosUI
 import ChatModels
+import TalkModels
 
 struct ConversationBuilder: View {
     @EnvironmentObject var viewModel: ConversationBuilderViewModel
@@ -47,7 +48,7 @@ struct ConversationBuilder: View {
             .listStyle(.plain)
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    TextField("General.searchHere", text: $viewModel.searchContactString)
+                    TextField("General.searchHere".localized(bundle: Language.preferedBundle), text: $viewModel.searchContactString)
                         .frame(height: 48)
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
@@ -114,7 +115,8 @@ struct EditCreatedConversationDetail: View {
         List {
             HStack {
                 imagePickerButton
-                TextField(viewModel.createConversationType?.isGroupType == true ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName" , text: $viewModel.conversationTitle)
+                let key = viewModel.createConversationType?.isGroupType == true ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName"
+                TextField(key.localized(bundle: Language.preferedBundle), text: $viewModel.conversationTitle)
                     .textContentType(.name)
                     .padding()
                     .font(.iransansBody)
@@ -130,8 +132,8 @@ struct EditCreatedConversationDetail: View {
 
             let type = viewModel.createConversationType
             let isChannel = type?.isChannelType == true
-            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
-            let localizedPublic = String(localized: .init("Thread.public"))
+            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"), bundle: Language.preferedBundle)
+            let localizedPublic = String(localized: .init("Thread.public"), bundle: Language.preferedBundle)
 
             Toggle(isOn: $viewModel.isPublic) {
                 Text(String(format: localizedPublic, typeName))
@@ -309,7 +311,7 @@ struct ‌BuilderContactRow: View {
                         .font(.iransansBoldBody)
                         .foregroundColor(Color.App.textPrimary)
 //                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
-//                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+//                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"), bundle: Language.preferedBundle)
 //                        let time = String(format: lastVisitedLabel, notSeenDuration)
 //                        Text(time)
 //                            .padding(.leading, 16)

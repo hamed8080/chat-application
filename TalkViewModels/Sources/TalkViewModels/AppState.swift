@@ -233,7 +233,7 @@ public extension AppState {
     }
 
     func openSelfThread() {
-        let req = CreateThreadRequest(title: String(localized: .init("Thread.selfThread")), type: StrictThreadTypeCreation.selfThread.threadType)
+        let req = CreateThreadRequest(title: String(localized: .init("Thread.selfThread"), bundle: Language.preferedBundle), type: StrictThreadTypeCreation.selfThread.threadType)
         RequestsManager.shared.append(prepend: "CREATE-SELF-THREAD", value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }

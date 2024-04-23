@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import TalkModels
 
 enum ContactType: String, Identifiable, CaseIterable {
     var id: Self { self }
@@ -45,21 +46,21 @@ struct AddOrEditContactView: View {
                         .padding()
                         .offset(y: 24)
                 }
-                TextField("General.firstName", text: $firstName)
+                TextField("General.firstName".localized(bundle: Language.preferedBundle), text: $firstName)
                     .focused($focusState, equals: .firstName)
                     .textContentType(.name)
                     .padding()
                     .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
                         focusState = .firstName
                     }
-                TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
+                TextField(optioanlAPpend(text: "General.lastName".localized(bundle: Language.preferedBundle)), text: $lastName)
                     .focused($focusState, equals: .lastName)
                     .textContentType(.familyName)
                     .padding()
                     .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
                         focusState = .lastName
                     }
-                TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
+                TextField("Contacts.Add.phoneOrUserName".localized(bundle: Language.preferedBundle), text: $contactValue)
                     .focused($focusState, equals: .contactValue)
                     .keyboardType(.default)
                     .padding()
@@ -142,7 +143,7 @@ struct AddOrEditContactView: View {
     }
 
     func optioanlAPpend(text: String) -> String {
-        "\(String(localized: .init(text))) \(String(localized: "General.optional"))"
+        "\(String(localized: .init(text), bundle: Language.preferedBundle)) \(String(localized: "General.optional", bundle: Language.preferedBundle))"
     }
 
     var toolbarView: some View {

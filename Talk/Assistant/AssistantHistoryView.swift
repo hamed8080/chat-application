@@ -56,7 +56,7 @@ struct AssistantActionRow: View {
             }
 
             Spacer()
-            Text(.init(localized: .init(action.actionType?.stringValue ?? "General.unknown")))
+            Text(action.actionType?.stringValue ?? "General.unknown")
                 .frame(width: 72)
                 .font(.iransansCaption2)
                 .padding(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))

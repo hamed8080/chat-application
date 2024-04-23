@@ -30,7 +30,7 @@ struct ForwardMessagesViewPlaceholder: View {
                             .foregroundColor(Color.App.textPlaceholder)
                             .lineLimit(2)
                     } else {
-                        let localized = String(localized: .init("Thread.forwardMessages"))
+                        let localized = String(localized: .init("Thread.forwardMessages"), bundle: Language.preferedBundle)
                         let localNumber = (model.forwardMessages?.count ?? 0).localNumber(locale: Language.preferredLocale) ?? ""
                         Text(String(format: localized, localNumber))
                             .foregroundStyle(Color.App.accent)

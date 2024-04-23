@@ -20,7 +20,7 @@ struct ContactListSearchBarFilterView: View {
     var body: some View {
         HStack {
             if isInSearchMode {
-                TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $viewModel.searchContactString)
+                TextField("General.searchHere".localized(bundle: Language.preferedBundle), text: $viewModel.searchContactString)
                     .font(.iransansBody)
                     .textFieldStyle(.clear)
                     .focused($searchFocus, equals: .search)
@@ -41,13 +41,13 @@ struct ContactListSearchBarFilterView: View {
                                 viewModel.searchType = item
                             }
                         } label: {
-                            Text(String(localized: .init(item.rawValue)))
+                            Text(item.rawValue)
                                 .font(.iransansBoldCaption3)
                         }
                     }
                 } label: {
                     HStack {
-                        Text(String(localized: .init(viewModel.searchType.rawValue)))
+                        Text(viewModel.searchType.rawValue)
                             .font(.iransansBoldCaption3)
                             .foregroundColor(Color.App.textSecondary)
                         Image(systemName: "chevron.down")

@@ -9,6 +9,7 @@ import SwiftUI
 import TalkViewModels
 import TalkUI
 import AdditiveUI
+import TalkModels
 
 struct VerifyContentView: View {
     @EnvironmentObject var viewModel: LoginViewModel
@@ -40,7 +41,7 @@ struct VerifyContentView: View {
                     .padding(.bottom, 2)
 
                 HStack(spacing: 2) {
-                    let localized = String(localized: "Login.Verfiy.verificationCodeSentTo")
+                    let localized = String(localized: "Login.Verfiy.verificationCodeSentTo", bundle: Language.preferedBundle)
                     let formatted = String(format: localized, viewModel.text)
                     Text(formatted)
                         .foregroundStyle(Color.App.textSecondary)
@@ -118,7 +119,7 @@ struct VerifyContentView: View {
 
             HStack {
                 if !viewModel.timerHasFinished {
-                    let localized = String(localized: .init("Login.Verify.timer"))
+                    let localized = String(localized: .init("Login.Verify.timer"), bundle: Language.preferedBundle)
                     let formatted = String(format: localized, viewModel.timerString)
                     Text(formatted)
                         .foregroundStyle(Color.App.textSecondary)

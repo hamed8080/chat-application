@@ -136,8 +136,8 @@ struct NormalLastMessageContainer: View {
 
     private var participantName: String? {
         if let participantName = lastMsgVO?.participant?.contactName ?? lastMsgVO?.participant?.name, thread.group == true {
-            let meVerb = String(localized: .init("General.you"))
-            let localized = String(localized: .init("Thread.Row.lastMessageSender"))
+            let meVerb = String(localized: .init("General.you"), bundle: Language.preferedBundle)
+            let localized = String(localized: .init("Thread.Row.lastMessageSender"), bundle: Language.preferedBundle)
             let participantName = String(format: localized, participantName)
             let name = isMe ? "\(meVerb):" : participantName
             return Message.textDirectionMark + name
@@ -150,7 +150,7 @@ struct NormalLastMessageContainer: View {
         if lastMsgVO == nil, let creator = thread.inviter?.name {
             let type = thread.type
             let key = type?.isChannelType == true ? "Thread.createdAChannel" : "Thread.createdAGroup"
-            let localizedLabel = String(localized: .init(key))
+            let localizedLabel = String(localized: .init(key), bundle: Language.preferedBundle)
             let text = String(format: localizedLabel, creator)
             return text
         } else {
@@ -161,8 +161,8 @@ struct NormalLastMessageContainer: View {
     private var sentFileString: String? {
         if isFileType {
             let fileStringName = lastMsgVO?.fileStringName ?? "MessageType.file"
-            let sentVerb = String(localized: .init(isMe ? "Genral.mineSendVerb" : "General.thirdSentVerb"))
-            let formatted = String(format: sentVerb, fileStringName.localized())
+            let sentVerb = String(localized: .init(isMe ? "Genral.mineSendVerb" : "General.thirdSentVerb"), bundle: Language.preferedBundle)
+            let formatted = String(format: sentVerb, fileStringName.localized(bundle: Language.preferedBundle))
             return Message.textDirectionMark + "\(formatted)"
         } else {
             return nil

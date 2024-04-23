@@ -11,11 +11,17 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct ReplyInfoMessageRow: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
+    private static var staticReplyText: some View = {
+        Text("Messages.deletedMessageReply")
+            .font(.iransansBoldCaption2)
+            .foregroundColor(Color.App.textSecondary)
+    }()
 
     var body: some View {
         replyContent()
@@ -39,9 +45,7 @@ struct ReplyInfoMessageRow: View {
                         .stroke(lineWidth: 1.5)
                         .fill(Color.App.accent)
                         .frame(maxWidth: 1.5)
-                    Text("Messages.deletedMessageReply")
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(Color.App.textSecondary)
+                    ReplyInfoMessageRow.staticReplyText
                     Spacer()
                 }
                 .contentShape(Rectangle())
@@ -112,7 +116,7 @@ struct ReplyInfoMessageRow: View {
 
     @ViewBuilder
     private var isMeHeaderParticipantNameView: some View {
-        Text(verbatim: "\(String(localized: .init("Message.replyTo"))):")
+        Text(verbatim: "\(String(localized: .init("Message.replyTo"), bundle: Language.preferedBundle)):")
             .font(.iransansBoldCaption2)
             .foregroundStyle(Color.App.accent)
         if let name = message.replyInfo?.participant?.name {
@@ -129,7 +133,7 @@ struct ReplyInfoMessageRow: View {
                 .font(.iransansBoldCaption2)
                 .foregroundStyle(Color.App.accent)
         }
-        Text(verbatim: "\(String(localized: .init("Message.replyTo"))):")
+        Text(verbatim: "\(String(localized: .init("Message.replyTo"), bundle: Language.preferedBundle)):")
             .font(.iransansBoldCaption2)
             .foregroundStyle(Color.App.accent)
     }

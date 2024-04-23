@@ -25,7 +25,7 @@ public struct DateSelectionView: View {
         ZStack {
             if !showEndDate {
                 VStack {
-                    Text(.init(localized: .init("ExportChat.startTitle")))
+                    Text("ExportChat.startTitle")
                         .foregroundColor(Color.App.color1)
                         .font(.iransansBoldTitle)
 

@@ -45,7 +45,7 @@ struct ContactContentList: View {
                 type = .privateGroup
                 showBuilder.toggle()
             } label: {
-                Label("Contacts.createGroup", systemImage: "person.2")
+                Label("Contacts.createGroup".localized(bundle: Language.preferedBundle), systemImage: "person.2")
                     .foregroundStyle(Color.App.accent)
             }
             .listRowBackground(Color.App.bgPrimary)
@@ -55,7 +55,7 @@ struct ContactContentList: View {
                 type = .privateChannel
                 showBuilder.toggle()
             } label: {
-                Label("Contacts.createChannel", systemImage: "megaphone")
+                Label("Contacts.createChannel".localized(bundle: Language.preferedBundle), systemImage: "megaphone")
                     .foregroundStyle(Color.App.accent)
             }
             .listRowBackground(Color.App.bgPrimary)
@@ -65,7 +65,7 @@ struct ContactContentList: View {
                 viewModel.showAddOrEditContactSheet.toggle()
                 viewModel.animateObjectWillChange()
             } label: {
-                Label("Contacts.addContact", systemImage: "person.badge.plus")
+                Label("Contacts.addContact".localized(bundle: Language.preferedBundle), systemImage: "person.badge.plus")
                     .foregroundStyle(Color.App.accent)
             }
             .listRowBackground(Color.App.bgPrimary)

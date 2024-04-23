@@ -102,7 +102,7 @@ struct AttchmentButtonItem: View {
                         .clipShape(RoundedRectangle(cornerRadius:(26)))
                 }
             }
-            Text(String(localized: .init(title)))
+            Text(title)
                 .font(.iransansCaption3)
                 .foregroundStyle(Color.App.textSecondary)
                 .multilineTextAlignment(.center)

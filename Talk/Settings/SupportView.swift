@@ -7,6 +7,7 @@
 
 import SwiftUI
 import TalkViewModels
+import TalkModels
 
 struct SupportView: View {
     @Environment(\.colorScheme) var scheme
@@ -59,7 +60,7 @@ struct SupportView: View {
         let version = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
         let splited = version.split(separator: ".")
         let numbers = splited.compactMap({Int($0)})
-        let localStr = numbers.compactMap{$0.localNumber()}
+        let localStr = numbers.compactMap{$0.localNumber(locale: Language.preferredLocale)}
         return localStr.joined(separator: ".")
     }
 }

@@ -11,6 +11,7 @@ import Combine
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct StartThreadContactPickerView: View {
     @Environment(\.dismiss) var dismiss
@@ -65,7 +66,7 @@ struct StartThreadContactPickerView: View {
             .listStyle(.plain)
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    TextField("General.searchHere", text: $viewModel.searchContactString)
+                    TextField("General.searchHere".localized(bundle: Language.preferedBundle), text: $viewModel.searchContactString)
                         .frame(height: 48)
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)

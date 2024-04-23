@@ -135,8 +135,8 @@ struct ExpandHeader: View {
 
     var body: some View {
         HStack {
-            let localized = String(localized: .init("Thread.sendAttachments"))
-            let value = viewModel.attachments.count.formatted(.number)
+            let localized = String(localized: .init("Thread.sendAttachments"), bundle: Language.preferedBundle)
+            let value = viewModel.attachments.count.localNumber(locale: Language.preferredLocale) ?? ""
             Text(String(format: localized, "\(value)"))
                 .font(.iransansBoldBody)
                 .padding(.leading, 8)

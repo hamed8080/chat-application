@@ -21,8 +21,7 @@ public struct ConnectionStatusToolbar: View {
     public var body: some View {
         if connectionStatus != .connected {
             HStack {
-                let localized = String(localized: .init(connectionStatus.stringValue))
-                Text(localized)
+                Text(connectionStatus.stringValue)
                     .fixedSize()
                     .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansFootnote)

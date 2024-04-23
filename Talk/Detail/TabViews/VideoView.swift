@@ -122,7 +122,7 @@ struct VideoRowView: View {
         }
         .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
             VStack {
-                ContextMenuButton(title: "General.showMessage", image: "message.fill") {
+                ContextMenuButton(title: "General.showMessage".localized(bundle: Language.preferedBundle), image: "message.fill") {
                     threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
                     viewModel.dismiss = true
                 }

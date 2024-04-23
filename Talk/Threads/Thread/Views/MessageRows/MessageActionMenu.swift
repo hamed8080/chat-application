@@ -34,31 +34,32 @@ struct MessageActionMenu: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if isDeletable {
-                ContextMenuButton(title: "General.delete", image: "trash", iconColor: Color.App.red, showSeparator: false) {
+                ContextMenuButton(title: "General.delete".localized(bundle: Language.preferedBundle), image: "trash", iconColor: Color.App.red, showSeparator: false) {
                     onDeleteTapped()
                 }
                 .foregroundStyle(Color.App.red)
             }
 
-            ContextMenuButton(title: "Messages.ActionMenu.forward", image: "arrowshape.turn.up.right") {
+            ContextMenuButton(title: "Messages.ActionMenu.forward".localized(bundle: Language.preferedBundle), image: "arrowshape.turn.up.right") {
                 onForwardTapped()
             }
 
 
             if !notAdminChannel {
-                ContextMenuButton(title: "Messages.ActionMenu.reply", image: "arrowshape.turn.up.left") {
+                ContextMenuButton(title: "Messages.ActionMenu.reply".localized(bundle: Language.preferedBundle), image: "arrowshape.turn.up.left") {
                     onReplyTapped()
                 }
             }
 
             if isAdmin {
-                ContextMenuButton(title: isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", image: "pin") {
+                let key = isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage"
+                ContextMenuButton(title: key.localized(bundle: Language.preferedBundle), image: "pin") {
                     onPinUnpinTapped()
                 }
             }
 
             if isGroup, !isMe && !isChannel {
-                ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
+                ContextMenuButton(title: "Messages.ActionMenu.replyPrivately".localized(bundle: Language.preferedBundle), image: "arrowshape.turn.up.left") {
                     onReplyPrivatelyTapped()
                 }
                 .overlay(alignment: Language.isRTL ? .bottomTrailing : .bottomLeading) {
@@ -66,18 +67,19 @@ struct MessageActionMenu: View {
                 }
             }
 
-            ContextMenuButton(title: "General.select", image: "checkmark.circle") {
+            ContextMenuButton(title: "General.select".localized(bundle: Language.preferedBundle), image: "checkmark.circle") {
                 onSelectTapped()
             }
 
             if isMe && isGroup {
-                ContextMenuButton(title: "SeenParticipants.title", image: "info.bubble") {
+                ContextMenuButton(title: "SeenParticipants.title".localized(bundle: Language.preferedBundle), image: "info.bubble") {
                     onInfoTapped()
                 }
             }
 
             if viewModel.canEdit {
-                ContextMenuButton(title: isEmptyText ? "General.addText" : "General.edit", image: "pencil.circle") {
+                let key = isEmptyText ? "General.addText" : "General.edit"
+                ContextMenuButton(title: key.localized(bundle: Language.preferedBundle), image: "pencil.circle") {
                     onAddOrEditTextTapped()
                 }
                 .disabled((message.editable ?? false) == false)
@@ -87,13 +89,13 @@ struct MessageActionMenu: View {
 
             Group {
                 if isImage, isImageDownloaded() {
-                    ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
+                    ContextMenuButton(title: "Messages.ActionMenu.saveImage".localized(bundle: Language.preferedBundle), image: "square.and.arrow.down") {
                         onSaveImageTapped()
                     }
                 }
 
                 if !isEmptyText {
-                    ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
+                    ContextMenuButton(title: "Messages.ActionMenu.copy".localized(bundle: Language.preferedBundle), image: "doc.on.doc") {
                         UIPasteboard.general.string = message.message
                     }
                 }
@@ -101,7 +103,7 @@ struct MessageActionMenu: View {
 
             if EnvironmentValues.isTalkTest {
                 if isFileType {
-                    ContextMenuButton(title: "Messages.ActionMenu.deleteCache", image: "cylinder.split.1x2") {
+                    ContextMenuButton(title: "Messages.ActionMenu.deleteCache".localized(bundle: Language.preferedBundle), image: "cylinder.split.1x2") {
                         onClearCacheTapped()
                     }
                 }

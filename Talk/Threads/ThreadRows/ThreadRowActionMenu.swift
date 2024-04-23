@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 import TalkViewModels
 import ActionableContextMenu
+import TalkModels
 
 struct ThreadRowActionMenu: View {
     @Binding var showPopover: Bool
@@ -20,45 +21,50 @@ struct ThreadRowActionMenu: View {
 
     var body: some View {
         if !isDetailView, thread.pin == true || viewModel.serverSortedPins.count < 5 {
-            ContextMenuButton(title: (thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", image: "pin") {
+            let key = (thread.pin ?? false) ? "Thread.unpin" : "Thread.pin"
+            ContextMenuButton(title: key.localized(bundle: Language.preferedBundle), image: "pin") {
                 onPinUnpinTapped()
             }
         }
 
         if thread.type != .selfThread && !isDetailView {
-            ContextMenuButton(title: (thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", image: "speaker.slash") {
+            let key = (thread.mute ?? false) ? "Thread.unmute" : "Thread.mute"
+            ContextMenuButton(title: key.localized(bundle: Language.preferedBundle), image: "speaker.slash") {
                 onMuteUnmuteTapped()
             }
         }
 
         if EnvironmentValues.isTalkTest {
-            ContextMenuButton(title: "Thread.clearHistory", image: "clock") {
+            ContextMenuButton(title: "Thread.clearHistory".localized(bundle: Language.preferedBundle), image: "clock") {
                 onClearHistoryTapped()
             }
             
-            ContextMenuButton(title: "Thread.addToFolder", image: "folder.badge.plus") {
+            ContextMenuButton(title: "Thread.addToFolder".localized(bundle: Language.preferedBundle), image: "folder.badge.plus") {
                 onAddToFolderTapped()
             }
             
-            ContextMenuButton(title: "Thread.spam", image: "ladybug") {
+            ContextMenuButton(title: "Thread.spam".localized(bundle: Language.preferedBundle), image: "ladybug") {
                 onSpamTapped()
             }
 
-            ContextMenuButton(title: thread.isArchive == true ? "Thread.unarchive" : "Thread.archive", image: thread.isArchive == true ?  "tray.and.arrow.up" : "tray.and.arrow.down") {
+
+            let archiveKey = thread.isArchive == true ? "Thread.unarchive" : "Thread.archive"
+            let archiveImage = thread.isArchive == true ?  "tray.and.arrow.up" : "tray.and.arrow.down"
+            ContextMenuButton(title: archiveKey.localized(bundle: Language.preferedBundle), image: archiveImage) {
                 onArchiveUnArchiveTapped()
             }
             
             if canAddParticipant {
-                ContextMenuButton(title: "Thread.invite", image: "person.crop.circle.badge.plus") {
+                ContextMenuButton(title: "Thread.invite".localized(bundle: Language.preferedBundle), image: "person.crop.circle.badge.plus") {
                     onInviteTapped()
                 }
             }
         }
 
         if isDetailView, thread.group == true {
-            let leaveKey = String(localized: .init("Thread.leave"))
+            let leaveKey = String(localized: .init("Thread.leave"), bundle: Language.preferedBundle)
             let key = thread.type?.isChannelType == true ? "Thread.channel" : "Thread.group"
-            ContextMenuButton(title: String(format: leaveKey, String(localized: .init(key))), image: "rectangle.portrait.and.arrow.right", iconColor: Color.App.red) {
+            ContextMenuButton(title: String(format: leaveKey, String(localized: .init(key), bundle: Language.preferedBundle)), image: "rectangle.portrait.and.arrow.right", iconColor: Color.App.red) {
                 onLeaveConversationTapped()
             }
             .foregroundStyle(Color.App.red)
@@ -68,8 +74,8 @@ struct ThreadRowActionMenu: View {
         if isDetailView, thread.admin == true || thread.group == false {
             let deleteKey = thread.group == false ? "" : String(localized: "Thread.delete")
             let key = thread.type?.isChannelType == true ? "Thread.channel" : thread.group == true ? "Thread.group" : ""
-            let groupLocalized = String(format: deleteKey, String(localized: .init(key)))
-            let p2pLocalized = String(localized: .init("Genreal.deleteConversation"))
+            let groupLocalized = String(format: deleteKey, String(localized: .init(key), bundle: Language.preferedBundle))
+            let p2pLocalized = String(localized: .init("Genreal.deleteConversation"), bundle: Language.preferedBundle)
             ContextMenuButton(title: thread.group == true ? groupLocalized : p2pLocalized, image: "trash", iconColor: Color.App.red) {
               onDeleteConversationTapped()
             }

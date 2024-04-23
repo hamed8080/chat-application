@@ -26,11 +26,23 @@ public struct Language: Identifiable {
         return Locale(identifier: localIdentifier ?? "en_US")
     }
 
+    public static var preferredLocaleLanguageCode: String {
+        return Language.languages.first(where: {$0.language == Locale.preferredLanguages[0] })?.language ?? "en"
+    }
+
     public static var rtlLanguages: [Language] {
         languages.filter{ $0.identifier == "ar_SA" || $0.identifier == "fa_IR" }
     }
     
     public static var isRTL: Bool {
         rtlLanguages.contains(where: {$0.language == Locale.preferredLanguages[0] })
+    }
+
+    public static var preferedBundle: Bundle {
+        guard
+            let path = Bundle.main.path(forResource: preferredLocaleLanguageCode, ofType: "lproj"),
+            let bundle = Bundle(path: path)
+        else { return .main }
+        return bundle
     }
 }

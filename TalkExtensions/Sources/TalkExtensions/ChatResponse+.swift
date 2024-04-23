@@ -8,6 +8,7 @@
 import ChatCore
 import Additive
 import Foundation
+import TalkModels
 
 extension ChatError {
     public static var presentableErrors: [ServerErrorType] = ServerErrorType.allCases.filter{ !customPresentable.contains($0) }
@@ -20,7 +21,7 @@ extension ChatError {
                 let data = message?.data(using: .utf8),
                 let banError = try? JSONDecoder.instance.decode(BanError.self, from: data)
             else { return nil }
-            let localized = "General.ban".localized()
+            let localized = "General.ban".localized(bundle: Language.preferedBundle)
             let banTime = banError.duration ?? 0
             return String(format: localized, "\(banTime / 1000)")
         default:

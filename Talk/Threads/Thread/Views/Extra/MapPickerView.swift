@@ -103,7 +103,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         DispatchQueue.main.async { [weak self] in
             if let currentLocation = locations.first, MKMapPoint(currentLocation.coordinate).distance(to: MKMapPoint(self?.currentLocation?.location ?? CLLocationCoordinate2D())) > 100 {
-                self?.currentLocation = .init(name: String(localized: .init("Map.mayLocation")), description: String(localized: .init("Map.hereIAm")), location: currentLocation.coordinate)
+                self?.currentLocation = .init(name: String(localized: .init("Map.mayLocation"), bundle: Language.preferedBundle), description: String(localized: .init("Map.hereIAm"), bundle: Language.preferedBundle), location: currentLocation.coordinate)
                 self?.region.center = currentLocation.coordinate
             }
         }

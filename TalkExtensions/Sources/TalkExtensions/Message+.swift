@@ -184,20 +184,20 @@ public extension Message {
         let effectedParticipantsName = addRemoveParticipant?.participnats?.compactMap{$0.name}.joined(separator: ", ") ?? ""
         switch requestType {
         case .leaveThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", comment: ""), participantName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", bundle: Language.preferedBundle, comment: ""), participantName)
         case .joinThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", bundle: Language.preferedBundle, comment: ""), participantName)
         case .removedFromThread:
             if isMe {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe" , comment: ""), effectedName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe", bundle: Language.preferedBundle, comment: ""), effectedName)
             } else {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", bundle: Language.preferedBundle, comment: ""), participantName, effectedName)
             }
         case .addParticipant:
             if isMe {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", comment: ""), effectedParticipantsName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", bundle: Language.preferedBundle, comment: ""), effectedParticipantsName)
             } else {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedParticipantsName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", bundle: Language.preferedBundle, comment: ""), participantName, effectedParticipantsName)
             }
         default:
             return nil
