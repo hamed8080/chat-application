@@ -15,7 +15,6 @@ struct ThreadListSearchBarFilterView: View {
     @State private var showPopover = false
     @Binding var isInSearchMode: Bool
     @EnvironmentObject var viewModel: ThreadsSearchViewModel
-    @EnvironmentObject var threadsVM: ThreadsViewModel
     enum Field: Hashable {
         case saerch
     }
@@ -32,7 +31,7 @@ struct ThreadListSearchBarFilterView: View {
             selectedSearchFilters
         }
         .animation(.easeInOut, value: isInSearchMode)
-        .animation(.easeInOut, value: threadsVM.showUnreadConversations)
+        .animation(.easeInOut, value: viewModel.showUnreadConversations)
         .padding(EdgeInsets(top: isInSearchMode ? 4 : 0, leading: 4, bottom: isInSearchMode ? 6 : 0, trailing: 4))
         .onChange(of: viewModel.searchText) { newValue in
             AppState.shared.objectsContainer.contactsVM.searchContactString = newValue
@@ -88,11 +87,11 @@ struct ThreadListSearchBarFilterView: View {
 
     @ViewBuilder
     private var selectedSearchFilters: some View {
-        if threadsVM.showUnreadConversations == true {
+        if viewModel.showUnreadConversations == true {
             HStack {
                 FilterChip(text: "Filters.onlyUnreadConversations") {
                     /// On remove
-                    threadsVM.showUnreadConversations?.toggle()
+                    viewModel.showUnreadConversations?.toggle()
                 }
                 Spacer()
             }

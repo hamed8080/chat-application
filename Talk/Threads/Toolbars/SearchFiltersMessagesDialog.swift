@@ -12,7 +12,7 @@ import SwiftUI
 import TalkUI
 
 struct SearchFiltersMessagesDialog: View {
-    @EnvironmentObject var viewModel: ThreadsViewModel
+    @EnvironmentObject var viewModel: ThreadsSearchViewModel
     @State private var showUnreadConversationToggle: Bool = false
 
     var body: some View {
@@ -55,7 +55,7 @@ struct SearchFiltersMessagesDialog: View {
         .padding(EdgeInsets(top: 16, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
         .onAppear {
-           showUnreadConversationToggle = viewModel.showUnreadConversations == true
+            showUnreadConversationToggle = viewModel.showUnreadConversations == true
         }
     }
 

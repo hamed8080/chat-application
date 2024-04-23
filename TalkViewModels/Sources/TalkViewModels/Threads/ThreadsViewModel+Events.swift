@@ -45,14 +45,6 @@ extension ThreadsViewModel {
                 }
             }
             .store(in: &cancelable)
-        $showUnreadConversations.sink { [weak self] newValue in
-            if newValue == true {
-                self?.getUnreadConversations()
-            } else if newValue == false {
-                self?.resetUnreadConversations()
-            }
-        }
-        .store(in: &cancelable)
         NotificationCenter.system.publisher(for: .system)
             .compactMap { $0.object as? SystemEventTypes }
             .sink { [weak self] systemMessageEvent in
@@ -98,9 +90,6 @@ extension ThreadsViewModel {
                     }
                     if response.pop(prepend: "GET-THREADS") != nil {
                         await onThreads(response)
-                    }
-                    if response.pop(prepend: "GET-UNREAD-THREADS") != nil {
-                        await onUnreadThreads(response)
                     }
                     if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") != nil {
                         await onNotActiveThreads(response)

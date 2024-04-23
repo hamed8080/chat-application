@@ -20,14 +20,16 @@ public final class ThreadsSearchViewModel: ObservableObject {
     @Published public var searchedConversations: ContiguousArray<Conversation> = []
     @Published public var searchedContacts: ContiguousArray<Contact> = []
     @Published public var searchText: String = ""
-    public private(set) var count = 15
-    public private(set) var offset = 0
-    public private(set) var cancelable: Set<AnyCancellable> = []
+    private var count = 15
+    private var offset = 0
+    private var cancelable: Set<AnyCancellable> = []
     private(set) var hasNext: Bool = true
     public var isLoading = false
     private var canLoadMore: Bool { hasNext && !isLoading }
     @Published public var selectedFilterThreadType: ThreadTypes?
-    @Published public var searchType: SearchParticipantType = .name
+    @Published public var showUnreadConversations: Bool? = nil
+    private var cachedAttribute: [String: AttributedString] = [:]
+    public var isInSearchMode: Bool { searchText.count > 0 || (!searchedConversations.isEmpty || !searchedContacts.isEmpty) }
 
     public init() {
         NotificationCenter.thread.publisher(for: .thread)
@@ -36,28 +38,22 @@ public final class ThreadsSearchViewModel: ObservableObject {
                 self?.onThreadEvent(event)
             }
             .store(in: &cancelable)
-        $searchType.sink { [weak self] newValue in
-            self?.offset = 0
-            self?.hasNext = true
-        }
-        .store(in: &cancelable)
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .removeDuplicates()
             .sink { [weak self] newValue in
                 if newValue.first == "@", newValue.count > 2 {
-                    self?.hasNext = true
+                    self?.reset()
                     let startIndex = newValue.index(newValue.startIndex, offsetBy: 1)
                     let newString = newValue[startIndex..<newValue.endIndex]
                     self?.searchPublicThreads(String(newString))
                 } else if newValue.first != "@" && !newValue.isEmpty {
-                    self?.hasNext = true
-                    self?.searchThreads(newValue)
+                    self?.reset()
+                    self?.searchThreads(newValue, new: self?.showUnreadConversations)
                     self?.searchContacts(newValue)
                 } else if newValue.count == 0, self?.hasNext == false {
-                    self?.offset = 0
-                    self?.hasNext = true
+                    self?.reset()
                 }
             }
             .store(in: &cancelable)
@@ -74,26 +70,37 @@ public final class ThreadsSearchViewModel: ObservableObject {
                 self?.onContactEvent(event)
             }
             .store(in: &cancelable)
+
+        $showUnreadConversations.sink { [weak self] newValue in
+            if (self?.showUnreadConversations ?? false) == newValue { return } // when the user taps on the close button on the toolbar
+            if newValue == true {
+                self?.getUnreadConversations()
+            } else if newValue == false {
+                self?.resetUnreadConversations()
+            }
+        }
+        .store(in: &cancelable)
     }
 
     public func loadMore() {
         if !canLoadMore { return }
         offset = count + offset
-        searchThreads(searchText)
+        searchThreads(searchText, new: showUnreadConversations, loadMore: true)
     }
 
-    public func onThreadEvent(_ event: ThreadEventTypes?) {
+    private func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
         case .threads(let response):
             setHasNextOnResponse(response)
             onPublicThreadSearch(response)
             onSearch(response)
+            onSearchLoadMore(response)
         default:
             break
         }
     }
 
-    public func onContactEvent(_ event: ContactEventTypes?) {
+    private func onContactEvent(_ event: ContactEventTypes?) {
         switch event {
         case let .contacts(response):
             onSearchContacts(response)
@@ -102,39 +109,37 @@ public final class ThreadsSearchViewModel: ObservableObject {
         }
     }
 
-    public func searchThreads(_ text: String) {
+    private func searchThreads(_ text: String, new: Bool? = nil, loadMore: Bool = false) {
         if !canLoadMore { return }
         isLoading = true
-        searchedConversations.removeAll()
-        offset = 0
-        var newText = text
-        if searchType == .username {
-            newText = "uname:\(newText)"
-        } else if searchType == .cellphoneNumber {
-            newText = "tel:\(newText)"
-        }
-        let req = ThreadsRequest(searchText: newText, count: count, offset: offset)
-        RequestsManager.shared.append(prepend: "SEARCH", value: req)
+        let req = ThreadsRequest(searchText: text, count: count, offset: offset, new: new)
+        RequestsManager.shared.append(prepend: loadMore ? "SEARCH-LOAD-MORE" : "SEARCH", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    public func searchPublicThreads(_ text: String) {
+    private func searchPublicThreads(_ text: String) {
         if !canLoadMore { return }
         isLoading = true
-        searchedConversations.removeAll()
         let req = ThreadsRequest(count: count, offset: offset, name: text, type: .publicGroup)
         RequestsManager.shared.append(prepend: "SEARCH-PUBLIC-THREAD", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    func onSearch(_ response: ChatResponse<[Conversation]>) {
+    private func onSearch(_ response: ChatResponse<[Conversation]>) {
         isLoading = false
         if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
 
-    func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
+    private func onSearchLoadMore(_ response: ChatResponse<[Conversation]>) {
+        isLoading = false
+        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-LOAD-MORE") != nil {
+            searchedConversations.append(contentsOf: threads)
+        }
+    }
+
+    private func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
         isLoading = false
         if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-PUBLIC-THREAD") != nil {
             searchedConversations.append(contentsOf: threads)
@@ -147,12 +152,17 @@ public final class ThreadsSearchViewModel: ObservableObject {
         }
     }
 
-    public func searchContacts(_ searchText: String) {
+    private func searchContacts(_ searchText: String) {
+        if searchText.isEmpty { return }
         let req: ContactsRequest
-        if searchType == .username {
-            req = ContactsRequest(userName: searchText)
-        } else if searchType == .cellphoneNumber {
-            req = ContactsRequest(cellphoneNumber: searchText)
+        if searchText.lowercased().contains("uname:") {
+            let startIndex = searchText.index(searchText.startIndex, offsetBy: 6)
+            let searchResultValue = String(searchText[startIndex..<searchText.endIndex])
+            req = ContactsRequest(userName: searchResultValue)
+        } else if searchText.lowercased().contains("tel:") {
+            let startIndex = searchText.index(searchText.startIndex, offsetBy: 4)
+            let searchResultValue = String(searchText[startIndex..<searchText.endIndex])
+            req = ContactsRequest(cellphoneNumber: searchResultValue)
         } else {
             req = ContactsRequest(query: searchText)
         }
@@ -160,13 +170,56 @@ public final class ThreadsSearchViewModel: ObservableObject {
         ChatManager.activeInstance?.contact.search(req)
     }
 
-    public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
+    private func onSearchContacts(_ response: ChatResponse<[Contact]>) {
         if !response.cache, response.pop(prepend: "SEARCH-CONTACTS-IN-THREADS-LIST") != nil {
             if let contacts = response.result {
                 self.searchedContacts.removeAll()
                 self.searchedContacts.append(contentsOf: contacts)
             }
         }
+    }
+
+    public func closedSearchUI() {
+        reset()
+        searchText = ""
+        showUnreadConversations = false
+    }
+
+    public func reset() {
+        isLoading = false
+        hasNext = true
+        searchedConversations.removeAll()
+        searchedContacts.removeAll()
+        cachedAttribute.removeAll()
+        offset = 0
+    }
+
+    private func getUnreadConversations() {
+        reset()
+        searchThreads(searchText, new: true)
+        searchContacts(searchText)
+    }
+
+    private func resetUnreadConversations() {
+        reset()
+        searchThreads(searchText, new: nil)
+        searchContacts(searchText)
+    }
+
+    public func attributdTitle(for title: String) -> AttributedString {
+        if let cached = cachedAttribute.first(where: {$0.key == title})?.value {
+            return cached
+        }
+        let attr = NSMutableAttributedString(string: title)
+        attr.addAttributes([
+            NSAttributedString.Key.foregroundColor: UIColor(named: "accent")!
+        ], range: findRangeOfTitleToHighlight(title))
+        cachedAttribute[title] = AttributedString(attr)
+        return AttributedString(attr)
+    }
+
+    private func findRangeOfTitleToHighlight(_ title: String) -> NSRange {
+        return NSString(string: title).range(of: searchText)
     }
 
     private func onCancelTimer(key: String) {

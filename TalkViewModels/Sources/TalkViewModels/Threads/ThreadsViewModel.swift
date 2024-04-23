@@ -35,7 +35,6 @@ public final class ThreadsViewModel: ObservableObject {
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
     public var serverSortedPins: [Int] = []
     public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
-    @Published public var showUnreadConversations: Bool? = nil
     public var threadEventModels: [ThreadEventViewModel] = []
     private var cache: Bool = true
     var isInCacheMode = false
@@ -117,11 +116,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func loadMore() {
         if !canLoadMore { return }
         preparePaginiation()
-        if showUnreadConversations == true {
-            getUnreadThreads()
-        } else {
-            getThreads()
-        }
+        getThreads()
     }
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) async {
@@ -481,52 +476,6 @@ public final class ThreadsViewModel: ObservableObject {
             RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
             ChatManager.activeInstance?.conversation.get(req)
         }
-    }
-
-    public func getUnreadThreads() {
-        if !firstSuccessResponse {
-            shimmerViewModel.show()
-        }
-        isLoading = true
-        animateObjectWillChange()
-        let req = ThreadsRequest(count: count, offset: offset, new: true)
-        RequestsManager.shared.append(prepend: "GET-UNREAD-THREADS", value: req)
-        ChatManager.activeInstance?.conversation.get(req)
-    }
-
-    public func onUnreadThreads(_ response: ChatResponse<[Conversation]>) async {        
-        let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil})
-        let pinThreads = response.result?.filter({$0.pin == true})
-        let hasAnyResults = response.result?.count ?? 0 > 0
-        /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
-        if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
-            serverSortedPins.removeAll()
-            serverSortedPins.append(contentsOf: serverSortedPinIds)
-        }
-        await appendThreads(threads: threads ?? [])
-        await asyncAnimateObjectWillChange()
-
-        if hasAnyResults {
-            hasNext = response.hasNext
-            firstSuccessResponse = true
-        }
-        isLoading = false
-
-        if firstSuccessResponse {
-            shimmerViewModel.hide()
-        }
-    }
-
-    public func getUnreadConversations() {
-        threads.removeAll()
-        offset = 0
-        getUnreadThreads()
-    }
-
-    public func resetUnreadConversations() {
-        threads.removeAll()
-        offset = 0
-        getThreads()
     }
 
     public func onPinMessage(_ response: ChatResponse<PinMessage>) {

@@ -13,28 +13,14 @@ struct ThreadSearchView: View {
     @EnvironmentObject var viewModel: ThreadsSearchViewModel
 
     var body: some View {
-        if viewModel.searchText.count > 0 {
+        if viewModel.isInSearchMode {
             List {
-                if viewModel.searchedContacts.count > 0 {
-                    StickyHeaderSection(header: "Contacts.searched", height: 4)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(.zero)
-                }
 
-                ForEach(viewModel.searchedContacts.prefix(5)) { contact in
-                    ContactRow(isInSelectionMode: .constant(false))
-                        .environmentObject(contact)
-                        .listRowInsets(.init(top: 16, leading: 16, bottom: 16, trailing: 8)) /// We usre 16 leading due to in ThreadRow we have a yellow bar and it causes spacing in VStack to add 16 pixels, so we have to keep Contacts and Threads row in same alignmen.
-                        .listRowBackground(Color.App.bgPrimary)
-                        .onTapGesture {
-                            AppState.shared.openThread(contact: contact)
-                        }
-                }
-
-                if viewModel.searchedConversations.count > 0 {
-                    StickyHeaderSection(header: "Tab.chats", height: 4)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(.zero)
+                StickyHeaderSection(header: "Tab.chats", height: 4)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(.zero)
+                if viewModel.searchedConversations.isEmpty {
+                    noResulTextView
                 }
 
                 ForEach(viewModel.searchedConversations) { thread in
@@ -50,6 +36,23 @@ struct ThreadSearchView: View {
                         }
                     }
                 }
+
+                StickyHeaderSection(header: "Contacts.searched", height: 4)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(.zero)
+                if viewModel.searchedContacts.isEmpty {
+                    noResulTextView
+                }
+
+                ForEach(viewModel.searchedContacts.prefix(5)) { contact in
+                    ContactRow(isInSelectionMode: .constant(false))
+                        .environmentObject(contact)
+                        .listRowInsets(.init(top: 16, leading: 16, bottom: 16, trailing: 8)) /// We usre 16 leading due to in ThreadRow we have a yellow bar and it causes spacing in VStack to add 16 pixels, so we have to keep Contacts and Threads row in same alignmen.
+                        .listRowBackground(Color.App.bgPrimary)
+                        .onTapGesture {
+                            AppState.shared.openThread(contact: contact)
+                        }
+                }
             }
             .listStyle(.plain)
             .background(MixMaterialBackground())
@@ -57,6 +60,19 @@ struct ThreadSearchView: View {
             .animation(.easeInOut, value: viewModel.searchedContacts.count)
             .animation(.easeInOut, value: viewModel.searchedConversations.count)
         }
+    }
+
+    private var noResulTextView: some View {
+        HStack {
+            Spacer()
+            Text("General.noResult")
+                .font(.iransansCaption2)
+                .fontWeight(.light)
+                .foregroundColor(Color.App.textSecondary)
+            Spacer()
+        }
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
     }
 }
 

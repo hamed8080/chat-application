@@ -38,7 +38,7 @@ struct ThreadContentList: View {
         .animation(.easeInOut, value: threadsVM.isLoading)
         .overlay(ThreadListShimmer().environmentObject(threadsVM.shimmerViewModel))
         .safeAreaInset(edge: .top, spacing: 0) {
-            ConversationTopSafeAreaInset(container: container)
+            ConversationTopSafeAreaInset()
         }
         .overlay(alignment: .bottom) {
             /// The if below is for shimmer

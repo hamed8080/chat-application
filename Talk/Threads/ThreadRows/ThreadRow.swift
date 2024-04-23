@@ -20,6 +20,7 @@ struct ThreadRow: View {
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
     let onTap: (() -> Void)?
+    private var searchVM: ThreadsSearchViewModel { AppState.shared.objectsContainer.searchVM }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -42,10 +43,18 @@ struct ThreadRow: View {
                             .frame(width: 16, height: 16)
                             .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
-                    Text(thread.titleRTLString)
-                        .lineLimit(1)
-                        .font(.iransansSubheadline)
-                        .fontWeight(.semibold)                    
+                    if searchVM.isInSearchMode {
+                        Text(searchVM.attributdTitle(for: thread.titleRTLString))
+                            .lineLimit(1)
+                            .font(.iransansSubheadline)
+                            .fontWeight(.semibold)
+                    } else {
+                        Text(thread.titleRTLString)
+                            .lineLimit(1)
+                            .font(.iransansSubheadline)
+                            .fontWeight(.semibold)
+                    }
+
                     Spacer()
                     MutableMessageStatusView(isSelected: isSelected)
                         .environmentObject(thread)

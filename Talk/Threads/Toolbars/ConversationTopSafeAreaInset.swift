@@ -12,8 +12,8 @@ import TalkModels
 
 struct ConversationTopSafeAreaInset: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
-    let container: ObjectsContainer
-    @State var isInSearchMode: Bool = false
+    private var container: ObjectsContainer { AppState.shared.objectsContainer }
+    @State private var isInSearchMode: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -47,9 +47,7 @@ struct ConversationTopSafeAreaInset: View {
     @ViewBuilder var searchButton: some View {
         if isInSearchMode {
             Button {
-                AppState.shared.objectsContainer.contactsVM.searchContactString = ""
-                AppState.shared.objectsContainer.searchVM.searchText = ""
-                AppState.shared.objectsContainer.threadsVM.showUnreadConversations = false
+                container.searchVM.closedSearchUI()                
                 isInSearchMode.toggle()
             } label: {
                 Image(systemName: "xmark")
@@ -77,6 +75,6 @@ struct ConversationTopSafeAreaInset: View {
 
 struct ConversationTopSafeAreaInset_Previews: PreviewProvider {
     static var previews: some View {
-        ConversationTopSafeAreaInset(container: ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance))
+        ConversationTopSafeAreaInset()
     }
 }

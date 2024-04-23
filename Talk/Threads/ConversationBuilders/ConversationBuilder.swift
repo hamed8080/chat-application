@@ -294,7 +294,7 @@ struct ‌BuilderContactRow: View {
         VStack {
             HStack(spacing: 0) {
                 BuilderContactRowRadioButton(contact: contact)
-                    .padding(.trailing, 8)
+                    .padding(.trailing, isInSelectionMode ? 8 : 0)
                 let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: String.splitedCharacter(contact.firstName ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config))
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
