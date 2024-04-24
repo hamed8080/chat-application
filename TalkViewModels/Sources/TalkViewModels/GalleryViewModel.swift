@@ -92,15 +92,15 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func getPictureMessages(count: Int = 5, fromTime: UInt? = nil, toTime: UInt? = nil) {
-        guard let threadId else { return }
-        let req = GetHistoryRequest(threadId: threadId,
-                                    count: count,
-                                    fromTime: fromTime,
-                                    messageType: ChatCore.MessageType.podSpacePicture.rawValue,
-                                    toTime: toTime
-        )
-        RequestsManager.shared.append(value: req)
-        ChatManager.activeInstance?.message.history(req)
+//        guard let threadId else { return }
+//        let req = GetHistoryRequest(threadId: threadId,
+//                                    count: count,
+//                                    fromTime: fromTime,
+//                                    messageType: ChatCore.MessageType.podSpacePicture.rawValue,
+//                                    toTime: toTime
+//        )
+//        RequestsManager.shared.append(value: req)
+//        ChatManager.activeInstance?.message.history(req)
     }
 
     public func fetchImage(message: Message? = nil) {

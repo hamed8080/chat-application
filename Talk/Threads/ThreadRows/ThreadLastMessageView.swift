@@ -65,7 +65,7 @@ struct NormalLastMessageContainer: View {
                 //            }
 
                 if let fiftyFirstCharacter = fiftyFirstCharacter {
-                    Text(fiftyFirstCharacter)
+                    Text(verbatim: fiftyFirstCharacter)
                         .font(.iransansCaption2)
                         .fontWeight(.regular)
                         .lineLimit(1)
