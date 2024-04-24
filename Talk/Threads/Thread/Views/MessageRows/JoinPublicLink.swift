@@ -19,8 +19,9 @@ struct JoinPublicLink: View {
         Button {
             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
         } label: {
-            Text(message.message ?? "")
-                .foregroundStyle(Color.App.color1)
+            Text(verbatim: message.message ?? "")
+                .foregroundStyle(Color.App.textSecondary)
+                .disabled(true)
             //                HStack {
             //                    Text("Thread.join")
             //                        .foregroundStyle(Color.App.textPrimary)
