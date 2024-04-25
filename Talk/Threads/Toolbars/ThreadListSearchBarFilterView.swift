@@ -48,7 +48,7 @@ struct ThreadListSearchBarFilterView: View {
     }
 
     private var searchField: some View {
-        TextField("General.searchHere".localized(bundle: Language.preferedBundle), text: $viewModel.searchText)
+        TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchText)
             .font(.iransansBody)
             .textFieldStyle(.clear)
             .focused($searchFocus, equals: .saerch)

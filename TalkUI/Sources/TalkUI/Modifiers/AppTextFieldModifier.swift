@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import TalkModels
+import TalkExtensions
 
 public struct AppTextFieldModifier: ViewModifier {
     let topPlaceholder: String
@@ -64,7 +64,7 @@ struct AppTextFieldModifier_Previews: PreviewProvider {
         @FocusState var focusState: AppTextFieldModifierTestFileds?
 
         var body: some View {
-            TextField("Contacts.Add.firstName".localized(bundle: Language.preferedBundle), text: .constant("Value"))
+            TextField("Contacts.Add.firstName".bundleLocalized(), text: .constant("Value"))
                 .focused($focusState, equals: .firstName)
                 .keyboardType(.default)
                 .padding()

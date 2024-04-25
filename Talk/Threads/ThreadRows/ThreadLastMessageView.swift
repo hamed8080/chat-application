@@ -162,7 +162,7 @@ struct NormalLastMessageContainer: View {
         if isFileType {
             let fileStringName = lastMsgVO?.fileStringName ?? "MessageType.file"
             let sentVerb = String(localized: .init(isMe ? "Genral.mineSendVerb" : "General.thirdSentVerb"), bundle: Language.preferedBundle)
-            let formatted = String(format: sentVerb, fileStringName.localized(bundle: Language.preferedBundle))
+            let formatted = String(format: sentVerb, fileStringName.bundleLocalized())
             return Message.textDirectionMark + "\(formatted)"
         } else {
             return nil

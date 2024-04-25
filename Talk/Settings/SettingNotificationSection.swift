@@ -30,16 +30,16 @@ struct NotificationSettings: View {
     var body: some View {
         List {
             Group {
-                Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.soundEnable)
+                Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.soundEnable)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
                 if EnvironmentValues.isTalkTest {
-                    Toggle("Notification.ShowDetails".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.showDetails)
+                    Toggle("Notification.ShowDetails".bundleLocalized(), isOn: $model.notificationSettings.showDetails)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.dividerPrimary)
                 }
                 if EnvironmentValues.isTalkTest {
-                    Toggle("Notification.Vibration".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.vibration)
+                    Toggle("Notification.Vibration".bundleLocalized(), isOn: $model.notificationSettings.vibration)
                         .listRowBackground(Color.App.bgPrimary)
                         .listSectionSeparator(.hidden)
                 }
@@ -102,7 +102,7 @@ struct PrivateNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.privateChat.sound)
+            Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.privateChat.sound)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
@@ -122,7 +122,7 @@ struct GroupNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.group.sound)
+            Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.group.sound)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
@@ -142,7 +142,7 @@ struct ChannelNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound".localized(bundle: Language.preferedBundle), isOn: $model.notificationSettings.channel.sound)
+            Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.channel.sound)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }

@@ -93,7 +93,7 @@ struct EditGroup: View {
                 .listRowInsets(.zero)
                 .noSeparators()
             
-            TextField("EditGroup.groupName".localized(bundle: Language.preferedBundle), text: $viewModel.editTitle)
+            TextField("EditGroup.groupName".bundleLocalized(), text: $viewModel.editTitle)
                 .focused($focusState, equals: .name)
                 .keyboardType(.default)
                 .padding()
@@ -103,7 +103,7 @@ struct EditGroup: View {
                 .noSeparators()
                 .listRowBackground(Color.App.bgSecondary)
             
-            TextField("EditGroup.groupDescription".localized(bundle: Language.preferedBundle), text: $viewModel.threadDescription)
+            TextField("EditGroup.groupDescription".bundleLocalized(), text: $viewModel.threadDescription)
                 .focused($focusState, equals: .description)
                 .keyboardType(.default)
                 .padding()

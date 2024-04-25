@@ -115,8 +115,6 @@ extension ThreadsViewModel {
             if let thread = response.result {
                 updateThreadInfo(thread)
             }
-        case .updatedUnreadCount(let response):
-            setUnreadCount(response.result?.unreadCount, threadId: response.result?.threadId)
         case .mute(let response):
             onMuteThreadChanged(mute: true, threadId: response.result)
         case .unmute(let response):

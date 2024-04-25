@@ -37,10 +37,10 @@ struct CreateDirectThreadView: View {
                     .pickerStyle(.navigationLink)
                     let typeString = String(localized: .init(type.title), bundle: Language.preferedBundle)
                     let fastMessge = String(localized: .init("Thread.enterFastMessageType"), bundle: Language.preferedBundle)
-                    TextField(String(format: fastMessge, typeString).localized(bundle: Language.preferedBundle), text: $id)
+                    TextField(String(format: fastMessge, typeString).bundleLocalized(), text: $id)
                         .keyboardType(type == .cellphoneNumber ? .phonePad : .default)
 
-                    TextField("Thread.SendContainer.typeMessageHere".localized(bundle: Language.preferedBundle), text: $message)
+                    TextField("Thread.SendContainer.typeMessageHere".bundleLocalized(), text: $message)
                 } footer: {
                     Text("Thread.fastMessageFooter")
                 }

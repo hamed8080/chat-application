@@ -9,6 +9,7 @@ import ChatModels
 import UniformTypeIdentifiers
 import SwiftUI
 import NaturalLanguage
+import TalkModels
 
 public extension String {
 
@@ -150,5 +151,11 @@ public extension Optional where Wrapped == String {
         } else {
             return nil
         }
+    }
+}
+
+public extension String {
+    func bundleLocalized() -> String {
+        return NSLocalizedString(self, bundle: Language.preferedBundle, comment: "")
     }
 }

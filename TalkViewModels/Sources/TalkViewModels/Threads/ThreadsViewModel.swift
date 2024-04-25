@@ -381,13 +381,15 @@ public final class ThreadsViewModel: ObservableObject {
     public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
         if let index = firstIndex(response.subjectId) {
             let thread = threads[index]
-            thread.lastSeenMessageTime = response.result?.lastSeenMessageTime
-            thread.lastSeenMessageId = response.result?.lastSeenMessageId
-            thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
             if response.result?.unreadCount == 0, thread.mentioned == true {
                 thread.mentioned = false
             }
-            setUnreadCount(response.result?.unreadCount ?? response.contentCount, threadId: response.subjectId)
+            if response.result?.lastSeenMessageTime ?? 0 > thread.lastSeenMessageTime ?? 0 {
+                thread.lastSeenMessageTime = response.result?.lastSeenMessageTime
+                thread.lastSeenMessageId = response.result?.lastSeenMessageId
+                thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
+                setUnreadCount(response.result?.unreadCount ?? response.contentCount, threadId: response.subjectId)
+            }
             thread.animateObjectWillChange()
             animateObjectWillChange()
         }
@@ -437,8 +439,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.
     public func setUnreadCount(_ newCount: Int?, threadId: Int?) {
-        if newCount ?? 0 <= threads.first(where: {$0.id == threadId})?.unreadCount ?? 0 {
-            threads.first(where: {$0.id == threadId})?.unreadCount = newCount
+        let thread = threads.first(where: {$0.id == threadId})
+        if newCount ?? 0 <= thread?.unreadCount ?? 0 {
+            thread?.unreadCount = newCount
             animateObjectWillChange()
         }
     }

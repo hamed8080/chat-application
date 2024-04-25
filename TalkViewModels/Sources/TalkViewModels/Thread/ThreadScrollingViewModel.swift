@@ -78,10 +78,16 @@ public final class ThreadScrollingViewModel: ObservableObject {
     }
 
     public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) async {
-        if await isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id), let uniqueId = message.uniqueId {
+        guard let uniqueId = message.uniqueId else { return }
+        if await canScrollToBottom(message: message) {
             await disableExcessiveLoading()
             await scrollTo(uniqueId, delay: 0.1, .easeInOut)
         }
+    }
+
+    private func canScrollToBottom(message: Message) async -> Bool {
+        if !AppState.shared.isInForeground { return false }
+        return await isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id)
     }
 
     public func showHighlighted(_ uniqueId: String, _ messageId: Int, animation: Animation? = .easeInOut, highlight: Bool = true, anchor: UnitPoint? = .bottom) async {

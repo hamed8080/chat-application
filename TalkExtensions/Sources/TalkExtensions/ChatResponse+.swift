@@ -21,7 +21,7 @@ extension ChatError {
                 let data = message?.data(using: .utf8),
                 let banError = try? JSONDecoder.instance.decode(BanError.self, from: data)
             else { return nil }
-            let localized = "General.ban".localized(bundle: Language.preferedBundle)
+            let localized = "General.ban".bundleLocalized()
             let banTime = banError.duration ?? 0
             return String(format: localized, "\(banTime / 1000)")
         case .haveAlreadyJoinedTheThread:

@@ -19,51 +19,63 @@ struct UserActionMenu: View {
     var body: some View {
         Divider()
         if participant.contactId == nil {
-            ContextMenuButton(title: "General.add".localized(bundle: Language.preferedBundle), image: "person.badge.plus") {
-                showPopover.toggle()
-                let contact = Contact(cellphoneNumber: participant.cellphoneNumber,
-                                      email: participant.email,
-                                      firstName: participant.firstName,
-                                      lastName: participant.lastName,
-                                      user: .init(username: participant.username))
-                contactViewModel.addContact = contact
-                contactViewModel.showAddOrEditContactSheet = true
-                contactViewModel.animateObjectWillChange()
+            ContextMenuButton(title: "General.add".bundleLocalized(), image: "person.badge.plus") {
+               onAddContactTapped()
             }
         }
 
         let blockKey = participant.blocked == true ? "General.unblock" : "General.block"
-        ContextMenuButton(title: blockKey.localized(bundle: Language.preferedBundle), image: participant.blocked == true ? "hand.raised.slash" : "hand.raised") {
-            showPopover.toggle()
-            if participant.blocked == true, let contactId = participant.contactId {
-                contactViewModel.unblockWith(contactId)
-            } else {
-                contactViewModel.block(.init(id: participant.contactId))
-            }
+        ContextMenuButton(title: blockKey.bundleLocalized(), image: participant.blocked == true ? "hand.raised.slash" : "hand.raised") {
+           onBlockUnblockTapped()
         }
 
         if EnvironmentValues.isTalkTest {
-            ContextMenuButton(title: "General.share".localized(bundle: Language.preferedBundle), image: "square.and.arrow.up") {
+            ContextMenuButton(title: "General.share".bundleLocalized(), image: "square.and.arrow.up") {
                 showPopover.toggle()
             }
             .disabled(true)
 
-            ContextMenuButton(title: "Thread.export".localized(bundle: Language.preferedBundle), image: "tray.and.arrow.up") {
+            ContextMenuButton(title: "Thread.export".bundleLocalized(), image: "tray.and.arrow.up") {
                 showPopover.toggle()
             }
             .disabled(true)
         }
 
         if participant.contactId != nil {
-            ContextMenuButton(title: "Contacts.delete".localized(bundle: Language.preferedBundle), image: "trash", iconColor: Color.App.red) {
-                showPopover.toggle()
-                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
-                    ConversationDetailDeleteContactDialog(participant: participant)
-                        .environmentObject(contactViewModel)
-                )
+            ContextMenuButton(title: "Contacts.delete".bundleLocalized(), image: "trash", iconColor: Color.App.red) {
+                onDeleteContactTapped()
             }
             .foregroundStyle(Color.App.red)
         }
+    }
+
+    private func onAddContactTapped() {
+        showPopover.toggle()
+        let contact = Contact(cellphoneNumber: participant.cellphoneNumber,
+                              email: participant.email,
+                              firstName: participant.firstName,
+                              lastName: participant.lastName,
+                              user: .init(username: participant.username))
+        contactViewModel.addContact = contact
+        contactViewModel.showAddOrEditContactSheet = true
+        contactViewModel.animateObjectWillChange()
+    }
+
+    private func onBlockUnblockTapped() {
+        showPopover.toggle()
+        if participant.blocked == true, let contactId = participant.contactId {
+            contactViewModel.unblockWith(contactId)
+        } else {
+            contactViewModel.block(.init(id: participant.contactId))
+        }
+    }
+
+    private func onDeleteContactTapped() {
+        showPopover.toggle()
+        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
+            ConversationDetailDeleteContactDialog(participant: participant)
+                .environmentObject(contactViewModel)
+        )
     }
 }
 

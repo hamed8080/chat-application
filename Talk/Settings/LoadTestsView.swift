@@ -19,15 +19,15 @@ struct LoadTestsView: View {
         List {
             Section {
                 VStack(spacing: 16) {
-                    TextField("ThreadId".localized(bundle: Language.preferedBundle), text: $threadId)
+                    TextField("ThreadId".bundleLocalized(), text: $threadId)
                         .keyboardType(.numberPad)
                         .padding()
                         .applyAppTextfieldStyle(topPlaceholder: "ThreadId")
-                    TextField("Start".localized(bundle: Language.preferedBundle), text: $start)
+                    TextField("Start".bundleLocalized(), text: $start)
                         .keyboardType(.numberPad)
                         .padding()
                         .applyAppTextfieldStyle(topPlaceholder: "Start")
-                    TextField("End".localized(bundle: Language.preferedBundle), text: $end)
+                    TextField("End".bundleLocalized(), text: $end)
                         .keyboardType(.numberPad)
                         .padding()
                         .applyAppTextfieldStyle(topPlaceholder: "End")

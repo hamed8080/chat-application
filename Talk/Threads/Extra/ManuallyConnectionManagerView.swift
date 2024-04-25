@@ -19,7 +19,7 @@ struct ManuallyConnectionManagerView: View {
 
     var body: some View {
         List {
-            TextField("token".localized(bundle: Language.preferedBundle), text: $token)
+            TextField("token".bundleLocalized(), text: $token)
                 .focused($isFocused)
                 .keyboardType(.phonePad)
                 .font(.iransansBody)

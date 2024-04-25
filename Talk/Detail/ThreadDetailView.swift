@@ -396,7 +396,7 @@ struct ThreadDescription: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        let description = viewModel.thread?.description.validateString ?? "General.noDescription".localized(bundle: Language.preferedBundle)
+        let description = viewModel.thread?.description.validateString ?? "General.noDescription".bundleLocalized()
         InfoRowItem(key: "General.description", value: description, lineLimit: nil)
     }
 }

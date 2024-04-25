@@ -119,7 +119,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
 
     @ViewBuilder var searchView: some View {
         if searchCompletion != nil {
-            TextField((searchPlaceholder ?? "" ).localized(bundle: Language.preferedBundle), text: $searchText)
+            TextField((searchPlaceholder ?? "" ).bundleLocalized(), text: $searchText)
                 .keyboardType(searchKeyboardType)
                 .font(.iransansBody)
                 .textFieldStyle(.clear)

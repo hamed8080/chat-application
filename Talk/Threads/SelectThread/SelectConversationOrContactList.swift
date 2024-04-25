@@ -49,7 +49,7 @@ struct SearchInSelectConversationOrContact: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            TextField("General.searchHere".localized(bundle: Language.preferedBundle), text: $viewModel.searchText)
+            TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchText)
                 .frame(height: 48)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)

@@ -46,21 +46,21 @@ struct AddOrEditContactView: View {
                         .padding()
                         .offset(y: 24)
                 }
-                TextField("General.firstName".localized(bundle: Language.preferedBundle), text: $firstName)
+                TextField("General.firstName".bundleLocalized(), text: $firstName)
                     .focused($focusState, equals: .firstName)
                     .textContentType(.name)
                     .padding()
                     .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
                         focusState = .firstName
                     }
-                TextField(optioanlAPpend(text: "General.lastName".localized(bundle: Language.preferedBundle)), text: $lastName)
+                TextField(optioanlAPpend(text: "General.lastName".bundleLocalized()), text: $lastName)
                     .focused($focusState, equals: .lastName)
                     .textContentType(.familyName)
                     .padding()
                     .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
                         focusState = .lastName
                     }
-                TextField("Contacts.Add.phoneOrUserName".localized(bundle: Language.preferedBundle), text: $contactValue)
+                TextField("Contacts.Add.phoneOrUserName".bundleLocalized(), text: $contactValue)
                     .focused($focusState, equals: .contactValue)
                     .keyboardType(.default)
                     .padding()

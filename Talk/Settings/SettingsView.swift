@@ -224,7 +224,7 @@ struct PreferenceView: View {
         List {
             Section("Tab.contacts") {
                 VStack(alignment: .leading, spacing: 2) {
-                    Toggle("Contacts.Sync.sync".localized(bundle: Language.preferedBundle), isOn: $model.isSyncOn)
+                    Toggle("Contacts.Sync.sync".bundleLocalized(), isOn: $model.isSyncOn)
                     Text("Contacts.Sync.subtitle")
                         .foregroundColor(.gray)
                         .font(.iransansCaption3)
@@ -348,7 +348,7 @@ struct DarkModeSection: View {
             .frame(width: 28, height: 28)
             .background(Color.App.color1)
             .clipShape(RoundedRectangle(cornerRadius:(8)))
-            Toggle("Settings.darkModeEnabled".localized(bundle: Language.preferedBundle), isOn: $isDarkModeEnabled)
+            Toggle("Settings.darkModeEnabled".bundleLocalized(), isOn: $isDarkModeEnabled)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.App.dividerPrimary)
         }

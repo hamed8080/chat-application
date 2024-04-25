@@ -29,6 +29,7 @@ public final class HistorySeenViewModel: ObservableObject {
     public func setup(viewModel: ThreadViewModel) {
         self.threadVM = viewModel
         seenPublisher
+            .filter{$0.id ?? 0 > 0} // Prevent send -1/-2/-3 UI Elements as seen message.
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] newValue in

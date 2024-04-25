@@ -22,40 +22,40 @@ struct ThreadRowActionMenu: View {
     var body: some View {
         if !isDetailView, thread.pin == true || viewModel.serverSortedPins.count < 5 {
             let key = (thread.pin ?? false) ? "Thread.unpin" : "Thread.pin"
-            ContextMenuButton(title: key.localized(bundle: Language.preferedBundle), image: "pin") {
+            ContextMenuButton(title: key.bundleLocalized(), image: "pin") {
                 onPinUnpinTapped()
             }
         }
 
         if thread.type != .selfThread && !isDetailView {
             let key = (thread.mute ?? false) ? "Thread.unmute" : "Thread.mute"
-            ContextMenuButton(title: key.localized(bundle: Language.preferedBundle), image: "speaker.slash") {
+            ContextMenuButton(title: key.bundleLocalized(), image: "speaker.slash") {
                 onMuteUnmuteTapped()
             }
         }
 
         if EnvironmentValues.isTalkTest {
-            ContextMenuButton(title: "Thread.clearHistory".localized(bundle: Language.preferedBundle), image: "clock") {
+            ContextMenuButton(title: "Thread.clearHistory".bundleLocalized(), image: "clock") {
                 onClearHistoryTapped()
             }
             
-            ContextMenuButton(title: "Thread.addToFolder".localized(bundle: Language.preferedBundle), image: "folder.badge.plus") {
+            ContextMenuButton(title: "Thread.addToFolder".bundleLocalized(), image: "folder.badge.plus") {
                 onAddToFolderTapped()
             }
             
-            ContextMenuButton(title: "Thread.spam".localized(bundle: Language.preferedBundle), image: "ladybug") {
+            ContextMenuButton(title: "Thread.spam".bundleLocalized(), image: "ladybug") {
                 onSpamTapped()
             }
 
 
             let archiveKey = thread.isArchive == true ? "Thread.unarchive" : "Thread.archive"
             let archiveImage = thread.isArchive == true ?  "tray.and.arrow.up" : "tray.and.arrow.down"
-            ContextMenuButton(title: archiveKey.localized(bundle: Language.preferedBundle), image: archiveImage) {
+            ContextMenuButton(title: archiveKey.bundleLocalized(), image: archiveImage) {
                 onArchiveUnArchiveTapped()
             }
             
             if canAddParticipant {
-                ContextMenuButton(title: "Thread.invite".localized(bundle: Language.preferedBundle), image: "person.crop.circle.badge.plus") {
+                ContextMenuButton(title: "Thread.invite".bundleLocalized(), image: "person.crop.circle.badge.plus") {
                     onInviteTapped()
                 }
             }

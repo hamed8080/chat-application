@@ -20,7 +20,7 @@ struct ContactListSearchBarFilterView: View {
     var body: some View {
         HStack {
             if isInSearchMode {
-                TextField("General.searchHere".localized(bundle: Language.preferedBundle), text: $viewModel.searchContactString)
+                TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchContactString)
                     .font(.iransansBody)
                     .textFieldStyle(.clear)
                     .focused($searchFocus, equals: .search)

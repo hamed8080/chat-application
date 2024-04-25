@@ -187,9 +187,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         case .lastMessageDeleted(let response), .lastMessageEdited(let response):
             if let thread = response.result {
                 onLastMessageChanged(thread)
-            }
-        case .updatedUnreadCount(let response):
-            onUnreadCount(response)
+            }        
         case .deleted(let response):
             onDeleteThread(response)
         case .userRemoveFormThread(let response):

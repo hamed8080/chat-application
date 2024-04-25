@@ -30,10 +30,10 @@ struct AutomaticDownloadSettings: View {
     var body: some View {
         List {
             Group {
-                Toggle("Download.images".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.downloadImages)
+                Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.downloadImages)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
-                Toggle("Download.files".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.downloadFiles)
+                Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.downloadFiles)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
             }
@@ -93,11 +93,11 @@ struct PrivateDownloadSetting: View {
 
     var body: some View {
         List {
-            Toggle("Download.images".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.privateChat.downloadImages)
+            Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.privateChat.downloadImages)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
 
-            Toggle("Download.files".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.downloadFiles)
+            Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.downloadFiles)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
@@ -116,11 +116,11 @@ struct GroupDownloadSetting: View {
 
     var body: some View {
         List {
-            Toggle("Download.images".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.group.downloadImages)
+            Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.group.downloadImages)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
 
-            Toggle("Download.files".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.group.downloadFiles)
+            Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.group.downloadFiles)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
@@ -139,11 +139,11 @@ struct ChannelDownloadSetting: View {
 
     var body: some View {
         List {
-            Toggle("Download.images".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.channel.downloadImages)
+            Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.channel.downloadImages)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
 
-            Toggle("Download.files".localized(bundle: Language.preferedBundle), isOn: $model.automaticDownloadSettings.channel.downloadFiles)
+            Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.channel.downloadFiles)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }

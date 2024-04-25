@@ -376,3 +376,8 @@ public extension AppState {
         isLoading = false
     }
 }
+
+// Lifesycle
+public extension AppState {
+    var isInForeground: Bool { lifeCycleState == .active || lifeCycleState == .foreground }
+}

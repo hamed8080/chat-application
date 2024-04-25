@@ -71,7 +71,7 @@ struct EditProfileView: View {
                     .opacity(0.9)
                 }
 
-                TextField("Setting.EditProfile.firstNameHint".localized(bundle: Language.preferedBundle), text: $viewModel.firstName)
+                TextField("Setting.EditProfile.firstNameHint".bundleLocalized(), text: $viewModel.firstName)
                     .focused($focusedField, equals: .firstName)
                     .font(.iransansBody)
                     .padding()
@@ -81,7 +81,7 @@ struct EditProfileView: View {
                     .applyAppTextfieldStyle(topPlaceholder: "Setting.EditProfile.firstName", isFocused: focusedField == .firstName) {
                         focusedField = .firstName
                     }
-                TextField("Setting.EditProfile.lastNameHint".localized(bundle: Language.preferedBundle), text: $viewModel.lastName)
+                TextField("Setting.EditProfile.lastNameHint".bundleLocalized(), text: $viewModel.lastName)
                     .focused($focusedField, equals: .lastName)
                     .font(.iransansBody)
                     .padding()
@@ -92,7 +92,7 @@ struct EditProfileView: View {
                         focusedField = .lastName
                     }
 
-                TextField("Setting.EditProfile.userNameHint".localized(bundle: Language.preferedBundle), text: $viewModel.userName)
+                TextField("Setting.EditProfile.userNameHint".bundleLocalized(), text: $viewModel.userName)
                     .focused($focusedField, equals: .userName)
                     .font(.iransansBody)
                     .padding()
@@ -102,7 +102,7 @@ struct EditProfileView: View {
                     .applyAppTextfieldStyle(topPlaceholder: "Setting.EditProfile.userName", isFocused: focusedField == .userName) {
                         focusedField = .userName
                     }
-                TextField("Setting.EditProfile.bioHint".localized(bundle: Language.preferedBundle), text: $viewModel.bio, axis: .vertical)
+                TextField("Setting.EditProfile.bioHint".bundleLocalized(), text: $viewModel.bio, axis: .vertical)
                     .focused($focusedField, equals: .bio)
                     .font(.iransansBody)
                     .padding()
