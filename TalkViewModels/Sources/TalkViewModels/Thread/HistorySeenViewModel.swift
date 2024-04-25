@@ -12,6 +12,7 @@ import Logger
 import OSLog
 import Chat
 import TalkModels
+import UIKit
 
 public final class HistorySeenViewModel: ObservableObject {
     private weak var threadVM: ThreadViewModel?
@@ -34,6 +35,7 @@ public final class HistorySeenViewModel: ObservableObject {
                 self?.sendSeen(for: newValue)
             }
             .store(in: &cancelable)
+        setupOnSceneBecomeActiveObserver()
     }
 
     internal func onAppear(_ message: Message) {
@@ -119,7 +121,7 @@ public final class HistorySeenViewModel: ObservableObject {
 
     private func sendSeen(for message: Message) {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        if let messageId = message.id, !isMe {
+        if let messageId = message.id, !isMe, AppState.shared.lifeCycleState == .active || AppState.shared.lifeCycleState == .foreground {
             thread.lastSeenMessageId = messageId
             log("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
@@ -133,6 +135,24 @@ public final class HistorySeenViewModel: ObservableObject {
            thread.unreadCount ?? 0 > 0
         {
             sendSeen(for: message)
+        }
+    }
+
+    private func setupOnSceneBecomeActiveObserver() {
+        if #available(iOS 13.0, *) {
+            NotificationCenter.default.addObserver(self, selector: #selector(onSceneBeomeActive(_:)), name: UIScene.willEnterForegroundNotification, object: nil)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    @objc func onSceneBeomeActive(_: Notification) {
+        let hasLastMeesageSeen = thread.lastMessageVO?.id != thread.lastSeenMessageId
+        let lastMessage = thread.lastMessageVO
+        Task { [weak self] in
+            let isAtEndOfTleList = await self?.threadVM?.scrollVM.isAtBottomOfTheList == true
+            if isAtEndOfTleList, hasLastMeesageSeen, let lastMessage = lastMessage {
+                self?.sendSeen(for: lastMessage)
+            }
         }
     }
 

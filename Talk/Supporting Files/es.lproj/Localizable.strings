@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Por favor, ingrese un número de teléfono válido";
 "Errors.failedTryAgain" = "¡Se produjo un error! Inténtalo de nuevo.";
 "Errors.Login.Verify.incorrectCode" = "Tu código de verificación es incorrecto.";
+"Errors.hasAlreadyJoinedError" = "Ya te has unido al grupo.";
 
 /* General */
 "General.next" = "Siguiente";

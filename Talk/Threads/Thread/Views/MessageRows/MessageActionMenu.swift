@@ -190,7 +190,7 @@ struct MessageActionMenu: View {
     private func onInfoTapped() {
         withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
             let value = MessageParticipantsSeenNavigationValue(message: viewModel.message, threadVM: threadVM ?? .init(thread: thread))
-            AppState.shared.objectsContainer.navVM.append(type: .messageParticipantsSeen(value), value: value)
+            AppState.shared.objectsContainer.navVM.append(value: value)
         }
     }
 

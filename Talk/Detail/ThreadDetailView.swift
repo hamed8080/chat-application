@@ -48,7 +48,7 @@ struct ThreadDetailView: View {
         .navigationBarBackButtonHidden(true)
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
-                AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
+                AppState.shared.objectsContainer.navVM.remove()
                 AppState.shared.objectsContainer.threadDetailVM.clear()
                 dismiss()
             }
@@ -118,8 +118,10 @@ struct ThreadDetailView: View {
 
     private var toolbarView: some View {
         VStack(spacing: 0) {
+            let type = viewModel.thread?.type
+            let typeKey = type == .normal ? "General.contact" : type?.isChannelType == true ? "Thread.channel" : "Thread.group"
             ToolbarView(searchId: "DetailView",
-                        title: "General.info",
+                        title: "\("General.info".localized()) \(typeKey.localized())",
                         showSearchButton: false,
                         searchPlaceholder: "General.searchHere",
                         searchKeyboardType: .default,
@@ -140,7 +142,7 @@ struct ThreadDetailView: View {
             Task {
                 await viewModel.threadVM?.scrollVM.disableExcessiveLoading()
                 AppState.shared.objectsContainer.contactsVM.editContact = nil
-                AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
+                AppState.shared.objectsContainer.navVM.remove()
                 AppState.shared.objectsContainer.threadDetailVM.clear()
             }
         }

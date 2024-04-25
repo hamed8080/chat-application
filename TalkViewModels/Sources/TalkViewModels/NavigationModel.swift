@@ -10,8 +10,8 @@ public final class NavigationModel: ObservableObject {
     var pathsTracking: [Any] = []
     public init() {}
 
-    public func append<T: NavigaitonValueProtocol>(type: NavigationType, value: T) {
-        paths.append(type)
+    public func append<T: NavigaitonValueProtocol>(value: T) {
+        paths.append(value.navType)
         pathsTracking.append(value)
     }
 
@@ -36,7 +36,7 @@ public final class NavigationModel: ObservableObject {
         paths.removeLast()
     }
 
-    public func remove<T>(type: T.Type) {
+    public func remove() {
         if pathsTracking.count > 0 {
             popLastPathTracking()
             if pathsTracking.count == 0, paths.count > 0 {
@@ -92,7 +92,7 @@ public extension NavigationModel {
         let viewModel = viewModel(for: thread.id ?? 0) ?? createViewModel(conversation: thread)
         viewModel.historyVM.created = created
         let value = ConversationNavigationValue(viewModel: viewModel)
-        append(type: .threadViewModel(viewModel), value: value)
+        append(value: value)
         selectedId = thread.id
     }
 
@@ -116,7 +116,7 @@ public extension NavigationModel {
         if threadId != nil {
             presentedThreadViewModel?.viewModel.cancelAllObservers()
         }
-        remove(type: ThreadViewModel.self)
+        remove()
         if let threadId = threadId, (pathsTracking.last as? ThreadViewModel)?.threadId == threadId {
             popLastPathTracking()
             popLastPath()
@@ -134,8 +134,8 @@ public extension NavigationModel {
         } else {
             detailViewModel.setup(thread: threadViewModel?.thread, threadVM: threadViewModel)
         }
-        paths.append(NavigationType.threadDetil(detailViewModel))
-        pathsTracking.append(detailViewModel)
+        let value = ConversationDetailNavigationValue(viewModel: detailViewModel)
+        append(value: value)
         selectedId = threadViewModel?.threadId
     }
 }

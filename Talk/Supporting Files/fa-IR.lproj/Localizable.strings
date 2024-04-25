@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "شماره تلفن معتبر نیست.";
 "Errors.failedTryAgain" = "یک خطایی رخ داده مجدد سعی کنید.";
 "Errors.Login.Verify.incorrectCode" = "کد تایید صحیح نمی باشد.";
+"Errors.hasAlreadyJoinedError" = "شما قبلا به این گروه ملحق شده اید.";
 
 /* General */
 "General.next" = "بعدی";
@@ -31,7 +32,7 @@
 "General.block" = "مسدود کردن";
 "General.unblock" = "رفع مسدودی";
 "General.blocked" = "مسدود شده";
-"General.searchHere" = "جستجو کنید...";
+"General.searchHere" = "جستجو";
 "General.firstName" = "نام";
 "General.lastName" = "نام خانوادگی";
 "General.contact" = "مخاطب";
@@ -53,7 +54,7 @@
 "General.info" = "اطلاعات";
 "General.title" = "عنوان";
 "General.description" = "توضیحات";
-"General.addToContact" = "اضافه کردن به مخاطبان";
+"General.addToContact" = "اضافه کردن به مخاطبین";
 "General.edit" = "ویرایش";
 "General.optional" = "(اختیاری)";
 "General.share" = "اشتراک گذاری";
@@ -77,7 +78,7 @@
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";
-"Tab.contacts" = "مخاطبان";
+"Tab.contacts" = "مخاطبین";
 "Tab.archives" = "آرشیو";
 "Tab.folders" = "پوشه ها";
 "Tab.settings" = "تنظیمات";
@@ -95,25 +96,25 @@
 "Assistant.History.title" = "تاریخچه عملیات";
 
 /* Contacts */
-"Contacts.total" = "مجموع مخاطبان";
-"Contacts.searched" = "مخاطبان جستجو شده";
+"Contacts.total" = "مجموع مخاطبین";
+"Contacts.searched" = "مخاطبین جستجو شده";
 "Contacts.createNew" = "ساخت مخاطب جدید";
 "Contacts.delete" = "حذف مخاطب";
-"Contacts.deleteSelectedTitle" = "حذف مخاطبان انتخاب شده";
-"Contacts.deleteSelectedSubTitle" = "آیا مطمئن هستید که می خواهید مخاطبان انتخاب شده را حذف کنید؟";
+"Contacts.deleteSelectedTitle" = "حذف مخاطبین انتخاب شده";
+"Contacts.deleteSelectedSubTitle" = "آیا مطمئن هستید که می خواهید مخاطبین انتخاب شده را حذف کنید؟";
 "Contacts.blockedList" = "لیست مسدودی ها";
 "Contacts.Add.phoneOrUserName" = "شماره موبایل یا نام کاربری";
 "Contacts.Edit.title" = "ویرایش مخاطب";
 "Contacts.Add.title" = "اضافه کردن مخاطب";
 "Contacts.Sync.sync" = "همسان سازی";
-"Contacts.Sync.contacts" = "همسان سازی مخاطبان";
-"Contacts.Sync.subtitle" = "با همسان سازی مخاطبان شما می توانید با دوستان و نزدیکان خود راحت تر صحبت کنید.";
+"Contacts.Sync.contacts" = "همسان سازی مخاطبین";
+"Contacts.Sync.subtitle" = "با همسان سازی مخاطبین شما می توانید با دوستان و نزدیکان خود راحت تر صحبت کنید.";
 "Contacts.createGroup" = "ایجاد گروه";
 "Contacts.createChannel" = "ایجاد کانال";
 "Contacts.addContact" = "افزودن مخاطب";
 "Contacts.sortLabel" = "مرتب شده بر اساس آخرین زمان بازدید";
 "Contacts.lastVisited" = "آخرین بازدید %@";
-"Contacts.selectContacts" = "انتخاب مخا‍طبان";
+"Contacts.selectContacts" = "انتخاب مخا‍طبین";
 "Contctas.notFound" = "مخاطب یافت نشد.";
 "ConversationBuilder.enterGroupName" = "نام گروه را وارد کنید";
 "ConversationBuilder.enterChannelName" = "نام کانال را وارد کنید.";
@@ -219,7 +220,7 @@
 "Thread.Join.duplicateName" = "گفتگو پیدا نشد";
 "Thread.Join.footer" = "پیوستن به یک گروه عمومی با نام منحصر به فرد";
 "Thread.Delete.footer" = "آیا مطمئن هستید می خواهید این گفتگو را حذف کنید؟";
-"Thread.fastMessageFooter" = "ساخت یک گفتگو بدون وارد کردن فرد مورد نظر در لیست مخاطبان";
+"Thread.fastMessageFooter" = "ساخت یک گفتگو بدون وارد کردن فرد مورد نظر در لیست مخاطبین";
 "Thread.enterFastMessageType" = "%@ را اینجا وارد کنید...";
 "Thread.Tabs.members" = "اعضا";
 "Thread.Tabs.mutualgroup" = "گروه های مشترک";
@@ -268,8 +269,8 @@
 "Participant.online" = "آنلاین";
 "Participant.owner" = "مالک";
 "Participant.assistant" = "دستیار";
-"Participant.addAdminAccess" = "دادن دسترسی مدیر";
-"Participant.removeAdminAccess" = "حذف دسترسی مدیر";
+"Participant.addAdminAccess" = "ارتقا به مدیریت";
+"Participant.removeAdminAccess" = "برکناری از مدیریت";
 
 /* Edit group */
 "EditGroup.groupName" = "اسم گروه";

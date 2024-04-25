@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Var god ange rätt telefonnummer";
 "Errors.failedTryAgain" = "Ett fel inträffade! Försök igen.";
 "Errors.Login.Verify.incorrectCode" = "Din verifieringskod är felaktig.";
+"Errors.hasAlreadyJoinedError" = "Du har redan gått med i gruppen.";
 
 /* General */
 "General.next" = "Nästa";

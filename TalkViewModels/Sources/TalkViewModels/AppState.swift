@@ -184,17 +184,15 @@ public extension AppState {
                 threadsVM.removeThread(conversation)
             }
 
-            /// Remove the ThreadViewModel for cleaning the memory.
-            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
-                objectsContainer.navVM.popPathTrackingAt(at: index)
+            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
+            if objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ConversationDetailNavigationValue)?.viewModel.thread?.id == response.subjectId }) != nil {
+                objectsContainer.navVM.popLastPath()
             }
 
-            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
-            /// That is the reason why we call paths.removeLast() twice.
-            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ThreadDetailViewModel)?.thread?.id == response.subjectId }) {
+            /// Remove Thread View model and pop ThreadView
+            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ConversationNavigationValue)?.viewModel.threadId == response.subjectId }) {
+                objectsContainer.navVM.popLastPath()
                 objectsContainer.navVM.popPathTrackingAt(at: index)
-                objectsContainer.navVM.popLastPath()
-                objectsContainer.navVM.popLastPath()
             }
         } else {
             if let participant = participant {

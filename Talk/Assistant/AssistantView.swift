@@ -32,7 +32,7 @@ struct AssistantView: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: AssistantNavigationValue.self)
+                    AppState.shared.objectsContainer.navVM.remove()
                 }
             }
 

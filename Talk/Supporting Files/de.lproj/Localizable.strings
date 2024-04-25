@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Bitte geben Sie eine korrekte Telefonnummer ein";
 "Errors.failedTryAgain" = "Es ist ein Fehler aufgetreten! Versuchen Sie es erneut.";
 "Errors.Login.Verify.incorrectCode" = "Ihr Bestätigungscode ist inkorrekt.";
+"Errors.hasAlreadyJoinedError" = "Sie sind der Gruppe bereits beigetreten.";
 
 /* General */
 "General.next" = "Weiter";

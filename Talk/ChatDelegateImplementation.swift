@@ -122,9 +122,9 @@ final class ChatDelegateImplementation: ChatDelegate {
     }
 
     private func onMessageEvent(_ event: MessageEventTypes) {
-        if case .new(let response) = event, let message = response.result, canNotify(response) {
-            UNUserNotificationCenter.localNewMessageNotif(message, showName: AppSettingsModel.restore().notificationSettings.showDetails)
-        }
+//        if case .new(let response) = event, let message = response.result, canNotify(response) {
+//            UNUserNotificationCenter.localNewMessageNotif(message, showName: AppSettingsModel.restore().notificationSettings.showDetails)
+//        }
     }
 
     private func canNotify(_ response: ChatResponse<Message>) -> Bool {

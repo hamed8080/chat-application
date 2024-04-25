@@ -24,6 +24,8 @@ extension ChatError {
             let localized = "General.ban".localized(bundle: Language.preferedBundle)
             let banTime = banError.duration ?? 0
             return String(format: localized, "\(banTime / 1000)")
+        case .haveAlreadyJoinedTheThread:
+            return "Errors.hasAlreadyJoinedError"
         default:
             return nil
         }

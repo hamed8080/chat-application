@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Please input correct phone number";
 "Errors.failedTryAgain" = "An error occured! try again.";
 "Errors.Login.Verify.incorrectCode" = "Your verification code is incorrect.";
+"Errors.hasAlreadyJoinedError" = "You have already joined the group.";
 
 /* General */
 "General.next" = "Next";

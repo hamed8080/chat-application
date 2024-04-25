@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "يرجى إدخال رقم هاتف صحيح";
 "Errors.failedTryAgain" = "حدث خطأ! يرجى المحاولة مرة أخرى.";
 "Errors.Login.Verify.incorrectCode" = "رمز التحقق الخاص بك غير صحيح.";
+"Errors.hasAlreadyJoinedError" = "لقد انضممت بالفعل إلى المجموعة.";
 
 /* General */
 "General.next" = "التالي";

@@ -16,7 +16,7 @@ struct SettingNotificationSection: View {
     var body: some View {
         ListSectionButton(imageName: "bell.fill", title: "Settings.notifictionSettings", color: .red, showDivider: false) {
             let value = NotificationSettingsNavigationValue()
-            navModel.append(type: .notificationSettings(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
