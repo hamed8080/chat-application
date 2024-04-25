@@ -31,12 +31,12 @@ struct UserActionMenu: View {
 
         if EnvironmentValues.isTalkTest {
             ContextMenuButton(title: "General.share".bundleLocalized(), image: "square.and.arrow.up") {
-                showPopover.toggle()
+                showPopover = false
             }
             .disabled(true)
 
             ContextMenuButton(title: "Thread.export".bundleLocalized(), image: "tray.and.arrow.up") {
-                showPopover.toggle()
+                showPopover = false
             }
             .disabled(true)
         }
@@ -50,32 +50,44 @@ struct UserActionMenu: View {
     }
 
     private func onAddContactTapped() {
-        showPopover.toggle()
-        let contact = Contact(cellphoneNumber: participant.cellphoneNumber,
-                              email: participant.email,
-                              firstName: participant.firstName,
-                              lastName: participant.lastName,
-                              user: .init(username: participant.username))
-        contactViewModel.addContact = contact
-        contactViewModel.showAddOrEditContactSheet = true
-        contactViewModel.animateObjectWillChange()
+        showPopover = false
+        delayActionOnHidePopover {
+            let contact = Contact(cellphoneNumber: participant.cellphoneNumber,
+                                  email: participant.email,
+                                  firstName: participant.firstName,
+                                  lastName: participant.lastName,
+                                  user: .init(username: participant.username))
+            contactViewModel.addContact = contact
+            contactViewModel.showAddOrEditContactSheet = true
+            contactViewModel.animateObjectWillChange()
+        }
     }
 
     private func onBlockUnblockTapped() {
-        showPopover.toggle()
-        if participant.blocked == true, let contactId = participant.contactId {
-            contactViewModel.unblockWith(contactId)
-        } else {
-            contactViewModel.block(.init(id: participant.contactId))
+        showPopover = false
+        delayActionOnHidePopover {
+            if participant.blocked == true, let contactId = participant.contactId {
+                contactViewModel.unblockWith(contactId)
+            } else {
+                contactViewModel.block(.init(id: participant.contactId))
+            }
         }
     }
 
     private func onDeleteContactTapped() {
-        showPopover.toggle()
-        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
-            ConversationDetailDeleteContactDialog(participant: participant)
-                .environmentObject(contactViewModel)
-        )
+        showPopover = false
+        delayActionOnHidePopover {
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
+                ConversationDetailDeleteContactDialog(participant: participant)
+                    .environmentObject(contactViewModel)
+            )
+        }
+    }
+
+    private func delayActionOnHidePopover(_ action: (() -> Void)? = nil) {
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in
+            action?()
+        }
     }
 }
 

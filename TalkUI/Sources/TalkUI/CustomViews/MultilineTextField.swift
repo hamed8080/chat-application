@@ -9,6 +9,8 @@ import SwiftUI
 
 private struct UITextViewWrapper: UIViewRepresentable {
     typealias UIViewType = UITextView
+    private static let font = UIFont(name: "IRANSansX", size: 16)
+    
 
     @Binding var text: String
     var textColor: UIColor
@@ -23,7 +25,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         textField.delegate = context.coordinator
 
         textField.isEditable = true
-        textField.font = UIFont(name: "IRANSansX", size: 16)
+        textField.font = UITextViewWrapper.font
         textField.isSelectable = true
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = true
@@ -54,13 +56,45 @@ private struct UITextViewWrapper: UIViewRepresentable {
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
     }
 
-    fileprivate static func recalculateHeight(view: UIView, result: Binding<CGFloat>) {
-        let newSize = view.sizeThatFits(CGSize(width: view.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
-        if result.wrappedValue != newSize.height {
-            DispatchQueue.main.async {
-                result.wrappedValue = newSize.height // !! must be called asynchronously
+    fileprivate static func recalculateHeight(view: UITextView, result: Binding<CGFloat>) {
+        Task.detached(priority: .userInitiated) {
+            let newHeight = await sizeForString(attributes(string: view.text), width: view.frame.size.width).height + 18
+            let MIN: CGFloat = 42
+            let MAX: CGFloat = 256
+            let height = max(min(MAX, newHeight), MIN)
+            if result.wrappedValue != height {
+                DispatchQueue.main.async {
+                    result.wrappedValue = height // !! must be called asynchronously
+                }
             }
         }
+    }
+
+    private static func sizeForString(_ str : NSAttributedString, width : CGFloat) async -> CGSize {
+        let ts = NSTextStorage(attributedString: str)
+
+        let size = CGSize(width: width, height: .greatestFiniteMagnitude)
+
+        let tc = NSTextContainer(size: size)
+        tc.lineFragmentPadding = 0.0
+
+        let lm = NSLayoutManager()
+        lm.addTextContainer(tc)
+
+        ts.addLayoutManager(lm)
+        lm.glyphRange(forBoundingRect: CGRect(origin: .zero, size: size), in: tc)
+
+        let rect = lm.usedRect(for: tc)
+
+        return rect.size
+    }
+
+    private static func attributes(string: String) -> NSAttributedString {
+        let mutableAttr = NSMutableAttributedString(string: string)
+        let attributes = [NSAttributedString.Key.font: font!]
+        let allRange = NSRange(mutableAttr.string.startIndex..., in: mutableAttr.string)
+        mutableAttr.addAttributes(attributes, range: allRange)
+        return mutableAttr
     }
 
     func makeCoordinator() -> Coordinator {
@@ -140,7 +174,7 @@ public struct MultilineTextField: View {
                           keyboardReturnType: keyboardReturnType,
                           mention: mention,
                           onDone: onDone)
-            .frame(minHeight: min(64, dynamicHeight), maxHeight: min(256, dynamicHeight))
+            .frame(height: dynamicHeight)
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
             .onChange(of: text) { newValue in

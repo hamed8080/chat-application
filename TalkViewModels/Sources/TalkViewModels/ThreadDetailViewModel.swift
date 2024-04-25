@@ -75,12 +75,24 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     }
 
     public func toggleMute() {
-        guard let threadId = thread?.id else { return }
+        guard let threadId = thread?.id, threadId != LocalId.emptyThread.rawValue else {
+            fakeMuteToggle()
+            return
+        }
         if thread?.mute ?? false == false {
             mute(threadId)
         } else {
             unmute(threadId)
         }
+    }
+
+    private func fakeMuteToggle() {
+        if thread?.mute == nil || thread?.mute == false {
+            thread?.mute = true
+        } else {
+            thread?.mute = false
+        }
+        animateObjectWillChange()
     }
 
     public func mute(_ threadId: Int) {

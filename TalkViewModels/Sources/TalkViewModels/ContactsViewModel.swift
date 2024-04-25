@@ -77,6 +77,12 @@ public class ContactsViewModel: ObservableObject {
                 self?.onContactEvent(event)
             }
             .store(in: &canceableSet)
+
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
+            .sink { [weak self] notif in
+                self?.onCancelTimer(notif.object as? String ?? "")
+            }
+            .store(in: &canceableSet)
     }
 
     public func onContactEvent(_ event: ContactEventTypes?) {
@@ -360,5 +366,11 @@ public class ContactsViewModel: ObservableObject {
                 viewModel.message.participant?.name = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
                 viewModel.animateObjectWillChange()
             }
+    }
+
+    private func onCancelTimer(_ key: String) {
+        if key.contains("Add-Contact-ContactsViewModel") {
+            isLoading = false
+        }
     }
 }
