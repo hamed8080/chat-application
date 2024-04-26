@@ -26,7 +26,6 @@ struct ThreadbackgroundView: View {
             .resizable()
             .scaledToFill()
             .id("chat_bg_\(threadId)")
-            .ignoresSafeArea()
             .background(
                 LinearGradient(
                     colors: colorScheme == .dark ? darkColors : lightColors,
@@ -34,6 +33,7 @@ struct ThreadbackgroundView: View {
                     endPoint: .bottom
                 )
             )
+            .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 

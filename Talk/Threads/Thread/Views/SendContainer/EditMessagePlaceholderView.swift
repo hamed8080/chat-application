@@ -37,6 +37,9 @@ struct EditMessagePlaceholderView: View {
                 Spacer()
                 CloseButton {
                     Task {
+                        if threadVM.scrollVM.isAtBottomOfTheList {
+                            threadVM.scrollVM.scrollToBottom()
+                        }
                         await threadVM.scrollVM.disableExcessiveLoading()
                         viewModel.clear()
                     }
