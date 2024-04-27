@@ -372,6 +372,7 @@
 "Messages.ActionMenu.pinMessage" = "Nåla";
 "Messages.ActionMenu.unpinMessage" = "Avnåla";
 "Messages.ActionMenu.saveImage" = "Spara i Bilder";
+"Messages.ActionMenu.messageDetail" = "Meddelandedetaljer";
 "Messages.unreadMessages" = "Olästa meddelanden";
 "Messages.deleteForMe" = "Ta bort åt mig";
 "Messages.deleteForAll" = "Ta bort för alla";

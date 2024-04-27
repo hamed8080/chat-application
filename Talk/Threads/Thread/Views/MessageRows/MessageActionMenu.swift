@@ -72,7 +72,7 @@ struct MessageActionMenu: View {
             }
 
             if isMe && isGroup {
-                ContextMenuButton(title: "SeenParticipants.title".bundleLocalized(), image: "info.bubble") {
+                ContextMenuButton(title: "Messages.ActionMenu.messageDetail".bundleLocalized(), image: "info.bubble") {
                     onInfoTapped()
                 }
             }

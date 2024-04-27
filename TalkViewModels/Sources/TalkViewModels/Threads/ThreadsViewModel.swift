@@ -63,6 +63,8 @@ public final class ThreadsViewModel: ObservableObject {
             let isMe = response.result?.participant?.id == AppState.shared.user?.id
             if !isMe {
                 thread.unreadCount = (threads[index].unreadCount ?? 0) + 1
+            } else if isMe {
+                thread.unreadCount = 0
             }
             thread.lastMessageVO = response.result
             thread.lastSeenMessageId = response.result?.conversation?.lastSeenMessageId

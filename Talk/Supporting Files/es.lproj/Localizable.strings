@@ -374,6 +374,7 @@
 "Messages.ActionMenu.pinMessage" = "Anclar";
 "Messages.ActionMenu.unpinMessage" = "Desanclar";
 "Messages.ActionMenu.saveImage" = "Guardar en Fotos";
+"Messages.ActionMenu.messageDetail" = "Detalles del mensaje";
 "Messages.unreadMessages" = "Mensajes sin leer";
 "Messages.deleteForMe" = "eliminar por mi";
 "Messages.deleteForAll" = "Eliminar para todas";

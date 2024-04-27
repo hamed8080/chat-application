@@ -375,6 +375,7 @@
 "Messages.ActionMenu.pinMessage" = "Pin";
 "Messages.ActionMenu.unpinMessage" = "UNPin";
 "Messages.ActionMenu.saveImage" = "Save in Photos";
+"Messages.ActionMenu.messageDetail" = "Message details";
 "Messages.unreadMessages" = "Unread Messages";
 "Messages.deleteForMe" = "Delete for me";
 "Messages.deleteForAll" = "Delete for all";

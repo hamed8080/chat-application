@@ -39,6 +39,7 @@ struct iPadStackContentView<Content: View>: View {
     var body: some View {
         HStack(spacing: 0) {
             sidebarView
+                .toolbar(.hidden)
                 .frame(width: showSideBar ? maxComputed : 0)
 
             NavigationStack(path: $navVM.paths) {
@@ -68,6 +69,7 @@ struct iPhoneStackContentView<Content: View>: View {
     var body: some View {
         NavigationStack(path: $navVM.paths) {
             sidebarView
+                .toolbar(.hidden)
                 .navigationDestination(for: NavigationType.self) { value in
                     NavigationTypeView(type: value, container: container)
                 }

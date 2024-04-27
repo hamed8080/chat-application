@@ -372,6 +372,7 @@
 "Messages.ActionMenu.pinMessage" = "تثبيت";
 "Messages.ActionMenu.unpinMessage" = "إلغاء تثبيت";
 "Messages.ActionMenu.saveImage" = "حفظ في الصور";
+"Messages.ActionMenu.messageDetail" = "تفاصيل الرسالة";
 "Messages.unreadMessages" = "رسائل غير مقروءة";
 "Messages.deleteForMe" = "حذف بالنسبة لي";
 "Messages.deleteForAll" = "الحذف للجميع";

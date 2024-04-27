@@ -24,7 +24,7 @@
 "General.close" = "بستن";
 "General.send" = "ارسال";
 "General.add" = "افزودن";
-"General.select" = "انتخاب";
+"General.select" = "انتخاب پیام ها";
 "General.typeMessageHere" = "پیام خود را اینجا بنویسید...";
 "General.more" = "بیشتر";
 "General.notSpecified" = "مشخص نشده است";
@@ -184,8 +184,8 @@
 "Thread.draft" = "پیش نویش:";
 "Thread.callStarted" = "تماس شروع شد";
 "Thread.callEnded" = "تماس پایان یافت";
-"Thread.unpin" = "از سنجاق در آوردن";
-"Thread.pin" = "سنجاق کردن";
+"Thread.unpin" = "برداشتن از بالا";
+"Thread.pin" = "چسباندن به بالا";
 "Thread.mute" = "قطع اعلانات";
 "Thread.unmute" = "برقراری اعلانات";
 "Thread.addToFolder" = "اضافه کردن به پوشه";
@@ -227,8 +227,8 @@
 "Thread.Tabs.photos" = "تصاویر";
 "Thread.Tabs.videos" = "ویدیوها";
 "Thread.Tabs.file" = "فایل ها";
-"Thread.Tabs.music" = "موزیک ها";
-"Thread.Tabs.voice" = "صدا ها";
+"Thread.Tabs.music" = "آهنگ ها";
+"Thread.Tabs.voice" = "صداها";
 "Thread.Tabs.link" = "لینک ها";
 "Thread.accessMicrophonePermission" = "لطفاً به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس میکروفن را روشن کنید.";
 "Thread.accessLocaitonPermission" = "لطفاً به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس دسترسی به موقعیت مکانی را فعال کنید.";
@@ -370,9 +370,10 @@
 "Messages.ActionMenu.forward" = "ارسال";
 "Messages.ActionMenu.copy" = "کپی";
 "Messages.ActionMenu.deleteCache" = "حذف فایل کش شده";
-"Messages.ActionMenu.pinMessage" = "سنجاق کردن";
-"Messages.ActionMenu.unpinMessage" = "از سنجاق در آوردن";
+"Messages.ActionMenu.pinMessage" = "چسباندن به بالا";
+"Messages.ActionMenu.unpinMessage" = "برداشتن از بالا";
 "Messages.ActionMenu.saveImage" = "ذخیره در گالری";
+"Messages.ActionMenu.messageDetail" = "اطلاعات پیام";
 "Messages.unreadMessages" = "پیام های خوانده نشده";
 "Messages.deleteForMe" = "حذف برای خودم";
 "Messages.deleteForAll" = "حذف برای همه";
