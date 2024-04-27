@@ -10,6 +10,7 @@ import TalkViewModels
 import ChatModels
 import TalkUI
 import Chat
+import TalkModels
 
 struct ConversationPlusContextMenu: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
@@ -33,8 +34,8 @@ struct ConversationPlusContextMenu: View {
 //            .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: 38)
 //            .clipped()
 //            .foregroundStyle(Color.App.toolbarButton)
-
-            Image("talk_logo_text")
+            let image = Language.isRTL ? "talk_logo_text" : "talk_logo_text_en"
+            Image(image)
                 .resizable()
                 .scaledToFit()
                 .frame(height: 12)

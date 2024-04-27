@@ -143,7 +143,7 @@ public extension NavigationModel {
 
 public extension NavigationModel {
     func updateConversationInViewModel(_ conversation: Conversation) {
-        if let vm = threadStack.first(where: {$0.viewModel.id == conversation.id})?.viewModel {
+        if let vm = threadStack.first(where: {$0.viewModel.threadId == conversation.id})?.viewModel {
             vm.updateConversation(conversation)
         }
     }

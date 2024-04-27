@@ -56,6 +56,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canDownloadFiles: Bool = false
 
     // MARK: Computed Properties
+    public var id: Int { threadId }
     public var threadId: Int { thread.id ?? 0 }
     public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }
     public var isSimulatedThared: Bool {
@@ -97,7 +98,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func updateConversation(_ conversation: Conversation) {
-        self.thread = conversation
+        self.thread.updateValues(conversation)
+        self.thread.animateObjectWillChange()
     }
 
     // MARK: Actions

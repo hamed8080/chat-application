@@ -164,13 +164,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Scenarios utilities
+    @MainActor
     private func setHasMoreTop(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextTop = response.hasNext
             isFetchedServerFirstResponse = true
-            await MainActor.run {
-                topLoading = false
-            }
+            topLoading = false
         }
     }
 
@@ -575,7 +574,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     @MainActor
     public func onMessageAppear(_ message: Message) async {
         let copy = message.copy
-        log("Message appear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
+        log("Message appear id: \(message.id ?? 0) uniqueId: \(message.uniqueId ?? "") text: \(message.message ?? "")")
         guard let threadVM = viewModel else { return }
         if message.id == thread.lastMessageVO?.id, threadVM.scrollVM.isAtBottomOfTheList == false {
             threadVM.scrollVM.isAtBottomOfTheList = true
@@ -593,7 +592,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     @MainActor
     public func onMessegeDisappear(_ message: Message) async {
-        log("Message disappear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
+        log("Message disappeared id: \(message.id ?? 0) uniqueId: \(message.uniqueId ?? "") text: \(message.message ?? "")")
         if message.id == thread.lastMessageVO?.id, viewModel?.scrollVM.isAtBottomOfTheList == true {
             viewModel?.scrollVM.isAtBottomOfTheList = false
             viewModel?.scrollVM.animateObjectWillChange()
