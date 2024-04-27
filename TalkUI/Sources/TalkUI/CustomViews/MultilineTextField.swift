@@ -9,8 +9,7 @@ import SwiftUI
 
 private struct UITextViewWrapper: UIViewRepresentable {
     typealias UIViewType = UITextView
-    private static let font = UIFont(name: "IRANSansX", size: 16)
-    
+    private let font = UIFont(name: "IRANSansX", size: 16)
 
     @Binding var text: String
     var textColor: UIColor
@@ -25,7 +24,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         textField.delegate = context.coordinator
 
         textField.isEditable = true
-        textField.font = UITextViewWrapper.font
+        textField.font = font
         textField.isSelectable = true
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = true
@@ -47,30 +46,33 @@ private struct UITextViewWrapper: UIViewRepresentable {
             } else {
                 uiView.text = text
             }
-            uiView.font = UIFont(name: "IRANSansX", size: 16)
+            uiView.font = font
             uiView.textColor = textColor
         }
         if focus {
             uiView.becomeFirstResponder()
         }
-        UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
+        recalculateHeight(view: uiView)
     }
 
-    fileprivate static func recalculateHeight(view: UITextView, result: Binding<CGFloat>) {
+    fileprivate func recalculateHeight(view: UITextView) {
+        let oldHeightValue = calculatedHeight
+        let width = view.frame.size.width
+        let text = view.text ?? ""
         Task.detached(priority: .userInitiated) {
-            let newHeight = await sizeForString(attributes(string: view.text), width: view.frame.size.width).height + 18
+            let newHeight = await sizeForString(attributes(string: text), width: width).height + 18
             let MIN: CGFloat = 42
             let MAX: CGFloat = 256
             let height = max(min(MAX, newHeight), MIN)
-            if result.wrappedValue != height {
-                DispatchQueue.main.async {
-                    result.wrappedValue = height // !! must be called asynchronously
+            if oldHeightValue != height {
+                await MainActor.run {
+                    calculatedHeight = height // !! must be called asynchronously
                 }
             }
         }
     }
 
-    private static func sizeForString(_ str : NSAttributedString, width : CGFloat) async -> CGSize {
+    private func sizeForString(_ str : NSAttributedString, width : CGFloat) async -> CGSize {
         let ts = NSTextStorage(attributedString: str)
 
         let size = CGSize(width: width, height: .greatestFiniteMagnitude)
@@ -89,7 +91,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         return rect.size
     }
 
-    private static func attributes(string: String) -> NSAttributedString {
+    private func attributes(string: String) -> NSAttributedString {
         let mutableAttr = NSMutableAttributedString(string: string)
         let attributes = [NSAttributedString.Key.font: font!]
         let allRange = NSRange(mutableAttr.string.startIndex..., in: mutableAttr.string)
@@ -98,23 +100,23 @@ private struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, height: $calculatedHeight, onDone: onDone)
+        Coordinator(text: $text, wrapper: self, onDone: onDone)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
         var text: Binding<String>
-        var calculatedHeight: Binding<CGFloat>
         var onDone: ((String?) -> Void)?
+        private var wrapper: UITextViewWrapper
 
-        init(text: Binding<String>, height: Binding<CGFloat>, onDone: ((String?) -> Void)? = nil) {
+        init(text: Binding<String>, wrapper: UITextViewWrapper, onDone: ((String?) -> Void)? = nil) {
             self.text = text
-            calculatedHeight = height
             self.onDone = onDone
+            self.wrapper = wrapper
         }
 
         func textViewDidChange(_ uiView: UITextView) {
             text.wrappedValue = uiView.text
-            UITextViewWrapper.recalculateHeight(view: uiView, result: calculatedHeight)
+            wrapper.recalculateHeight(view: uiView)
         }
 
         func textView(_ textView: UITextView, shouldChangeTextIn _: NSRange, replacementText text: String) -> Bool {
