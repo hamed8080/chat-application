@@ -41,7 +41,7 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
 
     public init(threadVM: ThreadViewModel?) {
         self.threadVM = threadVM
-        editTitle = thread.title ?? ""
+        editTitle = thread.title?.replacingOccurrences(of: NSRegularExpression.emojiRegEx, with: "\\\\u{$1}", options: .regularExpression) ?? ""
         threadDescription = thread.description ?? ""
         isPublic = thread.type?.isPrivate == false
         registerObservers()

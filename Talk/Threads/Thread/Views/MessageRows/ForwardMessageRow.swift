@@ -15,11 +15,6 @@ import TalkViewModels
 struct ForwardMessageRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var message: Message? { viewModel.message }
-    private static var statcForwardText: some View = {
-        Text("Message.forwardedFrom")
-            .foregroundStyle(Color.App.accent)
-            .font(.iransansCaption3)
-    }()
 
     var body: some View {
         if let forwardInfo = message?.forwardInfo, forwardInfo.conversation != nil {
@@ -29,7 +24,7 @@ struct ForwardMessageRow: View {
             } label: {
                 HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
-                        ForwardMessageRow.statcForwardText
+                        statcForwardText
                         /// When we are the sender of forward we use forwardInfo.participant.name unless we use message.participant.name because it's nil
                         if let name = forwardInfo.participant?.name ?? message?.participant?.name {
                             Text(name)
@@ -55,5 +50,11 @@ struct ForwardMessageRow: View {
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .padding(.top,viewModel.paddings.forwardViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         }
+    }
+
+    private var statcForwardText: some View {
+        Text("Message.forwardedFrom")
+            .foregroundStyle(Color.App.accent)
+            .font(.iransansCaption3)
     }
 }

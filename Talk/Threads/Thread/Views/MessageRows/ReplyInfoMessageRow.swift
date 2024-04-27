@@ -17,11 +17,6 @@ struct ReplyInfoMessageRow: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
-    private static var staticReplyText: some View = {
-        Text("Messages.deletedMessageReply")
-            .font(.iransansBoldCaption2)
-            .foregroundColor(Color.App.textSecondary)
-    }()
 
     var body: some View {
         replyContent()
@@ -45,7 +40,7 @@ struct ReplyInfoMessageRow: View {
                         .stroke(lineWidth: 1.5)
                         .fill(Color.App.accent)
                         .frame(maxWidth: 1.5)
-                    ReplyInfoMessageRow.staticReplyText
+                    staticReplyText
                     Spacer()
                 }
                 .contentShape(Rectangle())
@@ -136,6 +131,12 @@ struct ReplyInfoMessageRow: View {
         Text(verbatim: "\(String(localized: .init("Message.replyTo"), bundle: Language.preferedBundle)):")
             .font(.iransansBoldCaption2)
             .foregroundStyle(Color.App.accent)
+    }
+
+    private var staticReplyText: some View {
+        Text("Messages.deletedMessageReply")
+            .font(.iransansBoldCaption2)
+            .foregroundColor(Color.App.textSecondary)
     }
 }
 
