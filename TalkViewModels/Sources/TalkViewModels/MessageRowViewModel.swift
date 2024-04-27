@@ -341,7 +341,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
         if ![.participantJoin, .participantLeft].contains(message.type) { return nil }
         let date = Date(milliseconds: Int64(message.time ?? 0)).onlyLocaleTime
-        return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString(meId: AppState.shared.user?.id) ?? "") \(date)")
+        let string = "\(message.addOrRemoveParticipantString(meId: AppState.shared.user?.id) ?? "") \(date)"
+        let attr = NSMutableAttributedString(string: string)
+        let doer = message.participant?.name ?? ""
+        let doerRange = NSString(string: string).range(of: doer)
+        attr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "accent") ?? .orange], range: doerRange)
+        return AttributedString(attr)
     }
 
     private func calculateTextViewPadding() -> EdgeInsets {

@@ -28,6 +28,7 @@ struct ParticipantMessageType: View {
             .background(Color.black.opacity(0.2))
             .clipShape(RoundedRectangle(cornerRadius:(25)))
             .frame(maxWidth: .infinity)
+            .padding(.top, 4) // For separating in history if there are multiple add/remove participant messages.
         }
     }
 }
