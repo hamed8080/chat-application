@@ -170,7 +170,7 @@ struct P2PThreadLastSeenView : View {
             .foregroundColor(Color.App.toolbarSecondaryText)
             .font(.iransansFootnote)
             .onAppear {
-                if lastSeen.isEmpty && thread.id != LocalId.emptyThread.rawValue {
+                if canGetParticipant {
                     ChatManager.activeInstance?.conversation.participant.get(.init(threadId: thread.id ?? -1))
                 } else {
                     let lastSeen = "Contacts.lastSeen.unknown".bundleLocalized()
@@ -189,6 +189,11 @@ struct P2PThreadLastSeenView : View {
                 let formatted = String(format: localized, lastSeen)
                 self.lastSeen = formatted
             }
+    }
+
+    private var canGetParticipant: Bool {
+        if thread.group == true { return false }
+        return lastSeen.isEmpty && thread.id != LocalId.emptyThread.rawValue
     }
 }
 

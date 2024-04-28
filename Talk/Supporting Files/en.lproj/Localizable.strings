@@ -58,6 +58,7 @@
 "General.optional" = "(Optional)";
 "General.share" = "share";
 "General.createAConversation" = "Start a conversation";
+"General.Byte" = "Byte";
 "General.KB" = "KB";
 "General.MB" = "MB";
 "General.GB" = "GB";
