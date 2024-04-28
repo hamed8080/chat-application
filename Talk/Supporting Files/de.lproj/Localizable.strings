@@ -28,7 +28,6 @@
 "General.typeMessageHere" = "Hier Nachricht eingeben...";
 "General.more" = "Mehr";
 "General.notSpecified" = "Nicht angegeben";
-"General.unknown" = "Unbekannt";
 "General.block" = "Blockieren";
 "General.unblock" = "Entsperren";
 "General.blocked" = "Blockiert";
@@ -113,6 +112,9 @@
 "Contacts.createChannel" = "Einen Kanal erstellen";
 "Contacts.addContact" = "Einen Kontakt hinzufügen";
 "Contacts.sortLabel" = "Nach zuletzt besuchter Zeit sortiert";
+"Contacts.lastSeen.lately" = "vor ein paar Augenblicken";
+"Contacts.lastSeen.thisWeek" = "diese Woche";
+"Contacts.lastSeen.unknown" = "Unbekannt";
 "Contacts.lastVisited" = "Zuletzt besucht %@";
 "Contacts.selectContacts" = "Kontakte auswählen";
 "Contctas.notFound" = "Der Kontakt wurde nicht gefunden.";

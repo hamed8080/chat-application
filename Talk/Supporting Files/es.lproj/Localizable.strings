@@ -28,7 +28,6 @@
 "General.typeMessageHere" = "Escribe el mensaje aquí ...";
 "General.more" = "Más";
 "General.notSpecified" = "No especificado";
-"General.unknown" = "Desconocido";
 "General.block" = "Bloquear";
 "General.unblock" = "Desbloquear";
 "General.blocked" = "Bloqueado";
@@ -114,6 +113,9 @@
 "Contacts.createChannel" = "Crear un canal";
 "Contacts.addContact" = "Agregar un contacto";
 "Contacts.sortLabel" = "Ordenado por último tiempo visitado";
+"Contacts.lastSeen.lately" = "hace unos momentos";
+"Contacts.lastSeen.thisWeek" = "esta semana";
+"Contacts.lastSeen.unknown" = "desconocida";
 "Contacts.lastVisited" = "Última visita %@";
 "Contacts.selectContacts" = "Seleccionar contactos";
 "Contctas.notFound" = "No se ha encontrado el contacto.";

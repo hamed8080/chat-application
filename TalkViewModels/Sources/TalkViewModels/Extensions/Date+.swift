@@ -42,4 +42,16 @@ public extension Int {
         let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(self)
         return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDateCondense(local: Language.preferredLocale)
     }
+
+    var lastSeenString : String {
+        if self < 5 * 60_000 {
+            return "Contacts.lastSeen.lately".bundleLocalized()
+        } else if self < 86_400_000 {
+            return Date(milliseconds: Date().millisecondsSince1970 - Int64(self)).onlyLocaleTime
+        } else if self < 604_800_000 {
+            return "Contacts.lastSeen.thisWeek".bundleLocalized()
+        } else {
+            return "Contacts.lastSeen.unknown".bundleLocalized()
+        }
+    }
 }

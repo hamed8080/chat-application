@@ -18,42 +18,50 @@ struct ThreadViewCenterToolbar: View {
     var viewModel: ThreadViewModel
     @State private var title: String = ""
     @State private var participantsCount: Int?
+    @StateObject var eventVM: ThreadEventViewModel
     private let threadPublisher = NotificationCenter.thread.publisher(for: .thread).compactMap { $0.object as? ThreadEventTypes }
     private let participantPublisher = NotificationCenter.participant.publisher(for: .participant).compactMap { $0.object as? ParticipantEventTypes }
+    private let eventPublisher = NotificationCenter.system.publisher(for: .system).compactMap { $0.object as? SystemEventTypes }
     private var thread: Conversation { viewModel.thread }
-    private var partner: Participant? { thread.participants?.first(where: {$0.id == thread.partner }) }
+
+    init(viewModel: ThreadViewModel) {
+        let threadId = viewModel.threadId
+        self.viewModel = viewModel
+        self._eventVM = StateObject(wrappedValue: .init(threadId: threadId))
+    }
 
     var body: some View {
-        VStack(alignment: .center, spacing: appState.connectionStatus == .connected ? 4 : 0) {
-            Button {
-                appState.objectsContainer.navVM.appendThreadDetail(threadViewModel: viewModel)
-            } label: {
-                Text(title)
-                    .font(.iransansBoldBody)
-                    .foregroundStyle(Color.App.white)
-                    .padding(.horizontal, 48) // for super large titles we need to cut the text the best way for this is add a horizontal padding
-            }
-            .buttonStyle(.plain)
-
-            if appState.connectionStatus != .connected {
-                ConnectionStatusToolbar()
-            } else if let signalMessageText = viewModel.signalMessageText {
-                Text(signalMessageText)
-                    .foregroundColor(Color.App.toolbarSecondaryText)
-                    .font(.iransansCaption2)
-            } else if thread.group == true, let participantsCount = participantsCount?.localNumber(locale: Language.preferredLocale) {
-                let localizedLabel = String(localized: "Thread.Toolbar.participants", bundle: Language.preferedBundle)
-                Text("\(localizedLabel) \(participantsCount)")
-                    .fixedSize()
-                    .foregroundColor(Color.App.toolbarSecondaryText)
-                    .font(.iransansFootnote)
-            } else if thread.group == nil || thread.group == false, thread.type != .selfThread {
-                P2PThreadLastSeenView(thread: thread)
-            }
+        VStack(alignment: .center, spacing: 0) {
+            threadTitleButton
+            ConnectionStatusToolbar()
+                .frame(height: showConnectionStatus ? nil : 0)
+                .opacity(showConnectionStatus ? 1 : 0)
+                .scaleEffect(x: showConnectionStatus ? 1 : 0, y: showConnectionStatus ? 1 : 0, anchor: .center)
+                .clipped()
+            Text(signalMessageText)
+                .foregroundColor(Color.App.toolbarSecondaryText)
+                .font(.iransansBoldCaption2)
+                .frame(height: showSignaling ? nil : 0)
+                .opacity(showSignaling ? 1 : 0)
+                .scaleEffect(x: showSignaling ? 1 : 0, y: showSignaling ? 1 : 0, anchor: .center)
+                .clipped()
+            Text(numberOfParticipants)
+                .foregroundColor(Color.App.toolbarSecondaryText)
+                .font(.iransansFootnote)
+                .frame(height: showParticipantCount ? nil : 0)
+                .opacity(showParticipantCount ? 1 : 0)
+                .scaleEffect(x: showParticipantCount ? 1 : 0, y: showParticipantCount ? 1 : 0, anchor: .center)
+                .clipped()
+            P2PThreadLastSeenView(thread: thread)
+                .frame(height: canShowLastSeen ? nil : 0)
+                .opacity(canShowLastSeen ? 1 : 0)
+                .scaleEffect(x: canShowLastSeen ? 1 : 0, y: canShowLastSeen ? 1 : 0, anchor: .center)
+                .clipped()
         }
-        .animation(.easeInOut, value: appState.connectionStatus == .connected)
+        .animation(.easeInOut, value: participantsCount)
+        .animation(.easeInOut, value: showSignaling)
+        .animation(.easeInOut, value: showConnectionStatus)
         .animation(.easeInOut, value: title)
-        .animation(.easeInOut, value: viewModel.signalMessageText != nil)
         .onChange(of: viewModel.thread.computedTitle) { newValue in
             title = newValue
         }
@@ -66,10 +74,29 @@ struct ThreadViewCenterToolbar: View {
         .onReceive(participantPublisher) { event in
             onParticipantEvent(event)
         }
+        .onReceive(eventPublisher) { event in
+            onThreadSystemEvent(event)
+        }
         .onAppear {
             participantsCount = viewModel.thread.participantCount
             title = viewModel.thread.computedTitle
         }
+    }
+
+    private var threadTitleButton: some View {
+        Button {
+            appState.objectsContainer.navVM.appendThreadDetail(threadViewModel: viewModel)
+        } label: {
+            Text(title)
+                .font(.iransansBoldBody)
+                .foregroundStyle(Color.App.white)
+                .padding(.horizontal, 48) // for super large titles we need to cut the text the best way for this is add a horizontal padding
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var showConnectionStatus: Bool {
+        appState.connectionStatus != .connected
     }
 
     private func onThreadEvent(_ event: ThreadEventTypes) {
@@ -93,6 +120,44 @@ struct ThreadViewCenterToolbar: View {
             break
         }
     }
+
+    func onThreadSystemEvent(_ event: SystemEventTypes) {
+        switch event {
+        case .systemMessage(let chatResponse):
+            guard let result = chatResponse.result else { return }
+            eventVM.startEventTimer(result)
+        default:
+            break
+        }
+    }
+
+    private var showSignaling: Bool {
+        if showConnectionStatus { return false }
+        return !signalMessageText.isEmpty
+    }
+
+    private var signalMessageText: String {
+        return eventVM.smt?.titleAndIcon?.title ?? ""
+    }
+
+    private var showParticipantCount: Bool {
+        if showConnectionStatus { return false }
+        return !numberOfParticipants.isEmpty
+    }
+
+    private var numberOfParticipants: String {
+        if thread.group == true, let participantsCount = participantsCount?.localNumber(locale: Language.preferredLocale) {
+            let localizedLabel = String(localized: "Thread.Toolbar.participants", bundle: Language.preferedBundle)
+            return "\(localizedLabel) \(participantsCount)"
+        } else {
+            return ""
+        }
+    }
+
+    private var canShowLastSeen: Bool {
+        if showSignaling { return false }
+        return (thread.group == nil || thread.group == false) && thread.type != .selfThread
+    }
 }
 
 struct P2PThreadLastSeenView : View {
@@ -108,14 +173,17 @@ struct P2PThreadLastSeenView : View {
                 if lastSeen.isEmpty && thread.id != LocalId.emptyThread.rawValue {
                     ChatManager.activeInstance?.conversation.participant.get(.init(threadId: thread.id ?? -1))
                 } else {
-                    lastSeen = "General.unknown".bundleLocalized()
+                    let lastSeen = "Contacts.lastSeen.unknown".bundleLocalized()
+                    let localized = "Contacts.lastVisited".bundleLocalized()
+                    let formatted = String(format: localized, lastSeen)
+                    self.lastSeen = formatted
                 }
             }
             .onReceive(NotificationCenter.participant.publisher(for: .participant)) { notif in
                 guard
                     let event = notif.object as? ParticipantEventTypes,
                     case let .participants(response) = event,
-                    let lastSeen = response.result?.first(where: {$0.id == thread.partner})?.notSeenDuration?.localFormattedTime
+                    let lastSeen = response.result?.first(where: {$0.id == thread.partner})?.notSeenDuration?.lastSeenString
                 else { return }
                 let localized = "Contacts.lastVisited".bundleLocalized()
                 let formatted = String(format: localized, lastSeen)

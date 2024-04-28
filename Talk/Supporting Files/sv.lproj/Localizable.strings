@@ -28,7 +28,6 @@
 "General.typeMessageHere" = "Skriv meddelande här...";
 "General.more" = "Mer";
 "General.notSpecified" = "Ej specificerad";
-"General.unknown" = "okänd";
 "General.block" = "Blockera";
 "General.unblock" = "Avblockera";
 "General.blocked" = "Blockerad";
@@ -112,6 +111,9 @@
 "Contacts.createChannel" = "Skapa en kanal";
 "Contacts.addContact" = "Lägg till en kontakt";
 "Contacts.sortLabel" = "Sorterat efter senast besökt tid";
+"Contacts.lastSeen.lately" = "för några ögonblick sedan";
+"Contacts.lastSeen.thisWeek" = "Denna vecka";
+"Contacts.lastSeen.unknown" = "okänd";
 "Contacts.lastVisited" = "Senast besökt %@";
 "Contacts.selectContacts" = "Välj kontakter";
 "Contctas.notFound" = "Kontakten har inte hittats.";

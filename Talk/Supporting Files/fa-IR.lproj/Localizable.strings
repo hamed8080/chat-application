@@ -28,7 +28,6 @@
 "General.typeMessageHere" = "پیام خود را اینجا بنویسید...";
 "General.more" = "بیشتر";
 "General.notSpecified" = "مشخص نشده است";
-"General.unknown" = "نا مشخص";
 "General.block" = "مسدود کردن";
 "General.unblock" = "رفع مسدودی";
 "General.blocked" = "مسدود شده";
@@ -113,6 +112,9 @@
 "Contacts.createChannel" = "ایجاد کانال";
 "Contacts.addContact" = "افزودن مخاطب";
 "Contacts.sortLabel" = "مرتب شده بر اساس آخرین زمان بازدید";
+"Contacts.lastSeen.lately" = "چند لحظه پیش";
+"Contacts.lastSeen.thisWeek" = "در همین هفته";
+"Contacts.lastSeen.unknown" = "نامشخص";
 "Contacts.lastVisited" = "آخرین بازدید %@";
 "Contacts.selectContacts" = "انتخاب مخا‍طبین";
 "Contctas.notFound" = "مخاطب یافت نشد.";
