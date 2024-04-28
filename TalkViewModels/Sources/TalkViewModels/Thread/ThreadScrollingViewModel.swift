@@ -67,6 +67,12 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
+    public func scrollToBottomIfIsAtBottom() async {
+        if await isAtBottomOfTheList {
+            scrollToBottom()
+        }
+    }
+
     /// When user append a new attachment it will scroll above the attachments container if we are showing the last message.
     public func scrollToEmptySpace(animation: Animation? = .easeInOut) async {
         if await isAtBottomOfTheList {

@@ -14,7 +14,8 @@ struct ThreadEmptySpaceView: View {
     @EnvironmentObject var audioRecordingVM: AudioRecordingViewModel
 
     var height: CGFloat {
-        let hasForward = appState.appStateNavigationModel.forwardMessages != nil
+        let isSameThreadForward = viewModel.threadId == appState.appStateNavigationModel.forwardMessageRequest?.threadId
+        let hasForward = appState.appStateNavigationModel.forwardMessages != nil && isSameThreadForward
         let hasReplyPrivately = appState.appStateNavigationModel.replyPrivately != nil
         let replyMessage = viewModel.replyMessage != nil
         let hasEdit = viewModel.sendContainerViewModel.editMessage != nil

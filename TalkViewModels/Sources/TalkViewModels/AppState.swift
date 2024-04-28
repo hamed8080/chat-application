@@ -14,20 +14,6 @@ import ChatCore
 import Combine
 import ChatDTO
 
-struct ForwardCreateConversationRequest: ChatDTO.UniqueIdProtocol {
-    let uniqueId: String
-    let from: Int
-    let messageIds: [Int]
-    let request: CreateThreadRequest
-
-    init(uniqueId: String, from: Int, messageIds: [Int], request: CreateThreadRequest) {
-        self.uniqueId = uniqueId
-        self.from = from
-        self.messageIds = messageIds
-        self.request = request
-    }
-}
-
 /// Properties that can transfer between each navigation page and stay alive unless manually destroyed.
 public struct AppStateNavigationModel {
     public var userToCreateThread: Participant?
@@ -122,7 +108,6 @@ private extension AppState {
         case .threads(let response):
             onGetThreads(response)
         case .created(let response):
-            onForwardCreateConversation(response)
             onCreated(response)
         case .deleted(let response):
             onDeleted(response)
@@ -248,28 +233,13 @@ public extension AppState {
             objectsContainer.navVM.append(thread: conversation)
             appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
         } else if let coreUserId = contact?.user?.coreUserId {
-            openForwardConversation(coreUserId: coreUserId, fromThread: from, messageIds: messageIds)
-        }
-    }
-
-    private func openForwardConversation(coreUserId: Int, fromThread: Int, messageIds: [Int]) {
-        let invitees = [Invitee(id: "\(coreUserId)", idType: .coreUserId)]
-        let req = CreateThreadRequest(invitees: invitees, title: "", type: StrictThreadTypeCreation.p2p.threadType)
-        let request = ForwardCreateConversationRequest(uniqueId: req.uniqueId, from: fromThread, messageIds: messageIds, request: req)
-        RequestsManager.shared.append(prepend: "FORWARD-CREATE-CONVERSATION", value: request)
-        ChatManager.activeInstance?.conversation.create(req)
-    }
-
-    private func onForwardCreateConversation(_ response: ChatResponse<Conversation>) {
-        guard !response.cache,
-              let request = (response.pop(prepend: "FORWARD-CREATE-CONVERSATION") as? ForwardCreateConversationRequest),
-              let conversation = response.result,
-              let destinationConversationId = conversation.id
-        else { return }
-        objectsContainer.navVM.append(thread: conversation)
-        /// We call send forward messages with a little bit of delay because it will get history in the above code and there should not be anything in the queue to forward messages.
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-            self?.appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
+            // Empty conversation
+            let dstId = LocalId.emptyThread.rawValue
+            appStateNavigationModel.userToCreateThread = .init(coreUserId: coreUserId, id: coreUserId)
+            appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: dstId, messageIds: messageIds)
+            let title = "\(contact?.firstName ?? "") \(contact?.lastName ?? "")"
+            let conversation = Conversation(id: dstId, image: contact?.image ?? contact?.user?.image, title: title)
+            objectsContainer.navVM.append(thread: conversation)
         }
     }
 

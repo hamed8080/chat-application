@@ -186,19 +186,34 @@ public final class ThreadSendMessageViewModel: ObservableObject {
         selectVM.clearSelection()
     }
 
-    public func sendForwardMessages() {
-        if let req = navModel.forwardMessageRequest {
-            let model = makeModel()
-            if !model.textMessage.isEmpty {
-                let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: model.textMessage, messageType: .text)
-                ChatManager.activeInstance?.message.send(messageReq)
-            }
-            Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
-                ChatManager.activeInstance?.message.send(req)
-                self?.navModel = .init()
-            }
-            sendAttachmentsMessage()
+    private func sendForwardMessages() {
+        guard let req = navModel.forwardMessageRequest else { return }
+        if viewModel?.isSimulatedThared == true {
+            createAndSend(req)
+        } else {
+            sendForwardMessages(req)
         }
+    }
+
+    private func createAndSend(_ req: ForwardMessageRequest) {
+        send { [weak self] in
+            guard let self = self else {return}
+            let req = ForwardMessageRequest(fromThreadId: req.fromThreadId, threadId: threadId, messageIds: req.messageIds)
+            sendForwardMessages(req)
+        }
+    }
+
+    private func sendForwardMessages(_ req: ForwardMessageRequest) {
+        let model = makeModel()
+        if !model.textMessage.isEmpty {
+            let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: model.textMessage, messageType: .text)
+            ChatManager.activeInstance?.message.send(messageReq)
+        }
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+            ChatManager.activeInstance?.message.send(req)
+            self?.navModel = .init()
+        }
+        sendAttachmentsMessage()
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
@@ -277,7 +292,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func onCreateP2PThread(_ response: ChatResponse<Conversation>) {
-        guard response.pop(prepend: "CREATE-P2P") != nil, let thread = response.result else { return }
+        guard viewModel?.isSimulatedThared == true, response.pop(prepend: "CREATE-P2P") != nil, let thread = response.result else { return }
         self.viewModel?.updateConversation(thread)
         navModel.userToCreateThread = nil
         animateObjectWillChange()

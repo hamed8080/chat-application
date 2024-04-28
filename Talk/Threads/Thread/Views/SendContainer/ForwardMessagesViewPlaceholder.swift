@@ -13,45 +13,74 @@ import TalkModels
 
 struct ForwardMessagesViewPlaceholder: View {
     @EnvironmentObject var viewModel: ThreadViewModel
+    private var model: AppStateNavigationModel { AppState.shared.appStateNavigationModel }
 
     var body: some View {
-        let model = AppState.shared.appStateNavigationModel
-        if viewModel.threadId == model.forwardMessageRequest?.threadId, let forwardMessage = model.forwardMessageRequest {
-            HStack {
-                SendContainerButton(image: "arrow.turn.up.right")
+        HStack {
+            SendContainerButton(image: "arrow.turn.up.right")
 
-                VStack(alignment: .leading, spacing: 0) {
-                    if forwardMessage.messageIds.count == 1, let message = model.forwardMessages?.first {
-                        Text("Thread.forwardTheMessage")
-                            .foregroundStyle(Color.App.accent)
-                            .font(.iransansCaption)
-                        Text(message.message ?? "")
-                            .font(.iransansCaption2)
-                            .foregroundColor(Color.App.textPlaceholder)
-                            .lineLimit(2)
-                    } else {
-                        let localized = String(localized: .init("Thread.forwardMessages"), bundle: Language.preferedBundle)
-                        let localNumber = (model.forwardMessages?.count ?? 0).localNumber(locale: Language.preferredLocale) ?? ""
-                        Text(String(format: localized, localNumber))
-                            .foregroundStyle(Color.App.accent)
-                            .font(.iransansCaption)
-                        let messages = model.forwardMessages?.prefix(4).compactMap({$0.message?.prefix(20)}).joined(separator: ", ")
-                        Text(messages ?? "")
-                            .font(.iransansCaption2)
-                            .foregroundColor(Color.App.textPlaceholder)
-                            .lineLimit(2)
-                    }
+            VStack(alignment: .leading, spacing: 0) {
+                if isSingleForward {
+                    Text("Thread.forwardTheMessage")
+                        .foregroundStyle(Color.App.accent)
+                        .font(.iransansCaption)
+                    Text(singleForwardMessage)
+                        .font(.iransansCaption2)
+                        .foregroundColor(Color.App.textPlaceholder)
+                        .lineLimit(2)
+                } else {
+                    Text(numberOfSelected)
+                        .foregroundStyle(Color.App.accent)
+                        .font(.iransansCaption)
+
+                    Text(splitedMessages)
+                        .font(.iransansCaption2)
+                        .foregroundColor(Color.App.textPlaceholder)
+                        .lineLimit(2)
                 }
-                Spacer()
-                CloseButton {
-                    AppState.shared.appStateNavigationModel = .init()
-                    viewModel.selectedMessagesViewModel.clearSelection()
-                    viewModel.animateObjectWillChange()
-                }
-                .padding(.trailing, 4)
             }
-            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            Spacer()
+            CloseButton {
+                onCloseButtonTapped()
+            }
+            .padding(.trailing, 4)
         }
+        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+        .frame(height: hasAnythingToForward ? nil : 0)
+        .clipped()
+    }
+
+    private func onCloseButtonTapped() {
+        Task {
+            AppState.shared.appStateNavigationModel = .init()
+            viewModel.selectedMessagesViewModel.clearSelection()
+            await viewModel.scrollVM.scrollToBottomIfIsAtBottom()
+            await viewModel.scrollVM.disableExcessiveLoading()
+            viewModel.animateObjectWillChange()
+        }
+    }
+
+    private var numberOfSelected: String {
+        let model = AppState.shared.appStateNavigationModel
+        let localized = String(localized: .init("Thread.forwardMessages"), bundle: Language.preferedBundle)
+        let localNumber = (model.forwardMessages?.count ?? 0).localNumber(locale: Language.preferredLocale) ?? ""
+        return String(format: localized, localNumber)
+    }
+
+    private var splitedMessages: String {
+        return model.forwardMessages?.prefix(4).compactMap({$0.message?.prefix(20)}).joined(separator: ", ") ?? ""
+    }
+
+    private var isSingleForward: Bool {
+        model.forwardMessageRequest?.messageIds.count ?? 0 == 1 && model.forwardMessages?.first != nil
+    }
+
+    private var singleForwardMessage: String {
+        model.forwardMessages?.first?.message ?? ""
+    }
+
+    private var hasAnythingToForward: Bool {
+        viewModel.threadId == model.forwardMessageRequest?.threadId && model.forwardMessageRequest != nil
     }
 }
 

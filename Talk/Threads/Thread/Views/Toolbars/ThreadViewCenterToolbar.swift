@@ -100,15 +100,15 @@ struct P2PThreadLastSeenView : View {
     @State private var lastSeen = ""
 
     var body: some View {
-        let localized = String(localized: .init("Contacts.lastVisited"), bundle: Language.preferedBundle)
-        let formatted = String(format: localized, lastSeen)
-        Text(lastSeen.isEmpty ? "" : formatted)
+        Text(lastSeen)
             .fixedSize()
             .foregroundColor(Color.App.toolbarSecondaryText)
             .font(.iransansFootnote)
             .onAppear {
-                if lastSeen.isEmpty {
+                if lastSeen.isEmpty && thread.id != LocalId.emptyThread.rawValue {
                     ChatManager.activeInstance?.conversation.participant.get(.init(threadId: thread.id ?? -1))
+                } else {
+                    lastSeen = "General.unknown".bundleLocalized()
                 }
             }
             .onReceive(NotificationCenter.participant.publisher(for: .participant)) { notif in
@@ -117,7 +117,9 @@ struct P2PThreadLastSeenView : View {
                     case let .participants(response) = event,
                     let lastSeen = response.result?.first(where: {$0.id == thread.partner})?.notSeenDuration?.localFormattedTime
                 else { return }
-                self.lastSeen = lastSeen
+                let localized = "Contacts.lastVisited".bundleLocalized()
+                let formatted = String(format: localized, lastSeen)
+                self.lastSeen = formatted
             }
     }
 }
