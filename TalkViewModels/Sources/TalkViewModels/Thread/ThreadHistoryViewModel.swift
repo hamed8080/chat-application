@@ -47,8 +47,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1) }
     private var threadId: Int { thread.id ?? -1 }
+    @MainActor private var lastItemIdInSections = 0
     @MainActor public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
-    @MainActor public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.vms.last?.id != thread.lastMessageVO?.id && hasNextBottom }
+    @MainActor public var canLoadMoreBottom: Bool { !bottomLoading && lastItemIdInSections != thread.lastMessageVO?.id && hasNextBottom }
     private var isSimulated: Bool { viewModel?.isSimulatedThared == true }
     public typealias Indices = (message: Message, sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)
 
@@ -503,6 +504,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         topSliceId = flatMap.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
         bottomSliceId = flatMap.suffix(thresholdToLoad).compactMap{$0.id}.first ?? 0
         log("End of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
+        Task { @MainActor in
+            lastItemIdInSections = sections.last?.vms.last?.id ?? 0
+        }
         fetchReactions(messages: messages)
     }
 
@@ -566,7 +570,16 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func fetchReactions(messages: [Message]) {
         if viewModel?.searchedMessagesViewModel.isInSearchMode == false {
             let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
-            ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
+            viewModel?.reactionViewModel.getReactionSummary(messageIds, conversationId: threadId)
+        }
+    }
+
+    internal func updateReactions(reactions: [ReactionInMemoryCopy]) async {
+        for copy in reactions {
+            if let vm = messageViewModel(for: copy.messageId) {
+                await vm.calulateReactions(reactions: copy)
+                vm.animateObjectWillChange()
+            }
         }
     }
 
@@ -600,11 +613,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Event Handlers
-    private func onReactionEvent(_ notification: Notification) {
-        if let messageId = notification.object as? Int, let vm = messageViewModel(for: messageId) {
-            vm.reactionsVM.updateWithDelay()
-        }
-    }
 
     private func onUploadEvents(_ notification: Notification) {
         guard let event = notification.object as? UploadEventTypes else { return }
@@ -1106,12 +1114,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         NotificationCenter.upload.publisher(for: .upload)
             .sink { [weak self] notification in
                 self?.onUploadEvents(notification)
-            }
-            .store(in: &cancelable)
-
-        NotificationCenter.reactionMessageUpdated.publisher(for: .reactionMessageUpdated)
-            .sink { [weak self] notification in
-                self?.onReactionEvent(notification)
             }
             .store(in: &cancelable)
     }

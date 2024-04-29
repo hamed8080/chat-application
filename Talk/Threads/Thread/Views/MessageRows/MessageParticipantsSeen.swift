@@ -43,6 +43,7 @@ struct MessageParticipantsSeen: View {
         .padding(.horizontal, viewModel.isEmpty ? 0 : 6)
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isLoading)
+                .id(UUID())
         }
         .normalToolbarView(title: "SeenParticipants.title", type: MessageParticipantsSeenNavigationValue.self)
         .onAppear {

@@ -20,7 +20,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     @Published public private(set) var mentionList: ContiguousArray<Participant> = .init()
     private var cancelable: Set<AnyCancellable> = []
     private var searchText: String? = nil
-    public var lazyList = LazyListViewModel()
+    @MainActor public var lazyList = LazyListViewModel()
 
     public init() {}
 
@@ -56,6 +56,7 @@ public final class MentionListPickerViewModel: ObservableObject {
         let text = text.replacingOccurrences(of: "\u{200f}", with: "")
         if text.last == "@" {
             // Fetch some data to show if the user typed an @.
+            searchText = nil
             lazyList.reset()
             await getParticipants()
         } else if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {

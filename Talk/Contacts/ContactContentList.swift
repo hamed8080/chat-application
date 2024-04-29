@@ -92,13 +92,14 @@ struct ContactContentList: View {
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .listStyle(.plain)
         .safeAreaInset(edge: .top, spacing: 0) {
            ContactListToolbar()
         }
         .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.isLoading)
+            ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+                .id(UUID())
         }
         .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
             AddOrEditContactView()
@@ -120,13 +121,17 @@ struct ContactContentList: View {
             ConversationBuilder()
                 .environmentObject(builderVM)
                 .onAppear {
-                    builderVM.show(type: type)
+                    Task {
+                        await builderVM.show(type: type)
+                    }
                 }
         }
     }
 
     private func onDismissBuilder() {
-        builderVM.clear()
+        Task {
+            await builderVM.clear()
+        }
     }
 }
 
@@ -187,8 +192,10 @@ struct ContactRowContainer: View {
                 }
             }
             .onAppear {
-                if viewModel.contacts.last == contact {
-                    viewModel.loadMore()
+                Task {
+                    if viewModel.contacts.last == contact {
+                        await viewModel.loadMore()
+                    }
                 }
             }
             .onTapGesture {

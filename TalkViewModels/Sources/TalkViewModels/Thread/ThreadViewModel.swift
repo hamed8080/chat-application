@@ -45,6 +45,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var sendMessageViewModel: ThreadSendMessageViewModel = .init()
     public var participantsColorVM: ParticipantsColorViewModel = .init()
     public var threadPinMessageViewModel: ThreadPinMessageViewModel = .init()
+    public var reactionViewModel: ThreadReactionViewModel = .init()
     public var seenVM: HistorySeenViewModel = .init()
     public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
@@ -92,6 +93,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         selectedMessagesViewModel.setup(viewModel: self)
         uploadMessagesViewModel.setup(viewModel: self)
         exportMessagesViewModel.setup(viewModel: self)
+        reactionViewModel.setup(viewModel: self)
         registerNotifications()
         setAppSettingsModel()
     }

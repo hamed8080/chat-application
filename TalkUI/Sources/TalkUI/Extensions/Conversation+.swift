@@ -5,12 +5,14 @@ import ChatModels
 extension Conversation {
     public typealias MessageIconStatus = (icon: UIImage, fgColor: Color)
     public func messageStatusIcon(currentUserId: Int?) -> MessageIconStatus? {
+        if group == true || type == .selfThread { return nil }
         if !isLastMessageMine(currentUserId: currentUserId) { return nil }
-        if partnerLastSeenMessageId == lastMessageVO?.id {
+        let lastID = lastMessageVO?.id ?? 0
+        if let partnerLastSeenMessageId = partnerLastSeenMessageId, partnerLastSeenMessageId == lastID {
             return (Message.seenImage!, Color.App.accent)
-        } else if partnerLastDeliveredMessageId == lastMessageVO?.id ?? 0 {
-            return (Message.seenImage!, Color.App.textSecondary)
-        } else if lastMessageVO?.id ?? 0 > partnerLastSeenMessageId ?? 0 {
+        } else if let partnerLastDeliveredMessageId = partnerLastDeliveredMessageId, partnerLastDeliveredMessageId == lastID {
+            return (Message.sentImage!, Color.App.textSecondary)
+        } else if lastID > partnerLastSeenMessageId ?? 0 {
             return (Message.sentImage!, Color.App.textSecondary)
         } else { return nil }
     }

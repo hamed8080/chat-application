@@ -42,8 +42,10 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         super.init(isBuilder: true)
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
-            .sink{ [weak self] event in
-                self?.onConversationEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onConversationEvent(event)
+                }
             }
             .store(in: &canceableSet)
 
@@ -63,9 +65,10 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
             .store(in: &canceableSet)
     }
 
-    public func show(type: StrictThreadTypeCreation) {
+    @MainActor
+    public func show(type: StrictThreadTypeCreation) async {
         if contacts.isEmpty {
-            getContacts()
+            await getContacts()
         }
         show = true
         createConversationType = type
@@ -117,9 +120,10 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         ChatManager.activeInstance?.conversation.create(req)
     }
 
-    public func onCreateGroup(_ response: ChatResponse<Conversation>) {
+    @MainActor
+    public func onCreateGroup(_ response: ChatResponse<Conversation>) async {
         if response.pop(prepend: "ConversationBuilder") != nil {
-            clear()
+            await clear()
             if let conversation = response.result {
                 if #available(iOS 17, *) {
                     AppState.shared.showThread(thread: conversation, created: true)
@@ -133,8 +137,9 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         }
     }
 
-    public override func clear() {
-        super.clear()
+    @MainActor
+    public override func clear() async {
+        await super.clear()
         dimissAnResetDismiss()
         resetImageUploading()
         createdConversation = nil
@@ -184,12 +189,12 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         }
     }
 
-    private func onConversationEvent(_ event: ThreadEventTypes?) {
+    private func onConversationEvent(_ event: ThreadEventTypes?) async {
         switch event {
         case .created(let response):
-            onCreateGroup(response)
+            await onCreateGroup(response)
         case .isNameAvailable(let response):
-            onIsNameAvailable(response)
+            await onIsNameAvailable(response)
         default:
             break
         }
@@ -213,7 +218,7 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         }
     }
 
-    private func onIsNameAvailable(_ response: ChatResponse<PublicThreadNameAvailableResponse>) {
+    private func onIsNameAvailable(_ response: ChatResponse<PublicThreadNameAvailableResponse>) async{
         if conversationTitle == response.result?.name {
             self.isPublicNameAvailable = true
         }

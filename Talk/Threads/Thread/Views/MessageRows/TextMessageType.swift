@@ -125,7 +125,6 @@ struct InnerMessage: View {
             }
             Group {
                 ReactionCountView()
-                    .environmentObject(viewModel.reactionsVM)
                 MessageFooterView()
             }
         }
@@ -160,7 +159,8 @@ struct ContextMenuContent: View {
     var body: some View {
         VStack {
             ReactionMenuView()
-                .environmentObject(viewModel.reactionsVM)
+                .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
+                .environmentObject(viewModel)
                 .fixedSize()
             MessageActionMenu()
         }

@@ -81,8 +81,10 @@ struct AddOrEditContactView: View {
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             let title = isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title"
-            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.isLoading) {
-                submit()
+            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.lazyList.isLoading) {
+                Task {
+                    await submit()
+                }
             }
         }
         .presentationDetents([.fraction((isLargeSize ? 100 : 70) / 100)])
@@ -134,12 +136,12 @@ struct AddOrEditContactView: View {
     }
 
     private var enableButton: Bool {
-        !firstName.isEmpty && !contactValue.isEmpty && !viewModel.isLoading
+        !firstName.isEmpty && !contactValue.isEmpty && !viewModel.lazyList.isLoading
     }
 
-    func submit() {
+    func submit() async {
         /// Add or edit use same method.
-        viewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
+        await viewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
     }
 
     func optioanlAPpend(text: String) -> String {

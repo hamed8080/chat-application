@@ -27,6 +27,7 @@ public struct ListLoadingView: View {
                 .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round, miterLimit: 10))
                 .fill(AngularGradient(colors: [color, color.opacity(0.2)], center: .top))
                 .frame(width: isLoading ? 24 : 0, height: isLoading ? 24 : 0)
+                .opacity(isLoading ? 1 : 0)
                 .rotationEffect(Angle(degrees: $isAnimating.wrappedValue ? 360 : 0))
                 .onAppear {
                     DispatchQueue.main.async {
@@ -51,6 +52,7 @@ public struct ListLoadingView: View {
                 }
             Spacer()
         }
+        .disabled(true)
         .onChange(of: isLoading) { newValue in
             if !newValue {
                 timer?.invalidate()

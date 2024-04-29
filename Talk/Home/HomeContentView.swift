@@ -36,7 +36,6 @@ struct HomeContentView: View {
                 .environmentObject(container.userConfigsVM)
                 .environmentObject(container.logVM)
                 .environmentObject(container.audioPlayerVM)
-                .environmentObject(container.reactions)
                 .environmentObject(container.conversationBuilderVM)
                 .environmentObject(container.userProfileImageVM)
         }

@@ -103,3 +103,6 @@ public extension Conversation {
         }
     }
 }
+
+/// It needs to be ObservableObject because when a message is seen deleted... the object needs to update not the whole Thread ViewModel.
+extension Conversation: ObservableObject {}

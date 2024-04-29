@@ -29,11 +29,9 @@ struct LogoutDialogView: View {
 
             HStack {
                 Button {
-                    container.appOverlayVM.dialogView = nil
-                    ChatManager.activeInstance?.user.logOut()
-                    TokenManager.shared.clearToken()
-                    UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
-                    container.reset()
+                    Task {
+                        await onLogoutTapped()
+                    }
                 } label: {
                     Text("Settings.logout")
                         .foregroundStyle(Color.App.accent)
@@ -56,6 +54,14 @@ struct LogoutDialogView: View {
         .frame(maxWidth: 320)
         .padding(EdgeInsets(top: 16, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
+    }
+
+    private func onLogoutTapped() async {
+        container.appOverlayVM.dialogView = nil
+        ChatManager.activeInstance?.user.logOut()
+        TokenManager.shared.clearToken()
+        UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
+        await container.reset()
     }
 }
 

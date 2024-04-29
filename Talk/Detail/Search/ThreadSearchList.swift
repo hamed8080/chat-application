@@ -36,6 +36,7 @@ struct ThreadSearchList: View {
             ZStack {
                 if viewModel.isLoading {
                     ListLoadingView(isLoading: $viewModel.isLoading)
+                        .id(UUID())
                 } else if viewModel.isInSearchMode {
                     Text("General.nothingFound")
                         .font(.iransansTitle)

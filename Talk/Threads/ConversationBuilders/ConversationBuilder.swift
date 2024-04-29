@@ -36,8 +36,10 @@ struct ConversationBuilder: View {
                 ForEach(viewModel.contacts) { contact in
                     BuilderContactRowContainer(contact: contact, isSearchRow: false)
                         .onAppear {
-                            if viewModel.contacts.last == contact {
-                                viewModel.loadMore()
+                            Task {
+                                if viewModel.contacts.last == contact {
+                                    await viewModel.loadMore()
+                                }
                             }
                         }
                 }
@@ -75,6 +77,7 @@ struct ConversationBuilder: View {
         .animation(.easeInOut, value: viewModel.isCreateLoading)
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isCreateLoading)
+                .id(UUID())
         }
         .onAppear {
             /// We use BuilderContactRowContainer view because it is essential to force the ineer contactRow View to show radio buttons.
@@ -86,7 +89,7 @@ struct ConversationBuilder: View {
     }
 
     private var enabeleButton: Bool {
-        viewModel.selectedContacts.count > 1 && !viewModel.isLoading
+        viewModel.selectedContacts.count > 1 && !viewModel.lazyList.isLoading
     }
 }
 
@@ -175,7 +178,8 @@ struct EditCreatedConversationDetail: View {
             }
         }
         .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.isLoading)
+            ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+                .id(UUID())
         }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(sourceType: .photoLibrary) { image, assestResources in
@@ -270,16 +274,20 @@ struct BuilderContactRowContainer: View {
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
             .onAppear {
-                if viewModel.contacts.last == contact {
-                    viewModel.loadMore()
+                Task {
+                    if viewModel.contacts.last == contact {
+                        await viewModel.loadMore()
+                    }
                 }
             }
             .onTapGesture {
-                if viewModel.isInSelectionMode {
-                    viewModel.toggleSelectedContact(contact: contact)
-                } else {
-                    viewModel.clear()
-                    AppState.shared.openThread(contact: contact)
+                Task {
+                    if viewModel.isInSelectionMode {
+                        viewModel.toggleSelectedContact(contact: contact)
+                    } else {
+                        await viewModel.clear()
+                        AppState.shared.openThread(contact: contact)
+                    }
                 }
             }
     }

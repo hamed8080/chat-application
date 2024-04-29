@@ -67,26 +67,28 @@ struct SelectConversationTab: View {
     var body: some View {
         List {
             ForEach(conversations) { conversation in
-                ThreadRow(forceSelected: false, thread: conversation) {
+                ThreadRow(isInForwardMode: true, thread: conversation) {
                     onSelect(conversation, nil)
                     dismiss()
                 }
                 .listRowBackground(Color.App.bgPrimary)
                 .onAppear {
-                    if conversation == conversations.last {
-                        viewModel.loadMore()
+                    Task {
+                        if conversation == conversations.last {
+                            await viewModel.loadMore()
+                        }
                     }
                 }
             }
         }
         .safeAreaInset(edge: .top) {
-            if viewModel.isLoadingConversation {
+            if viewModel.conversationsLazyList.isLoading {
                 SwingLoadingIndicator()
             }
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.conversations.count)
-        .animation(.easeInOut, value: viewModel.isLoadingConversation)
+        .animation(.easeInOut, value: viewModel.conversationsLazyList.isLoading)
     }
 }
 
@@ -106,20 +108,22 @@ struct SelectContactTab: View {
                     }
                     .listRowBackground(Color.App.bgPrimary)
                     .onAppear {
-                        if contact == viewModel.contacts.last {
-                            viewModel.loadMoreContacts()
+                        Task {
+                            if contact == viewModel.contacts.last {
+                                await viewModel.loadMoreContacts()
+                            }
                         }
                     }
             }
         }
         .safeAreaInset(edge: .top) {
-            if viewModel.isLoadingContacts {
+            if viewModel.contactsLazyList.isLoading {
                 SwingLoadingIndicator()
             }
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.contacts.count)
-        .animation(.easeInOut, value: viewModel.isLoadingContacts)
+        .animation(.easeInOut, value: viewModel.contactsLazyList.isLoading)
     }
 }
 

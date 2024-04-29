@@ -26,8 +26,10 @@ struct ThreadContentList: View {
                 .listRowSeparatorTint(Color.App.dividerSecondary)
                 .listRowBackground(ThreadListRowBackground(thread: thread))
                 .onAppear {
-                    if self.threadsVM.threads.last == thread {
-                        threadsVM.loadMore()
+                    Task {
+                        if self.threadsVM.threads.last == thread {
+                            await threadsVM.loadMore()
+                        }
                     }
                 }
             }
@@ -35,22 +37,23 @@ struct ThreadContentList: View {
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: threadsVM.threads.count)
-        .animation(.easeInOut, value: threadsVM.isLoading)
+        .animation(.easeInOut, value: threadsVM.lazyList.isLoading)
         .overlay(ThreadListShimmer().environmentObject(threadsVM.shimmerViewModel))
         .safeAreaInset(edge: .top, spacing: 0) {
             ConversationTopSafeAreaInset()
         }
         .overlay(alignment: .bottom) {
             /// The if below is for shimmer
-            if threadsVM.firstSuccessResponse {
-                ListLoadingView(isLoading: $threadsVM.isLoading)
-            }
+            ListLoadingView(isLoading: .constant(threadsVM.lazyList.isLoading && threadsVM.firstSuccessResponse == true))
+                .id(UUID())
         }
         .sheet(isPresented: sheetBinding) {
             ThreadsSheetFactoryView()
         }
         .refreshable {
-            threadsVM.refresh()            
+            Task {
+                await threadsVM.refresh()
+            }
         }
     }
 }

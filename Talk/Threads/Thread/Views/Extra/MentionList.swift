@@ -23,12 +23,11 @@ struct MentionList: View {
                     mentionParticipantRow(participant)
                 }
 
-                ListLoadingView(isLoading: .constant(viewModel.lazyList.isLoading))
+                ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
                     .listRowSeparator(.hidden)
                     .listRowInsets(.zero)
                     .listRowBackground(Color.clear)
                     .animation(.easeInOut, value: viewModel.lazyList.isLoading)
-                    .frame(height: viewModel.lazyList.isLoading ? 24 : 0)
                     .id(-3)
             }
             .listStyle(.plain)

@@ -10,12 +10,14 @@ import Combine
 
 @MainActor
 public class LazyListViewModel: ObservableObject {
-    @Published public private(set) var isLoading: Bool = false
-    public var count: Int = 15
-    public var offset: Int = 0
+    @Published public var isLoading: Bool = false
+    public let count: Int
+    public private(set) var offset: Int = 0
     private var hasNext = true
 
-    nonisolated public init() {}
+    public init(count: Int = 15) {
+        self.count = count
+    }
 
     public func setLoading(_ value: Bool) {
         isLoading = value

@@ -81,8 +81,10 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showLoginSheet) {
             LoginNavigationContainerView {
-                container.reset()
-                showLoginSheet.toggle()
+                Task {
+                    await container.reset()
+                    showLoginSheet.toggle()
+                }
             }
         }
     }

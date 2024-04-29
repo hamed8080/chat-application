@@ -14,10 +14,9 @@ import TalkModels
 import ActionableContextMenu
 
 struct ThreadRow: View {
-    /// It is essential in the case of forwarding. We don't want to highlight the row in forwarding mode.
-    var forceSelected: Bool?
     @State private var isSelected: Bool = false
     @EnvironmentObject var viewModel: ThreadsViewModel
+    var isInForwardMode: Bool?
     var thread: Conversation
     let onTap: (() -> Void)?
     private var searchVM: ThreadsSearchViewModel { AppState.shared.objectsContainer.searchVM }
@@ -64,10 +63,12 @@ struct ThreadRow: View {
                     SecondaryMessageView(isSelected: isSelected, thread: thread)
                         .environmentObject(viewModel.threadEventModels.first{$0.threadId == thread.id} ?? .init(threadId: thread.id ?? 0))
                     Spacer()
-                    ThreadUnreadCount(isSelected: isSelected)
-                        .environmentObject(thread)
-                    ThreadMentionSign()
-                        .environmentObject(thread)
+                    if isInForwardMode == nil {
+                        ThreadMentionSign()
+                            .environmentObject(thread)
+                        ThreadUnreadCount(isSelected: isSelected)
+                            .environmentObject(thread)
+                    }
                 }
             }
             .contentShape(Rectangle())
@@ -89,7 +90,8 @@ struct ThreadRow: View {
         .customContextMenu(
             id: thread.id,
             self: ThreadRowSelfContextMenu(thread: thread, viewModel: viewModel),
-            addedX: 8
+            addedX: 8,
+            disable: isInForwardMode == true
         ) {
             onTap?()
         } menus: {
@@ -104,7 +106,7 @@ struct ThreadRow: View {
 
     private func setSelection() {
         if AppState.shared.objectsContainer.navVM.selectedId == thread.id {
-            isSelected = forceSelected ?? (AppState.shared.objectsContainer.navVM.selectedId == thread.id)
+            isSelected = isInForwardMode == true ? false : (AppState.shared.objectsContainer.navVM.selectedId == thread.id)
         } else if isSelected == true {
             isSelected = false
         }

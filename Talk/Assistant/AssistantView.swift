@@ -105,8 +105,10 @@ struct PickAssitstantListView: View {
                                 viewModel.showAddAssistantSheet = false
                             }
                             .onAppear {
-                                if contactsVM.contacts.last == contact {
-                                    contactsVM.loadMore()
+                                Task {
+                                    if contactsVM.contacts.last == contact {
+                                        await contactsVM.loadMore()
+                                    }
                                 }
                             }
                     }

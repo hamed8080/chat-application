@@ -42,6 +42,7 @@ struct ThreadView: View, DropDelegate {
                     UITableViewHeaderFooterView.appearance().backgroundView = UIView()
                 }
         }
+        .environmentObject(viewModel.reactionViewModel)
         .simultaneousGesture(tap.simultaneously(with: drag))
         .navigationBarBackButtonHidden(true)
         .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))

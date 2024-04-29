@@ -20,40 +20,41 @@ public final class ThreadsSearchViewModel: ObservableObject {
     @Published public var searchedConversations: ContiguousArray<Conversation> = []
     @Published public var searchedContacts: ContiguousArray<Contact> = []
     @Published public var searchText: String = ""
-    private var count = 15
-    private var offset = 0
     private var cancelable: Set<AnyCancellable> = []
-    private(set) var hasNext: Bool = true
-    public var isLoading = false
-    private var canLoadMore: Bool { hasNext && !isLoading }
     @Published public var selectedFilterThreadType: ThreadTypes?
     @Published public var showUnreadConversations: Bool? = nil
     private var cachedAttribute: [String: AttributedString] = [:]
     public var isInSearchMode: Bool { searchText.count > 0 || (!searchedConversations.isEmpty || !searchedContacts.isEmpty) }
+    @MainActor public private(set) var lazyList = LazyListViewModel()
 
     public init() {
+        Task {
+            await setupObservers()
+        }
+    }
+
+    @MainActor
+    private func setupObservers() async {
+        lazyList.objectWillChange.sink { [weak self] _ in
+            self?.animateObjectWillChange()
+        }
+        .store(in: &cancelable)
+
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
-            .sink{ [weak self] event in
-                self?.onThreadEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onThreadEvent(event)
+                }
             }
             .store(in: &cancelable)
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .removeDuplicates()
-            .sink { [weak self] newValue in
-                if newValue.first == "@", newValue.count > 2 {
-                    self?.reset()
-                    let startIndex = newValue.index(newValue.startIndex, offsetBy: 1)
-                    let newString = newValue[startIndex..<newValue.endIndex]
-                    self?.searchPublicThreads(String(newString))
-                } else if newValue.first != "@" && !newValue.isEmpty {
-                    self?.reset()
-                    self?.searchThreads(newValue, new: self?.showUnreadConversations)
-                    self?.searchContacts(newValue)
-                } else if newValue.count == 0, self?.hasNext == false {
-                    self?.reset()
+            .sink { newValue in
+                Task { [weak self] in
+                    await self?.onSearchTextChanged(newValue)
                 }
             }
             .store(in: &cancelable)
@@ -71,30 +72,54 @@ public final class ThreadsSearchViewModel: ObservableObject {
             }
             .store(in: &cancelable)
 
-        $showUnreadConversations.sink { [weak self] newValue in
-            if (self?.showUnreadConversations ?? false) == newValue { return } // when the user taps on the close button on the toolbar
-            if newValue == true {
-                self?.getUnreadConversations()
-            } else if newValue == false {
-                self?.resetUnreadConversations()
+        $showUnreadConversations.sink { newValue in
+            Task { [weak self] in
+                await self?.onUnreadConversationToggled(newValue)
             }
         }
         .store(in: &cancelable)
     }
 
-    public func loadMore() {
-        if !canLoadMore { return }
-        offset = count + offset
-        searchThreads(searchText, new: showUnreadConversations, loadMore: true)
+    @MainActor
+    private func onSearchTextChanged(_ newValue: String) async {
+        if newValue.first == "@", newValue.count > 2 {
+            await reset()
+            let startIndex = newValue.index(newValue.startIndex, offsetBy: 1)
+            let newString = newValue[startIndex..<newValue.endIndex]
+            await searchPublicThreads(String(newString))
+        } else if newValue.first != "@" && !newValue.isEmpty {
+            await reset()
+            await searchThreads(newValue, new: showUnreadConversations)
+            searchContacts(newValue)
+        } else if newValue.count == 0, await !lazyList.canLoadMore() {
+            await reset()
+        }
     }
 
-    private func onThreadEvent(_ event: ThreadEventTypes?) {
+    @MainActor
+    private func onUnreadConversationToggled(_ newValue: Bool?) async {
+        if (showUnreadConversations ?? false) == newValue { return } // when the user taps on the close button on the toolbar
+        if newValue == true {
+            await getUnreadConversations()
+        } else if newValue == false {
+            await resetUnreadConversations()
+        }
+    }
+
+    @MainActor
+    public func loadMore() async {
+        if await !lazyList.canLoadMore() { return }
+        lazyList.prepareForLoadMore()
+        await searchThreads(searchText, new: showUnreadConversations, loadMore: true)
+    }
+
+    private func onThreadEvent(_ event: ThreadEventTypes?) async {
         switch event {
         case .threads(let response):
-            setHasNextOnResponse(response)
-            onPublicThreadSearch(response)
-            onSearch(response)
-            onSearchLoadMore(response)
+            await setHasNextOnResponse(response)
+            await onPublicThreadSearch(response)
+            await onSearch(response)
+            await onSearchLoadMore(response)
         default:
             break
         }
@@ -109,46 +134,52 @@ public final class ThreadsSearchViewModel: ObservableObject {
         }
     }
 
-    private func searchThreads(_ text: String, new: Bool? = nil, loadMore: Bool = false) {
-        if !canLoadMore { return }
-        isLoading = true
-        let req = ThreadsRequest(searchText: text, count: count, offset: offset, new: new)
+    @MainActor
+    private func searchThreads(_ text: String, new: Bool? = nil, loadMore: Bool = false) async {
+        if await !lazyList.canLoadMore() { return }
+        lazyList.setLoading(true)
+        let req = ThreadsRequest(searchText: text, count: lazyList.count, offset: lazyList.offset, new: new)
         RequestsManager.shared.append(prepend: loadMore ? "SEARCH-LOAD-MORE" : "SEARCH", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    private func searchPublicThreads(_ text: String) {
-        if !canLoadMore { return }
-        isLoading = true
-        let req = ThreadsRequest(count: count, offset: offset, name: text, type: .publicGroup)
+    @MainActor
+    private func searchPublicThreads(_ text: String) async {
+        if await !lazyList.canLoadMore() { return }
+        lazyList.setLoading(true)
+        let req = ThreadsRequest(count: lazyList.count, offset: lazyList.offset, name: text, type: .publicGroup)
         RequestsManager.shared.append(prepend: "SEARCH-PUBLIC-THREAD", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    private func onSearch(_ response: ChatResponse<[Conversation]>) {
-        isLoading = false
+    @MainActor
+    private func onSearch(_ response: ChatResponse<[Conversation]>) async {
+        lazyList.setLoading(false)
         if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
 
-    private func onSearchLoadMore(_ response: ChatResponse<[Conversation]>) {
-        isLoading = false
+    @MainActor
+    private func onSearchLoadMore(_ response: ChatResponse<[Conversation]>) async {
+        lazyList.setLoading(false)
         if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-LOAD-MORE") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
 
-    private func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
-        isLoading = false
+    @MainActor
+    private func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) async {
+        lazyList.setLoading(false)
         if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-PUBLIC-THREAD") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
 
-    private func setHasNextOnResponse(_ response: ChatResponse<[Conversation]>) {
+    @MainActor
+    private func setHasNextOnResponse(_ response: ChatResponse<[Conversation]>) async {
         if !response.cache, response.result?.count ?? 0 > 0 {
-            hasNext = response.hasNext
+            lazyList.setHasNext(response.hasNext)
         }
     }
 
@@ -179,30 +210,32 @@ public final class ThreadsSearchViewModel: ObservableObject {
         }
     }
 
-    public func closedSearchUI() {
-        reset()
+    @MainActor
+    public func closedSearchUI() async {
+        await reset()
         searchText = ""
         showUnreadConversations = false
     }
 
-    public func reset() {
-        isLoading = false
-        hasNext = true
+    @MainActor
+    public func reset() async {
+        lazyList.reset()
         searchedConversations.removeAll()
         searchedContacts.removeAll()
         cachedAttribute.removeAll()
-        offset = 0
     }
 
-    private func getUnreadConversations() {
-        reset()
-        searchThreads(searchText, new: true)
+    @MainActor
+    private func getUnreadConversations() async {
+        await reset()
+        await searchThreads(searchText, new: true)
         searchContacts(searchText)
     }
 
-    private func resetUnreadConversations() {
-        reset()
-        searchThreads(searchText, new: nil)
+    @MainActor
+    private func resetUnreadConversations() async {
+        await reset()
+        await searchThreads(searchText, new: nil)
         searchContacts(searchText)
     }
 
@@ -223,9 +256,11 @@ public final class ThreadsSearchViewModel: ObservableObject {
     }
 
     private func onCancelTimer(key: String) {
-        if isLoading {
-            isLoading = false
-            animateObjectWillChange()
+        Task { @MainActor in
+            if lazyList.isLoading {
+                lazyList.setLoading(false)
+                animateObjectWillChange()
+            }
         }
     }
 }

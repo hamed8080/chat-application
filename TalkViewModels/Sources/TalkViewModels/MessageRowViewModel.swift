@@ -33,7 +33,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var markdownTitle = AttributedString()
     public var timeString: String = ""
     public static var avatarSize: CGFloat = 37
-    public var reactionsVM: MessageReactionsViewModel
+    public var reactionsModel: ReactionRowsCalculated
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     public var message: Message
@@ -111,8 +111,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        reactionsVM = MessageReactionsViewModel()
-        reactionsVM.viewModel = self
+        reactionsModel = .init(rows: [], topPadding: 0)
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
             isMe = true
@@ -554,8 +553,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             self.downloadFileVM = DownloadFileViewModel(message: message)
         }
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        reactionsVM = MessageReactionsViewModel()
-        reactionsVM.viewModel = self
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
             isMe = true
@@ -564,6 +561,34 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         width = nil
         height = nil
         registerObservers()
+    }
+
+
+    public func calulateReactions(reactions: ReactionInMemoryCopy) async {
+        var rows: [ReactionRowsCalculated.Row] = []
+        reactions.summary.forEach { summary in
+            let countText = summary.count?.localNumber(locale: Language.preferredLocale) ?? ""
+            let emoji = summary.sticker?.emoji ?? ""
+            let isMyReaction = reactions.currentUserReaction?.reaction?.rawValue == summary.sticker?.rawValue
+            let hasCount = summary.count ?? -1 > 0
+            let edgeInset = EdgeInsets(top: hasCount ? 6 : 0,
+                                       leading: hasCount ? 8 : 0,
+                                       bottom: hasCount ? 6 : 0,
+                                       trailing: hasCount ? 8 : 0)
+            let selectedEmojiTabId = "\(summary.sticker?.emoji ?? "all") \(countText)"
+            rows.append(.init(reactionId: summary.id,
+                              edgeInset: edgeInset,
+                              sticker: summary.sticker,
+                              emoji: emoji,
+                              countText: countText,
+                              isMyReaction: isMyReaction,
+                              hasReaction: hasCount,
+                              selectedEmojiTabId: selectedEmojiTabId))
+        }
+
+        let topPadding: CGFloat = reactions.summary.count > 0 ? 10 : 0
+        let myReactionSticker = reactions.currentUserReaction?.reaction
+        self.reactionsModel = .init(rows: rows, topPadding: topPadding, myReactionSticker: myReactionSticker)
     }
 
     deinit {

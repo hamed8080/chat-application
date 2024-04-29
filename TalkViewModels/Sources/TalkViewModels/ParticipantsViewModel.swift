@@ -17,11 +17,7 @@ import ChatCore
 public final class ParticipantsViewModel: ObservableObject {
     private weak var viewModel: ThreadViewModel?
     public var thread: Conversation? { viewModel?.thread }
-    private var hasNext = true
-    private var count = 15
-    private var offset = 0
     private(set) var firstSuccessResponse = false
-    @Published public var isLoading = false
     @Published public private(set) var participants: [Participant] = []
     @Published public private(set) var searchedParticipants: [Participant] = []
     @Published public var searchText: String = ""
@@ -29,6 +25,7 @@ public final class ParticipantsViewModel: ObservableObject {
     private var cancelable: Set<AnyCancellable> = []
     private var timerRequestQueue: Timer?
     private var lastRequestTime = Date()
+    @MainActor public private(set) var lazyList = LazyListViewModel()
 
     public init() {}
 
@@ -57,11 +54,13 @@ public final class ParticipantsViewModel: ObservableObject {
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
-            .sink { [weak self] searchText in
-                if searchText.count >= 2 {
-                    self?.searchParticipants(searchText.lowercased())
-                } else {
-                    self?.searchedParticipants.removeAll()
+            .sink { searchText in
+                Task { [weak self] in
+                    if searchText.count >= 2 {
+                        await self?.searchParticipants(searchText.lowercased())
+                    } else {
+                        self?.searchedParticipants.removeAll()
+                    }
                 }
             }
             .store(in: &cancelable)
@@ -71,8 +70,10 @@ public final class ParticipantsViewModel: ObservableObject {
     private func onParticipantEvent(_ event: ParticipantEventTypes) {
         switch event {
         case .participants(let chatResponse):
-            onParticipants(chatResponse)
-            onSearchedParticipants(chatResponse)
+            Task {
+                await onParticipants(chatResponse)
+                await onSearchedParticipants(chatResponse)
+            }
         case .deleted(let chatResponse):
             onDelete(chatResponse)
         case .setAdminRoleToUser(let response):
@@ -113,31 +114,33 @@ public final class ParticipantsViewModel: ObservableObject {
         }
     }
 
-    public func getParticipants() {
+    public func getParticipants() async {
         if lastRequestTime + 0.5 > .now {
             timerRequestQueue?.invalidate()
             timerRequestQueue = nil
-            timerRequestQueue = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-                self?.loadByTimerQueue()
+            timerRequestQueue = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                Task { [weak self] in
+                    await self?.loadByTimerQueue()
+                }
             }
             return
         }
         lastRequestTime = Date()
-        isLoading = true
-        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: offset, count: count)
+        await lazyList.setLoading(true)
+        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: await lazyList.offset, count: await lazyList.count)
         RequestsManager.shared.append(prepend: "Load-Participants", value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
-    private func loadByTimerQueue() {
-        isLoading = true
-        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: offset, count: count)
+    private func loadByTimerQueue() async {
+        await lazyList.setLoading(true)        
+        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: await lazyList.offset, count: await lazyList.count)
         RequestsManager.shared.append(prepend: "Load-Participants", value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
-    public func searchParticipants(_ searchText: String) {
-        isLoading = true
+    private func searchParticipants(_ searchText: String) async {
+        await lazyList.setLoading(true)
         var req = ThreadParticipantRequest(threadId: thread?.id ?? -1)
         switch searchType {
         case .name:
@@ -158,40 +161,40 @@ public final class ParticipantsViewModel: ObservableObject {
         participants.sorted(by: { ($0.auditor ?? false && !($1.auditor ?? false)) || (($0.admin ?? false) && !($1.admin ?? false)) })
     }
 
-    public func loadMore() {
-        if !hasNext || isLoading { return }
-        preparePaginiation()
-        getParticipants()
+    public func loadMore() async {
+        if await !lazyList.canLoadMore() { return }
+        await lazyList.prepareForLoadMore()
+        await getParticipants()
     }
 
-    public func onParticipants(_ response: ChatResponse<[Participant]>) {
+    @MainActor
+    public func onParticipants(_ response: ChatResponse<[Participant]>) async {
         // FIXME: This bug should be fixed in the caching system as described in the text below.
         /// If we remove this line due to a bug in the Cache, we will get an incorrect participants list.
         /// For example, after a user leaves a thread, if the user updates their getHistory, the left participant will be shown in the list, which is incorrect.
         if !response.cache, response.pop(prepend: "Load-Participants") != nil, let participants = response.result, response.subjectId == thread?.id {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
-            hasNext = response.hasNext
+            lazyList.setHasNext(response.hasNext)
         }
-        isLoading = false
+        lazyList.setLoading(false)
     }
 
-    public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) {
+    public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) async {
         if !response.cache, response.pop(prepend: "SearchParticipants") != nil, let participants = response.result {
             searchedParticipants.removeAll()
             searchedParticipants.append(contentsOf: participants)
         }
-        isLoading = false
+        await lazyList.setLoading(false)
     }
 
-    public func refresh() {
-        clear()
-        getParticipants()
+    public func refresh() async {
+        await clear()
+        await getParticipants()
     }
 
-    public func clear() {
-        offset = 0
-        count = 15
+    public func clear() async {
+        await lazyList.reset()
         participants = []
     }
 
@@ -212,10 +215,6 @@ public final class ParticipantsViewModel: ObservableObject {
         guard let id = participant.id, let threadId = thread?.id else { return }
         ChatManager.activeInstance?.user.remove(RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId))
 //        ChatManager.activeInstance?.conversation.participant.removeAdminRole(.init(participants: [.init(id: "\(participant.coreUserId ?? 0)", idType: .coreUserId)], conversationId: threadId))
-    }
-
-    public func preparePaginiation() {
-        offset = participants.count
     }
 
     public func appendParticipants(participants: [Participant]) {

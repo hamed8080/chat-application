@@ -17,39 +17,32 @@ import TalkExtensions
 import OSLog
 import Logger
 
-/// It needs to be ObservableObject because when a message is seen deleted... the object needs to update not the whole Thread ViewModel.
-extension Conversation: ObservableObject {}
 public final class ThreadsViewModel: ObservableObject {
-    public var isLoading = false
     public var threads: ContiguousArray<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
     @Published public var sheetType: ThreadsSheetType?
     public var cancelable: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
-    public private(set) var count = 15
-    public private(set) var offset = 0
-    private(set) var hasNext: Bool = true
     public var selectedThraed: Conversation?
-    private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
     public var serverSortedPins: [Int] = []
     public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
     public var threadEventModels: [ThreadEventViewModel] = []
     private var cache: Bool = true
     var isInCacheMode = false
+    private var isSilentClear = false
+    @MainActor public private(set) var lazyList = LazyListViewModel()
 
     public init() {
-        AppState.shared.$connectionStatus
-            .sink{ [weak self] event in
-                self?.onConnectionStatusChanged(event)
-            }
-            .store(in: &cancelable)
-        registerNotifications()
+        Task {
+            await setupObservers()
+        }
     }
 
+    @MainActor
     func onCreate(_ response: ChatResponse<Conversation>) async {
-        isLoading = false
+        lazyList.setLoading(false)
         if let thread = response.result {
             await appendThreads(threads: [thread])
             await asyncAnimateObjectWillChange()
@@ -91,37 +84,42 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
+    public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) async {
         if firstSuccessResponse == false, status == .connected {
-           refresh()
+           await refresh()
         } else if status == .connected, firstSuccessResponse == true {
             // After connecting again
             // We should call this method because if the token expire all the data inside InMemory Cache of the SDK is invalid
-            refresh()
+            await refresh()
         } else if status == .disconnected && !firstSuccessResponse {
             // To get the cached version of the threads in SQLITE.
-            getThreads()
+            await getThreads()
         }
     }
 
-    public func getThreads() {
+    @MainActor
+    public func getThreads() async {
         if !firstSuccessResponse {
             shimmerViewModel.show()
         }
-        isLoading = true
-        animateObjectWillChange()
-        let req = ThreadsRequest(count: count, offset: offset, cache: cache)
+        lazyList.setLoading(true)
+        let req = ThreadsRequest(count: lazyList.count, offset: lazyList.offset, cache: cache)
         RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    public func loadMore() {
-        if !canLoadMore { return }
-        preparePaginiation()
-        getThreads()
+    @MainActor
+    public func loadMore() async {
+        if await !lazyList.canLoadMore() { return }
+        lazyList.prepareForLoadMore()
+        await getThreads()
     }
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) async {
+        if isSilentClear {
+            threads.removeAll()
+            isSilentClear = false
+        }
         let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil})
         let pinThreads = response.result?.filter({$0.pin == true})
         let hasAnyResults = response.result?.count ?? 0 > 0
@@ -135,10 +133,10 @@ public final class ThreadsViewModel: ObservableObject {
         updatePresentedViewModels(response.result ?? [])
         await MainActor.run {
             if hasAnyResults {
-                hasNext = response.hasNext
+                lazyList.setHasNext(response.hasNext)
                 firstSuccessResponse = true
             }
-            isLoading = false
+            lazyList.setLoading(false)
 
             if firstSuccessResponse {
                 shimmerViewModel.hide()
@@ -155,27 +153,27 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) async {        
+    public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) async {
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
             await appendThreads(threads: threads)
             await asyncAnimateObjectWillChange()
         }
     }
 
-    public func refresh() {
+    public func refresh() async {
         cache = false
-        clear()
-        getThreads()
+        await silenClear()
+        await getThreads()
         cache = true
     }
 
     /// Create a thread and send a message without adding a contact.
-    public func fastMessage(_ invitee: Invitee, _ message: String) {
-        isLoading = true
+    @MainActor
+    public func fastMessage(_ invitee: Invitee, _ message: String) async {
         let messageREQ = CreateThreadMessage(text: message, messageType: .text)
         let req = CreateThreadWithMessage(invitees: [invitee], title: "", type: StrictThreadTypeCreation.p2p.threadType, message: messageREQ)
         ChatManager.activeInstance?.conversation.create(req)
-        animateObjectWillChange()
+        lazyList.setLoading(true)
     }
 
     public func searchInsideAllThreads(text _: String) {
@@ -200,13 +198,13 @@ public final class ThreadsViewModel: ObservableObject {
         sheetType = .addParticipant
     }
 
-    public func addParticipantsToThread(_ contacts: ContiguousArray<Contact>) {
-        isLoading = true
+    @MainActor
+    public func addParticipantsToThread(_ contacts: ContiguousArray<Contact>) async {
         guard let threadId = selectedThraed?.id else { return }
         let contactIds = contacts.compactMap(\.id)
-        let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)        
+        let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
         ChatManager.activeInstance?.conversation.participant.add(req)
-        animateObjectWillChange()
+        lazyList.setLoading(true)
     }
 
     func onAddPrticipant(_ response: ChatResponse<Conversation>) async {
@@ -214,26 +212,20 @@ public final class ThreadsViewModel: ObservableObject {
             /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
             await appendThreads(threads: [newConversation])
         }
-        isLoading = false
-        await asyncAnimateObjectWillChange()
+        await lazyList.setLoading(false)
     }
 
-    func onDeletePrticipant(_ response: ChatResponse<[Participant]>) {
+    func onDeletePrticipant(_ response: ChatResponse<[Participant]>) async {
         if let index = firstIndex(response.subjectId) {
             threads[index].participantCount = max(0, (threads[index].participantCount ?? 0) - 1)
             animateObjectWillChange()
         }
-        isLoading = false
-        animateObjectWillChange()
+        await lazyList.setLoading(false)
     }
 
     public func showAddThreadToTag(_ thread: Conversation) {
         selectedThraed = thread
         sheetType = .tagManagement
-    }
-
-    public func preparePaginiation() {
-        offset = count + offset
     }
 
     public func appendThreads(threads: [Conversation]) async {
@@ -264,13 +256,22 @@ public final class ThreadsViewModel: ObservableObject {
         })
     }
 
-    public func clear() {
+    @MainActor
+    public func clear() async {
         isInCacheMode = false
-        hasNext = false
-        offset = 0
-        count = 15
+        lazyList.reset()
         threads = []
         firstSuccessResponse = false
+        animateObjectWillChange()
+    }
+
+    @MainActor
+    public func silenClear() async {
+        if firstSuccessResponse {
+            isSilentClear = true
+        }
+        isInCacheMode = false
+        lazyList.reset()
         animateObjectWillChange()
     }
 
@@ -343,14 +344,14 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.conversation.unreadCount(.init(threadIds: threadsIds))
     }
 
-    func onUnreadCounts(_ response: ChatResponse<[String : Int]>) {
+    @MainActor
+    func onUnreadCounts(_ response: ChatResponse<[String : Int]>) async {
         response.result?.forEach { key, value in
             if let index = firstIndex(Int(key)) {
                 threads[index].unreadCount = value
             }
         }
-        isLoading = false
-        animateObjectWillChange()
+        lazyList.setLoading(false)
     }
 
     public func updateThreadInfo(_ thread: Conversation) {
@@ -398,9 +399,10 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onCancelTimer(key: String) {
-        if isLoading {
-            isLoading = false
-            animateObjectWillChange()
+        Task { @MainActor in
+            if lazyList.isLoading {
+                lazyList.setLoading(false)
+            }
         }
     }
 

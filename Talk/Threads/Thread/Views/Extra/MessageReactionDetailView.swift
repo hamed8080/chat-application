@@ -77,6 +77,7 @@ struct ParticiapntsPageSticker: View {
     private let messageId: Int
     private let conversationId: Int
     @State var viewHasAppeared = false
+    @EnvironmentObject var viewModel: ThreadReactionViewModel
 
     init(sticker: Sticker?, reactions: [Reaction] = [], messageId: Int, conversationId: Int) {
         self.sticker = sticker
@@ -92,7 +93,7 @@ struct ParticiapntsPageSticker: View {
                     .listRowBackground(Color.App.bgPrimary)
                     .onAppear {
                         if reactions.last == reaction {
-                            ReactionViewModel.shared.getDetail(for: messageId,
+                            viewModel.getDetail(for: messageId,
                                                                offset: reactions.count,
                                                                conversationId: conversationId,
                                                                sticker: sticker
@@ -105,7 +106,7 @@ struct ParticiapntsPageSticker: View {
         .onAppear {
             if !viewHasAppeared {
                 viewHasAppeared = true
-                ReactionViewModel.shared.getDetail(for: messageId,
+                viewModel.getDetail(for: messageId,
                                                    offset: reactions.count,
                                                    conversationId: conversationId,
                                                    sticker: sticker

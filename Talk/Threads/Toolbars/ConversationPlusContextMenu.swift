@@ -102,7 +102,9 @@ struct ConversationPlusContextMenu: View {
     }
 
     private func onDismissBuilder() {
-        builderVM.clear()
+        Task {
+            await builderVM.clear()
+        }
     }
 }
 

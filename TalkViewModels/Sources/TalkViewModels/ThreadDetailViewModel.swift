@@ -45,7 +45,9 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         setupEditConversationViewModel()
 
         registerObservers()
-        fetchPartnerParticipant()
+        Task {
+            await fetchPartnerParticipant()
+        }
     }
 
     private func onThreadEvent(_ event: ThreadEventTypes) {
@@ -171,10 +173,10 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
 
     /// When the thread is a P2P thread and member tab is hidden so getParticipants won't get called.
     /// We have to call it manually and observe for changes, and make the participantDetailViewModel and then update the UI.
-    public func fetchPartnerParticipant() {
+    public func fetchPartnerParticipant() async {
         guard thread?.group == false, let participantsVM = threadVM?.participantsViewModel else { return }
         if participantsVM.participants.isEmpty == true {
-            participantsVM.getParticipants()
+            await participantsVM.getParticipants()
         }
         participantsVM.objectWillChange.sink { [weak self] _ in
             guard let self = self else { return }

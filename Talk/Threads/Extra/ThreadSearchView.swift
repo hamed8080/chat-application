@@ -31,8 +31,10 @@ struct ThreadSearchView: View {
                     .listRowSeparatorTint(Color.App.dividerSecondary)
                     .listRowBackground(thread.pin == true ? Color.App.bgSecondary : Color.App.bgPrimary)
                     .onAppear {
-                        if self.viewModel.searchedConversations.last == thread {
-                            viewModel.loadMore()
+                        Task {
+                            if self.viewModel.searchedConversations.last == thread {
+                                await viewModel.loadMore()
+                            }
                         }
                     }
                 }

@@ -25,7 +25,9 @@ struct StartThreadContactPickerView: View {
                         ConversationBuilder()
                             .navigationBarBackButtonHidden(true)
                             .onAppear {
-                                viewModel.show(type: .privateGroup)
+                                Task {
+                                    await viewModel.show(type: .privateGroup)
+                                }
                             }
 
                     } label: {
@@ -39,7 +41,9 @@ struct StartThreadContactPickerView: View {
                         ConversationBuilder()
                             .navigationBarBackButtonHidden(true)
                             .onAppear {
-                                viewModel.show(type: .privateChannel)
+                                Task {
+                                    await viewModel.show(type: .privateChannel)
+                                }
                             }
                     } label: {
                         Label("Contacts.createChannel", systemImage: "megaphone")
@@ -75,23 +79,26 @@ struct StartThreadContactPickerView: View {
                 .background(.ultraThinMaterial)
             }
             .overlay(alignment: .bottom) {
-                ListLoadingView(isLoading: $viewModel.isLoading)
+                ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+                    .id(UUID())
             }
         }
         .environmentObject(viewModel)
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .onChange(of: viewModel.dismiss) { newValue in
             if newValue == true {
                 dismiss()
             }
         }
         .onAppear {
-            viewModel.dismiss = false
-            if viewModel.contacts.isEmpty {
-                viewModel.getContacts()
+            Task {
+                viewModel.dismiss = false
+                if viewModel.contacts.isEmpty {
+                    await viewModel.getContacts()
+                }
             }
         }
     }

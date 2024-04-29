@@ -39,12 +39,14 @@ struct MemberView: View {
         .animation(.easeInOut, value: viewModel.participants.count)
         .animation(.easeInOut, value: viewModel.searchedParticipants.count)
         .animation(.easeInOut, value: viewModel.searchText)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .ignoresSafeArea(.all)
         .padding(.bottom)
         .onAppear {
             if viewModel.participants.count == 0 {
-                viewModel.getParticipants()
+                Task {
+                    await viewModel.getParticipants()
+                }
             }
         }
     }
@@ -76,7 +78,9 @@ struct ParticipantRowContainer: View {
             }
             .onAppear {
                 if viewModel.participants.last == participant {
-                    viewModel.loadMore()
+                    Task {
+                        await viewModel.loadMore()
+                    }
                 }
             }
             .onTapGesture {

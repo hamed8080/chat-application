@@ -28,8 +28,10 @@ struct AddParticipantsToThreadView: View {
                     ContactRowContainer(isSearchRow: false)
                         .environmentObject(contact)
                         .onAppear {
-                            if contactsVM.contacts.last == contact {
-                                contactsVM.loadMore()
+                            Task {
+                                if contactsVM.contacts.last == contact {
+                                    await contactsVM.loadMore()
+                                }
                             }
                         }
                 }
