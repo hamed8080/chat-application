@@ -56,19 +56,20 @@ public final class ThreadReactionViewModel: ObservableObject {
     }
 
     public func getReactionSummary(_ messageIds: [Int], conversationId: Int) {
-        chatReaction?.count(.init(messageIds: messageIds, conversationId: conversationId))
+        chatReaction?.count(.init(messageIds: messageIds, conversationId: threadId))
     }
 
-    public func getCurrentUserReaction(for messageId: Int, conversationId: Int) {
-        chatReaction?.reaction(.init(messageId: messageId, conversationId: conversationId))
+    public func getCurrentUserReaction(for messageId: Int) {
+        chatReaction?.reaction(.init(messageId: messageId, conversationId: threadId))
     }
 
-    public func getDetail(for messageId: Int, offset: Int = 0, conversationId: Int, sticker: Sticker? = nil) {
+    public func getDetail(for messageId: Int, offset: Int = 0, count: Int, sticker: Sticker? = nil) {
         chatReaction?.get(.init(messageId: messageId,
-                                                       offset: offset,
-                                                       count: 25,
-                                                       conversationId: conversationId,
-                                                       sticker: sticker))
+                                offset: offset,
+                                count: count,
+                                conversationId: threadId,
+                                sticker: sticker)
+        )
     }
 
     @MainActor
@@ -76,7 +77,6 @@ public final class ThreadReactionViewModel: ObservableObject {
         switch event {
         case .inMemoryUpdate(let copies):
             await threadVM?.historyVM.updateReactions(reactions: copies)
-            break
         case .add(let chatResponse):
             scrollToLastMessageIfLastMessageReacionChanged(chatResponse)
         case .replace(let chatResponse):

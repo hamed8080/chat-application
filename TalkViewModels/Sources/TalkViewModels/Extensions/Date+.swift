@@ -47,7 +47,10 @@ public extension Int {
         if self < 5 * 60_000 {
             return "Contacts.lastSeen.lately".bundleLocalized()
         } else if self < 86_400_000 {
-            return Date(milliseconds: Date().millisecondsSince1970 - Int64(self)).onlyLocaleTime
+            let key = "Contacts.lastSeen.todayAt".bundleLocalized()
+            let localTime = Date(milliseconds: Date().millisecondsSince1970 - Int64(self)).onlyLocaleTime
+            let formatted = String(format: key, localTime)
+            return formatted
         } else if self < 604_800_000 {
             return "Contacts.lastSeen.thisWeek".bundleLocalized()
         } else {

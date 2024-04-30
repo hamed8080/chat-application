@@ -113,6 +113,7 @@
 "Contacts.addContact" = "افزودن مخاطب";
 "Contacts.sortLabel" = "مرتب شده بر اساس آخرین زمان بازدید";
 "Contacts.lastSeen.lately" = "چند لحظه پیش";
+"Contacts.lastSeen.todayAt" = "امروز ساعت %@";
 "Contacts.lastSeen.thisWeek" = "در همین هفته";
 "Contacts.lastSeen.unknown" = "نامشخص";
 "Contacts.lastVisited" = "آخرین بازدید %@";

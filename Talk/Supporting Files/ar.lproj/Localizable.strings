@@ -112,6 +112,7 @@
 "Contacts.addContact" = "إضافة جهة اتصال";
 "Contacts.sortLabel" = "مرتب حسب آخر وقت زيارة";
 "Contacts.lastSeen.lately" = "قبل لحظات قليلة";
+"Contacts.lastSeen.todayAt" = "اليوم في %@";
 "Contacts.lastSeen.thisWeek" = ".هذا الاسبوع";
 "Contacts.lastSeen.unknown" = "مجهول";
 "Contacts.lastVisited" = "آخر زيارة %@";

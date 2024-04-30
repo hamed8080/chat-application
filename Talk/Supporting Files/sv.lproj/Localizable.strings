@@ -112,6 +112,7 @@
 "Contacts.addContact" = "Lägg till en kontakt";
 "Contacts.sortLabel" = "Sorterat efter senast besökt tid";
 "Contacts.lastSeen.lately" = "för några ögonblick sedan";
+"Contacts.lastSeen.todayAt" = "idag kl %@";
 "Contacts.lastSeen.thisWeek" = "Denna vecka";
 "Contacts.lastSeen.unknown" = "okänd";
 "Contacts.lastVisited" = "Senast besökt %@";

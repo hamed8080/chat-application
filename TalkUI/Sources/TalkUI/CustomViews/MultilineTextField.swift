@@ -78,7 +78,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         let size = CGSize(width: width, height: .greatestFiniteMagnitude)
 
         let tc = NSTextContainer(size: size)
-        tc.lineFragmentPadding = 0.0
+        tc.lineFragmentPadding = 5.0
 
         let lm = NSLayoutManager()
         lm.addTextContainer(tc)
@@ -137,7 +137,7 @@ public struct MultilineTextField: View {
     var placeholderColor: Color = Color.App.textPlaceholder
     var textColor: UIColor?
     @Environment(\.colorScheme) var colorScheme
-    var keyboardReturnType: UIReturnKeyType = .done
+    var keyboardReturnType: UIReturnKeyType = .default
     var mention: Bool = false
 
     @Binding private var text: String
@@ -150,7 +150,7 @@ public struct MultilineTextField: View {
          textColor: UIColor? = nil,
          backgroundColor: Color = Color.App.white,
          placeholderColor: Color = Color.App.textPlaceholder,
-         keyboardReturnType: UIReturnKeyType = .done,
+         keyboardReturnType: UIReturnKeyType = .default,
          mention: Bool = false,
          focus: Binding<Bool> = .constant(false),
          onDone: ((String?) -> Void)? = nil)

@@ -11,26 +11,32 @@ import TalkViewModels
 import ChatModels
 import SwiftUI
 import TalkExtensions
+import TalkModels
 
 struct MessageReactionDetailView: View {
     let message: Message
-    let selectedStickerTabId: String?
+    private let row: ReactionRowsCalculated.Row
     private var messageId: Int { message.id ?? -1 }
-    private var conversationId: Int { message.conversation?.id ?? -1 }
+    @EnvironmentObject var tabVM: ReactionTabParticipantsViewModel
 
-    init(message: Message, selectedStickerTabId: String? = nil) {
+    init(message: Message, row: ReactionRowsCalculated.Row) {
         self.message = message
-        self.selectedStickerTabId = selectedStickerTabId
+        self.row = row
     }
 
     var body: some View {
         TabContainerView(
-            selectedId: selectedStickerTabId ?? "General.all",
+            selectedId: row.selectedEmojiTabId,
             tabs: tabs,
             config: .init(alignment: .top)
-        )
+        ) { selectedTab in
+            tabVM.setActiveTab(tabId: selectedTab)
+        }
         .background(Color.App.bgPrimary)
         .navigationTitle("Reactions to: \(message.messageTitle.trimmingCharacters(in: .whitespacesAndNewlines))")
+        .onAppear {
+            tabVM.setActiveTab(tabId: row.selectedEmojiTabId)
+        }
     }
 
     var tabs: [TabItem] {
@@ -44,12 +50,8 @@ struct MessageReactionDetailView: View {
     }
 
     var allTab: TabItem {
-        TabItem(
-            tabContent: ParticiapntsPageSticker(
-                sticker: nil,
-                messageId: messageId,
-                conversationId: conversationId
-            ),
+        return TabItem(
+            tabContent: ParticiapntsPageSticker(tabId: "General.all").environmentObject(tabVM),
             title: "General.all",
             showSelectedDivider: true
         )
@@ -58,13 +60,11 @@ struct MessageReactionDetailView: View {
     var summaryTabs: [TabItem] {
         ChatManager.activeInstance?.reaction.inMemoryReaction.summary(for: messageId)
             .compactMap { reaction in
-                TabItem(
-                    tabContent: ParticiapntsPageSticker(
-                        sticker: reaction.sticker ?? .unknown,
-                        messageId: messageId,
-                        conversationId: conversationId
-                    ),
-                    title: "\(reaction.sticker?.emoji ?? "all") \(reaction.count ?? 0)",
+                let countText = reaction.count?.localNumber(locale: Language.preferredLocale) ?? ""
+                let title = "\(reaction.sticker?.emoji ?? "all") \(countText)"
+                return TabItem(
+                    tabContent: ParticiapntsPageSticker(tabId: title).environmentObject(tabVM),
+                    title: title,
                     showSelectedDivider: true
                 )
             } ?? []
@@ -72,68 +72,23 @@ struct MessageReactionDetailView: View {
 }
 
 struct ParticiapntsPageSticker: View {
-    let sticker: Sticker?
-    @State private var reactions: [Reaction] = []
-    private let messageId: Int
-    private let conversationId: Int
-    @State var viewHasAppeared = false
-    @EnvironmentObject var viewModel: ThreadReactionViewModel
-
-    init(sticker: Sticker?, reactions: [Reaction] = [], messageId: Int, conversationId: Int) {
-        self.sticker = sticker
-        self.reactions = reactions
-        self.messageId = messageId
-        self.conversationId = conversationId
-    }
+    let tabId: ReactionTabId
+    @EnvironmentObject var viewModel: ReactionTabParticipantsViewModel
 
     var body: some View {
         List {
+            let reactions = viewModel.participants(for: tabId)
             ForEach(reactions) { reaction in
                 ReactionParticipantRow(reaction: reaction)
                     .listRowBackground(Color.App.bgPrimary)
                     .onAppear {
                         if reactions.last == reaction {
-                            viewModel.getDetail(for: messageId,
-                                                               offset: reactions.count,
-                                                               conversationId: conversationId,
-                                                               sticker: sticker
-                            )
+                             viewModel.loadMoreParticipants()
                         }
                     }
             }
         }
         .listStyle(.plain)
-        .onAppear {
-            if !viewHasAppeared {
-                viewHasAppeared = true
-                viewModel.getDetail(for: messageId,
-                                                   offset: reactions.count,
-                                                   conversationId: conversationId,
-                                                   sticker: sticker
-                )
-            }
-        }
-        .onReceive(NotificationCenter.reaction.publisher(for: .reaction)) { newValue in
-            guard let event = newValue.object as? ReactionEventTypes,
-                  case let .list(resposne) = event,
-                  resposne.result?.messageId == messageId,
-                  let reactions = resposne.result?.reactions
-            else { return }
-            let groups = Dictionary(grouping: reactions.compactMap{$0.reaction}, by: {$0})
-            if self.sticker == nil {
-                reactions.forEach { reaction in
-                    if !self.reactions.contains(where: {$0.id == reaction.id}) {
-                        self.reactions.append( reaction)
-                    }
-                }
-            } else if groups.count == 1, sticker == groups.first?.value.first {
-                reactions.forEach { reaction in
-                    if !self.reactions.contains(where: {$0.id == reaction.id}) {
-                        self.reactions.append( reaction)
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -188,7 +143,15 @@ struct ReactionParticipantRow: View {
 
 struct MessageReactionDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        MessageReactionDetailView(message: Message(id: 1, message: "TEST", conversation: Conversation(id: 1)))
+        let row = ReactionRowsCalculated.Row(reactionId: 0,
+                                             edgeInset: .zero,
+                                             sticker: .happy,
+                                             emoji: "😂",
+                                             countText: "1",
+                                             isMyReaction: true,
+                                             hasReaction: true,
+                                             selectedEmojiTabId: "")
+        MessageReactionDetailView(message: Message(id: 1, message: "TEST", conversation: Conversation(id: 1)), row: row)
 
         ReactionParticipantRow(reaction: .init(id: 1, reaction: .like, participant: .init(image: "https://imgv3.fotor.com/images/cover-photo-image/a-beautiful-girl-with-gray-hair-and-lucxy-neckless-generated-by-Fotor-AI.jpg"), time: nil))
             .frame(width: 300, height: 300)

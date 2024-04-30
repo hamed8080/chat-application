@@ -114,6 +114,7 @@
 "Contacts.addContact" = "Agregar un contacto";
 "Contacts.sortLabel" = "Ordenado por último tiempo visitado";
 "Contacts.lastSeen.lately" = "hace unos momentos";
+"Contacts.lastSeen.todayAt" = "hoy en %@";
 "Contacts.lastSeen.thisWeek" = "esta semana";
 "Contacts.lastSeen.unknown" = "desconocida";
 "Contacts.lastVisited" = "Última visita %@";

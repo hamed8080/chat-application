@@ -113,6 +113,7 @@
 "Contacts.addContact" = "Add a contact";
 "Contacts.sortLabel" = "Sorted by last visited time";
 "Contacts.lastSeen.lately" = "a few moments ago";
+"Contacts.lastSeen.todayAt" = "today at %@";
 "Contacts.lastSeen.thisWeek" = "this week";
 "Contacts.lastSeen.unknown" = "unknown";
 "Contacts.lastVisited" = "Last visited %@";

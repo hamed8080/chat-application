@@ -113,6 +113,7 @@
 "Contacts.addContact" = "Einen Kontakt hinzufügen";
 "Contacts.sortLabel" = "Nach zuletzt besuchter Zeit sortiert";
 "Contacts.lastSeen.lately" = "vor ein paar Augenblicken";
+"Contacts.lastSeen.todayAt" = "heute um %@";
 "Contacts.lastSeen.thisWeek" = "diese Woche";
 "Contacts.lastSeen.unknown" = "Unbekannt";
 "Contacts.lastVisited" = "Zuletzt besucht %@";

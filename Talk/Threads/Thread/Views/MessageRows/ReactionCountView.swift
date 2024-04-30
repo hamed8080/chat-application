@@ -56,10 +56,7 @@ struct ReactionCountRow: View {
             onReactionTapped()
         }
         .customContextMenu(id: row.reactionId, self: self.environmentObject(viewModel)) {
-            MessageReactionDetailView(message: viewModel.message, selectedStickerTabId: row.selectedEmojiTabId)
-                .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
-                .frame(width: 300, height: 400)
-                .clipShape(RoundedRectangle(cornerRadius:(12)))
+            contextMenu
         }
     }
 
@@ -67,6 +64,16 @@ struct ReactionCountRow: View {
         if let tappedStciker = row.sticker {
             reactionVM.reaction(tappedStciker, messageId: viewModel.message.id ?? -1)
         }
+    }
+
+    private var contextMenu: some View {
+        let tabVM = ReactionTabParticipantsViewModel(messageId: viewModel.message.id ?? -1)
+        tabVM.viewModel = viewModel.threadVM?.reactionViewModel
+        return MessageReactionDetailView(message: viewModel.message, row: row)
+            .environmentObject(tabVM)
+            .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
+            .frame(width: 300, height: 400)
+            .clipShape(RoundedRectangle(cornerRadius:(12)))
     }
 }
 
