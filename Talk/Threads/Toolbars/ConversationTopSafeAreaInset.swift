@@ -47,9 +47,13 @@ struct ConversationTopSafeAreaInset: View {
     @ViewBuilder var searchButton: some View {
         if isInSearchMode {
             Button {
-                Task { @MainActor in
+                Task {
                     await container.searchVM.closedSearchUI()
-                    isInSearchMode.toggle()
+                    await MainActor.run {
+                        withAnimation {
+                            isInSearchMode.toggle()
+                        }
+                    }
                 }
             } label: {
                 Image(systemName: "xmark")

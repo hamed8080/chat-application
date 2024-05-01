@@ -17,27 +17,20 @@ struct MentionList: View {
     @EnvironmentObject var viewModel: MentionListPickerViewModel
 
     var body: some View {
-        if viewModel.mentionList.count > 0 {
-            List {
+        ScrollView {
+            LazyVStack {
                 ForEach(viewModel.mentionList) { participant in
                     mentionParticipantRow(participant)
                 }
 
                 ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(.zero)
-                    .listRowBackground(Color.clear)
                     .animation(.easeInOut, value: viewModel.lazyList.isLoading)
                     .id(-3)
             }
-            .listStyle(.plain)
-            .environment(\.defaultMinListRowHeight, 0)
-            .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .bottom)))
-            .frame(maxHeight: min(196, CGFloat(viewModel.mentionList.count) * 48))
-            .animation(.easeInOut, value: viewModel.mentionList.count)
-        } else {
-            EmptyView()
         }
+        .frame(height: viewModel.mentionList.count > 0 ? nil : 0)
+        .frame(maxHeight: min(196, CGFloat(viewModel.mentionList.count) * 48))
+        .animation(.easeInOut(duration: 0.2), value: viewModel.mentionList.count > 0)
     }
 
     @ViewBuilder
@@ -56,9 +49,8 @@ struct MentionList: View {
                 .fontWeight(.medium)
             Spacer()
         }
-        .listRowBackground(Color.clear)
-        .listRowSeparator(.hidden)
-        .listRowInsets(.init(top: 4, leading: 4, bottom: 8, trailing: 4))
+        .contentShape(Rectangle())
+        .padding(.init(top: 4, leading: 4, bottom: 8, trailing: 4))
         .onAppear {
             if participant == viewModel.mentionList.last {
                 Task {

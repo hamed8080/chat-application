@@ -27,25 +27,25 @@ struct ThreadContentList: View {
                 .listRowBackground(ThreadListRowBackground(thread: thread))
                 .onAppear {
                     Task {
-                        if self.threadsVM.threads.last == thread {
-                            await threadsVM.loadMore()
-                        }
+                        await threadsVM.loadMore(id: thread.id)                        
                     }
                 }
             }
+            /// The if below is for shimmer
+            ListLoadingView(isLoading: .constant(threadsVM.lazyList.isLoading && threadsVM.firstSuccessResponse == true))
+                .id(UUID())
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
         }
         .listStyle(.plain)
+        .environment(\.defaultMinListRowHeight, 0)
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: threadsVM.threads.count)
         .animation(.easeInOut, value: threadsVM.lazyList.isLoading)
         .overlay(ThreadListShimmer().environmentObject(threadsVM.shimmerViewModel))
         .safeAreaInset(edge: .top, spacing: 0) {
             ConversationTopSafeAreaInset()
-        }
-        .overlay(alignment: .bottom) {
-            /// The if below is for shimmer
-            ListLoadingView(isLoading: .constant(threadsVM.lazyList.isLoading && threadsVM.firstSuccessResponse == true))
-                .id(UUID())
         }
         .sheet(isPresented: sheetBinding) {
             ThreadsSheetFactoryView()

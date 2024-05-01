@@ -109,8 +109,8 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     @MainActor
-    public func loadMore() async {
-        if await !lazyList.canLoadMore() { return }
+    public func loadMore(id: Int?) async {
+        if await !lazyList.canLoadMore(id: id) { return }
         lazyList.prepareForLoadMore()
         await getThreads()
     }
@@ -141,6 +141,7 @@ public final class ThreadsViewModel: ObservableObject {
             if firstSuccessResponse {
                 shimmerViewModel.hide()
             }
+            lazyList.setThreasholdIds(ids: self.threads.suffix(5).compactMap{$0.id})
             objectWillChange.send()
         }
     }

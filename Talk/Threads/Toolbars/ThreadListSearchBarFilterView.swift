@@ -27,6 +27,7 @@ struct ThreadListSearchBarFilterView: View {
                     searchField
                     filterButton
                 }
+                .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
             }
             selectedSearchFilters
         }

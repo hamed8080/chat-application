@@ -79,6 +79,11 @@ struct ContactContentList: View {
                         .environmentObject(contact)
                 }
                 .padding()
+                ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+                    .id(UUID())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.zero)
             } else {
                 ForEach(viewModel.contacts) { contact in
                     ContactRowContainer(isSearchRow: false)
@@ -86,20 +91,21 @@ struct ContactContentList: View {
                 }
                 .padding()
                 .listRowInsets(.zero)
+                ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+                    .id(UUID())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.zero)
             }
         }
         .listEmptyBackgroundColor(show: viewModel.contacts.isEmpty)
-        .environment(\.defaultMinListRowHeight, 24)
+        .environment(\.defaultMinListRowHeight, 0)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .listStyle(.plain)
         .safeAreaInset(edge: .top, spacing: 0) {
            ContactListToolbar()
-        }
-        .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
-                .id(UUID())
         }
         .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
             AddOrEditContactView()
@@ -193,9 +199,7 @@ struct ContactRowContainer: View {
             }
             .onAppear {
                 Task {
-                    if viewModel.contacts.last == contact {
-                        await viewModel.loadMore()
-                    }
+                    await viewModel.loadMore(id: contact.id)
                 }
             }
             .onTapGesture {

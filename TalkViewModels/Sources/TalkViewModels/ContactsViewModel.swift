@@ -126,6 +126,7 @@ public class ContactsViewModel: ObservableObject {
             }
             lazyList.setHasNext(response.hasNext)
             lazyList.setLoading(false)
+            lazyList.setThreasholdIds(ids: self.contacts.suffix(5).compactMap{$0.id})
         }
     }
 
@@ -173,6 +174,12 @@ public class ContactsViewModel: ObservableObject {
         if await !lazyList.canLoadMore() { return }
         lazyList.prepareForLoadMore()
         await getContacts()
+    }
+
+    @MainActor
+    public func loadMore(id: Int?) async {
+        if await !lazyList.canLoadMore(id: id) { return }
+        await loadMore()
     }
 
     public func refresh() async {
