@@ -119,6 +119,7 @@
 "Contacts.lastVisited" = "Zuletzt besucht %@";
 "Contacts.selectContacts" = "Kontakte auswählen";
 "Contctas.notFound" = "Der Kontakt wurde nicht gefunden.";
+"Contctas.list.notFound" = "Benutzer nicht gefunden";
 "ConversationBuilder.enterGroupName" = "Gib den Gruppennamen ein";
 "ConversationBuilder.enterChannelName" = "Geben Sie den Kanalnamen ein";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Bitte geben Sie den Namen der Konversation ein. (mindestens zwei Zeichen)";

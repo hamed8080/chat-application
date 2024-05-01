@@ -119,6 +119,7 @@
 "Contacts.lastVisited" = "آخرین بازدید %@";
 "Contacts.selectContacts" = "انتخاب مخا‍طبین";
 "Contctas.notFound" = "مخاطب یافت نشد.";
+"Contctas.list.notFound" = "کاربر یافت نشد";
 "ConversationBuilder.enterGroupName" = "نام گروه را وارد کنید";
 "ConversationBuilder.enterChannelName" = "نام کانال را وارد کنید.";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "لطفا نام گفتگو را وارد نمایید. (حداقل ۲ حرف)";

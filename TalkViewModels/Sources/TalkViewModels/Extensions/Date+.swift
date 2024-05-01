@@ -46,7 +46,7 @@ public extension Int {
     var lastSeenString : String {
         if self < 5 * 60_000 {
             return "Contacts.lastSeen.lately".bundleLocalized()
-        } else if self < 86_400_000 {
+        } else if self < 86_400_000, isInToday() {
             let key = "Contacts.lastSeen.todayAt".bundleLocalized()
             let localTime = Date(milliseconds: Date().millisecondsSince1970 - Int64(self)).onlyLocaleTime
             let formatted = String(format: key, localTime)
@@ -56,5 +56,10 @@ public extension Int {
         } else {
             return "Contacts.lastSeen.unknown".bundleLocalized()
         }
+    }
+
+    private func isInToday() -> Bool {
+        let date = Date(milliseconds: Date().millisecondsSince1970 - Int64(self))
+        return Calendar.current.isDateInToday(date)
     }
 }

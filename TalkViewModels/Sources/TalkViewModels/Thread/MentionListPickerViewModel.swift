@@ -74,7 +74,8 @@ public final class MentionListPickerViewModel: ObservableObject {
 
     @MainActor
     func onParticipants(_ response: ChatResponse<[Participant]>) async {
-        if !response.cache, response.pop(prepend: "MentionParticipants") != nil, let participants = response.result {
+        /// We have to check threadId when forwarding messages to prevent the previous thread catch the result.
+        if !response.cache, response.subjectId == viewModel?.threadId, response.pop(prepend: "MentionParticipants") != nil, let participants = response.result {
             if lazyList.offset == 0 {
                 self.mentionList.removeAll()
                 self.mentionList = .init(participants)

@@ -18,45 +18,47 @@ struct ConversationBuilder: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                if viewModel.searchedContacts.count > 0 {
-                    StickyHeaderSection(header: "Contacts.searched")
+            VStack(spacing: 0) {
+                SelectedContactsView()
+                    .padding(.horizontal, 8)
+                    .background(Color.App.bgPrimary)
+                List {
+                    if viewModel.searchedContacts.count > 0 {
+                        StickyHeaderSection(header: "Contacts.searched")
+                            .listRowInsets(.zero)
+                            .listRowSeparator(.hidden)
+                        ForEach(viewModel.searchedContacts) { contact in
+                            BuilderContactRowContainer(contact: contact, isSearchRow: true)
+                        }
+                        .padding()
+                        .listRowInsets(.zero)
+                    }
+
+                    StickyHeaderSection(header: "Contacts.selectContacts")
                         .listRowInsets(.zero)
                         .listRowSeparator(.hidden)
-                    ForEach(viewModel.searchedContacts) { contact in
-                        BuilderContactRowContainer(contact: contact, isSearchRow: true)
+                    ForEach(viewModel.contacts) { contact in
+                        BuilderContactRowContainer(contact: contact, isSearchRow: false)
+                            .onAppear {
+                                Task {
+                                    if viewModel.contacts.last == contact {
+                                        await viewModel.loadMore()
+                                    }
+                                }
+                            }
                     }
+                    .onDelete(perform: viewModel.delete)
                     .padding()
                     .listRowInsets(.zero)
                 }
-
-                StickyHeaderSection(header: "Contacts.selectContacts")
-                    .listRowInsets(.zero)
-                    .listRowSeparator(.hidden)
-                ForEach(viewModel.contacts) { contact in
-                    BuilderContactRowContainer(contact: contact, isSearchRow: false)
-                        .onAppear {
-                            Task {
-                                if viewModel.contacts.last == contact {
-                                    await viewModel.loadMore()
-                                }
-                            }
-                        }
-                }
-                .onDelete(perform: viewModel.delete)
-                .padding()
-                .listRowInsets(.zero)
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
                     TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchContactString)
                         .frame(height: 48)
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
-                    SelectedContactsView()
-                        .padding(.horizontal, 8)
-                        .frame(height: 48)
                 }
                 .background(.ultraThinMaterial)
             }
@@ -95,17 +97,44 @@ struct ConversationBuilder: View {
 
 struct SelectedContactsView: View {
     @EnvironmentObject var viewModel: ConversationBuilderViewModel
+    @State private var width: CGFloat = 200
 
     var body: some View {
-        if viewModel.selectedContacts.count > 0 {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(viewModel.selectedContacts) { contact in
-                        SelectedContact(viewModel: viewModel, contact: contact)
-                    }
+        ScrollView(showsIndicators: false) {
+            LazyVGrid(columns: columns, alignment: .leading) {
+                ForEach(viewModel.selectedContacts) { contact in
+                    SelectedContact(viewModel: viewModel, contact: contact)
                 }
             }
         }
+        .padding(.vertical, viewModel.selectedContacts.count == 0 ? 0 : 4 )
+        .background(frameReader)
+        .frame(height: height)
+        .clipped()
+    }
+
+    private var frameReader: some View {
+        GeometryReader { reader in
+            Color.clear.onAppear {
+                width = reader.size.width
+                print("width offf:\(width)_")
+            }
+        }
+    }
+
+    private var height: CGFloat {
+        if viewModel.selectedContacts.count == 0 { return 0 }
+        let MAX: CGFloat = 126
+        let rows: CGFloat = ceil(CGFloat(viewModel.selectedContacts.count) / CGFloat(2))
+        if rows >= 4 { return MAX }
+        return max(48, rows * 42)
+    }
+
+    private var columns: Array<GridItem> {
+        let numberOfColumns = width / 2
+        let flexible = GridItem.Size.flexible(minimum: numberOfColumns, maximum: numberOfColumns)
+        let item = GridItem(flexible,spacing: 8)
+        return Array(repeating: item, count: 2)
     }
 }
 

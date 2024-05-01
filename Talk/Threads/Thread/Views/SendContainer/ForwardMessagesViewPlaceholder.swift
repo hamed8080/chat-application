@@ -80,7 +80,9 @@ struct ForwardMessagesViewPlaceholder: View {
     }
 
     private var hasAnythingToForward: Bool {
-        viewModel.threadId == model.forwardMessageRequest?.threadId && model.forwardMessageRequest != nil
+        let isRealThreadId = viewModel.threadId == model.forwardMessageRequest?.threadId
+        let isSimulatedId = viewModel.isSimulatedThared // when forwarding to a contact where they never talk to each other.
+        return (isSimulatedId || isRealThreadId) && model.forwardMessageRequest != nil
     }
 }
 

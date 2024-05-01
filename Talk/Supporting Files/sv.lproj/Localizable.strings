@@ -118,6 +118,7 @@
 "Contacts.lastVisited" = "Senast besökt %@";
 "Contacts.selectContacts" = "Välj kontakter";
 "Contctas.notFound" = "Kontakten har inte hittats.";
+"Contctas.list.notFound" = "Användaren hittades inte";
 "ConversationBuilder.enterGroupName" = "Ange gruppnamnet";
 "ConversationBuilder.enterChannelName" = "Ange kanalnamnet";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Vänligen ange namnet på konversationen. (minst två tecken)";

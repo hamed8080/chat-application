@@ -104,6 +104,7 @@ struct ContactContentList: View {
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .listStyle(.plain)
+        .gesture(dragToHideKeyboardGesture)
         .safeAreaInset(edge: .top, spacing: 0) {
            ContactListToolbar()
         }
@@ -138,6 +139,13 @@ struct ContactContentList: View {
         Task {
             await builderVM.clear()
         }
+    }
+
+    private var dragToHideKeyboardGesture: some Gesture {
+        DragGesture()
+            .onChanged{ _ in
+                hideKeyboard()
+            }
     }
 }
 
@@ -205,7 +213,7 @@ struct ContactRowContainer: View {
             .onTapGesture {
                 if viewModel.isInSelectionMode {
                     viewModel.toggleSelectedContact(contact: contact)
-                } else {
+                } else if contact.hasUser == true {
                     AppState.shared.openThread(contact: contact)
                 }
             }

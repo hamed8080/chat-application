@@ -56,6 +56,7 @@ struct ContactRow: View {
 //                            .font(.iransansBody)
 //                            .foregroundColor(Color.App.textSecondary)
 //                    }
+                    notFoundUserText
                 }
                 Spacer()
                 if contact.blocked == true {
@@ -73,6 +74,17 @@ struct ContactRow: View {
 
     var isOnline: Bool {
         contact.notSeenDuration ?? 16000 < 15000
+    }
+
+    @ViewBuilder
+    private var notFoundUserText: some View {
+        if contact.hasUser == false || contact.hasUser == nil {
+            Text("Contctas.list.notFound")
+                .foregroundStyle(Color.App.accent)
+                .font(.iransansCaption2)
+                .fontWeight(.medium)
+                .padding(.leading, 16)
+        }
     }
 }
 

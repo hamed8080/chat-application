@@ -61,6 +61,14 @@ struct ThreadSearchView: View {
             .environment(\.defaultMinListRowHeight, 24)
             .animation(.easeInOut, value: viewModel.searchedContacts.count)
             .animation(.easeInOut, value: viewModel.searchedConversations.count)
+            .gesture(dragToHideKeyboardGesture)
+        }
+    }
+    
+    private var dragToHideKeyboardGesture: some Gesture {
+        DragGesture()
+            .onChanged{ _ in
+            hideKeyboard()
         }
     }
 
