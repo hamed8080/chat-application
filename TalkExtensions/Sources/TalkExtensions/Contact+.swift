@@ -40,4 +40,13 @@ public extension Contact {
         }
         return id
     }
+
+    var toParticipant: Participant {
+        return Participant(
+            contactId: id,
+            id: user?.id ?? user?.coreUserId ?? -1,
+            image: image ?? user?.image,
+            name: "\(firstName ?? "") \(lastName ?? "")"
+        )
+    }
 }

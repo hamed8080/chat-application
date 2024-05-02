@@ -41,26 +41,14 @@ public final class SendContainerViewModel: ObservableObject {
     @Published public var isInEditMode: Bool = false
     @Published public var editMessage: Message?
     public var height: CGFloat = 0
-    private var draft: String {
-        get {
-            UserDefaults.standard.string(forKey: "draft-\(threadId)") ?? ""
-        }
-        set {
-            if newValue.isEmpty {
-                UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
-            } else {
-                UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
-            }
-        }
-    }
-
-    private var isDraft: Bool { !draft.isEmpty }
+    private let draftManager = DraftManager.shared
 
     public init() {}
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
-        textMessage = UserDefaults.standard.string(forKey: "draft-\(thread.id ?? 0)") ?? ""
+        let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId ?? -1
+        textMessage = draftManager.get(threadId: threadId) ?? draftManager.get(contactId: contactId) ?? ""
         setupNotificationObservers()
     }
 
@@ -73,7 +61,7 @@ public final class SendContainerViewModel: ObservableObject {
         
         $editMessage
             .sink { [weak self] editMessage in
-                if editMessage != nil, self?.isDraft == false {
+                if editMessage != nil, self?.isDraft() == false {
                     self?.onTextMessageChanged(editMessage?.message ?? "")
                 }
             }
@@ -88,9 +76,9 @@ public final class SendContainerViewModel: ObservableObject {
         viewModel?.sendStartTyping(newValue)
         let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
         if !isTextEmpty(text: newValue) && !isRTLChar {
-            draft = newValue
+            setDraft(newText: newValue)
         } else {
-            draft = ""
+            setDraft(newText: "")
         }
     }
 
@@ -124,4 +112,24 @@ public final class SendContainerViewModel: ObservableObject {
             cancelable.cancel()
         }
     }
+
+    public func setDraft(newText: String) {
+        if !isSimulated {
+            draftManager.set(draftValue: newText, threadId: threadId)
+        } else if let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId {
+            draftManager.set(draftValue: newText, contactId: contactId)
+        }
+    }
+
+    public func isDraft() -> Bool {
+        var isDraft = false
+        if !isSimulated {
+            isDraft = draftManager.get(threadId: threadId).isEmptyOrNil
+        } else if let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId {
+            isDraft = draftManager.get(contactId: contactId).isEmptyOrNil
+        }
+        return isDraft
+    }
+
+    private var isSimulated: Bool { threadId == -1 || threadId == LocalId.emptyThread.rawValue }
 }

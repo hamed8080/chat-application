@@ -436,7 +436,7 @@ public final class ThreadsViewModel: ObservableObject {
             threads.append(conversation)
             sort()
             if conversation.participants?.first?.id == AppState.shared.user?.id {
-                AppState.shared.showThread(thread: conversation)
+                AppState.shared.showThread(conversation)
             }
             animateObjectWillChange()
         }

@@ -133,7 +133,7 @@ private extension AppState {
 public extension AppState {
     private func onGetThreads(_ response: ChatResponse<[Conversation]>) {
         if RequestsManager.shared.contains(key: response.uniqueId ?? ""), let thraed = response.result?.first {
-            showThread(thread: thraed)
+            showThread(thraed)
         }
     }
 
@@ -176,19 +176,14 @@ public extension AppState {
         }
     }
 
-    func showThread(thread: Conversation, created: Bool = false) {
-        withAnimation {
-            isLoading = false
-            objectsContainer.navVM.append(thread: thread, created: created)
-        }
+    func showThread(_ conversation: Conversation, created: Bool = false) {
+        isLoading = false
+        objectsContainer.navVM.append(thread: conversation, created: created)
     }
 
     func openThread(contact: Contact) {
         let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
-        appStateNavigationModel.userToCreateThread = .init(contactId: contact.id,
-                                                           id: userId,
-                                                           image: contact.image ?? contact.user?.image,
-                                                           name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
+        appStateNavigationModel.userToCreateThread = contact.toParticipant
         searchForP2PThread(coreUserId: userId)
     }
 
@@ -205,7 +200,7 @@ public extension AppState {
     func openSelfThread() {
         selfThreadBuilder = SelfThreadBuilder()
         selfThreadBuilder?.create { [weak self] conversation in
-            self?.objectsContainer.navVM.append(thread: conversation)
+            self?.showThread(conversation)
             self?.selfThreadBuilder = nil
         }
     }
@@ -215,13 +210,13 @@ public extension AppState {
     func openForwardThread(from: Int, conversation: Conversation, messages: [Message]) {
         let dstId = conversation.id ?? -1
         setupForwardRequest(from: from, to: dstId, messages: messages)
-        objectsContainer.navVM.append(thread: conversation)
+        showThread(conversation)
     }
 
     func openForwardThread(from: Int, contact: Contact, messages: [Message]) {
         if let conv = localConversationWith(contact) {
             setupForwardRequest(from: from, to: conv.id ?? -1, messages: messages)
-            objectsContainer.navVM.append(thread: conv)
+            showThread(conv)
         } else {
             openEmptyForwardThread(from: from, contact: contact, messages: messages)
         }
@@ -261,27 +256,23 @@ public extension AppState {
 
     func searchForGroupThread(threadId: Int, moveToMessageId: Int, moveToMessageTime: UInt) {
         if let thread = checkForGroupOffline(tharedId: threadId) {
-            openGroupThread(thread)
+            showThread(thread)
             return
         }
         searchThreadById = SearchConversationById()
         searchThreadById?.search(id: threadId) { [weak self] conversations in
             if let thread = conversations?.first {
-                self?.openGroupThread(thread)
+                self?.showThread(thread)
             }
             self?.searchThreadById = nil
         }
-    }
-
-    private func openGroupThread(_ thread: Conversation) {
-        objectsContainer.navVM.append(thread: thread)
     }
 
     private func onSearchP2PThreads(_ thread: Conversation?, userName: String? = nil) {
         let thread = getRefrenceObject(thread) ?? thread
         updateThreadIdIfIsInForwarding(thread)
         if let thread = thread {
-            objectsContainer.navVM.append(thread: thread)
+            showThread(thread)
         } else {
             showEmptyThread(userName: userName)
         }
@@ -320,8 +311,7 @@ public extension AppState {
                                         image: participant.image,
                                         title: participant.name ?? userName,
                                         participants: particpants)
-        objectsContainer.navVM.append(thread: conversation)
-        isLoading = false
+        showThread(conversation)
     }
 
     func openThreadAndMoveToMessage(conversationId: Int, messageId: Int, messageTime: UInt) {

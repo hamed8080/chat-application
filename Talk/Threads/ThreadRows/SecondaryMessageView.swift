@@ -16,7 +16,6 @@ struct SecondaryMessageView: View {
     var thread: Conversation
     @State private var draft: String = ""
     @State private var cancelable: AnyCancellable?
-    let userDfault = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
 
     var body: some View {
         HStack {
@@ -27,15 +26,21 @@ struct SecondaryMessageView: View {
             }
         }
         .animation(.easeInOut, value: draft.isEmpty)
-        .onReceive(userDfault) { _ in
-            let threadId = thread.id ?? 0
-            draft = UserDefaults.standard.string(forKey: "draft-\(threadId)") ?? ""
+        .onReceive(NotificationCenter.draft.publisher(for: .draft)) { notif in
+            onDraftChanged(id: notif.object as? Int)
         }
         .onAppear {
             let threadId = thread.id ?? 0
-            if let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
+            if let draft = DraftManager.shared.get(threadId: threadId), !draft.isEmpty {
                 self.draft = draft
             }
+        }
+    }
+
+    private func onDraftChanged(id: Int?) {
+        let threadId = thread.id ?? 0
+        if id == threadId {
+            draft = DraftManager.shared.get(threadId: threadId) ?? ""
         }
     }
 }
