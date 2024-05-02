@@ -15,12 +15,14 @@ struct ThreadHistoryShimmerView: View {
     var body: some View {
         if viewModel.isShowing {
             ScrollViewReader { reader in
-                List {
-                    ForEach(1...10, id: \.self) { id in
-                        MessageRowShimmer(id: id)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(.zero)
-                            .listRowBackground(Color.clear)
+                ScrollView {
+                    LazyVStack {
+                        ForEach(1...10, id: \.self) { id in
+                            MessageRowShimmer(id: id)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(.zero)
+                                .listRowBackground(Color.clear)
+                        }
                     }
                 }
                 .environmentObject(viewModel.itemViewModel)
@@ -28,7 +30,7 @@ struct ThreadHistoryShimmerView: View {
                 .background(ThreadbackgroundView(threadId: 0))
                 .transition(.opacity)
                 .onAppear() {
-                    reader.scrollTo(10)
+                    reader.scrollTo(10, anchor: .bottom)
                 }
             }
         }

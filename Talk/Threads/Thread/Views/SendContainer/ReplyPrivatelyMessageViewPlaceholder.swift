@@ -34,6 +34,7 @@ struct ReplyPrivatelyMessageViewPlaceholder: View {
                             // TODO: Go to reply message location
                         }
                 }
+                .frame(maxHeight: 48)
 
                 Spacer()
                 CloseButton {

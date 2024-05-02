@@ -302,6 +302,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func onCreateP2PThread(_ conversation: Conversation) {
         self.viewModel?.updateConversation(conversation)
+        DraftManager.shared.clear(contactId: navModel.userToCreateThread?.contactId ?? -1)
         navModel.userToCreateThread = nil
         animateObjectWillChange()
     }

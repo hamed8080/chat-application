@@ -39,6 +39,7 @@ struct ForwardMessagesViewPlaceholder: View {
                         .lineLimit(2)
                 }
             }
+            .frame(maxHeight: 72)
             Spacer()
             CloseButton {
                 onCloseButtonTapped()

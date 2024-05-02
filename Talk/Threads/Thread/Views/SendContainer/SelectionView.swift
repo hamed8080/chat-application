@@ -23,6 +23,9 @@ struct SelectionView: View {
                 threadVM.sheetType = .threadPicker
                 threadVM.animateObjectWillChange()
             }
+            .disabled(selectedCount > 50)
+            .opacity(selectedCount > 50 ? 0.3 : 1.0)
+
             HStack(spacing: 2) {
                 Text(selectedCount.localNumber(locale: Language.preferredLocale) ?? "")
                     .font(.iransansBoldBody)
