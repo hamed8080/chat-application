@@ -22,33 +22,79 @@ struct SendContainer: View {
         ZStack(alignment: .bottom) {           
             VStack(spacing: 0) {
                 VStack(spacing: 0) {
-                    if viewModel.viewModel?.selectedMessagesViewModel.isInSelectMode == true {
-                        SelectionView(threadVM: threadVM)
-                            .environmentObject(threadVM.selectedMessagesViewModel)
-                    } else if viewModel.canShowMute {
-                        MuteChannelViewPlaceholder()
-                            .padding(10)
-                    } else {
-                        ForwardMessagesViewPlaceholder()
-                            .environmentObject(viewModel)
-                        ReplyPrivatelyMessageViewPlaceholder()
-                            .environmentObject(viewModel)
-                        ReplyMessageViewPlaceholder()
-                            .environmentObject(viewModel)
-                        MentionList()
-                            .environmentObject(threadVM.mentionListPickerViewModel)
-                            .environmentObject(viewModel)
-                        EditMessagePlaceholderView()
-                            .environmentObject(viewModel)
-                        AudioOrTextContainer()
-                    }
+                    SelectionView(threadVM: threadVM)
+                        .frame(height: selectionHeight)
+                        .clipped()
+                        .environmentObject(threadVM.selectedMessagesViewModel)
+                    MuteChannelViewPlaceholder()
+                        .padding(viewModel.canShowMute ? 10 : 0)
+                        .frame(height: cahnnelMuteHeight)
+                        .clipped()
+                    ForwardMessagesViewPlaceholder()
+                        .modifier(normalModifier)
+                    ReplyPrivatelyMessageViewPlaceholder()
+                        .modifier(normalModifier)
+                    ReplyMessageViewPlaceholder()
+                        .modifier(normalModifier)
+                    MentionList()
+                        .modifier(normalModifier)
+                        .environmentObject(threadVM.mentionListPickerViewModel)
+                    EditMessagePlaceholderView()
+                        .modifier(normalModifier)
+                    AudioOrTextContainer()
+                        .modifier(normalModifier)
                 }
+                .environmentObject(viewModel)
                 .opacity(viewModel.disableSend ? 0.3 : 1.0)
                 .disabled(viewModel.disableSend)
                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                 .animation(.easeInOut, value: viewModel.textMessage.isEmpty)
             }
         }
+    }
+
+    private var isInSelection: Bool {
+        viewModel.viewModel?.selectedMessagesViewModel.isInSelectMode == true
+    }
+
+    private var selectionHeight: CGFloat? {
+        isInSelection ? nil : 0
+    }
+
+    private var isChannel: Bool {
+        viewModel.canShowMute
+    }
+
+    private var cahnnelMuteHeight: CGFloat? {
+        isChannel ? nil : 0
+    }
+
+    private var canShowNormalThreadControls: Bool {
+        !(isChannel || isInSelection)
+    }
+
+    private var normalThreadHeight: CGFloat? {
+        canShowNormalThreadControls ? nil : 0
+    }
+
+    private var disableNormalControls: Bool {
+        !canShowNormalThreadControls
+    }
+
+    private var normalModifier: SendContainerViewModifier {
+        SendContainerViewModifier(normalThreadHeight: normalThreadHeight, disableNormalControls: disableNormalControls)
+    }
+}
+
+struct SendContainerViewModifier: ViewModifier {
+    let normalThreadHeight: CGFloat?
+    let disableNormalControls: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .frame(height: normalThreadHeight)
+            .disabled(disableNormalControls)
+            .clipped()
     }
 }
 

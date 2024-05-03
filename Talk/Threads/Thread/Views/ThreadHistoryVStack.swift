@@ -19,9 +19,7 @@ struct ThreadHistoryVStack: View {
     var body: some View {
         ThreadHistoryList()
             .overlay {
-                if viewModel.isEmptyThread {
-                    EmptyThreadView()
-                }
+                EmptyThreadView()
             }
             .overlay(ThreadHistoryShimmerView().environmentObject(viewModel.shimmerViewModel))
             .environment(\.layoutDirection, .leftToRight)

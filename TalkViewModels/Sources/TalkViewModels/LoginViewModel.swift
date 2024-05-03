@@ -122,11 +122,14 @@ public final class LoginViewModel: ObservableObject {
             let resp = try await session.data(for: urlReq)
             var ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
             ssoToken.keyId = keyId
-            await saveTokenAndCreateChatObject(ssoToken)
             await MainActor.run {
                 hideKeyboard()
-                resetState()
                 doHaptic()
+            }
+            await saveTokenAndCreateChatObject(ssoToken)
+            try? await Task.sleep(for: .seconds(0.5))
+            await MainActor.run {
+                resetState()
             }
         } catch {
             doHaptic(failed: true)

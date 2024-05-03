@@ -37,6 +37,10 @@ struct EmptyThreadView: View {
             }
             Spacer()
         }
+        .frame(height: viewModel.isEmptyThread ? nil : 0)
+        .opacity(viewModel.isEmptyThread ? 1.0 : 0.0)
+        .clipped()
+        .contentShape(Rectangle())
     }
 }
 

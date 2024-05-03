@@ -15,21 +15,15 @@ struct SendContainerOverlayView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            if viewModel.showActionButtons {
-                Rectangle()
-                    .fill(Color.App.bgSecondary.opacity(0.4))
-                    .onTapGesture {
-                        withAnimation(.easeOut(duration: 0.13)) {
-                            viewModel.showActionButtons.toggle()
-                        }
-                    }
-            }
+            dimBackground
             VStack(spacing: 0) {
                 HistoryEssentialButtonsOverSendContainer(viewModel: threadVM)
                 VStack(spacing: 0) {
-                    if viewModel.showActionButtons {
-                        AttachmentButtons(viewModel: threadVM.attachmentsViewModel)
-                    }
+                    AttachmentButtons(viewModel: threadVM.attachmentsViewModel)
+                        .frame(height: viewModel.showActionButtons ? nil : 0)
+                        .contentShape(Rectangle())
+                        .clipped()
+                        .disabled(!viewModel.showActionButtons)
                     AttachmentFiles()
                         .environmentObject(threadVM.attachmentsViewModel)
                         .padding(.top, viewModel.showActionButtons ? 8 : 0)
@@ -50,6 +44,19 @@ struct SendContainerOverlayView: View {
                 )
             }
         }
+    }
+
+    private var dimBackground: some View {
+        Rectangle()
+            .fill(Color.App.bgSecondary.opacity(0.4))
+            .frame(height: viewModel.showActionButtons ? nil : 0)
+            .clipped()
+            .animation(.none, value: viewModel.showActionButtons)
+            .onTapGesture {
+                withAnimation(.easeOut(duration: 0.13)) {
+                    viewModel.showActionButtons.toggle()
+                }
+            }
     }
 }
 
