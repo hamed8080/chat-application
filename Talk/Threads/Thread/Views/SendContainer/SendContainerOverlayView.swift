@@ -24,29 +24,44 @@ struct SendContainerOverlayView: View {
                         }
                     }
             }
-
             VStack(spacing: 0) {
-                if viewModel.showActionButtons {
-                    AttachmentButtons(viewModel: threadVM.attachmentsViewModel)
+                HistoryEssentialButtonsOverSendContainer(viewModel: threadVM)
+                VStack(spacing: 0) {
+                    if viewModel.showActionButtons {
+                        AttachmentButtons(viewModel: threadVM.attachmentsViewModel)
+                    }
+                    AttachmentFiles()
+                        .environmentObject(threadVM.attachmentsViewModel)
+                        .padding(.top, viewModel.showActionButtons ? 8 : 0)
+                    SendContainer(threadVM: threadVM)
                 }
-                AttachmentFiles()
-                    .environmentObject(threadVM.attachmentsViewModel)
-                    .padding(.top, threadVM.attachmentsViewModel.attachments.count > 0 ? 8 : 0)
-                SendContainer(threadVM: threadVM)
+                .background(
+                    MixMaterialBackground()
+                        .cornerRadius(viewModel.showActionButtons && threadVM.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
+                        .ignoresSafeArea()
+                        .background(
+                            GeometryReader { reader in
+                                Color.clear.ignoresSafeArea()
+                                    .onAppear {
+                                        threadVM.sendContainerViewModel.height = reader.size.height + 24
+                                    }
+                            }
+                        )
+                )
             }
-            .background(
-                MixMaterialBackground()
-                    .cornerRadius(viewModel.showActionButtons && threadVM.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
-                    .ignoresSafeArea()
-                    .background(
-                        GeometryReader { reader in
-                            Color.clear.ignoresSafeArea()
-                                .onAppear {
-                                    threadVM.sendContainerViewModel.height = reader.size.height + 24
-                                }
-                        }
-                    )
-            )
+        }
+    }
+}
+
+struct HistoryEssentialButtonsOverSendContainer: View {
+    let viewModel: ThreadViewModel
+
+    var body: some View {
+        VStack(spacing: 16) {
+            UnreadMentionsButton()
+                .environmentObject(viewModel.unreadMentionsViewModel)
+            MoveToBottomButton()
+            CloseRecordingButton()
         }
     }
 }

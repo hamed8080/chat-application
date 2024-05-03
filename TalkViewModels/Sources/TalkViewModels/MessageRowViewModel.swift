@@ -35,6 +35,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public static var avatarSize: CGFloat = 37
     public var reactionsModel: ReactionRowsCalculated
     public var downloadFileVM: DownloadFileViewModel?
+    public var uploadViewModel: UploadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     public var message: Message
     public var isInSelectMode: Bool = false
@@ -47,7 +48,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
-    public var uploadViewModel: UploadFileViewModel?
     public var imageWidth: CGFloat? = nil
     public var imageHeight: CGFloat? = nil
     public var isReplyImage: Bool = false

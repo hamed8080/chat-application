@@ -54,4 +54,27 @@ public extension UploadFileWithReplyPrivatelyMessage {
                           repliedToMessageTime: replyMessage?.time,
                           participant: replyMessage?.participant)
     }
+
+    convenience init?(voiceURL: URL?, model: SendMessageModel) {
+        guard
+            let url = voiceURL,
+            var req = ReplyPrivatelyRequest(model: model),
+            let fileReq = UploadFileRequest(url: url, model.userGroupHash)
+        else { return nil }
+        req.messageType = .podSpaceVoice
+        self.init(uploadFileRequest: fileReq, thread: model.conversation)
+        uniqueId = fileReq.uniqueId
+        req.uniqueId = fileReq.uniqueId
+        replyPrivatelyRequest = req
+        messageType = .podSpaceVoice
+        let replyMessage = model.replyPrivatelyMessage
+        replyInfo = .init(repliedToMessageId: replyMessage?.id,
+                          message: replyMessage?.message,
+                          messageType: replyMessage?.messageType,
+                          metadata: replyMessage?.metadata,
+                          systemMetadata: replyMessage?.systemMetadata,
+                          repliedToMessageNanos: replyMessage?.timeNanos,
+                          repliedToMessageTime: replyMessage?.time,
+                          participant: replyMessage?.participant)
+    }
 }

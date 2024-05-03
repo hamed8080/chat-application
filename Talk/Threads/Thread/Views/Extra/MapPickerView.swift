@@ -30,6 +30,7 @@ struct MapPickerView: View {
                 Spacer()
                 SubmitBottomButton(text: "MapPicker.sendSelectedLocation") {
                     if let location = locationManager.currentLocation {
+                        AppState.shared.appStateNavigationModel = .init()
                         viewModel.attachmentsViewModel.append(attachments: [.init(type: .map, request: location)])
                     }
                     viewModel.sheetType = nil

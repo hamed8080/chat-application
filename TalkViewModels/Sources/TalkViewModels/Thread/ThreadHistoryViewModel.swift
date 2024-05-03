@@ -1061,7 +1061,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func isLastSeenMessageExist() -> Bool {
-        guard let lastSeenId = thread.lastSeenMessageId else { return false }
+        let lastSeenId = thread.lastSeenMessageId
+        if lastSeenIsGreaterThanLastMessage() { return true }
+        guard let lastSeenId = lastSeenId else { return false }
         var isExist = false
         // we get two bottom to check if it is in today list or previous day
         for section in sections.suffix(2) {
@@ -1070,6 +1072,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
             }
         }
         return isExist
+    }
+
+    /// When we delete the last message, lastMessageSeenId is greater than currently lastMessageVO.id
+    /// which is totally wrong and causes a lot of problems.
+    private func lastSeenIsGreaterThanLastMessage() -> Bool {
+        return thread.lastSeenMessageId ?? 0 > thread.lastMessageVO?.id ?? 0
     }
 
     // MARK: Register Notifications

@@ -54,6 +54,8 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             sendEditMessage()
         } else if attVM.attachments.count > 0 {
             sendAttachmentsMessage()
+        } else if recorderVM.recordingOutputPath != nil {
+            sendAudiorecording()
         } else {
             sendNormalMessage()
         }
@@ -128,6 +130,8 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             sendSingleReplyPrivatelyAttachment(first)
         } else if attVM.attachments.count > 1 {
             sendMultipleAttachemntWithReplyPrivately()
+        } else if recorderVM.recordingOutputPath != nil {
+            sendReplyPrivatelyWithVoice()
         } else {
             sendTextOnlyReplyPrivately()
         }
@@ -157,7 +161,14 @@ public final class ThreadSendMessageViewModel: ObservableObject {
         }
     }
 
-    public func sendAudiorecording() {
+    private func sendReplyPrivatelyWithVoice() {
+        if let message = UploadFileWithReplyPrivatelyMessage(voiceURL: recorderVM.recordingOutputPath, model: makeModel()) {
+            uplVM.append(contentsOf: [message])
+            recorderVM.cancel()
+        }
+    }
+
+    private func sendAudiorecording() {
         send { [weak self] in
             guard let self = self,
                   let request = UploadFileWithTextMessage(audioFileURL: recorderVM.recordingOutputPath, model: makeModel())
@@ -248,8 +259,9 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             guard let self = self else {return}
             for (index, url) in urls.enumerated() {
                 let isLastItem = url == urls.last || urls.count == 1
-                let fileMessage = UploadFileWithTextMessage(urlItem: url, isLastItem: isLastItem, urlModel: makeModel(index))
-                self.uplVM.append(contentsOf: [fileMessage])
+                if let fileMessage = UploadFileWithTextMessage(urlItem: url, isLastItem: isLastItem, urlModel: makeModel(index)) {
+                    self.uplVM.append(contentsOf: [fileMessage])
+                }
             }
             attVM.clear()
         }

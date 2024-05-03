@@ -22,14 +22,6 @@ struct ThreadView: View, DropDelegate {
         ScrollViewReader { scrollProxy in
             ThreadHistoryVStack()
                 .background(ThreadbackgroundView(threadId: viewModel.threadId))
-                .overlay(alignment: .bottom) {
-                    VStack(spacing: 16) {
-                        UnreadMentionsButton()
-                            .environmentObject(viewModel.unreadMentionsViewModel)
-                        MoveToBottomButton()
-                        CloseRecordingButton()                            
-                    }
-                }
                 .task {
                     viewModel.historyVM.start()
                     viewModel.scrollVM.scrollProxy = scrollProxy
@@ -45,7 +37,6 @@ struct ThreadView: View, DropDelegate {
         .environmentObject(viewModel.reactionViewModel)
         .simultaneousGesture(tap.simultaneously(with: drag))
         .navigationBarBackButtonHidden(true)
-        .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))
         .background(SheetEmptyBackground())
         .onDrop(of: [.image], delegate: self)
         .safeAreaInset(edge: .bottom) {

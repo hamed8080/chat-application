@@ -100,8 +100,8 @@ struct SelectedContactsView: View {
     @State private var width: CGFloat = 200
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            LazyVGrid(columns: columns, alignment: .leading) {
+        ScrollView(.vertical, showsIndicators: false) {
+            LazyVGrid(columns: columns, alignment: .center) {
                 ForEach(viewModel.selectedContacts) { contact in
                     SelectedContact(viewModel: viewModel, contact: contact)
                 }
@@ -142,22 +142,22 @@ struct SelectedContactsView: View {
 struct EditCreatedConversationDetail: View {
     @EnvironmentObject var viewModel: ConversationBuilderViewModel
     @State var showImagePicker = false
+    @FocusState private var focused: FocusFields?
+
+    private enum FocusFields: Hashable {
+        case title
+    }
 
     var body: some View {
         List {
             HStack {
                 imagePickerButton
-                let key = viewModel.createConversationType?.isGroupType == true ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName"
-                TextField(key.bundleLocalized(), text: $viewModel.conversationTitle)
-                    .textContentType(.name)
-                    .padding()
-                    .font(.iransansBody)
-                    .applyAppTextfieldStyle(innerBGColor: Color.clear, error: viewModel.showTitleError ? "ConversationBuilder.atLeatsEnterTwoCharacter" : nil)
+                titleTextField
             }
             .frame(height: 88)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
-            
+
             StickyHeaderSection(header: "", height: 10)
                 .listRowInsets(.zero)
                 .listRowSeparator(.hidden)
@@ -234,6 +234,20 @@ struct EditCreatedConversationDetail: View {
             imagePickerButtonView
         }
         .buttonStyle(.borderless)
+    }
+
+    @ViewBuilder
+    private var titleTextField: some View {
+        let key = viewModel.createConversationType?.isGroupType == true ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName"
+        let error = viewModel.showTitleError ? "ConversationBuilder.atLeatsEnterTwoCharacter" : nil
+        TextField(key.bundleLocalized(), text: $viewModel.conversationTitle)
+            .focused($focused, equals: .title)
+            .font(.iransansBody)
+            .padding()
+            .foregroundStyle(Color.App.textSecondary.opacity(0.6))
+            .applyAppTextfieldStyle(topPlaceholder: "", error: error, isFocused: focused == .title) {
+                focused = .title
+            }
     }
 
     private var imagePickerButtonView: some View {
