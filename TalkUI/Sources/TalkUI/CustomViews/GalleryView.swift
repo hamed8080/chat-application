@@ -11,40 +11,63 @@ import SwiftUI
 import OSLog
 
 public struct GalleryView: View {
-    @StateObject var viewModel: GalleryViewModel
-
-    public init(message: Message) {
-        self._viewModel = StateObject(wrappedValue: .init(message: message))
-    }
+    @EnvironmentObject var viewModel: GalleryViewModel
+    
+    public init() {}
 
     public var body: some View {
         ZStack {
-            GalleryProgressView()
-                .environmentObject(viewModel)
-                .environment(\.layoutDirection, .leftToRight)
+            progress
+                .disabled(true)
             GalleryImageViewData()
                 .environment(\.layoutDirection, .leftToRight)
                 .environmentObject(viewModel)
-            GalleryTextView()
-                .environmentObject(viewModel)
+            textView
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .fullScreenBackgroundView()
         .ignoresSafeArea(.all)
+        .contentShape(Rectangle())
         .onAppear {
             viewModel.fetchImage()
         }
     }
-}
 
-struct GalleryProgressView: View {
-    @EnvironmentObject var viewModel: GalleryViewModel
+    private var progress: some View {
+        CircularProgressView(percent: $viewModel.percent, config: .normal)
+            .padding()
+            .frame(maxWidth: 128)
+            .frame(height: viewModel.state == .downloading ? nil : 0)
+            .clipped()
+            .environment(\.layoutDirection, .leftToRight)
+    }
 
-    var body: some View {
-        if viewModel.state == .downloading {
-            CircularProgressView(percent: $viewModel.percent, config: .normal)
-                .padding()
-                .frame(maxWidth: 128)
+    private var textView: some View {
+        VStack(alignment: .leading, spacing: 0){
+            Spacer()
+            HStack {
+                LongTextView(message)
+                    .frame(minWidth: 0, maxWidth: .infinity)
+                    .padding()
+                    .edgesIgnoringSafeArea([.leading, .trailing, .bottom])
+            }
+            .background(.ultraThinMaterial)
+        }
+        .frame(height: canShowTextView ? nil : 0)
+        .contentShape(Rectangle())
+        .clipped()
+        .disabled(!canShowTextView)
+    }
+
+    private var message: String {
+        viewModel.currentImageMessage?.message?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    private var canShowTextView: Bool {
+        if let message = viewModel.currentImageMessage?.message?.trimmingCharacters(in: .whitespacesAndNewlines), !message.isEmpty {
+            return true
+        } else {
+            return false
         }
     }
 }
@@ -71,110 +94,61 @@ struct GalleryImageViewData: View {
 public struct GalleryImageView: View {
     let uiimage: UIImage
     let viewModel: GalleryViewModel?
+    @EnvironmentObject var offsetVM: GalleyOffsetViewModel
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     @GestureState private var scaleBy: CGFloat = 1.0
-    @State private var endScale: CGFloat = 1.0
-    @State private var isDragging = false
-    @State var dragOffset: CGSize = .zero
-    @State private var previousDragOffset: CGSize = .zero
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "GalleryImageView")
 
     public init(uiimage: UIImage, viewModel: GalleryViewModel? = nil) {
         self.uiimage = uiimage
         self.viewModel = viewModel
     }
 
+    public var body: some View {
+        Image(uiImage: uiimage)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .contentShape(Rectangle())
+            .scaleEffect(scaleBy, anchor: .center)
+            .scaleEffect(offsetVM.endScale, anchor: .center)
+            .simultaneousGesture(doubleTapGesture.exclusively(before: zoomGesture.simultaneously(with: dragGesture)))
+            .offset(offsetVM.dragOffset)
+            .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
+            .animation(.easeInOut, value: offsetVM.dragOffset)
+    }
+
     var dragGesture: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .local)
             .onChanged { value in
-#if DEBUG
-                logger.info("OnChanged dragGesture before: previousDragoffset: \(previousDragOffset.debugDescription) endScale: \(endScale) isDragging: \(isDragging) valueTranslation: \(value.translation.debugDescription)")
-#endif
-                isDragging = true
-                dragOffset.width = value.translation.width + previousDragOffset.width
-                dragOffset.height = value.translation.height + previousDragOffset.height
-#if DEBUG
-                logger.info("OnChanged dragGesture after: previousDragoffset: \(previousDragOffset.debugDescription) endScale: \(endScale) isDragging: \(isDragging) valueTranslation: \(value.translation.debugDescription)")
-#endif
+                offsetVM.onDragChanged(value)
             }
             .onEnded { value in
-#if DEBUG
-                logger.info("OnEnded dragGesture before: endScale: \(endScale) isDragging: \(isDragging) valueTRanslation: \(value.translation.debugDescription)")
-#endif
-                isDragging = false
-                previousDragOffset = dragOffset
-                if value.translation.width > 100 {
-                    // swipe right
-                    viewModel?.swipeTo(.previous)
-                }
-
-                if value.translation.width < 100 {
-                    // swipe left
-                    viewModel?.swipeTo(.next)
-                }
-
-                if value.translation.height > 100, endScale <= 1.0, abs(value.translation.width) < 42 {
-                    // swipe down
-                    appOverlayVM.isPresented = false
-                    appOverlayVM.clear()
-                }
-#if DEBUG
-                logger.info("OnEnded dragGesture after: endScale: \(endScale) isDragging: \(isDragging) valueTRanslation: \(value.translation.debugDescription)")
-#endif
+                offsetVM.onDragEnded(value)
             }
     }
 
     var zoomGesture: some Gesture {
         MagnificationGesture()
             .updating($scaleBy) { value, state, transaction in
-                logger.info("OnUpdating zoomGesture before: endScale: \(endScale) isDragging: \(isDragging)")
-                state = value
-                transaction.animation = .interactiveSpring()
-                logger.info("OnUpdating zoomGesture after: endScale: \(endScale) isDragging: \(isDragging)")
+                if value > 1 {
+                    state = value
+                    transaction.animation = .interactiveSpring()
+                }
             }
             .onEnded{ value in
-                if !isDragging {
-                    logger.info("OnEnded zoomGesture before: endScale: \(endScale) isDragging: \(isDragging)")
-                    endScale = value
-                    logger.info("OnEnded zoomGesture after: endScale: \(endScale) isDragging: \(isDragging)")
-                }
+                offsetVM.onMagnificationEnded(value)
             }
     }
 
-    public var body: some View {
-        Image(uiImage: uiimage)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .scaleEffect(scaleBy, anchor: .center)
-            .scaleEffect(endScale, anchor: .center)
-            .offset(dragOffset)
-            .gesture(dragGesture)
-            .gesture(zoomGesture)
-            .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
-    }
-}
-
-struct GalleryTextView: View {
-    @EnvironmentObject var viewModel: GalleryViewModel
-
-    var body: some View {
-        if let message = viewModel.currentImageMessage?.message?.trimmingCharacters(in: .whitespacesAndNewlines), !message.isEmpty {
-            VStack(alignment: .leading, spacing: 0){
-                Spacer()
-                HStack {
-                    LongTextView(message)
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .padding()
-                        .edgesIgnoringSafeArea([.leading, .trailing, .bottom])
-                }
-                .background(.ultraThinMaterial)
+    private var doubleTapGesture: some Gesture {
+        TapGesture(count: 2)
+            .onEnded { _ in
+                offsetVM.onDoubleTapped()
             }
-        }
     }
 }
 
 struct GalleryView_Previews: PreviewProvider {
     static var previews: some View {
-        GalleryView(message: Message(message: "TEST", conversation: .init(id: 1)))
+        GalleryView()
     }
 }

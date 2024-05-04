@@ -18,7 +18,8 @@ struct AppOverlayFactory: View {
     var body: some View {
         switch viewModel.type {
         case .gallery(let message):
-            GalleryView(message: message)
+            GalleryView()
+                .environmentObject(GalleryViewModel(message: message))
                 .id(message.id)
         case .galleryImageView(let image):
             ZStack {

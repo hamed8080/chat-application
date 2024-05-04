@@ -43,6 +43,7 @@ public class AppOverlayViewModel: ObservableObject {
     public var isToast: Bool = false
     public var isError: Bool { AppState.shared.error != nil }
     public var showCloseButton: Bool = false
+    public var offsetVM = GalleyOffsetViewModel()
 
     public var transition: AnyTransition {
         switch type {
@@ -73,6 +74,7 @@ public class AppOverlayViewModel: ObservableObject {
             self?.onError(newValue)
         }
         .store(in: &cancelableSet)
+        offsetVM.appOverlayVM = self
     }
 
     private func onError(_ newError: ChatError?) {

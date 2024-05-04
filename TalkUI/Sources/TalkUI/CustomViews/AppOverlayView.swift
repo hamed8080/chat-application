@@ -10,8 +10,10 @@ import TalkViewModels
 
 public struct AppOverlayView<Content>: View where Content: View {
     @EnvironmentObject var viewModel: AppOverlayViewModel
+    @EnvironmentObject var galleryOffsetVM: GalleyOffsetViewModel
     let content: () -> Content
     let onDismiss: (() -> Void)?
+    @State private var offsetY: CGFloat = 0
 
     public init(onDismiss: (() -> Void)?, @ViewBuilder content: @escaping () -> Content) {
         self.content = content
@@ -39,10 +41,19 @@ public struct AppOverlayView<Content>: View where Content: View {
             }
         }
         .ignoresSafeArea(.all)
+        .offset(y: offsetY)
+        .simultaneousGesture(dragGesture)
+        .animation(.smooth, value: offsetY)
         .animation(animtion, value: viewModel.isPresented)
         .onChange(of: viewModel.isPresented) { newValue in
             if newValue == false {
+                offsetY = 0
                 onDismiss?()
+            }
+        }
+        .onChange(of: galleryOffsetVM.dragOffset) { newValue in
+            if viewModel.isPresented, galleryOffsetVM.endScale == 1  {
+                offsetY = newValue.height
             }
         }
     }
@@ -53,6 +64,24 @@ public struct AppOverlayView<Content>: View where Content: View {
         } else {
             return Animation.easeInOut
         }
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                if value.translation.height > 0, galleryOffsetVM.endScale == 1 {
+                    offsetY = value.translation.height
+                }
+            }
+            .onEnded { endValue in
+                if endValue.translation.height > 100, galleryOffsetVM.endScale == 1 {
+                    galleryOffsetVM.dismiss()
+                } else {
+                    withAnimation(.spring) {
+                        offsetY = 0
+                    }
+                }
+            }
     }
 }
 

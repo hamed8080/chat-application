@@ -69,10 +69,12 @@ struct SplitView: View {
         .animation(.easeInOut, value: isLoggedIn)
         .overlay(OpenURLView())
         .overlay {
+            let appOverlayVM = container.appOverlayVM
             AppOverlayView(onDismiss: onDismiss) {
                 AppOverlayFactory()
             }
-            .environmentObject(container.appOverlayVM)
+            .environmentObject(appOverlayVM)
+            .environmentObject(appOverlayVM.offsetVM)
         }
         .onReceive(TokenManager.shared.$isLoggedIn) { isLoggedIn in
             if self.isLoggedIn != isLoggedIn {
