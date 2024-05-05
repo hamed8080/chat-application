@@ -17,22 +17,6 @@ public struct LongTextView: View {
         self.text = text
     }
 
-    private func determineTruncation(_ geometry: GeometryProxy) {
-        let total = self.text.boundingRect(
-            with: CGSize(
-                width: geometry.size.width,
-                height: .greatestFiniteMagnitude
-            ),
-            options: .usesLineFragmentOrigin,
-            attributes: [.font: UIFont.systemFont(ofSize: 16)],
-            context: nil
-        )
-
-        if total.size.height > geometry.size.height {
-            self.truncated = true
-        }
-    }
-
     public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             if expanded {
@@ -41,12 +25,14 @@ public struct LongTextView: View {
                     .matchedGeometryEffect(id: 1, in: id, anchor: .top, isSource: false)
                     .multilineTextAlignment(text.naturalTextAlignment)
                     .lineLimit(nil)
+                    .contentShape(Rectangle())
             } else {
                 Text(self.text)
                     .font(.iransansBody)
                     .lineLimit(3)
                     .multilineTextAlignment(text.naturalTextAlignment)
                     .matchedGeometryEffect(id: 1, in: id, anchor: .bottom, isSource: true)
+                    .contentShape(Rectangle())
                     .background(
                         GeometryReader { geometry in
                             Color.clear.onAppear {
@@ -57,6 +43,25 @@ public struct LongTextView: View {
             }
             if self.truncated {
                 self.toggleButton
+            }
+        }
+        .contentShape(Rectangle())
+    }
+
+    private func determineTruncation(_ geometry: GeometryProxy) {
+        Task {
+            let total = self.text.boundingRect(
+                with: CGSize(
+                    width: geometry.size.width,
+                    height: .greatestFiniteMagnitude
+                ),
+                options: .usesLineFragmentOrigin,
+                attributes: [.font: UIFont.systemFont(ofSize: 16)],
+                context: nil
+            )
+
+            if total.size.height > geometry.size.height {
+                self.truncated = true
             }
         }
     }
@@ -70,6 +75,7 @@ public struct LongTextView: View {
             Text(self.expanded ? "General.showLess" : "General.showMore")
                 .font(.iransansCaption)
         }
+        .buttonStyle(.borderless)
     }
 }
 

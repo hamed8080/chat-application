@@ -18,8 +18,7 @@ public class GalleyOffsetViewModel: ObservableObject {
     public func onDragChanged(_ value: DragGesture.Value) {
         isDragging = true
         if endScale > 1 {
-            dragOffset.width = value.translation.width + previousDragOffset.width
-            dragOffset.height = value.translation.height + previousDragOffset.height
+            scrollInZoomMode(value)
         }
     }
 
@@ -37,18 +36,35 @@ public class GalleyOffsetViewModel: ObservableObject {
     public func onDoubleTapped() {
         withAnimation(.easeOut) {
             if endScale == 1 {
-                endScale = 2
+                doubleZoom()
             } else {
-                endScale = 1
-                dragOffset = .zero
+                resetZoom()
             }
         }
     }
 
     public func onMagnificationEnded(_ value: GestureStateGesture<MagnificationGesture, CGFloat>.Value) {
-        if !isDragging, value > 1 {
+        if isDragging { return }
+        if value > 1 {
             endScale = value
+        } else {
+            endScale = max(1, endScale - value)
         }
+    }
+
+    private func scrollInZoomMode(_ value: DragGesture.Value) {
+        let width = value.translation.width + previousDragOffset.width
+        let height = value.translation.height + previousDragOffset.height
+        dragOffset = .init(width: width, height: height)
+    }
+
+    private func doubleZoom() {
+        endScale = 2
+    }
+
+    private func resetZoom() {
+        endScale = 1
+        dragOffset = .zero
     }
 
     public func dismiss() {
@@ -56,7 +72,7 @@ public class GalleyOffsetViewModel: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.appOverlayVM?.isPresented = false
             self?.appOverlayVM?.clear()
-            self?.dragOffset.height = 0
+            self?.resetZoom()
         }
     }
 }

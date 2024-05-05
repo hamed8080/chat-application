@@ -42,9 +42,9 @@ public struct AppOverlayView<Content>: View where Content: View {
         }
         .ignoresSafeArea(.all)
         .offset(y: offsetY)
-        .simultaneousGesture(dragGesture)
-        .animation(.smooth, value: offsetY)
+        .animation(.easeInOut, value: offsetY)
         .animation(animtion, value: viewModel.isPresented)
+        .simultaneousGesture(dragGesture)
         .onChange(of: viewModel.isPresented) { newValue in
             if newValue == false {
                 offsetY = 0
@@ -77,7 +77,7 @@ public struct AppOverlayView<Content>: View where Content: View {
                 if endValue.translation.height > 100, galleryOffsetVM.endScale == 1 {
                     galleryOffsetVM.dismiss()
                 } else {
-                    withAnimation(.spring) {
+                    withAnimation(.spring()) {
                         offsetY = 0
                     }
                 }
@@ -86,16 +86,13 @@ public struct AppOverlayView<Content>: View where Content: View {
 }
 
 struct DismissAppOverlayButton: View {
-    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
+    @EnvironmentObject var galleryOffsetVM: GalleyOffsetViewModel
 
     var body: some View {
         GeometryReader { reader in
             VStack {
                 Button {
-                    withAnimation {
-                        appOverlayVM.isPresented = false
-                        appOverlayVM.clear()
-                    }
+                    galleryOffsetVM.dismiss()
                 } label: {
                     Image(systemName: "xmark")
                         .resizable()

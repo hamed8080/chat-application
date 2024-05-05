@@ -35,28 +35,27 @@ public struct GalleryView: View {
 
     private var progress: some View {
         CircularProgressView(percent: $viewModel.percent, config: .normal)
-            .padding()
+            .padding(viewModel.state == .downloading ? 0 : 8)
             .frame(maxWidth: 128)
             .frame(height: viewModel.state == .downloading ? nil : 0)
             .clipped()
             .environment(\.layoutDirection, .leftToRight)
     }
 
+    @ViewBuilder
     private var textView: some View {
-        VStack(alignment: .leading, spacing: 0){
-            Spacer()
-            HStack {
-                LongTextView(message)
-                    .frame(minWidth: 0, maxWidth: .infinity)
-                    .padding()
-                    .edgesIgnoringSafeArea([.leading, .trailing, .bottom])
+        if canShowTextView {
+            VStack(alignment: .leading, spacing: 0){
+                Spacer()
+                HStack {
+                    LongTextView(message)
+                        .frame(minWidth: 0, maxWidth: .infinity)
+                        .padding()
+                        .edgesIgnoringSafeArea([.leading, .trailing, .bottom])
+                }
+                .background(.ultraThinMaterial)
             }
-            .background(.ultraThinMaterial)
         }
-        .frame(height: canShowTextView ? nil : 0)
-        .contentShape(Rectangle())
-        .clipped()
-        .disabled(!canShowTextView)
     }
 
     private var message: String {
@@ -112,7 +111,7 @@ public struct GalleryImageView: View {
             .scaleEffect(offsetVM.endScale, anchor: .center)
             .simultaneousGesture(doubleTapGesture.exclusively(before: zoomGesture.simultaneously(with: dragGesture)))
             .offset(offsetVM.dragOffset)
-            .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
+            .animation(.easeInOut, value: scaleBy)
             .animation(.easeInOut, value: offsetVM.dragOffset)
     }
 
