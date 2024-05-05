@@ -12,7 +12,8 @@ import OSLog
 
 public struct GalleryView: View {
     @EnvironmentObject var viewModel: GalleryViewModel
-    
+    @EnvironmentObject var offsetVM: GalleyOffsetViewModel
+
     public init() {}
 
     public var body: some View {
@@ -27,6 +28,7 @@ public struct GalleryView: View {
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .fullScreenBackgroundView()
         .ignoresSafeArea(.all)
+        .background(frameReader)
         .contentShape(Rectangle())
         .onAppear {
             viewModel.fetchImage()
@@ -67,6 +69,14 @@ public struct GalleryView: View {
             return true
         } else {
             return false
+        }
+    }
+
+    private var frameReader: some View {
+        GeometryReader { proxy in
+            Color.clear.onAppear {
+                offsetVM.heightOfScreen = proxy.size.height
+            }
         }
     }
 }

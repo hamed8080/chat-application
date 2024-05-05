@@ -12,8 +12,10 @@ public class GalleyOffsetViewModel: ObservableObject {
     @Published public var endScale: CGFloat = 1.0
     @Published public var isDragging = false
     @Published public var dragOffset: CGSize = .zero
+    @Published public var containerYOffset: CGFloat = .zero
     @Published public var previousDragOffset: CGSize = .zero
     public weak var appOverlayVM: AppOverlayViewModel?
+    @Published public var heightOfScreen: CGFloat = .zero
 
     public func onDragChanged(_ value: DragGesture.Value) {
         isDragging = true
@@ -27,9 +29,25 @@ public class GalleyOffsetViewModel: ObservableObject {
         previousDragOffset = dragOffset
 
         if value.translation.height < 100, endScale <= 1 {
-            dragOffset = .zero
+            resetOffset()
         } else if value.translation.height > 100, endScale == 1 {
+            dragOffset.height = value.translation.height
             dismiss()
+        }
+    }
+
+    public func onContainerDragChanged(_ value: DragGesture.Value) {
+        if value.translation.height > 0, endScale == 1 {
+            containerYOffset = value.translation.height
+        }
+    }
+
+    public func onContainerDragEnded(_ endValue: DragGesture.Value) {
+        if endValue.translation.height > 100, endScale == 1 {
+            containerYOffset = endValue.translation.height
+            dismiss()
+        } else if endScale == 1 {
+            resetOffset()
         }
     }
 
@@ -39,6 +57,7 @@ public class GalleyOffsetViewModel: ObservableObject {
                 doubleZoom()
             } else {
                 resetZoom()
+                resetOffset()
             }
         }
     }
@@ -64,15 +83,24 @@ public class GalleyOffsetViewModel: ObservableObject {
 
     private func resetZoom() {
         endScale = 1
+    }
+
+    private func resetOffset() {
+        containerYOffset = .zero
         dragOffset = .zero
+        previousDragOffset = .zero
     }
 
     public func dismiss() {
-        dragOffset.height = 1000
+        withAnimation(.easeInOut(duration: 0.3)) {
+            dragOffset.height += heightOfScreen - dragOffset.height
+            containerYOffset = dragOffset.height
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.appOverlayVM?.isPresented = false
             self?.appOverlayVM?.clear()
             self?.resetZoom()
+            self?.resetOffset()
         }
     }
 }
