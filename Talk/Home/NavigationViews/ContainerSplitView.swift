@@ -100,7 +100,7 @@ struct NavigationTypeView: View {
                 .environmentObject(viewModel.threadPinMessageViewModel)
         case .threadDetail(let navValue):
             let viewModel = navValue.viewModel
-            ThreadDetailView(thread: viewModel.thread)
+            ThreadDetailView()
                 .environmentObject(container.appOverlayVM)
                 .environmentObject(viewModel)
                 .environmentObject(container.threadsVM)

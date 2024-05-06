@@ -69,7 +69,7 @@ struct MainSendButtons: View {
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: viewModel.showAudio ? 20 : 0, height: viewModel.showAudio ? 20 : 0)
+                    .frame(width: viewModel.showAudio ? 24 : 0, height: viewModel.showAudio ? 24 : 0)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(Color.App.textSecondary)
             }

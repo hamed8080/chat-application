@@ -53,7 +53,7 @@ struct SelectionView: View {
                         .interpolation(.none)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 19, height: 18)
+                        .frame(width: 24, height: 24)
                         .tint(Color.App.iconSecondary)
                 }
                 .frame(width: 36, height: 36)

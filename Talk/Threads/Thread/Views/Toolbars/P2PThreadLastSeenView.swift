@@ -14,7 +14,7 @@ import ChatDTO
 struct P2PThreadLastSeenView : View {
     let thread: Conversation
     @State private var lastSeen = ""
-    private var p2pPartnerFinderVM = FindPartnerParticipantViewModel()
+    @State private var p2pPartnerFinderVM = FindPartnerParticipantViewModel()
 
     init(thread: Conversation) {
         self.thread = thread

@@ -18,14 +18,10 @@ struct SelectConversationOrContactList: View {
     var onSelect: (Conversation?, Contact?) -> Void
     @Environment(\.dismiss) var dismiss
     @State var selectedTabId: Int = 0
-    let tabs: [Tab]
+    @State private var tabs: [Tab] = []
 
     init(onSelect: @escaping (Conversation?, Contact?) -> Void) {
         self.onSelect = onSelect
-        tabs = [
-            .init(title: "Tab.chats", view: AnyView(SelectConversationTab(onSelect: onSelect))),
-            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
-        ]
     }
 
     var body: some View {
@@ -38,9 +34,19 @@ struct SelectConversationOrContactList: View {
                 SearchInSelectConversationOrContact()
                     .environmentObject(viewModel)
             }
+            .onAppear {
+                makeTabs()
+            }
             .onDisappear {
                 viewModel.cancelObservers()
             }
+    }
+
+    private func makeTabs() {
+        tabs = [
+            .init(title: "Tab.chats", view: AnyView(SelectConversationTab(onSelect: onSelect))),
+            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
+        ]
     }
 }
 
