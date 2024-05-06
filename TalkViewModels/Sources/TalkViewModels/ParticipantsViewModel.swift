@@ -225,7 +225,7 @@ public final class ParticipantsViewModel: ObservableObject {
 //        ChatManager.activeInstance?.conversation.participant.removeAdminRole(.init(participants: [.init(id: "\(participant.coreUserId ?? 0)", idType: .coreUserId)], conversationId: threadId))
     }
 
-    public func appendParticipants(participants: [Participant]) {
+    private func appendParticipants(participants: [Participant]) {
         // remove older data to prevent duplicate on view
         self.participants.removeAll(where: { participant in participants.contains(where: { participant.id == $0.id }) })
         self.participants.append(contentsOf: participants)

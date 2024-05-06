@@ -240,8 +240,5 @@ struct MemberView_Previews: PreviewProvider {
         }
         .listStyle(.plain)
         .environmentObject(viewModel)
-        .onAppear {
-            viewModel.appendParticipants(participants: MockData.generateParticipants())
-        }
     }
 }

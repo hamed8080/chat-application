@@ -29,10 +29,10 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     public weak var threadVM: ThreadViewModel?
     @Published public var dismiss = false
     @Published public var isLoading = false
-    public var isGroup: Bool { thread?.group == true }
     public var canShowEditConversationButton: Bool { thread?.group == true && thread?.admin == true && thread?.type != .selfThread }
     public var participantDetailViewModel: ParticipantDetailViewModel?
     public var editConversationViewModel: EditConversationViewModel?
+    private let p2pPartnerFinder = FindPartnerParticipantViewModel()
 
     public init() {}
 
@@ -163,30 +163,13 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
                 self?.onThreadEvent(value)
             }
             .store(in: &cancelable)
-        participantDetailViewModel?.objectWillChange.sink { [weak self] _ in
-            self?.updateThreadTitle()
-            /// We have to update the ui all the time and keep it in sync with the ParticipantDetailViewModel.
-            self?.animateObjectWillChange()
-        }
-        .store(in: &cancelable)
+        registerP2PParticipantObserver()
     }
 
-    /// When the thread is a P2P thread and member tab is hidden so getParticipants won't get called.
-    /// We have to call it manually and observe for changes, and make the participantDetailViewModel and then update the UI.
+    /// Fetch contact detail of the P2P participant by threadId directly here.
     public func fetchPartnerParticipant() async {
-        guard thread?.group == false, let participantsVM = threadVM?.participantsViewModel else { return }
-        if participantsVM.participants.isEmpty == true {
-            await participantsVM.getParticipants()
-        }
-        participantsVM.objectWillChange.sink { [weak self] _ in
-            guard let self = self else { return }
-            let partner = participantsVM.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id})
-            if let partner = partner, participantDetailViewModel == nil {
-                participantDetailViewModel = ParticipantDetailViewModel(participant: partner)
-                self.animateObjectWillChange()
-            }
-        }
-        .store(in: &cancelable)
+        guard thread?.group == false else { return }
+        getP2PPartnerParticipant()
     }
 
     private func setupParticipantDetailViewModel(participant: Participant?) {
@@ -194,7 +177,7 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         let threadP2PParticipant = AppState.shared.appStateNavigationModel.userToCreateThread
         let participant = participant ?? threadP2PParticipant ?? partner
         if let participant = participant {
-            self.participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
+            setupP2PParticipant(participant)
         }
     }
 
@@ -209,6 +192,31 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
             cancelable.cancel()
         }
         participantDetailViewModel?.cancelObservers()
+    }
+
+    private func getP2PPartnerParticipant() {
+        guard let threadId = thread?.id else { return }
+        p2pPartnerFinder.findPartnerBy(threadId: threadId) { [weak self] partner in
+            if let self = self, let partner = partner {
+                setupP2PParticipant(partner)
+            }
+        }
+    }
+
+    private func setupP2PParticipant(_ participant: Participant) {
+        participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
+        registerP2PParticipantObserver()
+    }
+
+    private func registerP2PParticipantObserver() {
+        guard let participantDetailViewModel else { return }
+        participantDetailViewModel.objectWillChange.sink { [weak self] _ in
+            self?.updateThreadTitle()
+            /// We have to update the ui all the time and keep it in sync with the ParticipantDetailViewModel.
+            self?.animateObjectWillChange()
+        }
+        .store(in: &cancelable)
+        self.animateObjectWillChange()
     }
 
     deinit {

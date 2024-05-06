@@ -36,6 +36,8 @@
 		051ED3242B4D75BC00D963A0 /* LeaveThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051ED3222B4D75BC00D963A0 /* LeaveThreadDialog.swift */; };
 		052191562B2F262300CC99D1 /* MutualThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052191552B2F262300CC99D1 /* MutualThreadRow.swift */; };
 		052191572B2F262300CC99D1 /* MutualThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052191552B2F262300CC99D1 /* MutualThreadRow.swift */; };
+		052557042BE93AD600DFCE54 /* P2PThreadLastSeenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052557032BE93AD600DFCE54 /* P2PThreadLastSeenView.swift */; };
+		052557052BE93AD600DFCE54 /* P2PThreadLastSeenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052557032BE93AD600DFCE54 /* P2PThreadLastSeenView.swift */; };
 		053803D02B11F879005C8FAB /* DeleteThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */; };
 		053803D12B11F879005C8FAB /* DeleteThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */; };
 		05466B0A2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
@@ -376,6 +378,7 @@
 		0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButtonItem.swift; sourceTree = "<group>"; };
 		051ED3222B4D75BC00D963A0 /* LeaveThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveThreadDialog.swift; sourceTree = "<group>"; };
 		052191552B2F262300CC99D1 /* MutualThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutualThreadRow.swift; sourceTree = "<group>"; };
+		052557032BE93AD600DFCE54 /* P2PThreadLastSeenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = P2PThreadLastSeenView.swift; sourceTree = "<group>"; };
 		052F46652B21F5B400085C26 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
 		053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadDialog.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
@@ -1035,6 +1038,7 @@
 				0570CB922AAEE98C001832E9 /* ThreadViewTrailingToolbar.swift */,
 				05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */,
 				05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */,
+				052557032BE93AD600DFCE54 /* P2PThreadLastSeenView.swift */,
 			);
 			path = Toolbars;
 			sourceTree = "<group>";
@@ -1198,6 +1202,7 @@
 				052191562B2F262300CC99D1 /* MutualThreadRow.swift in Sources */,
 				05FF13332AF8CD8200F120DF /* SelectedContact.swift in Sources */,
 				05A4AAA42B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */,
+				052557042BE93AD600DFCE54 /* P2PThreadLastSeenView.swift in Sources */,
 				0570CC512AAEE98F001832E9 /* VideoView.swift in Sources */,
 				05EA77A02BBC025E00FFB9C2 /* CameraViewController.swift in Sources */,
 				0516ACF82AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,
@@ -1360,6 +1365,7 @@
 				052191572B2F262300CC99D1 /* MutualThreadRow.swift in Sources */,
 				05FF13342AF8CD8200F120DF /* SelectedContact.swift in Sources */,
 				05A4AAA52B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */,
+				052557052BE93AD600DFCE54 /* P2PThreadLastSeenView.swift in Sources */,
 				0570CC522AAEE98F001832E9 /* VideoView.swift in Sources */,
 				05EA77A12BBC025E00FFB9C2 /* CameraViewController.swift in Sources */,
 				0516ACF92AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,

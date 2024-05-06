@@ -160,43 +160,6 @@ struct ThreadViewCenterToolbar: View {
     }
 }
 
-struct P2PThreadLastSeenView : View {
-    let thread: Conversation
-    @State private var lastSeen = ""
-
-    var body: some View {
-        Text(lastSeen)
-            .fixedSize()
-            .foregroundColor(Color.App.toolbarSecondaryText)
-            .font(.iransansFootnote)
-            .onAppear {
-                if canGetParticipant {
-                    ChatManager.activeInstance?.conversation.participant.get(.init(threadId: thread.id ?? -1))
-                } else {
-                    let lastSeen = "Contacts.lastSeen.unknown".bundleLocalized()
-                    let localized = "Contacts.lastVisited".bundleLocalized()
-                    let formatted = String(format: localized, lastSeen)
-                    self.lastSeen = formatted
-                }
-            }
-            .onReceive(NotificationCenter.participant.publisher(for: .participant)) { notif in
-                guard
-                    let event = notif.object as? ParticipantEventTypes,
-                    case let .participants(response) = event,
-                    let lastSeen = response.result?.first(where: {$0.id == thread.partner})?.notSeenDuration?.lastSeenString
-                else { return }
-                let localized = "Contacts.lastVisited".bundleLocalized()
-                let formatted = String(format: localized, lastSeen)
-                self.lastSeen = formatted
-            }
-    }
-
-    private var canGetParticipant: Bool {
-        if thread.group == true { return false }
-        return lastSeen.isEmpty && thread.id != LocalId.emptyThread.rawValue
-    }
-}
-
 struct ThreadViewCenterToolbar_Previews: PreviewProvider {
     static var previews: some View {
         ThreadViewCenterToolbar(viewModel: ThreadViewModel(thread: Conversation()))
