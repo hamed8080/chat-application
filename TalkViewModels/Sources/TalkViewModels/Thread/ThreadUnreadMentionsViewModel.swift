@@ -18,6 +18,12 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     public private(set) var unreadMentions: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
     public private(set) var hasMention: Bool = false
+    private var objectId = UUID().uuidString
+    private let UNREAD_MENTIONS_KEY: String
+
+    public init(){
+        UNREAD_MENTIONS_KEY = "UNREAD-MENTIONS-\(objectId)"
+    }
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
@@ -41,7 +47,7 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
 
     public func fetchAllUnreadMentions() {
         let req = GetHistoryRequest(threadId: thread?.id ?? -1, count: 25, offset: 0, order: "desc", unreadMentioned: true)
-        RequestsManager.shared.append(prepend: "UnreadMentions", value: req)
+        RequestsManager.shared.append(prepend: UNREAD_MENTIONS_KEY, value: req)
         ChatManager.activeInstance?.message.history(req)
     }
 
@@ -54,7 +60,7 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     func onUnreadMentions(_ response: ChatResponse<[Message]>) {
-        if response.subjectId == thread?.id, !response.cache, response.pop(prepend: "UnreadMentions") != nil, let unreadMentions = response.result {
+        if response.subjectId == thread?.id, !response.cache, response.pop(prepend: UNREAD_MENTIONS_KEY) != nil, let unreadMentions = response.result {
             self.unreadMentions.removeAll()
             self.unreadMentions.append(contentsOf: unreadMentions)
             self.unreadMentions.sort(by: {$0.time ?? 0 < $1.time ?? 1})

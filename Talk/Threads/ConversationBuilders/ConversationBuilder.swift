@@ -167,10 +167,19 @@ struct EditCreatedConversationDetail: View {
             let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"), bundle: Language.preferedBundle)
             let localizedPublic = String(localized: .init("Thread.public"), bundle: Language.preferedBundle)
 
-            Toggle(isOn: $viewModel.isPublic) {
+
+            HStack(spacing: 8) {
                 Text(String(format: localizedPublic, typeName))
+                    .foregroundColor(Color.App.textPrimary)
+                    .lineLimit(1)
+                    .layoutPriority(1)
+                Spacer()
+                Toggle("", isOn: $viewModel.isPublic)
+                    .tint(Color.App.accent)
+                    .scaleEffect(x: 0.8, y: 0.8, anchor: .center)
+                    .offset(x: 8)
             }
-            .toggleStyle(MyToggleStyle())
+            .padding(.leading)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
 

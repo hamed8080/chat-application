@@ -26,8 +26,11 @@ public final class EditProfileViewModel: ObservableObject {
     public var assetResources: [PHAssetResource] = []
     public var temporaryDisable: Bool = true
     private var cancelable: Set<AnyCancellable> = []
+    private var objectId = UUID().uuidString
+    private let UPDATE_USER_INFO_KEY: String
 
     public init() {
+        UPDATE_USER_INFO_KEY = "UPDATE-USER-INFO-\(objectId)"
         let user = AppState.shared.user
         firstName = user?.name ?? ""
         lastName = user?.lastName ?? ""
@@ -46,13 +49,13 @@ public final class EditProfileViewModel: ObservableObject {
 
     public func submit() {
         let req = UpdateChatProfile(bio: bio)
-        RequestsManager.shared.append(prepend: "Update-Thread-Info", value: req)
+        RequestsManager.shared.append(prepend: UPDATE_USER_INFO_KEY, value: req)
         ChatManager.activeInstance?.user.set(req)
     }
 
     private func onUpdateProfile(_ response: ChatResponse<Profile>) {
         self.bio = response.result?.bio ?? ""
-        if response.error == nil, response.pop(prepend: "Update-Thread-Info") != nil {
+        if response.error == nil, response.pop(prepend: UPDATE_USER_INFO_KEY) != nil {
             dismiss = true
         }
     }

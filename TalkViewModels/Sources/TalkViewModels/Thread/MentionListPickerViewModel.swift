@@ -21,8 +21,12 @@ public final class MentionListPickerViewModel: ObservableObject {
     private var cancelable: Set<AnyCancellable> = []
     private var searchText: String? = nil
     @MainActor public var lazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let MENTION_PARTICIPANTS_KEY: String
 
-    public init() {}
+    public init() {
+       MENTION_PARTICIPANTS_KEY = "MENTION-PARTICIPANTS-KEY-\(objectId)"
+    }
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
@@ -75,7 +79,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     @MainActor
     func onParticipants(_ response: ChatResponse<[Participant]>) async {
         /// We have to check threadId when forwarding messages to prevent the previous thread catch the result.
-        if !response.cache, response.subjectId == viewModel?.threadId, response.pop(prepend: "MentionParticipants") != nil, let participants = response.result {
+        if !response.cache, response.subjectId == viewModel?.threadId, response.pop(prepend: MENTION_PARTICIPANTS_KEY) != nil, let participants = response.result {
             if lazyList.offset == 0 {
                 self.mentionList.removeAll()
                 self.mentionList = .init(participants)
@@ -104,7 +108,7 @@ public final class MentionListPickerViewModel: ObservableObject {
         let count = lazyList.count
         let offset = lazyList.offset
         let req = ThreadParticipantRequest(threadId: threadId, offset: offset, count: count, name: searchText)
-        RequestsManager.shared.append(prepend: "MentionParticipants", value: req)
+        RequestsManager.shared.append(prepend: MENTION_PARTICIPANTS_KEY, value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 

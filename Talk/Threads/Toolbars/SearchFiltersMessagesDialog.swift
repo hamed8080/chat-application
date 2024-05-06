@@ -70,12 +70,13 @@ struct SearchFiltersMessagesDialog: View {
                 .foregroundColor(Color.App.textPrimary)
                 .lineLimit(1)
                 .layoutPriority(1)
+            Spacer()
             Toggle("", isOn: $showUnreadConversationToggle)
+                .tint(Color.App.accent)
                 .scaleEffect(x: 0.8, y: 0.8, anchor: .center)
-                .offset(x: -12)
+                .offset(x: 8)
         }
-        .padding(.horizontal)
-        .toggleStyle(MyToggleStyle())
+        .padding(.leading)
     }
 }
 

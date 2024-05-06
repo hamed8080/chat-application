@@ -26,8 +26,18 @@ public final class ThreadsSearchViewModel: ObservableObject {
     private var cachedAttribute: [String: AttributedString] = [:]
     public var isInSearchMode: Bool { searchText.count > 0 || (!searchedConversations.isEmpty || !searchedContacts.isEmpty) }
     @MainActor public private(set) var lazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let SEARCH_KEY: String
+    private let SEARCH_LOAD_MORE_KEY: String
+    private let SEARCH_PUBLIC_THREAD_KEY: String
+    private let SEARCH_CONTACTS_IN_THREADS_LIST_KEY: String
 
     public init() {
+        SEARCH_KEY = "SEARCH-\(objectId)"
+        SEARCH_LOAD_MORE_KEY = "SEARCH-LOAD-MORE-\(objectId)"
+        SEARCH_PUBLIC_THREAD_KEY = "SEARCH-PUBLIC-THREAD-\(objectId)"
+        SEARCH_CONTACTS_IN_THREADS_LIST_KEY = "SEARCH-CONTACTS-IN-THREADS-LIST-\(objectId)"
+
         Task {
             await setupObservers()
         }
@@ -139,7 +149,7 @@ public final class ThreadsSearchViewModel: ObservableObject {
         if await !lazyList.canLoadMore() { return }
         lazyList.setLoading(true)
         let req = ThreadsRequest(searchText: text, count: lazyList.count, offset: lazyList.offset, new: new)
-        RequestsManager.shared.append(prepend: loadMore ? "SEARCH-LOAD-MORE" : "SEARCH", value: req)
+        RequestsManager.shared.append(prepend: loadMore ? SEARCH_LOAD_MORE_KEY : SEARCH_KEY, value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
@@ -148,14 +158,14 @@ public final class ThreadsSearchViewModel: ObservableObject {
         if await !lazyList.canLoadMore() { return }
         lazyList.setLoading(true)
         let req = ThreadsRequest(count: lazyList.count, offset: lazyList.offset, name: text, type: .publicGroup)
-        RequestsManager.shared.append(prepend: "SEARCH-PUBLIC-THREAD", value: req)
+        RequestsManager.shared.append(prepend: SEARCH_PUBLIC_THREAD_KEY, value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
     @MainActor
     private func onSearch(_ response: ChatResponse<[Conversation]>) async {
         lazyList.setLoading(false)
-        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH") != nil {
+        if !response.cache, let threads = response.result, response.pop(prepend: SEARCH_KEY) != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
@@ -163,7 +173,7 @@ public final class ThreadsSearchViewModel: ObservableObject {
     @MainActor
     private func onSearchLoadMore(_ response: ChatResponse<[Conversation]>) async {
         lazyList.setLoading(false)
-        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-LOAD-MORE") != nil {
+        if !response.cache, let threads = response.result, response.pop(prepend: SEARCH_LOAD_MORE_KEY) != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
@@ -171,7 +181,7 @@ public final class ThreadsSearchViewModel: ObservableObject {
     @MainActor
     private func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) async {
         lazyList.setLoading(false)
-        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-PUBLIC-THREAD") != nil {
+        if !response.cache, let threads = response.result, response.pop(prepend: SEARCH_PUBLIC_THREAD_KEY) != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
@@ -197,12 +207,12 @@ public final class ThreadsSearchViewModel: ObservableObject {
         } else {
             req = ContactsRequest(query: searchText)
         }
-        RequestsManager.shared.append(prepend: "SEARCH-CONTACTS-IN-THREADS-LIST", value: req)
+        RequestsManager.shared.append(prepend: SEARCH_CONTACTS_IN_THREADS_LIST_KEY, value: req)
         ChatManager.activeInstance?.contact.search(req)
     }
 
     private func onSearchContacts(_ response: ChatResponse<[Contact]>) {
-        if !response.cache, response.pop(prepend: "SEARCH-CONTACTS-IN-THREADS-LIST") != nil {
+        if !response.cache, response.pop(prepend: SEARCH_CONTACTS_IN_THREADS_LIST_KEY) != nil {
             if let contacts = response.result {
                 self.searchedContacts.removeAll()
                 self.searchedContacts.append(contentsOf: contacts)

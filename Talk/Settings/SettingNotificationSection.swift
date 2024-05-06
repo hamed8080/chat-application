@@ -31,20 +31,22 @@ struct NotificationSettings: View {
         List {
             Group {
                 Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.soundEnable)
+                    .tint(Color.App.accent)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
                 if EnvironmentValues.isTalkTest {
                     Toggle("Notification.ShowDetails".bundleLocalized(), isOn: $model.notificationSettings.showDetails)
+                        .tint(Color.App.accent)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.dividerPrimary)
                 }
                 if EnvironmentValues.isTalkTest {
                     Toggle("Notification.Vibration".bundleLocalized(), isOn: $model.notificationSettings.vibration)
+                        .tint(Color.App.accent)
                         .listRowBackground(Color.App.bgPrimary)
                         .listSectionSeparator(.hidden)
                 }
             }
-            .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)
 
             if EnvironmentValues.isTalkTest {
@@ -103,10 +105,10 @@ struct PrivateNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.privateChat.sound)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -123,10 +125,10 @@ struct GroupNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.group.sound)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -143,10 +145,10 @@ struct ChannelNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.channel.sound)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)

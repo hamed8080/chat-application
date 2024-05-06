@@ -53,8 +53,29 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private var isSimulated: Bool { viewModel?.isSimulatedThared == true }
     public typealias Indices = (message: Message, sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)
 
+    private var objectId = UUID().uuidString
+    private let MORE_TOP_KEY: String
+    private let MORE_BOTTOM_KEY: String
+    private let MORE_TOP_FIRST_SCENARIO_KEY: String
+    private let MORE_BOTTOM_FIRST_SCENARIO_KEY: String
+    private let MORE_TOP_SECOND_SCENARIO_KEY: String
+    private let MORE_BOTTOM_FIFTH_SCENARIO_KEY: String
+    private let TO_TIME_KEY: String
+    private let FROM_TIME_KEY: String
+    private let FETCH_BY_OFFSET_KEY: String
+
     // MARK: Initializer
-    public init() {}
+    public init() {
+        MORE_TOP_KEY = "MORE-TOP-\(objectId)"
+        MORE_BOTTOM_KEY = "MORE-BOTTOM-\(objectId)"
+        MORE_TOP_FIRST_SCENARIO_KEY = "MORE-TOP-FIRST-SCENARIO-\(objectId)"
+        MORE_BOTTOM_FIRST_SCENARIO_KEY = "MORE-BOTTOM-FIRST-SCENARIO-\(objectId)"
+        MORE_TOP_SECOND_SCENARIO_KEY = "MORE-TOP-SECOND-SCENARIO-\(objectId)"
+        MORE_BOTTOM_FIFTH_SCENARIO_KEY = "MORE-BOTTOM-FIFTH-SCENARIO-\(objectId)"
+        TO_TIME_KEY = "TO-TIME-\(objectId)"
+        FROM_TIME_KEY = "FROM-TIME-\(objectId)"
+        FETCH_BY_OFFSET_KEY = "FETCH-BY-OFFSET-\(objectId)"
+    }
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
@@ -95,7 +116,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     @MainActor
-    private func moreTop(prepend: String = "MORE-TOP", delay: TimeInterval = 0.5, _ toTime: UInt?) async {
+    private func moreTop(prepend: String, delay: TimeInterval = 0.5, _ toTime: UInt?) async {
         if !canLoadMoreTop { return }
         topLoading = true
         oldFirstMessageInFirstSection = sections.first?.vms.first?.message
@@ -111,7 +132,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoreTop(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-TOP") != nil, let messages = response.result else { return }
+        guard response.pop(prepend: MORE_TOP_KEY) != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 3- Append and sort the array but not call to update the view.
@@ -139,7 +160,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     @MainActor
-    private func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) async {
+    private func moreBottom(prepend: String, _ fromTime: UInt?) async {
         if !hasNextBottom || bottomLoading { return }
         bottomLoading = true
         animateObjectWillChange()
@@ -150,7 +171,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoreBottom(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-BOTTOM") != nil, let messages = response.result else { return }
+        guard response.pop(prepend: MORE_BOTTOM_KEY) != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 3- Append and sort the array but not call to update the view.
@@ -204,13 +225,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 1- Get the top part to time messages
         if thread.lastMessageVO?.id ?? 0 > thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
             Task {
-                await moreTop(prepend: "MORE-TOP-FIRST-SCENARIO", delay: TimeInterval(0), toTime.advanced(by: 1))
+                await moreTop(prepend: MORE_TOP_FIRST_SCENARIO_KEY, delay: TimeInterval(0), toTime.advanced(by: 1))
             }
         }
     }
 
     private func onMoreTopFirstScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-TOP-FIRST-SCENARIO") != nil, let messages = response.result else { return }
+        guard response.pop(prepend: MORE_TOP_FIRST_SCENARIO_KEY) != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 2- Append and sort  and calculate the array but not call to update the view.
@@ -219,7 +240,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             let lastSeenMessageTime = thread.lastSeenMessageTime
             /// 4- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
             if let fromTime = lastSeenMessageTime {
-                await moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: 1))
+                await moreBottom(prepend: MORE_BOTTOM_FIRST_SCENARIO_KEY, fromTime.advanced(by: 1))
             }
             /// 5- Set whether it has more messages at the top or not.
             await setHasMoreTop(response)
@@ -227,7 +248,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoreBottomFirstScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-BOTTOM-FIRST-SCENARIO") != nil, let messages = response.result else { return }
+        guard response.pop(prepend: MORE_BOTTOM_FIRST_SCENARIO_KEY) != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 6- Append the unread message banner and after sorting it will sit below the last message seen. and it will be added into the secion of lastseen message no the new ones.
@@ -250,13 +271,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 1- Get the top part to time messages
         if thread.lastMessageVO?.id ?? 0 == thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
             Task {
-                await moreTop(prepend: "MORE-TOP-SECOND-SCENARIO", toTime.advanced(by: 1))
+                await moreTop(prepend: MORE_TOP_SECOND_SCENARIO_KEY, toTime.advanced(by: 1))
             }
         }
     }
 
     private func onMoreTopSecondScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-TOP-SECOND-SCENARIO") != nil, let messages = response.result else { return }
+        guard response.pop(prepend: MORE_TOP_SECOND_SCENARIO_KEY) != nil, let messages = response.result else { return }
         let lastSeenId = thread.lastSeenMessageId
         Task { [weak self] in
             guard let self = self else { return }
@@ -296,14 +317,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
             }
             let fromTime = lastMessageInListTime.advanced(by: 1)
             let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: viewModel?.readOnly == true)
-            RequestsManager.shared.append(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", value: req)
+            RequestsManager.shared.append(prepend: MORE_BOTTOM_FIFTH_SCENARIO_KEY, value: req)
             logHistoryRequest(req: req)
             ChatManager.activeInstance?.message.history(req)
         }
     }
 
     private func onMoreBottomFifthScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-BOTTOM-FIFTH-SCENARIO") != nil, let messages = response.result else { return }
+        guard response.pop(prepend: MORE_BOTTOM_FIFTH_SCENARIO_KEY) != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
@@ -337,14 +358,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 2- Fetch the top part of the message with the message itself.
             let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: viewModel?.readOnly == true)
             let timeReqManager = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
-            RequestsManager.shared.append(prepend: "TO-TIME", value: timeReqManager)
+            RequestsManager.shared.append(prepend: TO_TIME_KEY, value: timeReqManager)
             logHistoryRequest(req: toTimeReq)
             ChatManager.activeInstance?.message.history(toTimeReq)
         }
     }
 
     private func onMoveToTime(_ response: ChatResponse<[Message]>) {
-        guard let request = response.pop(prepend: "TO-TIME") as? OnMoveTime,
+        guard let request = response.pop(prepend: TO_TIME_KEY) as? OnMoveTime,
               let messages = response.result
         else { return }
         Task { [weak self] in
@@ -360,7 +381,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
             let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: viewModel?.readOnly == true)
             let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
-            RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
+            RequestsManager.shared.append(prepend: FROM_TIME_KEY, value: fromReqManager)
             logHistoryRequest(req: fromTimeReq)
             ChatManager.activeInstance?.message.history(fromTimeReq)
         }
@@ -368,7 +389,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func onMoveFromTime(_ response: ChatResponse<[Message]>) {
         guard
-            let request = response.pop(prepend: "FROM-TIME") as? OnMoveTime,
+            let request = response.pop(prepend: FROM_TIME_KEY) as? OnMoveTime,
             let messages = response.result
         else { return }
         Task { [weak self] in
@@ -405,14 +426,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func requestBottomPartByCountAndOffset() {
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, readOnly: viewModel?.readOnly == true)
-        RequestsManager.shared.append(prepend: "FETCH-BY-OFFSET", value: req)
+        RequestsManager.shared.append(prepend: FETCH_BY_OFFSET_KEY, value: req)
         logHistoryRequest(req: req)
         ChatManager.activeInstance?.message.history(req)
     }
 
     private func onFetchByOffset(_ response: ChatResponse<[Message]>) {
         guard
-            response.pop(prepend: "FETCH-BY-OFFSET") != nil,
+            response.pop(prepend: FETCH_BY_OFFSET_KEY) != nil,
             let messages = response.result
         else { return }
         Task { [weak self] in
@@ -458,7 +479,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         await appendMessagesAndSort(sortedMessages)
         await viewModel?.scrollVM.disableExcessiveLoading()
         isFetchedServerFirstResponse = false
-        if response.containsPartial(prependedKey: "MORE-TOP") {
+        if response.containsPartial(prependedKey: MORE_TOP_KEY) {
             hasNextTop = messages.count >= count // We just need the top part when the user open the thread while it's not connected.
         }
         await MainActor.run {
@@ -595,11 +616,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
         seenVM?.onAppear(copy)
         if canLoadMoreTop, let time = moreTopTime(messageId: message.id) {
-            await moreTop(time)
+            await moreTop(prepend: MORE_TOP_KEY, time)
         }
 
         if canLoadMoreBottom, let time = moreBottomTime(messageId: message.id) {
-            await moreBottom(time)
+            await moreBottom(prepend: MORE_BOTTOM_KEY, time)
         }
     }
 

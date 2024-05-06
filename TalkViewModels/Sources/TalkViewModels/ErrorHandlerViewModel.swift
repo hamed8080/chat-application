@@ -27,7 +27,7 @@ public final class ErrorHandlerViewModel: ObservableObject {
     public func onError(_ response: ChatResponse<Any>) {
         if let code = response.error?.code,
            code == ServerErrorType.noOtherOwnership.rawValue,
-           let request = response.pop(prepend: "Leave") as? LeaveThreadRequest,
+           let request = response.pop(prepend: "LEAVE") as? LeaveThreadRequest,
            let thread = AppState.shared.objectsContainer.threadsVM.threads.first(where: {$0.id == request.threadId})
         {
             let message = thread.type?.isChannelType == true ? "Thread.onlyChannelAdminError" : "Thread.onlyGroupAdminError"

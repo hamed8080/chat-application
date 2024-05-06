@@ -35,8 +35,11 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public var fileURL: URL? { message?.fileURL }
     public var url: URL? { message?.url }
     public var isInCache: Bool = false
+    private var objectId = UUID().uuidString
+    private let THUMBNAIL_KEY: String
 
     public init(message: Message) {
+        THUMBNAIL_KEY = "THUMBNAIL-\(objectId)"
         self.message = message
         setObservers()
     }
@@ -140,7 +143,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .thumbnailDownloaing
             let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true)
             uniqueId = req.uniqueId
-            RequestsManager.shared.append(prepend: "THUMBNAIL", value: req, autoCancel: false)
+            RequestsManager.shared.append(prepend: THUMBNAIL_KEY, value: req, autoCancel: false)
             ChatManager.activeInstance?.file.get(req)
             animateObjectWillChange()
         }
@@ -148,7 +151,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     private func onResponse(_ response: ChatResponse<Data>, _ url: URL?) {
         if response.uniqueId != uniqueId { return }
-        if !response.cache, response.pop(prepend: "THUMBNAIL") != nil, let data = response.result {
+        if !response.cache, response.pop(prepend: THUMBNAIL_KEY) != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
             state = .thumbnail
             autoreleasepool {
@@ -159,7 +162,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         }
 
         if response.cache, let data = response.result {
-            _ = response.pop(prepend: "THUMBNAIL")
+            _ = response.pop(prepend: THUMBNAIL_KEY)
             autoreleasepool {
                 state = .completed
                 downloadPercent = 100

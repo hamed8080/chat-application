@@ -37,8 +37,11 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     @Published public var showTitleError: Bool = false
     @Published public var show = false
     @Published public var dismiss = false
+    private var objectId = UUID().uuidString
+    private let CREATE_THREAD_CONVERSATION_BUILDER_KEY: String
 
     public init() {
+        CREATE_THREAD_CONVERSATION_BUILDER_KEY = "CREATE-THREAD-CONVERSATION-BUILDER-KEY-\(objectId)"
         super.init(isBuilder: true)
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
@@ -116,13 +119,13 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
                                       type: calculatedType,
                                       uniqueName: isPublic ? UUID().uuidString : nil
         )
-        RequestsManager.shared.append(prepend: "ConversationBuilder", value: req)
+        RequestsManager.shared.append(prepend: CREATE_THREAD_CONVERSATION_BUILDER_KEY, value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }
 
     @MainActor
     public func onCreateGroup(_ response: ChatResponse<Conversation>) async {
-        if response.pop(prepend: "ConversationBuilder") != nil {
+        if response.pop(prepend: CREATE_THREAD_CONVERSATION_BUILDER_KEY) != nil {
             await clear()
             if let conversation = response.result {
                 if #available(iOS 17, *) {

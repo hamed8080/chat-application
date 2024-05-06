@@ -26,8 +26,16 @@ public final class ParticipantsViewModel: ObservableObject {
     private var timerRequestQueue: Timer?
     private var lastRequestTime = Date()
     @MainActor public private(set) var lazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let LOAD_KEY: String
+    private let SEARCH_KEY: String
+    private let ADMIN_KEY: String
 
-    public init() {}
+    public init() {
+        LOAD_KEY = "LOAD-PARTICIPANTS-\(objectId)"
+        SEARCH_KEY = "SEARCH-PARTICIPANTS-\(objectId)"
+        ADMIN_KEY = "REQUEST-TO-ADMIN-PARTICIPANT-\(objectId)"
+    }
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
@@ -128,14 +136,14 @@ public final class ParticipantsViewModel: ObservableObject {
         lastRequestTime = Date()
         await lazyList.setLoading(true)
         let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: await lazyList.offset, count: await lazyList.count)
-        RequestsManager.shared.append(prepend: "Load-Participants", value: req)
+        RequestsManager.shared.append(prepend: LOAD_KEY, value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
     private func loadByTimerQueue() async {
         await lazyList.setLoading(true)        
         let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: await lazyList.offset, count: await lazyList.count)
-        RequestsManager.shared.append(prepend: "Load-Participants", value: req)
+        RequestsManager.shared.append(prepend: LOAD_KEY, value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
@@ -153,7 +161,7 @@ public final class ParticipantsViewModel: ObservableObject {
             req.admin = true
             req.name = searchText
         }
-        RequestsManager.shared.append(prepend: "SearchParticipants", value: req)
+        RequestsManager.shared.append(prepend: SEARCH_KEY, value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
@@ -172,7 +180,7 @@ public final class ParticipantsViewModel: ObservableObject {
         // FIXME: This bug should be fixed in the caching system as described in the text below.
         /// If we remove this line due to a bug in the Cache, we will get an incorrect participants list.
         /// For example, after a user leaves a thread, if the user updates their getHistory, the left participant will be shown in the list, which is incorrect.
-        if !response.cache, response.pop(prepend: "Load-Participants") != nil, let participants = response.result, response.subjectId == thread?.id {
+        if !response.cache, response.pop(prepend: LOAD_KEY) != nil, let participants = response.result, response.subjectId == thread?.id {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
             lazyList.setHasNext(response.hasNext)
@@ -181,7 +189,7 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) async {
-        if !response.cache, response.pop(prepend: "SearchParticipants") != nil, let participants = response.result {
+        if !response.cache, response.pop(prepend: SEARCH_KEY) != nil, let participants = response.result {
             searchedParticipants.removeAll()
             searchedParticipants.append(contentsOf: participants)
         }
@@ -206,7 +214,7 @@ public final class ParticipantsViewModel: ObservableObject {
     public func makeAdmin(_ participant: Participant) {
         guard let id = participant.id, let threadId = thread?.id else { return }
         let req = RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId)
-        RequestsManager.shared.append(prepend: "REQUEST-TO-ADMIN-PARTICIPANT", value: req)
+        RequestsManager.shared.append(prepend: ADMIN_KEY, value: req)
         ChatManager.activeInstance?.user.set(req)
 //        ChatManager.activeInstance?.conversation.participant.addAdminRole(.init(participants: [.init(id: "\(participant.coreUserId ?? 0)", idType: .coreUserId)], conversationId: threadId))
     }
@@ -249,7 +257,7 @@ public final class ParticipantsViewModel: ObservableObject {
         }
 
 //        /// If an admin makes another participant admin the setter will not get a list of roles in the response.
-        if response.pop(prepend: "REQUEST-TO-ADMIN-PARTICIPANT") != nil, response.error == nil {
+        if response.pop(prepend: ADMIN_KEY) != nil, response.error == nil {
             response.result?.forEach{ userRole in
                 if let index = participants.firstIndex(where: {$0.id == userRole.id}) {
                     participants[index].admin = true
@@ -282,7 +290,7 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onError(_ response: ChatResponse<Any>) {
-        if response.error != nil, response.pop(prepend: "SearchParticipants") != nil {
+        if response.error != nil, response.pop(prepend: SEARCH_KEY) != nil {
             searchedParticipants.removeAll()
         }
     }
@@ -291,5 +299,9 @@ public final class ParticipantsViewModel: ObservableObject {
         cancelable.forEach { cancelable in
             cancelable.cancel()
         }
+    }
+
+    deinit {
+        print("deinit called for ParticipantsViewModel thread:\(thread?.title ?? "")")
     }
 }

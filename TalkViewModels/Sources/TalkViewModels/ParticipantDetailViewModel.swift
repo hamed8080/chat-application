@@ -39,11 +39,17 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     @Published public var dismiss = false
     @Published public var isLoading = false
     @Published public var successEdited: Bool = false
+    private var objectId = UUID().uuidString
+    private let P2P_PARTNER_CONTACT_KEY: String
+    private let PARTICIPANT_EDIT_CONTACT_KEY: String
+
     public var canShowEditButton: Bool {
         participant.contactId != nil
     }
 
     public init(participant: Participant) {
+        P2P_PARTNER_CONTACT_KEY = "P2P-PARTNER-CONTACT-KEY-\(objectId)"
+        PARTICIPANT_EDIT_CONTACT_KEY = "PARTICIPANT-EDIT-CONTACT-KEY-\(objectId)"
         self.participant = participant
         setup()
     }
@@ -162,7 +168,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
                 AppState.shared.objectsContainer.contactsVM.contacts[index] = contact
             }
         }
-        if response.pop(prepend: "ParticipantEditContact") != nil {
+        if response.pop(prepend: PARTICIPANT_EDIT_CONTACT_KEY) != nil {
             successEdited = true
         }
         animateObjectWillChange()
@@ -201,12 +207,12 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
             req = ContactsRequest(userName: userName)
         }
         guard let req = req else { return }
-        RequestsManager.shared.append(prepend: "P2P-Partner-Contact", value: req)
+        RequestsManager.shared.append(prepend: P2P_PARTNER_CONTACT_KEY, value: req)
         ChatManager.activeInstance?.contact.get(req)
     }
 
     private func onP2PConatct(_ response: ChatResponse<[Contact]>) {
-        if !response.cache, response.pop(prepend: "P2P-Partner-Contact") != nil, let contact = response.result?.first {
+        if !response.cache, response.pop(prepend: P2P_PARTNER_CONTACT_KEY) != nil, let contact = response.result?.first {
             self.partnerContact = contact
             participant.contactId = contact.id
             animateObjectWillChange()
@@ -218,7 +224,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
         let req: AddContactRequest = isNumber ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
-        RequestsManager.shared.append(prepend: "ParticipantEditContact", value: req)
+        RequestsManager.shared.append(prepend: PARTICIPANT_EDIT_CONTACT_KEY, value: req)
         ChatManager.activeInstance?.contact.add(req)
     }
 

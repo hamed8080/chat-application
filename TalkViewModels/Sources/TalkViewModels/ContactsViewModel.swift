@@ -35,9 +35,16 @@ public class ContactsViewModel: ObservableObject {
     public var successAdded: Bool = false
     public var userNotFound: Bool = false
     @MainActor public var lazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let GET_CONTACTS_KEY: String
+    private let SEARCH_CONTACTS_KEY: String
+    private let ADD_CONTACT_KEY: String
 
     nonisolated public init(isBuilder: Bool = false) {
         self.isBuilder = isBuilder
+        GET_CONTACTS_KEY = "GET-CONTACTS\(isBuilder ? "-BUILDER" : "")-\(objectId)"
+        SEARCH_CONTACTS_KEY = "SEARCH-CONTACTS\(isBuilder ? "-BUILDER" : "")-\(objectId)"
+        ADD_CONTACT_KEY = "ADD-CONTACT\(isBuilder ? "-BUILDER" : "")-\(objectId)"
         Task { @MainActor in
             setupPublishers()
         }
@@ -117,7 +124,7 @@ public class ContactsViewModel: ObservableObject {
 
     @MainActor
     public func onContacts(_ response: ChatResponse<[Contact]>) async {
-        if !response.cache, response.pop(prepend: "GET-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
+        if !response.cache, response.pop(prepend: GET_CONTACTS_KEY) != nil {
             if let contacts = response.result {
                 firstSuccessResponse = !response.cache
                 appendOrUpdateContact(contacts)
@@ -138,7 +145,7 @@ public class ContactsViewModel: ObservableObject {
     public func getContacts() async {
         lazyList.setLoading(true)
         let req = ContactsRequest(count: lazyList.count, offset: lazyList.offset)
-        RequestsManager.shared.append(prepend: "GET-CONTACTS\(isBuilder ? "-Builder" : "")", value: req)
+        RequestsManager.shared.append(prepend: GET_CONTACTS_KEY, value: req)
         ChatManager.activeInstance?.contact.get(req)
     }
 
@@ -153,7 +160,7 @@ public class ContactsViewModel: ObservableObject {
         } else {
             req = ContactsRequest(query: searchText)
         }
-        RequestsManager.shared.append(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")", value: req)
+        RequestsManager.shared.append(prepend: SEARCH_CONTACTS_KEY, value: req)
         ChatManager.activeInstance?.contact.search(req)
     }
 
@@ -245,7 +252,7 @@ public class ContactsViewModel: ObservableObject {
 
     @MainActor
     public func onAddContacts(_ response: ChatResponse<[Contact]>) async {
-        if !response.cache, response.pop(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")") == nil { return }
+        if !response.cache, response.pop(prepend: ADD_CONTACT_KEY) == nil { return }
         if response.error == nil, let contacts = response.result {
             contacts.forEach { newContact in
                 if let index = self.contacts.firstIndex(where: {$0.id == newContact.id }) {
@@ -287,7 +294,7 @@ public class ContactsViewModel: ObservableObject {
 
     @MainActor
     public func onSearchContacts(_ response: ChatResponse<[Contact]>) async {
-        if !response.cache, response.pop(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
+        if !response.cache, response.pop(prepend: SEARCH_CONTACTS_KEY) != nil {
             lazyList.setLoading(false)
             searchedContacts = .init(response.result ?? [])
         }
@@ -305,7 +312,7 @@ public class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isNumber ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
-        RequestsManager.shared.append(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")", value: req)
+        RequestsManager.shared.append(prepend: ADD_CONTACT_KEY, value: req)
         ChatManager.activeInstance?.contact.add(req)
     }
 

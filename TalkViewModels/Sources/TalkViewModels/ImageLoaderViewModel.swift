@@ -79,7 +79,11 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
+    private var objectId = UUID().uuidString
+    private let IMAGE_LOADER_KEY: String
+
     public init(config: ImageLoaderConfig) {
+        IMAGE_LOADER_KEY = "IMAGE-LOADER-\(objectId)"
         self.config = config
         NotificationCenter.download.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
@@ -157,19 +161,19 @@ public final class ImageLoaderViewModel: ObservableObject {
     private func getFromSDK() {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: config.forceToDownloadFromServer, size: config.size, thumbnail: config.thumbnail)
         uniqueId = req.uniqueId
-        RequestsManager.shared.append(prepend: "ImageLoader", value: req)
+        RequestsManager.shared.append(prepend: IMAGE_LOADER_KEY, value: req)
         ChatManager.activeInstance?.file.get(req)
     }
 
     private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) {
         guard response.uniqueId == uniqueId else { return }
         if response.uniqueId == uniqueId, !response.cache, let data = response.result {
-            response.pop(prepend: "ImageLoader")
+            response.pop(prepend: IMAGE_LOADER_KEY)
             update(data: data)
             storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
         } else {
             guard let url = url else { return }
-            response.pop(prepend: "ImageLoader")
+            response.pop(prepend: IMAGE_LOADER_KEY)
             setImage(fileURL: url)
         }
     }

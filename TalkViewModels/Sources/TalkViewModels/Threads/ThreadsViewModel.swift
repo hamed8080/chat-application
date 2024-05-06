@@ -34,7 +34,17 @@ public final class ThreadsViewModel: ObservableObject {
     private var isSilentClear = false
     @MainActor public private(set) var lazyList = LazyListViewModel()
 
+    internal var objectId = UUID().uuidString
+    internal let GET_THREADS_KEY: String
+    internal let CHANNEL_TO_KEY: String
+    internal let GET_NOT_ACTIVE_THREADS_KEY: String
+    internal let LEAVE_KEY: String
+
     public init() {
+        GET_THREADS_KEY = "GET-THREADS-\(objectId)"
+        CHANNEL_TO_KEY = "CHANGE-TO-PUBLIC-\(objectId)"
+        GET_NOT_ACTIVE_THREADS_KEY = "GET-NOT-ACTIVE-THREADS-\(objectId)"
+        LEAVE_KEY = "LEAVE"
         Task {
             await setupObservers()
         }
@@ -104,7 +114,7 @@ public final class ThreadsViewModel: ObservableObject {
         }
         lazyList.setLoading(true)
         let req = ThreadsRequest(count: lazyList.count, offset: lazyList.offset, cache: cache)
-        RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
+        RequestsManager.shared.append(prepend: GET_THREADS_KEY, value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
@@ -185,7 +195,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func makeThreadPublic(_ thread: Conversation) {
         guard let threadId = thread.id, let type = thread.type else { return }
         let req = ChangeThreadTypeRequest(threadId: threadId, type: type.publicType, uniqueName: UUID().uuidString)
-        RequestsManager.shared.append(prepend: "CHANGE-TO-PUBLIC", value: req)
+        RequestsManager.shared.append(prepend: CHANNEL_TO_KEY, value: req)
         ChatManager.activeInstance?.conversation.changeType(req)
     }
 
@@ -310,7 +320,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func leave(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
         let req = LeaveThreadRequest(threadId: threadId, clearHistory: true)
-        RequestsManager.shared.append(prepend: "Leave", value: req)
+        RequestsManager.shared.append(prepend: LEAVE_KEY, value: req)
         ChatManager.activeInstance?.conversation.leave(req)
     }
 
@@ -484,7 +494,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func getNotActiveThreads(_ conversation: Conversation?) {
         if let conversationId = conversation?.id, !threads.contains(where: {$0.id == conversationId }) {
             let req = ThreadsRequest(threadIds: [conversationId])
-            RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
+            RequestsManager.shared.append(prepend: GET_NOT_ACTIVE_THREADS_KEY, value: req)
             ChatManager.activeInstance?.conversation.get(req)
         }
     }

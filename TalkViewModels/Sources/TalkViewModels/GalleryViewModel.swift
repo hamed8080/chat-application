@@ -19,12 +19,15 @@ public final class GalleryViewModel: ObservableObject {
     public var percent: Int64 = 0
     public var state: DownloadFileState = .undefined
     private var cancelable: Set<AnyCancellable> = []
+    private var objectId = UUID().uuidString
+    private let FETCH_GALLERY_VIEW_KEY: String
     public var currentData: Data? {
         guard let hashCode = currentImageMessage?.fileMetaData?.fileHash else { return nil }
         return downloadedImages[hashCode]
     }
 
     public init(message: Message) {
+        FETCH_GALLERY_VIEW_KEY = "FETCH-GALLERY-VIEW-\(objectId)"
         self.starter = message
         getPictureMessages()
 
@@ -72,7 +75,7 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onImage(_ response: ChatResponse<Data>, _ fileURL: URL?) {
-        if let data = response.result, let request = response.pop(prepend: "GalleryView-Fetch") as? ImageRequest {
+        if let data = response.result, let request = response.pop(prepend: FETCH_GALLERY_VIEW_KEY) as? ImageRequest {
             state = .completed
             downloadedImages[request.hashCode] = data
             /// Send a notification to update the original.
@@ -84,7 +87,7 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if let progress = progress, RequestsManager.shared.contains(key: "GalleryView-Fetch-\(uniqueId)") {
+        if let progress = progress, RequestsManager.shared.contains(key: FETCH_GALLERY_VIEW_KEY) {
             state = .downloading
             percent = progress.percent
             animateObjectWillChange()
@@ -109,7 +112,7 @@ public final class GalleryViewModel: ObservableObject {
         animateObjectWillChange()
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
         let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
-        RequestsManager.shared.append(prepend: "GalleryView-Fetch", value: req)
+        RequestsManager.shared.append(prepend: FETCH_GALLERY_VIEW_KEY, value: req)
         ChatManager.activeInstance?.file.get(req)
     }
 

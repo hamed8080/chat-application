@@ -36,9 +36,11 @@ struct ThreadDetailView: View {
             ScrollView(.vertical) {
                 VStack(spacing: 0) {
                     topView
-                    CustomDetailTabView(tabs: tabs, tabButtons: { tabButtons } )
-                        .environmentObject(viewModel.threadVM?.participantsViewModel ?? .init())
-                        .selectedTabIndx(index: selectedTabIndex)
+                    if let viewModel = viewModel.threadVM?.participantsViewModel {
+                        CustomDetailTabView(tabs: tabs, tabButtons: { tabButtons } )
+                            .environmentObject(viewModel)
+                            .selectedTabIndx(index: selectedTabIndex)
+                    }
                 }
             }
         }

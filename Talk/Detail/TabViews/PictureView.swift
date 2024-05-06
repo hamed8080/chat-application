@@ -36,7 +36,7 @@ struct PictureView: View {
         .environmentObject(viewModel)
         .background(frameReader)
         .overlay(alignment: .top) {
-            if !viewModel.isLoading && viewModel.messages.count == 0 && !viewModel.hasNext {
+            if !viewModel.isLoading && viewModel.messages.count == 0 && (!viewModel.hasNext || detailViewModel.threadVM?.isSimulatedThared == true) {
                 HStack {
                     Spacer()
                     EmptyResultViewInTabs()

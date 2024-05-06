@@ -20,8 +20,13 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     private var isIsSearchMode = false
     @MainActor public var contactsLazyList = LazyListViewModel()
     @MainActor public var conversationsLazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let GET_THREADS_IN_SELECT_THREAD_KEY: String
+    private let GET_CONTCATS_IN_SELECT_CONTACT_KEY: String
 
     public init() {
+        GET_THREADS_IN_SELECT_THREAD_KEY = "GET-THREADS-IN-SELECT-THREAD-\(objectId)"
+        GET_CONTCATS_IN_SELECT_CONTACT_KEY = "GET-CONTACTS-IN-SELECT-CONTACT-\(objectId)"
         Task {
             await getContacts()
             await getThreads()
@@ -94,11 +99,11 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
         contactsLazyList.setLoading(true)
         conversationsLazyList.setLoading(true)
         let req = ThreadsRequest(searchText: text)
-        RequestsManager.shared.append(prepend: "GET_THREADS_IN_SELECT_THREAD", value: req)
+        RequestsManager.shared.append(prepend: GET_THREADS_IN_SELECT_THREAD_KEY, value: req)
         ChatManager.activeInstance?.conversation.get(req)
 
         let contactsReq = ContactsRequest(query: text)
-        RequestsManager.shared.append(prepend: "GET_CONTCATS_IN_SELECT_CONTACT", value: contactsReq)
+        RequestsManager.shared.append(prepend: GET_CONTCATS_IN_SELECT_CONTACT_KEY, value: contactsReq)
         ChatManager.activeInstance?.contact.get(contactsReq)
     }
 
@@ -113,13 +118,13 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     public func getThreads() async {
         conversationsLazyList.setLoading(true)
         let req = ThreadsRequest(count: conversationsLazyList.count, offset: conversationsLazyList.offset)
-        RequestsManager.shared.append(prepend: "GET_THREADS_IN_SELECT_THREAD", value: req)
+        RequestsManager.shared.append(prepend: GET_THREADS_IN_SELECT_THREAD_KEY, value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
     @MainActor
     private func onConversations(_ response: ChatResponse<[Conversation]>) async {
-        if !response.cache, response.pop(prepend: "GET_THREADS_IN_SELECT_THREAD") != nil {
+        if !response.cache, response.pop(prepend: GET_THREADS_IN_SELECT_THREAD_KEY) != nil {
             await hideConversationsLoadingWithDelay()
             conversationsLazyList.setHasNext(response.hasNext)
             conversations.append(contentsOf: response.result ?? [])
@@ -138,13 +143,13 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     public func getContacts() async {
         contactsLazyList.setLoading(true)
         let req = ContactsRequest(count: contactsLazyList.count, offset: contactsLazyList.offset)
-        RequestsManager.shared.append(prepend: "GET_CONTCATS_IN_SELECT_CONTACT", value: req)
+        RequestsManager.shared.append(prepend: GET_CONTCATS_IN_SELECT_CONTACT_KEY, value: req)
         ChatManager.activeInstance?.contact.get(req)
     }
 
     @MainActor
     private func onContacts(_ response: ChatResponse<[Contact]>) async {
-        if !response.cache, response.pop(prepend: "GET_CONTCATS_IN_SELECT_CONTACT") != nil {
+        if !response.cache, response.pop(prepend: GET_CONTCATS_IN_SELECT_CONTACT_KEY) != nil {
             await hideContactsLoadingWithDelay()
             contactsLazyList.setHasNext(response.hasNext)
             contacts.append(contentsOf: response.result ?? [])

@@ -109,10 +109,10 @@ extension ThreadsViewModel {
                     await clear()
                     log("Clear all SQLITE cached version of conversions")
                 }
-                if response.pop(prepend: "GET-THREADS") != nil {
+                if response.pop(prepend: GET_THREADS_KEY) != nil {
                     await onThreads(response)
                 }
-                if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") != nil {
+                if response.pop(prepend: GET_NOT_ACTIVE_THREADS_KEY) != nil {
                     await onNotActiveThreads(response)
                 }
             } else if response.cache && AppState.shared.connectionStatus != .connected {
