@@ -999,25 +999,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     @discardableResult
-    public func messageViewModel(for message: Message) -> MessageRowViewModel? {
-        /// For unsent messages, uniqueId has value but message.id is always nil, so we have to check both to make sure we get the right viewModel, unless it will lead to an overwrite on a message and it will break down all the things.
-        let messageViewModels = sections.flatMap{$0.vms}
-        if let viewModel = messageViewModels.first(where: {  $0.message.uniqueId == message.uniqueId && $0.message.id == message.id }){
-            return viewModel
-        } else if let threadViewModel = viewModel {
-            let newViewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
-            if let lastIndex = sections.indices.last {
-                sections[lastIndex].vms.append(newViewModel)
-            } else {
-                sections.append(.init(date: Date(), vms: [.init(message: message, viewModel: threadViewModel)]))
-            }
-            return newViewModel
-        } else {
-            return nil
-        }
-    }
-
-    @discardableResult
     public func messageViewModel(for messageId: Int) -> MessageRowViewModel? {
         return sections.flatMap{$0.vms}.first(where: { $0.message.id == messageId })
     }

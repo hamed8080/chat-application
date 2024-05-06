@@ -38,7 +38,7 @@ public final class SendContainerViewModel: ObservableObject {
     @Published public var showActionButtons: Bool = false
     public var focusOnTextInput: Bool = false
     @Published public var isVideoRecordingSelected = false
-    @Published public var isInEditMode: Bool = false
+    private var isInEditMode: Bool = false
     @Published public var editMessage: Message?
     public var height: CGFloat = 0
     private let draftManager = DraftManager.shared
@@ -49,6 +49,7 @@ public final class SendContainerViewModel: ObservableObject {
         self.viewModel = viewModel
         let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId ?? -1
         textMessage = draftManager.get(threadId: threadId) ?? draftManager.get(contactId: contactId) ?? ""
+        editMessage = getDraftEditMessage()
         setupNotificationObservers()
     }
 
@@ -61,9 +62,7 @@ public final class SendContainerViewModel: ObservableObject {
         
         $editMessage
             .sink { [weak self] editMessage in
-                if editMessage != nil, self?.isDraft() == false {
-                    self?.onTextMessageChanged(editMessage?.message ?? "")
-                }
+                self?.onEditMessageChanged(editMessage)
             }
             .store(in: &cancelable)
     }
@@ -121,14 +120,29 @@ public final class SendContainerViewModel: ObservableObject {
         }
     }
 
-    public func isDraft() -> Bool {
-        var isDraft = false
-        if !isSimulated {
-            isDraft = draftManager.get(threadId: threadId).isEmptyOrNil
-        } else if let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId {
-            isDraft = draftManager.get(contactId: contactId).isEmptyOrNil
+    /// If we are in edit mode drafts will not be changed.
+    private func onEditMessageChanged(_ editMessage: Message?) {
+        if editMessage != nil {
+            let text = editMessage?.message ?? ""
+
+            /// set edit message draft for the thread
+            setEditMessageDraft(editMessage)
+
+            /// It will trigger onTextMessageChanged method
+            if draftManager.get(threadId: threadId) == nil {
+                textMessage = text
+            }
+        } else {
+            setEditMessageDraft(nil)
         }
-        return isDraft
+    }
+
+    private func setEditMessageDraft(_ editMessage: Message?) {
+        draftManager.setEditMessageDraft(editMessage, threadId: threadId)
+    }
+
+    private func getDraftEditMessage() -> Message? {
+        draftManager.editMessageText(threadId: threadId)
     }
 
     private var isSimulated: Bool { threadId == -1 || threadId == LocalId.emptyThread.rawValue }

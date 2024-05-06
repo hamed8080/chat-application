@@ -73,7 +73,6 @@ public class ContactsViewModel: ObservableObject {
         $searchContactString
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .filter { $0.count > 1 }
-            .removeDuplicates()
             .sink { searchText in
                 Task { [weak self] in
                     await self?.searchContacts(searchText)

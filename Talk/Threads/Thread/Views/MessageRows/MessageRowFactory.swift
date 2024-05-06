@@ -48,7 +48,7 @@ struct TextMessageSelectedBackground: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        let selectedColor = colorScheme == .dark ? Color.App.accent.opacity(0.1) : Color.App.dividerPrimary.opacity(0.5)
+        let selectedColor = colorScheme == .dark ? Color.App.accent.opacity(0.4) : Color.App.dividerPrimary.opacity(0.5)
         let color: Color = viewModel.isHighlited || viewModel.isSelected ? selectedColor : Color.clear
         color
             .contentShape(Rectangle())

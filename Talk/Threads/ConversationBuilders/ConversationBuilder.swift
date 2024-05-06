@@ -244,7 +244,6 @@ struct EditCreatedConversationDetail: View {
             .focused($focused, equals: .title)
             .font(.iransansBody)
             .padding()
-            .foregroundStyle(Color.App.textSecondary.opacity(0.6))
             .applyAppTextfieldStyle(topPlaceholder: "", error: error, isFocused: focused == .title) {
                 focused = .title
             }

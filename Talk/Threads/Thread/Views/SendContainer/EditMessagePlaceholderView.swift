@@ -19,7 +19,9 @@ struct EditMessagePlaceholderView: View {
         if let editMessage = viewModel.editMessage {
             HStack {
                 SendContainerButton(image: "pencil")
+                    .disabled(true)
                 EditMessageImage(editMessage: editMessage)
+                    .disabled(true)
                 VStack(alignment: .leading, spacing: 0) {
                     if let name = editMessage.participant?.name {
                         Text(name)
@@ -34,6 +36,7 @@ struct EditMessagePlaceholderView: View {
                         }
                 }
                 .frame(maxHeight: 48)
+                .disabled(true)
 
                 Spacer()
                 CloseButton {
@@ -46,6 +49,12 @@ struct EditMessagePlaceholderView: View {
                 .padding(.trailing, 4)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if let time = editMessage.time, let id = editMessage.id {
+                    threadVM.historyVM.moveToTime(time, id)
+                }
+            }
             .onAppear {
                 if let messageId = editMessage.id, let uniqueId = editMessage.uniqueId, messageId == threadVM.thread.lastMessageVO?.id {
                     Task {
@@ -62,7 +71,7 @@ struct EditMessageImage: View {
     @EnvironmentObject var viewModel: ThreadHistoryViewModel
 
     var body: some View {
-        if let viewModel = viewModel.messageViewModel(for: editMessage) {
+        if let viewModel = viewModel.messageViewModel(for: editMessage.id ?? -1) {
             if viewModel.message.isImage {
                 image(viewModel: viewModel)
             } else if viewModel.message.isFileType {

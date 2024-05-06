@@ -131,7 +131,7 @@ struct UnsentMessagesLoop: View {
     var body: some View {
         /// We have to use \.uniqueId to force the ForLoop to use uniqueId instead of default \.id because id is nil when a message is unsent.
         ForEach(viewModel.unsentMessages, id: \.uniqueId) { unsentMessage in
-            if let messageRowVM = historyVM.messageViewModel(for: unsentMessage) {
+            if let messageRowVM = historyVM.messageViewModel(for: unsentMessage.id ?? -1) {
                 MessageRowFactory(viewModel: messageRowVM)
                     .id(unsentMessage.uniqueId)
             }

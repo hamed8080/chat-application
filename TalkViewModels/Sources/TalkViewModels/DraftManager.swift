@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import ChatModels
 
 public class DraftManager {
     private let contactKey = "contact-draft-"
     private let conversationKey = "conversation-draft-"
+    private let eidtMessageKey = "edit-draft-"
     private init() {}
 
     public func get(threadId: Int) -> String? {
@@ -38,6 +40,19 @@ public class DraftManager {
         NotificationCenter.draft.post(name: .draft, object: contactId)
     }
 
+    public func setEditMessageDraft(_ editMessage: Message?, threadId: Int) {
+        if editMessage == nil {
+            clearEditMessage(threadId: threadId)
+        } else if let editMessage = editMessage {
+            UserDefaults.standard.setValue(codable: editMessage, forKey: getEditMessageKey(threadId: threadId))
+        }
+    }
+
+    public func editMessageText(threadId: Int) -> Message? {
+        let message: Message? = UserDefaults.standard.codableValue(forKey: getEditMessageKey(threadId: threadId))
+        return message
+    }
+
     public func clear(threadId: Int) {
         UserDefaults.standard.removeObject(forKey: getConversationKey(threadId: threadId))
     }
@@ -46,8 +61,16 @@ public class DraftManager {
         UserDefaults.standard.removeObject(forKey: getContactKey(contactId: contactId))
     }
 
+    public func clearEditMessage(threadId: Int) {
+        UserDefaults.standard.removeObject(forKey: getEditMessageKey(threadId: threadId))
+    }
+
     private func getConversationKey(threadId: Int) -> String {
         "\(conversationKey)\(threadId)"
+    }
+
+    private func getEditMessageKey(threadId: Int) -> String {
+        "\(eidtMessageKey)\(threadId)"
     }
 
     private func getContactKey(contactId: Int) -> String {
