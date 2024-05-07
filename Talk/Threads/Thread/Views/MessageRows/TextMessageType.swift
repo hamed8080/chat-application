@@ -116,7 +116,11 @@ struct InnerMessage: View {
                     MessageRowAudioView()
                 }
             }
-            MessageTextView()
+
+            if viewModel.rowType.hasText {
+                MessageTextView()
+            }
+
             if viewModel.rowType.isPublicLink {
                 JoinPublicLink(viewModel: viewModel)
             }

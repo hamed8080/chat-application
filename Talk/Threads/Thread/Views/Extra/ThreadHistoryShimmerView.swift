@@ -33,6 +33,7 @@ struct ThreadHistoryShimmerView: View {
                     reader.scrollTo(10, anchor: .bottom)
                 }
             }
+            .padding(.bottom, 52)
         }
     }
 }

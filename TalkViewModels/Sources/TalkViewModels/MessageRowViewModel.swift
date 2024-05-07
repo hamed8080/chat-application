@@ -179,6 +179,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         rowType.isAudio = message.isAudio
         rowType.isForward = message.forwardInfo != nil
         rowType.isUnSent = message.isUnsentMessage
+        rowType.hasText = !rowType.isPublicLink && message.message?.isEmpty == false
         callTypeKey = message.callHistory?.status?.key?.bundleLocalized() ?? ""
         async let color = threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
         participantColor = await Color(uiColor: color ?? .clear)
