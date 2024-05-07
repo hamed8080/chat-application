@@ -69,7 +69,7 @@ struct VerifyContentView: View {
                         .textFieldStyle(BorderedTextFieldStyle(minHeight: 56,
                                                                cornerRadius: 12,
                                                                bgColor: Color.App.bgInput,
-                                                               borderColor: Color.clear,
+                                                               borderColor: viewModel.showSuccessAnimation ? Color.App.color2 : Color.clear,
                                                                padding: 0))
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.center)
@@ -77,7 +77,13 @@ struct VerifyContentView: View {
                         .focused($focusField, equals: VerifyFocusFileds.allCases.first(where: { i == $0.rawValue })!)
                         .disabled(viewModel.isLoading)
                         .opacity(viewModel.isLoading ? 0.5 : 1)
+                        .animation(.easeInOut(duration: 0.2), value: viewModel.showSuccessAnimation)
                         .onChange(of: viewModel.verifyCodes[i]) { newString in
+
+                            if newString.count == viewModel.verifyCodes.count, let integers = getIntegers(newString) {
+                                setVerifyCodes(integers)
+                                return
+                            }
 
                             if newString.count > 2, i == VerifyFocusFileds.allCases.count - 1 {
                                 viewModel.verifyCodes[i] = String(newString[newString.startIndex..<newString.index(newString.startIndex, offsetBy: 2)])
@@ -88,6 +94,10 @@ struct VerifyContentView: View {
                                 viewModel.verifyCodes[i] = "\u{200B}" + newString
                             }
 
+                            if newString.count == 0 && i == 0 {
+                                viewModel.verifyCodes[0] = ""
+                            }
+
                             if newString.count == 0 , i > 0 {
                                 viewModel.verifyCodes[i - 1] = "\u{200B}"
                                 focusField = VerifyFocusFileds.allCases.first(where: { $0.rawValue == i - 1 })
@@ -95,14 +105,20 @@ struct VerifyContentView: View {
 
                             /// Move focus to the next textfield if there is something inside the textfield.
                             if viewModel.verifyCodes[i].count == 2, i < VerifyFocusFileds.allCases.count - 1 {
-                                viewModel.verifyCodes[i + 1] = "\u{200B}"
+                                if viewModel.verifyCodes[i + 1].count == 0 {
+                                    viewModel.verifyCodes[i + 1] = "\u{200B}"
+                                }
                                 focusField = VerifyFocusFileds.allCases.first(where: { $0.rawValue == i + 1 })
                             }
 
                             if viewModel.verifyCodes[i].count == 2, i == VerifyFocusFileds.allCases.count - 1 {
                                 // Submit automatically
                                 Task {
-                                    await viewModel.verifyCode()
+                                    // After the user clicked on the sms we have to make sure that the last filed is selected
+                                    focusField = .sixth
+                                    // We wait 500 millisecond to fill out all text fields if the user clicked on sms
+                                    try? await Task.sleep(for: .milliseconds(500))
+                                    viewModel.verifyCode()
                                 }
                             }
                         }
@@ -112,10 +128,6 @@ struct VerifyContentView: View {
             .padding(.horizontal)
             .environment(\.layoutDirection, .leftToRight)
             .transition(.asymmetric(insertion: .scale(scale: 1), removal: .scale(scale: 0)))
-            .onAppear {
-                /// Add Zero-Width space 'hidden character' for using as a backspace.
-                viewModel.verifyCodes[0] = "\u{200B}"
-            }
 
             HStack {
                 if !viewModel.timerHasFinished {
@@ -154,9 +166,7 @@ struct VerifyContentView: View {
                                isLoading: $viewModel.isLoading,
                                maxInnerWidth: 420
             ) {
-                Task {
-                    await viewModel.verifyCode()
-                }
+                viewModel.verifyCode()
             }
             .disabled(viewModel.isLoading)
 
@@ -179,8 +189,28 @@ struct VerifyContentView: View {
             hideKeyboard()
         }
         .onAppear {
+            /// Add Zero-Width space 'hidden character' for using as a backspace.
+//            viewModel.verifyCodes[0] = "\u{200B}"
             focusField = VerifyFocusFileds.first
         }
+    }
+
+    private func getIntegers(_ newString: String) -> [Int]? {
+        var intArray: [Int] = []
+        for ch in newString {
+            let intVal = Int("\(ch)")
+            if let intVal = intVal {
+                intArray.append(intVal)
+            } else {
+                break
+            }
+        }
+        if intArray.count == 0 { return nil }
+        return intArray
+    }
+
+    private func setVerifyCodes(_ integers: [Int]) {
+        viewModel.verifyCodes = integers.map({"\($0)"})
     }
 }
 

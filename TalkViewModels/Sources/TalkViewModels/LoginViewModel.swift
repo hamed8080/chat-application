@@ -32,6 +32,7 @@ public final class LoginViewModel: ObservableObject {
     @Published public var timerString = "00:00"
     @Published public var timerHasFinished = false
     @Published public var path: NavigationPath = .init()
+    @Published public var showSuccessAnimation: Bool = false
 
     public init(delegate: ChatDelegate, session: URLSession = .shared) {
         self.delegate = delegate
@@ -43,8 +44,9 @@ public final class LoginViewModel: ObservableObject {
         return !text.isEmpty
     }
 
-    public func login() async {
-        showLoading(true)
+    @MainActor
+    public func login() {
+        isLoading = true
         if selectedServerType == .integration {
             let ssoToken = SSOTokenResponse(accessToken: text,
                                                   expiresIn: Int(Calendar.current.date(byAdding: .year, value: 1, to: .now)?.millisecondsSince1970 ?? 0),
@@ -52,11 +54,13 @@ public final class LoginViewModel: ObservableObject {
                                                   refreshToken: nil,
                                                   scope: nil,
                                                   tokenType: nil)
-            await saveTokenAndCreateChatObject(ssoToken)
-            showLoading(false)
+            Task {
+                await saveTokenAndCreateChatObject(ssoToken)
+            }
+            isLoading = false
             return
         }
-        let req = await HandshakeRequest(deviceName: UIDevice.current.name,
+        let req = HandshakeRequest(deviceName: UIDevice.current.name,
                                          deviceOs: UIDevice.current.systemName,
                                          deviceOsVersion: UIDevice.current.systemVersion,
                                          deviceType: "MOBILE_PHONE",
@@ -64,41 +68,52 @@ public final class LoginViewModel: ObservableObject {
         var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).handshake)!)
         urlReq.httpBody = req.parameterData
         urlReq.method = .post
-        do {
-            let resp = try await session.data(for: urlReq)
-            let decodecd = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
-            if let keyId = decodecd.keyId {
-                await requestOTP(identity: text, keyId: keyId)
+        Task {
+            do {
+                let resp = try await session.data(for: urlReq)
+                let decodecd = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
+                if let keyId = decodecd.keyId {
+                    isLoading = false                    
+                    requestOTP(identity: text, keyId: keyId)
+                }
+                await MainActor.run {
+                    expireIn = decodecd.client?.accessTokenExpiryTime ?? 60
+                }
+                await startTimer()
+            } catch {
+                isLoading = false
+                showError(.failed)
             }
-            await MainActor.run {
-                expireIn = decodecd.client?.accessTokenExpiryTime ?? 60
-            }
-            await startTimer()
-        } catch {
-            showError(.failed)
         }
-        showLoading(false)
     }
 
-    public func requestOTP(identity: String, keyId: String, resend: Bool = false) async {
-        showLoading(true)
+    @MainActor
+    public func requestOTP(identity: String, keyId: String, resend: Bool = false) {
+        if isLoading { return }
         var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).authorize)!)
         urlReq.url?.append(queryItems: [.init(name: "identity", value: identity.replaceRTLNumbers())])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
-        do {
-            let resp = try await session.data(for: urlReq)
-            _ = try JSONDecoder().decode(AuthorizeResponse.self, from: resp.0)
-            await MainActor.run {
-                if !resend {
-                    state = .verify
+        Task {
+            do {
+                let resp = try await session.data(for: urlReq)
+                let result = try JSONDecoder().decode(AuthorizeResponse.self, from: resp.0)
+                isLoading = false
+                if result.errorMessage != nil {
+                    showError(.failed)
+                } else {
+                    await MainActor.run {
+                        if !resend {
+                            state = .verify
+                        }
+                        self.keyId = keyId
+                    }
                 }
-                self.keyId = keyId
+            } catch {
+                isLoading = false
+                showError(.failed)
             }
-        } catch {
-            showError(.failed)
         }
-        showLoading(false)
     }
 
     public func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponse) async {
@@ -110,32 +125,38 @@ public final class LoginViewModel: ObservableObject {
         }
     }
 
-    public func verifyCode() async {
-        guard let keyId = keyId else { return }
-        showLoading(true)
-        var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).verify)!)
+    @MainActor
+    public func verifyCode() {
+        if isLoading { return }
         let codes = verifyCodes.joined(separator:"").replacingOccurrences(of: "\u{200B}", with: "").replaceRTLNumbers()
+        guard let keyId = keyId, codes.count == verifyCodes.count else { return }
+        isLoading = true
+        var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).verify)!)
         urlReq.url?.append(queryItems: [.init(name: "identity", value: text.replaceRTLNumbers()), .init(name: "otp", value: codes)])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
-        do {
-            let resp = try await session.data(for: urlReq)
-            var ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
-            ssoToken.keyId = keyId
-            await MainActor.run {
+        Task {
+            do {
+                let resp = try await session.data(for: urlReq)
+                var ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
+                ssoToken.keyId = keyId
+                showSuccessAnimation = true
+                try? await Task.sleep(for: .seconds(0.5))
+                isLoading = false
                 hideKeyboard()
                 doHaptic()
+                await saveTokenAndCreateChatObject(ssoToken)
+                try? await Task.sleep(for: .seconds(0.5))
+                await MainActor.run {
+                    resetState()
+                }
             }
-            await saveTokenAndCreateChatObject(ssoToken)
-            try? await Task.sleep(for: .seconds(0.5))
-            await MainActor.run {
-                resetState()
+            catch {
+                isLoading = false
+                doHaptic(failed: true)
+                showError(.verificationCodeIncorrect)
             }
-        } catch {
-            doHaptic(failed: true)
-            showError(.verificationCodeIncorrect)
         }
-        showLoading(false)
     }
 
     public func resetState() {
@@ -144,6 +165,7 @@ public final class LoginViewModel: ObservableObject {
         text = ""
         keyId = nil
         isLoading = false
+        showSuccessAnimation = false
         verifyCodes = ["", "", "", "", "", ""]
     }
 
@@ -152,15 +174,6 @@ public final class LoginViewModel: ObservableObject {
             guard let self = self else { return }
             await MainActor.run {
                 self.state = state
-            }
-        }
-    }
-
-    public func showLoading(_ show: Bool) {
-        Task { [weak self] in
-            await MainActor.run { [weak self] in
-                guard let self = self else { return }
-                isLoading = show
             }
         }
     }
