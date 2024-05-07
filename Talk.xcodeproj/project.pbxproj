@@ -295,6 +295,8 @@
 		0594FE6A2B0387920031AADF /* UnsentMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE682B0387920031AADF /* UnsentMessageView.swift */; };
 		05A0CD712B19314100F13EE5 /* DeleteContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */; };
 		05A0CD722B19314100F13EE5 /* DeleteContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */; };
+		05A218432BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A218422BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift */; };
+		05A218442BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A218422BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift */; };
 		05A3AD6B2B99F41C00536022 /* ThreadbackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD6A2B99F41C00536022 /* ThreadbackgroundView.swift */; };
 		05A3AD6C2B99F41C00536022 /* ThreadbackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD6A2B99F41C00536022 /* ThreadbackgroundView.swift */; };
 		05A3AD6F2B99F4F100536022 /* EmptyThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD6E2B99F4F100536022 /* EmptyThreadView.swift */; };
@@ -549,6 +551,7 @@
 		0594FE652B0387370031AADF /* LocationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationRowView.swift; sourceTree = "<group>"; };
 		0594FE682B0387920031AADF /* UnsentMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsentMessageView.swift; sourceTree = "<group>"; };
 		05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteContactView.swift; sourceTree = "<group>"; };
+		05A218422BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAddOrEditContactSheetView.swift; sourceTree = "<group>"; };
 		05A3AD6A2B99F41C00536022 /* ThreadbackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadbackgroundView.swift; sourceTree = "<group>"; };
 		05A3AD6E2B99F4F100536022 /* EmptyThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyThreadView.swift; sourceTree = "<group>"; };
 		05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMentionsButton.swift; sourceTree = "<group>"; };
@@ -912,16 +915,12 @@
 		0570CBA92AAEE98D001832E9 /* Detail */ = {
 			isa = PBXGroup;
 			children = (
+				05A218452BEA31DD002CE1C8 /* Extra */,
 				0525571C2BE94CE300DFCE54 /* Toolbars */,
 				052557092BE949B800DFCE54 /* Sections */,
 				05A6A2C82B40167700DA0363 /* Search */,
 				0570CBAA2AAEE98D001832E9 /* TabViews */,
 				0570CBB42AAEE98D001832E9 /* ThreadDetailView.swift */,
-				05745AEF2AF2626B00102193 /* UserActionMenu.swift */,
-				05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */,
-				05729A552B8DACDA00D62D69 /* DeleteParticipantDialog.swift */,
-				052557062BE9487700DFCE54 /* EditContactInParticipantDetailView.swift */,
-				052557322BE9536D00DFCE54 /* DetailTabContainer.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -929,6 +928,7 @@
 		0570CBAA2AAEE98D001832E9 /* TabViews */ = {
 			isa = PBXGroup;
 			children = (
+				052557322BE9536D00DFCE54 /* DetailTabContainer.swift */,
 				0570CBAB2AAEE98D001832E9 /* FileView.swift */,
 				0570CBAC2AAEE98D001832E9 /* VideoView.swift */,
 				0570CBAD2AAEE98D001832E9 /* PictureView.swift */,
@@ -1016,6 +1016,18 @@
 				052F46652B21F5B400085C26 /* PhotosUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		05A218452BEA31DD002CE1C8 /* Extra */ = {
+			isa = PBXGroup;
+			children = (
+				05729A552B8DACDA00D62D69 /* DeleteParticipantDialog.swift */,
+				052557062BE9487700DFCE54 /* EditContactInParticipantDetailView.swift */,
+				05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */,
+				05745AEF2AF2626B00102193 /* UserActionMenu.swift */,
+				05A218422BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift */,
+			);
+			path = Extra;
 			sourceTree = "<group>";
 		};
 		05A3AD6D2B99F47000536022 /* Extra */ = {
@@ -1291,6 +1303,7 @@
 				0564D5952B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */,
 				0570CC712AAEE98F001832E9 /* AssistantRow.swift in Sources */,
 				05ABE5882B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */,
+				05A218432BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift in Sources */,
 				0570CC332AAEE98F001832E9 /* SendContainer.swift in Sources */,
 				0570CC272AAEE98F001832E9 /* ThreadViewCenterToolbar.swift in Sources */,
 				05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,
@@ -1469,6 +1482,7 @@
 				0564D5962B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */,
 				0570CC722AAEE98F001832E9 /* AssistantRow.swift in Sources */,
 				05ABE5872B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */,
+				05A218442BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift in Sources */,
 				0570CC342AAEE98F001832E9 /* SendContainer.swift in Sources */,
 				0570CC282AAEE98F001832E9 /* ThreadViewCenterToolbar.swift in Sources */,
 				05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,

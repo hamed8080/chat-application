@@ -29,7 +29,7 @@ public class ContactsViewModel: ObservableObject {
     public var blockedContacts: ContiguousArray<BlockedContactResponse> = []
     public var addContact: Contact?
     public var editContact: Contact?
-    public var showAddOrEditContactSheet = false
+    @Published public var showAddOrEditContactSheet = false
     public var isBuilder: Bool = false
     public var isInSelectionMode = false
     public var successAdded: Bool = false
@@ -38,13 +38,11 @@ public class ContactsViewModel: ObservableObject {
     private var objectId = UUID().uuidString
     private let GET_CONTACTS_KEY: String
     private let SEARCH_CONTACTS_KEY: String
-    private let ADD_CONTACT_KEY: String
 
     nonisolated public init(isBuilder: Bool = false) {
         self.isBuilder = isBuilder
         GET_CONTACTS_KEY = "GET-CONTACTS\(isBuilder ? "-BUILDER" : "")-\(objectId)"
         SEARCH_CONTACTS_KEY = "SEARCH-CONTACTS\(isBuilder ? "-BUILDER" : "")-\(objectId)"
-        ADD_CONTACT_KEY = "ADD-CONTACT\(isBuilder ? "-BUILDER" : "")-\(objectId)"
         Task { @MainActor in
             setupPublishers()
         }
@@ -95,6 +93,13 @@ public class ContactsViewModel: ObservableObject {
             }
             .store(in: &canceableSet)
 
+        NotificationCenter.thread.publisher(for: .thread)
+            .map{$0.object as? ThreadEventTypes}
+            .sink { [weak self] event in
+                self?.onThreadEvent(event)
+            }
+            .store(in: &canceableSet)
+
         NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
             .sink { [weak self] notif in
                 self?.onCancelTimer(notif.object as? String ?? "")
@@ -102,7 +107,7 @@ public class ContactsViewModel: ObservableObject {
             .store(in: &canceableSet)
     }
 
-    public func onContactEvent(_ event: ContactEventTypes?) async {
+    private func onContactEvent(_ event: ContactEventTypes?) async {
         switch event {
         case let .contacts(response):
             await onSearchContacts(response)
@@ -117,6 +122,15 @@ public class ContactsViewModel: ObservableObject {
             await onUNBlockResponse(response)
         case let .blockedList(response):
             await onBlockedList(response)
+        default:
+            break
+        }
+    }
+
+    private func onThreadEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .updatedInfo(let response):
+            onUpdatePartnerContact(response)
         default:
             break
         }
@@ -252,7 +266,7 @@ public class ContactsViewModel: ObservableObject {
 
     @MainActor
     public func onAddContacts(_ response: ChatResponse<[Contact]>) async {
-        if !response.cache, response.pop(prepend: ADD_CONTACT_KEY) == nil { return }
+        if response.cache { return }
         if response.error == nil, let contacts = response.result {
             contacts.forEach { newContact in
                 if let index = self.contacts.firstIndex(where: {$0.id == newContact.id }) {
@@ -312,7 +326,6 @@ public class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isNumber ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
-        RequestsManager.shared.append(prepend: ADD_CONTACT_KEY, value: req)
         ChatManager.activeInstance?.contact.add(req)
     }
 
@@ -396,6 +409,19 @@ public class ContactsViewModel: ObservableObject {
                 viewModel.message.participant?.name = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
                 viewModel.animateObjectWillChange()
             }
+    }
+
+    private func onUpdatePartnerContact(_ response: ChatResponse<Conversation>) {
+        if let index = contacts.firstIndex(where: {$0.userId == response.result?.partner }) {
+            let split = response.result?.title?.split(separator: " ")
+            if let firstName = split?.first {
+                contacts[index].firstName = String(firstName)
+            }
+            if let lastName = split?.dropFirst().joined(separator: " ") {
+                contacts[index].lastName = String(lastName)
+            }
+            animateObjectWillChange()
+        }
     }
 
     private func onCancelTimer(_ key: String) {

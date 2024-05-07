@@ -26,6 +26,7 @@ struct ThreadDetailView: View {
         .background(Color.App.bgPrimary)
         .environmentObject(viewModel)
         .safeAreaInset(edge: .top, spacing: 0) { DetailToolbarContainer() }
+        .background(DetailAddOrEditContactSheetView())
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
                 prepareToDismiss()

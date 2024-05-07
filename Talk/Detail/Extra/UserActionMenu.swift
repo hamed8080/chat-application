@@ -85,7 +85,7 @@ struct UserActionMenu: View {
     }
 
     private func delayActionOnHidePopover(_ action: (() -> Void)? = nil) {
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
             action?()
         }
     }

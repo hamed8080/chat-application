@@ -26,7 +26,7 @@ struct EditProfileView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .center, spacing: 16) {
                 Button {
-                    viewModel.showImagePicker = true
+//                    viewModel.showImagePicker = true
                 } label: {
                     ZStack(alignment: .leading) {
                         let config = ImageLoaderConfig(url: AppState.shared.user?.image ?? "", userName: String.splitedCharacter(AppState.shared.user?.name ?? ""))

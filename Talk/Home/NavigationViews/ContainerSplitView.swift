@@ -101,6 +101,7 @@ struct NavigationTypeView: View {
         case .threadDetail(let navValue):
             let viewModel = navValue.viewModel
             ThreadDetailView()
+                .environmentObject(ContactsViewModel())// We should inject different object in UserAction menu/sheet
                 .environmentObject(container.appOverlayVM)
                 .environmentObject(viewModel)
                 .environmentObject(container.threadsVM)
