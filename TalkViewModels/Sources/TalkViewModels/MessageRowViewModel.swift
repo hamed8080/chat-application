@@ -60,6 +60,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var addOrRemoveParticipantsAttr: AttributedString? = nil
     public var avatarColor: Color = .blue
     public var avatarSplitedCharaters = ""
+    public var isInTwoWeekPeriod: Bool = false
 
     public var localizedReplyFileName: String? = nil
     public var callDateText: String = ""
@@ -192,6 +193,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         calculateGroupParticipantName()
         replyContainerWidth = await calculateReplyContainerWidth()
         forwardContainerWidth = await calculateForwardContainerWidth()
+        isInTwoWeekPeriod = calculateIsInTwoWeekPeriod()
         calculateSpacingPaddings()
         setAvatarColor()
     }
@@ -589,6 +591,16 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let topPadding: CGFloat = reactions.summary.count > 0 ? 10 : 0
         let myReactionSticker = reactions.currentUserReaction?.reaction
         self.reactionsModel = .init(rows: rows, topPadding: topPadding, myReactionSticker: myReactionSticker)
+    }
+
+    private func calculateIsInTwoWeekPeriod() -> Bool {
+        let twoWeeksInMilliSeconds: UInt = 1_209_600_000
+        let now = UInt(Date().millisecondsSince1970)
+        let twoWeeksAfter = UInt(message.time ?? 0) + twoWeeksInMilliSeconds
+        if twoWeeksAfter > now {
+            return true
+        }
+        return false
     }
 
     deinit {

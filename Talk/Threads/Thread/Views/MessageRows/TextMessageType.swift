@@ -158,10 +158,12 @@ struct ContextMenuContent: View {
 
     var body: some View {
         VStack {
-            ReactionMenuView()
-                .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
-                .environmentObject(viewModel)
-                .fixedSize()
+            if viewModel.isInTwoWeekPeriod {
+                ReactionMenuView()
+                    .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
+                    .environmentObject(viewModel)
+                    .fixedSize()
+            }
             MessageActionMenu()
         }
         .id("SelfContextMenu\(viewModel.message.id ?? 0)")
