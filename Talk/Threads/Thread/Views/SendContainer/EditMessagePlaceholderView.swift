@@ -16,52 +16,74 @@ struct EditMessagePlaceholderView: View {
     @EnvironmentObject var viewModel: SendContainerViewModel
 
     var body: some View {
-        if let editMessage = viewModel.editMessage {
-            HStack {
-                SendContainerButton(image: "pencil")
-                    .disabled(true)
-                EditMessageImage(editMessage: editMessage)
-                    .disabled(true)
-                VStack(alignment: .leading, spacing: 0) {
-                    if let name = editMessage.participant?.name {
-                        Text(name)
-                            .font(.iransansBoldBody)
-                            .foregroundStyle(Color.App.accent)
-                    }
-                    Text("\(editMessage.message ?? "")")
-                        .font(.iransansCaption2)
-                        .foregroundColor(Color.App.textPlaceholder)
-                        .onTapGesture {
-                            // TODO: Go to reply message location
-                        }
-                }
-                .frame(maxHeight: 48)
-                .disabled(true)
+        HStack {
+            if isInEditMode {
+                editView
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+           onTapMoveToOriginalMessage()
+        }
+        .onAppear {
+            moveToEditMessage()
+        }
+    }
 
-                Spacer()
-                CloseButton {
-                    Task {
-                        await threadVM.scrollVM.scrollToBottomIfIsAtBottom()
-                        await threadVM.scrollVM.disableExcessiveLoading()
-                        viewModel.clear()
+    private var isInEditMode: Bool {
+        viewModel.editMessage != nil && !threadVM.selectedMessagesViewModel.isInSelectMode
+    }
+
+    @ViewBuilder
+    private var editView: some View {
+        if let editMessage = viewModel.editMessage {
+            SendContainerButton(image: "pencil")
+                .disabled(true)
+            EditMessageImage(editMessage: editMessage)
+                .disabled(true)
+            VStack(alignment: .leading, spacing: 0) {
+                if let name = editMessage.participant?.name {
+                    Text(name)
+                        .font(.iransansBoldBody)
+                        .foregroundStyle(Color.App.accent)
+                }
+                Text("\(editMessage.message ?? "")")
+                    .font(.iransansCaption2)
+                    .foregroundColor(Color.App.textPlaceholder)
+                    .onTapGesture {
+                        // TODO: Go to reply message location
                     }
-                }
-                .padding(.trailing, 4)
             }
-            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
-            .contentShape(Rectangle())
-            .onTapGesture {
-                if let time = editMessage.time, let id = editMessage.id {
-                    threadVM.historyVM.moveToTime(time, id)
-                }
+            .frame(maxHeight: 48)
+            .disabled(true)
+
+            Spacer()
+            CloseButton {
+                onCloseTapped()
             }
-            .onAppear {
-                if let messageId = editMessage.id, let uniqueId = editMessage.uniqueId, messageId == threadVM.thread.lastMessageVO?.id {
-                    Task {
-                        await threadVM.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
-                    }
-                }
+            .padding(.trailing, 4)
+        }
+    }
+
+    private func onTapMoveToOriginalMessage() {
+        if let editMessage = viewModel.editMessage, let time = editMessage.time, let id = editMessage.id {
+            threadVM.historyVM.moveToTime(time, id)
+        }
+    }
+
+    private func moveToEditMessage() {
+        if let editMessage = viewModel.editMessage, let messageId = editMessage.id, let uniqueId = editMessage.uniqueId, messageId == threadVM.thread.lastMessageVO?.id {
+            Task {
+                await threadVM.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
             }
+        }
+    }
+
+    private func onCloseTapped() {
+        Task { @MainActor in
+            await threadVM.scrollVM.scrollToBottomIfIsAtBottom()
+            await threadVM.scrollVM.disableExcessiveLoading()
+            viewModel.clear()
         }
     }
 }

@@ -28,5 +28,6 @@ struct ThreadEmptySpaceView: View {
     var body: some View {
         Rectangle()
             .frame(width: 0, height: height)
+            .disabled(true)
     }
 }

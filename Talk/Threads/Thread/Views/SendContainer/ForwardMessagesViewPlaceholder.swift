@@ -16,6 +16,12 @@ struct ForwardMessagesViewPlaceholder: View {
     private var model: AppStateNavigationModel { AppState.shared.appStateNavigationModel }
 
     var body: some View {
+        if hasAnythingToForward {
+            view
+        }
+    }
+
+    private var view: some View {
         HStack {
             SendContainerButton(image: "arrow.turn.up.right")
 
@@ -46,9 +52,9 @@ struct ForwardMessagesViewPlaceholder: View {
             }
             .padding(.trailing, 4)
         }
-        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
         .frame(height: hasAnythingToForward ? nil : 0)
         .clipped()
+        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
     }
 
     private func onCloseButtonTapped() {

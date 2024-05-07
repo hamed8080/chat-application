@@ -30,6 +30,7 @@ struct SendContainer: View {
                         .padding(viewModel.canShowMute ? 10 : 0)
                         .frame(height: cahnnelMuteHeight)
                         .clipped()
+                        .disabled(!viewModel.canShowMute)
                     ForwardMessagesViewPlaceholder()
                         .modifier(normalModifier)
                     ReplyPrivatelyMessageViewPlaceholder()

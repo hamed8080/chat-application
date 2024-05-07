@@ -69,6 +69,9 @@ struct ThreadHistoryList: View {
         }
         .environment(\.defaultMinListRowHeight, 0)
         .listStyle(.plain)
+        .safeAreaInset(edge: .bottom) {
+            ThreadEmptySpaceView()
+        }
     }
 }
 

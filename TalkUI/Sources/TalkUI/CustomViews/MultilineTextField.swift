@@ -139,6 +139,7 @@ public struct MultilineTextField: View {
     @Environment(\.colorScheme) var colorScheme
     var keyboardReturnType: UIReturnKeyType = .default
     var mention: Bool = false
+    private var disable: Bool
 
     @Binding private var text: String
     @Binding private var focus: Bool
@@ -153,6 +154,7 @@ public struct MultilineTextField: View {
          keyboardReturnType: UIReturnKeyType = .default,
          mention: Bool = false,
          focus: Binding<Bool> = .constant(false),
+         disable: Bool = false,
          onDone: ((String?) -> Void)? = nil)
     {
         self.placeholder = placeholder
@@ -165,6 +167,7 @@ public struct MultilineTextField: View {
         self._focus = focus
         self.placeholderColor = placeholderColor
         let canShowPlaceHolder = text.wrappedValue.isEmpty || (text.wrappedValue.first == "\u{200f}" && text.wrappedValue.count == 1)
+        self.disable = disable
         _showingPlaceholder = State<Bool>(initialValue: canShowPlaceHolder)
     }
 
@@ -176,7 +179,7 @@ public struct MultilineTextField: View {
                           keyboardReturnType: keyboardReturnType,
                           mention: mention,
                           onDone: onDone)
-            .frame(height: dynamicHeight)
+            .frame(height: disable ? 0 : dynamicHeight)
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
             .onChange(of: text) { newValue in

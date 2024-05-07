@@ -189,7 +189,6 @@ struct ContactRowContainer: View {
 
     var body: some View {
         ContactRow(isInSelectionMode: $viewModel.isInSelectionMode)
-//            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)\(contact.blocked == true ? "Blocked" : "UnBlocked")")
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)

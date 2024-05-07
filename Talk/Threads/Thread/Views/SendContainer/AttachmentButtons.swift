@@ -65,62 +65,75 @@ struct MutableAttachmentDialog: View {
             }
         }
         .font(.iransansBody)
-        .padding(.top)
+        .padding(.top, viewModel.showActionButtons ? 8 : 0)
+        .frame(height: viewModel.showActionButtons ? nil : 0)
+        .clipped()
         .animation(.easeInOut, value: viewModel.showActionButtons)
         .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
     }
 }
 
-struct AttchmentButtonItem: View {
+fileprivate struct AttchmentButtonItem: View {
     let title: String
     let image: String
     let action: () -> Void
     @Environment(\.colorScheme) var colorScheme
     @State var isPressing = false
+    @EnvironmentObject var viewModel: SendContainerViewModel
 
     var body: some View {
         VStack {
-            ZStack {
-                Image(systemName: image)
-                    .interpolation(.none)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(colorScheme == .dark ? Color.App.white : Color.App.accent)
+            if viewModel.showActionButtons {
+                buttonContainer
             }
-            .frame(width: isPressing ? 22 : 34, height: isPressing ? 22 : 34)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 26)
-                    .strokeBorder(Color.App.textSecondary.opacity(0.5), lineWidth: 1, antialiased: true)
-            )
-            .overlay(alignment: .center) {
-                if isPressing {
-                    RoundedRectangle(cornerRadius: 26)
-                        .stroke(Color.clear)
-                        .background(Color.App.white.opacity(0.3))
-                        .clipShape(RoundedRectangle(cornerRadius:(26)))
-                }
-            }
-            Text(title)
-                .font(.iransansCaption3)
-                .foregroundStyle(Color.App.textSecondary)
-                .multilineTextAlignment(.center)
         }
+        .frame(height: viewModel.showActionButtons ? nil : 0)
         .contentShape(Rectangle())
         .onTapGesture {
             action()
         }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0, coordinateSpace: .global)
-                .onChanged { newValue in
-                    isPressing = true
-                }
-                .onEnded { newValue in
-                    isPressing = false
-                }
-        )
+        .simultaneousGesture(dragGesture)
         .animation(.easeInOut, value: isPressing)
+    }
+
+    @ViewBuilder
+    private var buttonContainer: some View {
+        ZStack {
+            Image(systemName: image)
+                .interpolation(.none)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .foregroundColor(colorScheme == .dark ? Color.App.white : Color.App.accent)
+        }
+        .frame(width: isPressing ? 22 : 34, height: isPressing ? 22 : 34)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 26)
+                .strokeBorder(Color.App.textSecondary.opacity(0.5), lineWidth: 1, antialiased: true)
+        )
+        .overlay(alignment: .center) {
+            if isPressing {
+                RoundedRectangle(cornerRadius: 26)
+                    .stroke(Color.clear)
+                    .background(Color.App.white.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius:(26)))
+            }
+        }
+        Text(title)
+            .font(.iransansCaption3)
+            .foregroundStyle(Color.App.textSecondary)
+            .multilineTextAlignment(.center)
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture(minimumDistance: 0, coordinateSpace: .global)
+            .onChanged { newValue in
+                isPressing = true
+            }
+            .onEnded { newValue in
+                isPressing = false
+            }
     }
 }
 

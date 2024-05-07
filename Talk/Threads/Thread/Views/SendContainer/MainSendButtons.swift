@@ -20,11 +20,15 @@ struct MainSendButtons: View {
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
-            actionButtonsToggleView
-            textFieldView
-            micOrCameraView
-            sendButtonView
+            if !isInSelection {
+                actionButtonsToggleView
+                textFieldView
+                micOrCameraView
+                sendButtonView
+            }
         }
+        .frame(height: isInSelection ? 0 : nil)
+        .clipped()
         .animation(.easeInOut, value: viewModel.isVideoRecordingSelected)
         .fullScreenCover(isPresented: $showCaptureImageView) {
             CameraCapturer(isVideo: false) { image, _, asset in
@@ -185,10 +189,15 @@ struct MainSendButtons: View {
             backgroundColor: Color.App.bgSendInput,
             placeholderColor: Color.App.textPrimary.opacity(0.7),
             mention: true,
-            focus: $viewModel.focusOnTextInput
+            focus: $viewModel.focusOnTextInput,
+            disable: isInSelection
         )
-        .clipShape(RoundedRectangle(cornerRadius:(24)))
+        .clipShape(RoundedRectangle(cornerRadius:(isInSelection ? 0 : 24)))
         .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
+    }
+
+    private var isInSelection: Bool {
+        viewModel.viewModel?.selectedMessagesViewModel.isInSelectMode == true
     }
 }
 

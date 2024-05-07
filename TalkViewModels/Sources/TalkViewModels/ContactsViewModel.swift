@@ -38,6 +38,7 @@ public class ContactsViewModel: ObservableObject {
     private var objectId = UUID().uuidString
     private let GET_CONTACTS_KEY: String
     private let SEARCH_CONTACTS_KEY: String
+    public var builderScrollProxy: ScrollViewProxy?
 
     nonisolated public init(isBuilder: Bool = false) {
         self.isBuilder = isBuilder
@@ -311,6 +312,10 @@ public class ContactsViewModel: ObservableObject {
         if !response.cache, response.pop(prepend: SEARCH_CONTACTS_KEY) != nil {
             lazyList.setLoading(false)
             searchedContacts = .init(response.result ?? [])
+            try? await Task.sleep(for: .milliseconds(200)) /// To scroll properly
+            withAnimation {
+                builderScrollProxy?.scrollTo("SearchRow-\(searchedContacts.first?.id ?? 0)", anchor: .top)
+            }
         }
     }
 

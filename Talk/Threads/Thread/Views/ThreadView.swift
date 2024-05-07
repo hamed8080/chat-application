@@ -39,17 +39,14 @@ struct ThreadView: View, DropDelegate {
         .navigationBarBackButtonHidden(true)
         .background(SheetEmptyBackground())
         .onDrop(of: [.image], delegate: self)
-        .safeAreaInset(edge: .bottom) {
-            ThreadEmptySpaceView()
+        .overlay(alignment: .bottom) {
+            SendContainerOverlayView()
         }
         .overlay(alignment: .top) {
             VStack(spacing: 0) {
                 ThreadPinMessage(threadVM: viewModel)
                 AudioPlayerView(threadVM: viewModel)
             }
-        }
-        .overlay(alignment: .bottom) {
-            SendContainerOverlayView()
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(spacing: 0) {

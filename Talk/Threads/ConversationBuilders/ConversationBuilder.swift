@@ -22,36 +22,41 @@ struct ConversationBuilder: View {
                 SelectedContactsView()
                     .padding(.horizontal, 8)
                     .background(Color.App.bgPrimary)
-                List {
-                    if viewModel.searchedContacts.count > 0 {
-                        StickyHeaderSection(header: "Contacts.searched")
+                ScrollViewReader { proxy in
+                    List {
+                        if viewModel.searchedContacts.count > 0 {
+                            StickyHeaderSection(header: "Contacts.searched")
+                                .listRowInsets(.zero)
+                                .listRowSeparator(.hidden)
+                            ForEach(viewModel.searchedContacts) { contact in
+                                BuilderContactRowContainer(contact: contact, isSearchRow: true)
+                            }
+                            .padding()
+                            .listRowInsets(.zero)
+                        }
+
+                        StickyHeaderSection(header: "Contacts.selectContacts")
                             .listRowInsets(.zero)
                             .listRowSeparator(.hidden)
-                        ForEach(viewModel.searchedContacts) { contact in
-                            BuilderContactRowContainer(contact: contact, isSearchRow: true)
+                        ForEach(viewModel.contacts) { contact in
+                            BuilderContactRowContainer(contact: contact, isSearchRow: false)
+                                .onAppear {
+                                    Task {
+                                        if viewModel.contacts.last == contact {
+                                            await viewModel.loadMore()
+                                        }
+                                    }
+                                }
                         }
+                        .onDelete(perform: viewModel.delete)
                         .padding()
                         .listRowInsets(.zero)
                     }
-
-                    StickyHeaderSection(header: "Contacts.selectContacts")
-                        .listRowInsets(.zero)
-                        .listRowSeparator(.hidden)
-                    ForEach(viewModel.contacts) { contact in
-                        BuilderContactRowContainer(contact: contact, isSearchRow: false)
-                            .onAppear {
-                                Task {
-                                    if viewModel.contacts.last == contact {
-                                        await viewModel.loadMore()
-                                    }
-                                }
-                            }
+                    .listStyle(.plain)
+                    .onAppear {
+                        viewModel.builderScrollProxy = proxy
                     }
-                    .onDelete(perform: viewModel.delete)
-                    .padding()
-                    .listRowInsets(.zero)
                 }
-                .listStyle(.plain)
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
@@ -320,7 +325,7 @@ struct BuilderContactRowContainer: View {
 
     var body: some View {
         ‌BuilderContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
-            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)\(contact.blocked == true ? "Blocked" : "UnBlocked")")
+            .id("\(isSearchRow ? "SearchRow-" : "Normal-")\(contact.id ?? 0)")
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
