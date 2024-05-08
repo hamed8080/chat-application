@@ -16,6 +16,8 @@ import TalkModels
 import TalkViewModels
 import UIKit
 import OSLog
+import TalkUI
+import SwiftUI
 
 final class ChatDelegateImplementation: ChatDelegate {
     let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "Talk-App")
@@ -109,7 +111,7 @@ final class ChatDelegateImplementation: ChatDelegate {
                 onLog(log: log)
                 await TokenManager.shared.getNewTokenWithRefreshToken()
             }
-            AppState.shared.connectionStatus = .unauthorized
+            AppState.shared.connectionStatus = EnvironmentValues.isTalkTest ? .unauthorized : .connecting
         } else {
             if response.isPresentable {
                 AppState.shared.animateAndShowError(error)
