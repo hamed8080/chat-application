@@ -24,40 +24,19 @@ struct MessageFooterView: View {
     }
 
     var body: some View {
-        HStack(spacing: 2) {
-
+        HStack(spacing: 0) {
             if !viewModel.isMe {
                 timeView
             }
-
-            if message.edited == true {
-                editedText
-            }
-
+            editedText
             if viewModel.isMe {
                 timeView
             }
-
-            if viewModel.isMe, isSelfThreadDelvived {
-                Image(uiImage: message.footerStatus.image)
-                    .interpolation(.none)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(message.footerStatus.fgColor)
-            }
-
-            if message.id != nil, message.id == thread?.pinMessage?.id {
-                Image(systemName: "pin.fill")
-                    .interpolation(.none)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 12, height: 12)
-                    .foregroundColor(Color.App.accent)
-            }
+            statusImage
+            pinImage
         }
         .font(.subheadline)
-        .padding(EdgeInsets(top: 4, leading: 6, bottom: 0, trailing: 6)) /// Top 4 for spacing in VStack in TextMessageType
+        .padding(EdgeInsets(top: 4, leading: 6, bottom: 0, trailing: -4)) /// Top 4 for spacing in VStack in TextMessageType
     }
 
     private var timeView: some View {
@@ -65,11 +44,39 @@ struct MessageFooterView: View {
             .foregroundColor(Color.App.textPrimary.opacity(0.5))
             .font(.iransansCaption2)
             .fontWeight(.medium)
+            .padding(.horizontal, 2)
     }
 
     private var editedText: some View {
         Text("Messages.Footer.edited")
             .foregroundColor(Color.App.textSecondary)
             .font(.iransansCaption2)
+            .frame(width: message.edited == true ? nil : 0, height: message.edited == true ? nil : 0)
+            .clipped()
+            .padding(.leading, 2)
+    }
+
+    @ViewBuilder
+    private var pinImage: some View {
+        let isPin = message.id != nil && message.id == thread?.pinMessage?.id
+        Image(systemName: "pin.fill")
+            .interpolation(.none)
+            .resizable()
+            .scaledToFit()
+            .frame(width: isPin ? 12 : 0, height: isPin ? 12 : 0)
+            .foregroundColor(Color.App.accent)
+            .padding(.trailing, 2)
+    }
+
+    @ViewBuilder
+    private var statusImage: some View {
+        let canShowStatus = viewModel.isMe && isSelfThreadDelvived
+        Image(uiImage: message.footerStatus.image)
+            .interpolation(.none)
+            .resizable()
+            .scaledToFit()
+            .frame(width: canShowStatus ? 16 : 0, height: canShowStatus ? 16 : 0)
+            .foregroundColor(message.footerStatus.fgColor)
+            .padding(.trailing, 2)
     }
 }

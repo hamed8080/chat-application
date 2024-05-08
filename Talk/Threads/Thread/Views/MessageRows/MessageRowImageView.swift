@@ -17,8 +17,8 @@ struct MessageRowImageView: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        if (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.isPreparingThumbnailImageForUploadedImage {
-            ZStack {
+        ZStack {
+            if (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.isPreparingThumbnailImageForUploadedImage {
                 Image(uiImage: viewModel.image)
                     .interpolation(.none)
                     .resizable()
@@ -29,21 +29,21 @@ struct MessageRowImageView: View {
                     .background(gradient)
                     .blur(radius: viewModel.blurRadius ?? 0, opaque: false)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
+                    .onTapGesture {
+                        viewModel.onTap()
+                    }
                 if let downloadVM = viewModel.downloadFileVM, downloadVM.state != .completed {
                     OverlayDownloadImageButton(message: message)
                         .environmentObject(downloadVM)
                 }
             }
-            .onTapGesture {
-                viewModel.onTap()
+
+            if message.uploadFile?.uploadImageRequest != nil || viewModel.isPreparingThumbnailImageForUploadedImage {
+                UploadMessageImageView(viewModel: viewModel)
             }
-            .clipped()
-            .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         }
-        
-        if message.uploadFile?.uploadImageRequest != nil || viewModel.isPreparingThumbnailImageForUploadedImage {
-            UploadMessageImageView(viewModel: viewModel)
-        }
+        .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .clipped()
     }
 
     private static let clearGradient = LinearGradient(colors: [.clear], startPoint: .top, endPoint: .bottom)

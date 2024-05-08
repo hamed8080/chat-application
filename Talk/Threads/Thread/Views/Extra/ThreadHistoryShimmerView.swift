@@ -25,6 +25,7 @@ struct ThreadHistoryShimmerView: View {
                         }
                     }
                 }
+                .padding(.bottom, 52)
                 .environmentObject(viewModel.itemViewModel)
                 .listStyle(.plain)
                 .background(ThreadbackgroundView(threadId: 0))
@@ -33,7 +34,6 @@ struct ThreadHistoryShimmerView: View {
                     reader.scrollTo(10, anchor: .bottom)
                 }
             }
-            .padding(.bottom, 52)
         }
     }
 }

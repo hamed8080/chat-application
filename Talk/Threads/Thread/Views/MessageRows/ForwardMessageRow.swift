@@ -17,8 +17,7 @@ struct ForwardMessageRow: View {
     var message: Message? { viewModel.message }
 
     var body: some View {
-        if let forwardInfo = message?.forwardInfo, forwardInfo.conversation != nil {
-            Button {
+        Button {
                 /// Disabled until they fix the server side.
 //                AppState.shared.objectsContainer.navVM.append(thread: forwardThread)
             } label: {
@@ -26,19 +25,12 @@ struct ForwardMessageRow: View {
                     VStack(alignment: .leading, spacing: 2) {
                         statcForwardText
                         /// When we are the sender of forward we use forwardInfo.participant.name unless we use message.participant.name because it's nil
-                        if let name = forwardInfo.participant?.name ?? message?.participant?.name {
-                            Text(name)
-                                .font(.iransansBoldBody)
-                                .foregroundStyle(Color.App.accent)
-                        }                       
+                        participantName
                     }
                 }
                 .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))
                 .overlay(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .stroke(lineWidth: 1.5)
-                        .fill(Color.App.accent)
-                        .frame(maxWidth: 1.5)
+                    orangeLeadingBar
                 }
             }
             .frame(maxWidth: viewModel.forwardContainerWidth, alignment: .leading)
@@ -49,12 +41,26 @@ struct ForwardMessageRow: View {
             .background(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .padding(.top,viewModel.paddings.forwardViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-        }
     }
 
     private var statcForwardText: some View {
         Text("Message.forwardedFrom")
             .foregroundStyle(Color.App.accent)
             .font(.iransansCaption3)
+    }
+
+    @ViewBuilder
+    private var participantName: some View {
+        let name = message?.forwardInfo?.participant?.name ?? message?.participant?.name ?? ""
+        Text(name)
+            .font(.iransansBoldBody)
+            .foregroundStyle(Color.App.accent)
+    }
+
+    private var orangeLeadingBar: some View {
+        RoundedRectangle(cornerRadius: 3)
+            .stroke(lineWidth: 1.5)
+            .fill(Color.App.accent)
+            .frame(maxWidth: 1.5)
     }
 }

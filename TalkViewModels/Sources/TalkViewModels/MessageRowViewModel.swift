@@ -195,6 +195,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         replyContainerWidth = await calculateReplyContainerWidth()
         forwardContainerWidth = await calculateForwardContainerWidth()
         isInTwoWeekPeriod = calculateIsInTwoWeekPeriod()
+        isInSelectMode = threadVM?.selectedMessagesViewModel.isInSelectMode ?? false
         calculateSpacingPaddings()
         setAvatarColor()
     }
