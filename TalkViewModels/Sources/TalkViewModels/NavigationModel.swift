@@ -120,6 +120,8 @@ public extension NavigationModel {
         if let threadId = threadId, (pathsTracking.last as? ThreadViewModel)?.threadId == threadId {
             popLastPathTracking()
             popLastPath()
+        } else if paths.count > 0 {
+            popLastPath()
         }
         setSelectedThreadId()
     }
@@ -127,19 +129,19 @@ public extension NavigationModel {
 
 // ThreadDetailViewModel
 public extension NavigationModel {
-    func appendThreadDetail(threadViewModel: ThreadViewModel? = nil, paricipant: Participant? = nil) {
+    func appendThreadDetail(threadViewModel: ThreadViewModel) {
         let detailViewModel = AppState.shared.objectsContainer.threadDetailVM
-        if let participant = paricipant {
-            detailViewModel.setup(participant: participant)
-        } else {
-            detailViewModel.setup(thread: threadViewModel?.thread, threadVM: threadViewModel)
-        }
+        detailViewModel.setup(thread: threadViewModel.thread, threadVM: threadViewModel)
         let value = ConversationDetailNavigationValue(viewModel: detailViewModel)
         append(value: value)
-        selectedId = threadViewModel?.threadId
+        selectedId = threadViewModel.threadId
+    }
+
+    func removeDetail() {
+        popLastPath()
+        popLastPathTracking()
     }
 }
-
 
 public extension NavigationModel {
     func updateConversationInViewModel(_ conversation: Conversation) {

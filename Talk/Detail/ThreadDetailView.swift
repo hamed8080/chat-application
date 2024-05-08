@@ -32,12 +32,27 @@ struct ThreadDetailView: View {
                 prepareToDismiss()
             }
         }
+        .onAppear {
+            setupPreviousDetailViewModel()
+        }
     }
 
     private func prepareToDismiss() {
         AppState.shared.objectsContainer.navVM.remove()
         AppState.shared.objectsContainer.threadDetailVM.clear()
         dismiss()
+    }
+
+/*
+ We must do this because we use a shared detail view model.
+ It will lead to problems if we don't do this when going deeply through threads.
+ It will refresh the whole detail in the previous thread but will do the job.
+*/
+    private func setupPreviousDetailViewModel() {
+        let threadVM = AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel
+        if viewModel.thread?.id ?? 0 != threadVM?.threadId, let threadVM = threadVM {
+            viewModel.setup(thread: threadVM.thread, threadVM: threadVM)
+        }
     }
 }
 

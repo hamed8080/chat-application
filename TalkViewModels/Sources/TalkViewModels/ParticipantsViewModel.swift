@@ -63,7 +63,7 @@ public final class ParticipantsViewModel: ObservableObject {
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
             .sink { searchText in
-                Task { [weak self] in
+                Task { @MainActor [weak self] in
                     if searchText.count >= 2 {
                         await self?.searchParticipants(searchText.lowercased())
                     } else {
@@ -188,12 +188,13 @@ public final class ParticipantsViewModel: ObservableObject {
         lazyList.setLoading(false)
     }
 
+    @MainActor
     public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) async {
         if !response.cache, response.pop(prepend: SEARCH_KEY) != nil, let participants = response.result {
             searchedParticipants.removeAll()
             searchedParticipants.append(contentsOf: participants)
         }
-        await lazyList.setLoading(false)
+        lazyList.setLoading(false)
     }
 
     public func refresh() async {

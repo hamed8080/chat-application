@@ -13,8 +13,10 @@ public struct NavigationBackButton: View {
     @Environment(\.dismiss) var dismiss
     let action: (() -> ())?
     @GestureState private var isTouching = false
+    private let automaticDismiss: Bool
 
-    public init(action: (() -> Void)? = nil) {
+    public init(automaticDismiss: Bool, action: (() -> Void)? = nil) {
+        self.automaticDismiss = automaticDismiss
         self.action = action
     }
 
@@ -46,7 +48,9 @@ public struct NavigationBackButton: View {
         TapGesture(count: 1)
             .onEnded { _ in
                 action?()
-                dismiss()
+                if automaticDismiss {
+                    dismiss()
+                }
             }
     }
 }
@@ -80,8 +84,6 @@ public struct NormalNavigationBackButton: View {
 
 struct NavigationBackButton_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationBackButton {
-
-        }
+        NavigationBackButton(automaticDismiss: true) {}
     }
 }

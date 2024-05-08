@@ -213,9 +213,7 @@ struct EditGroup: View {
     }
 
     var leadingTralingView: some View {
-        NavigationBackButton {
-            dismiss()
-        }
+        NavigationBackButton(automaticDismiss: true) {}
     }
 
     @ViewBuilder private func item(title: String,

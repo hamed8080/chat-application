@@ -196,7 +196,7 @@ struct NormalToolbarViewModifier<T, TrailingContentView: View>: ViewModifier {
     }
     
     private var leadingView: some View {
-        NavigationBackButton {
+        NavigationBackButton(automaticDismiss: false) {
             AppState.shared.objectsContainer.navVM.remove()
         }
     }

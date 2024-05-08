@@ -12,12 +12,14 @@ struct DetailLeadingToolbarViews: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
     
     var body: some View {
-        NavigationBackButton {
-            Task {
+        NavigationBackButton(automaticDismiss: false) {
+            Task { @MainActor in
                 await viewModel.threadVM?.scrollVM.disableExcessiveLoading()
                 AppState.shared.objectsContainer.contactsVM.editContact = nil
-                AppState.shared.objectsContainer.navVM.remove()
-                AppState.shared.objectsContainer.threadDetailVM.clear()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    AppState.shared.objectsContainer.threadDetailVM.clear()
+                }
+                AppState.shared.objectsContainer.navVM.removeDetail()
             }
         }
     }

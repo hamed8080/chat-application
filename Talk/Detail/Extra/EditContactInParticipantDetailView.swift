@@ -115,9 +115,7 @@ struct EditContactInParticipantDetailView: View {
     }
 
     var leadingViews: some View {
-        NavigationBackButton {
-
-        }
+        NavigationBackButton(automaticDismiss: true) {}
     }
 }
 

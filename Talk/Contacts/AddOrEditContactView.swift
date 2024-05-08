@@ -159,9 +159,7 @@ struct AddOrEditContactView: View {
     }
 
     var leadingTralingView: some View {
-        NavigationBackButton {
-            dismiss()
-        }
+        NavigationBackButton(automaticDismiss: true) {}
     }
 }
 

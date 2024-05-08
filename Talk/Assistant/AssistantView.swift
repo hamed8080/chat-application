@@ -31,7 +31,7 @@ struct AssistantView: View {
         .animation(.easeInOut, value: viewModel.assistants.count)
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
+                NavigationBackButton(automaticDismiss: false) {
                     AppState.shared.objectsContainer.navVM.remove()
                 }
             }
