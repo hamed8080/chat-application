@@ -65,7 +65,7 @@ struct ThreadHistoryList: View {
                 .padding([.top, .bottom], viewModel.bottomLoading ? 8 : 0)
                 .animation(.easeInOut, value: viewModel.bottomLoading)
 
-            //                UnsentMessagesLoop(historyVM: viewModel)
+            UnsentMessagesLoop(historyVM: viewModel)
         }
         .environment(\.defaultMinListRowHeight, 0)
         .listStyle(.plain)
@@ -133,13 +133,10 @@ struct UnsentMessagesLoop: View {
 
     var body: some View {
         /// We have to use \.uniqueId to force the ForLoop to use uniqueId instead of default \.id because id is nil when a message is unsent.
-        ForEach(viewModel.unsentMessages, id: \.uniqueId) { unsentMessage in
-            if let messageRowVM = historyVM.messageViewModel(for: unsentMessage.id ?? -1) {
-                MessageRowFactory(viewModel: messageRowVM)
-                    .id(unsentMessage.uniqueId)
-            }
+        ForEach(viewModel.rowViewModels) { messageRowVM in
+            MessageRowFactory(viewModel: messageRowVM)
         }
-        .animation(.easeInOut, value: viewModel.unsentMessages.count)
+        .animation(.easeInOut, value: viewModel.rowViewModels.count)
     }
 }
 
