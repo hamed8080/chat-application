@@ -35,6 +35,14 @@
 				<string>openURL</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>talk</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>talk</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.3.44</string>

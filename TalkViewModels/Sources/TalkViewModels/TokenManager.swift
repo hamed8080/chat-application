@@ -28,22 +28,27 @@ public final class TokenManager: ObservableObject {
 
     public func getNewTokenWithRefreshToken() async {
         guard let ssoTokenModel = getSSOTokenFromUserDefaults(),
-              let keyId = ssoTokenModel.keyId
+              let codeVerifier = ssoTokenModel.codeVerifier
         else { return }
         do {
             let refreshToken = ssoTokenModel.refreshToken ?? ""
-            let config = ChatManager.activeInstance?.config
-            let serverType = Config.serverType(config: config) ?? .main
-            var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: serverType).refreshToken)!)
+//            let config = ChatManager.activeInstance?.config
+//            let serverType = Config.serverType(config: config) ?? .main
+
+            let clientId = "88413l69cd4051a039cf115ee4e073"
+            let url = URL(string: "https://accounts.pod.ir/oauth2/token")!
+            var urlReq = URLRequest(url: url)
             urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
-            urlReq.allHTTPHeaderFields = ["keyId": keyId]
+            urlReq.httpMethod = "POST"
+            urlReq.httpBody = NSMutableData(data: "grant_type=refresh_token&client_id=\(clientId)&code_verifier=\(codeVerifier)&refresh_token=\(refreshToken)".data(using: String.Encoding.utf8)!) as Data
+            urlReq.allHTTPHeaderFields = ["content-type": "application/x-www-form-urlencoded", ]
             let resp = try await session.data(for: urlReq)
             let log = Logger.makeLog(prefix: "TALK_APP_REFRESH_TOKEN:", request: urlReq, response: resp)
             post(log: log)
             let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
             await MainActor.run {
                 var ssoToken = ssoToken
-                ssoToken.keyId = keyId
+                ssoToken.codeVerifier = codeVerifier
                 saveSSOToken(ssoToken: ssoToken)
                 ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
                 if AppState.shared.connectionStatus != .connected {
