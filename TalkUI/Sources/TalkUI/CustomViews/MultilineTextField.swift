@@ -143,7 +143,7 @@ public struct MultilineTextField: View {
 
     @Binding private var text: String
     @Binding private var focus: Bool
-    @State private var dynamicHeight: CGFloat = 64
+    @State private var dynamicHeight: CGFloat = 42
     @State private var showingPlaceholder = false
 
     public init(_ placeholder: String = "",
@@ -180,6 +180,7 @@ public struct MultilineTextField: View {
                           mention: mention,
                           onDone: onDone)
             .frame(height: disable ? 0 : dynamicHeight)
+            .padding(.horizontal, 4)
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
             .onChange(of: text) { newValue in
@@ -195,7 +196,7 @@ public struct MultilineTextField: View {
                 Text(placeholder)
                     .font(.iransansBody)
                     .foregroundColor(placeholderColor)
-                    .padding(EdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 0))
+                    .padding(EdgeInsets(top: 8, leading: 12, bottom: 0, trailing: 0))
                     .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .leading)))
             }
         }

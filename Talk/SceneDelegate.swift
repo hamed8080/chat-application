@@ -36,7 +36,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
         }
         
         // MARK: Registering Launch Handlers for Tasks
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: EnvironmentValues.isTalkTest ? "ir.pod.talk-test.refreshToken" : "ir.pod.talk.refreshToken", using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "\(Bundle.main.bundleIdentifier!).refreshToken", using: nil) { task in
             // Downcast the parameter to an app refresh task as this identifier is used for a refresh request.
             if let task = task as? BGAppRefreshTask {
                 self.handleTaskRefreshToken(task)
@@ -110,12 +110,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
     private func scheduleAppRefreshToken() {
         if let ssoToken = TokenManager.shared.getSSOTokenFromUserDefaults(), let createDate = TokenManager.shared.getCreateTokenDate() {
             let timeToStart = createDate.advanced(by: Double(ssoToken.expiresIn - 50)).timeIntervalSince1970 - Date().timeIntervalSince1970
-            let request = BGAppRefreshTaskRequest(identifier: EnvironmentValues.isTalkTest ? "ir.pod.talk-test.refreshToken" : "ir.pod.talk.refreshToken")
+            let request = BGAppRefreshTaskRequest(identifier: "\(Bundle.main.bundleIdentifier!).refreshToken")
             request.earliestBeginDate = Date(timeIntervalSince1970: timeToStart)
             do {
                 try BGTaskScheduler.shared.submit(request)
             } catch {
-                print("Could not schedule app refresh: \(error)")
+                print("Could not schedule app refresh(Maybe you should run it on a real device): \(error)")
             }
         }
     }
