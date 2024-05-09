@@ -598,7 +598,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     internal func updateReactions(reactions: [ReactionInMemoryCopy]) async {
         for copy in reactions {
             if let vm = messageViewModel(for: copy.messageId) {
-                await vm.calulateReactions(reactions: copy)
+                await vm.setReaction(reactions: copy)
                 vm.animateObjectWillChange()
             }
         }
