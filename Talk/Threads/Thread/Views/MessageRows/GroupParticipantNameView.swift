@@ -15,13 +15,13 @@ struct GroupParticipantNameView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if let groupMessageParticipantName = viewModel.groupMessageParticipantName {
+        if let groupMessageParticipantName = viewModel.calculatedMessage.groupMessageParticipantName {
             HStack {
                 Text(verbatim: groupMessageParticipantName)
-                    .foregroundStyle(viewModel.participantColor ?? .clear)
+                    .foregroundStyle(viewModel.calculatedMessage.participantColor ?? .clear)
                     .font(.iransansBoldBody)
             }
-            .padding(viewModel.paddings.groupParticipantNamePadding)
+            .padding(viewModel.sizes.paddings.groupParticipantNamePadding)
         }
     }
 }

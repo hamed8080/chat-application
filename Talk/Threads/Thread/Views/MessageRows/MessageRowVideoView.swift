@@ -18,18 +18,18 @@ struct MessageRowVideoView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: viewModel.isDownloadCompleted ? 0 : 8) {
-            if !viewModel.isMe {
+            if !viewModel.calculatedMessage.isMe {
                 button
             }
 
             playerContainerView
 
-            if viewModel.isMe {
+            if viewModel.calculatedMessage.isMe {
                 button
             }
         }
         .padding(viewModel.isDownloadCompleted ? 0 : 4)
-        .padding(.top, viewModel.isDownloadCompleted ? 0 : viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .padding(.top, viewModel.isDownloadCompleted ? 0 : viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
         .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
         .task {
@@ -42,7 +42,7 @@ struct MessageRowVideoView: View {
     }
 
     @ViewBuilder private var fileNameView: some View {
-        if let fileName = viewModel.fileName {
+        if let fileName = viewModel.calculatedMessage.fileName {
             Text(fileName)
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
@@ -52,7 +52,7 @@ struct MessageRowVideoView: View {
     }
 
     @ViewBuilder private var fileTypeView: some View {
-        if let extName = viewModel.extName {
+        if let extName = viewModel.calculatedMessage.extName {
             Text(extName)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
@@ -61,7 +61,7 @@ struct MessageRowVideoView: View {
     }
 
     @ViewBuilder private var fileSizeView: some View {
-        if let fileZize = viewModel.computedFileSize {
+        if let fileZize = viewModel.calculatedMessage.computedFileSize {
             Text(fileZize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
@@ -82,11 +82,12 @@ struct MessageRowVideoView: View {
 
     @ViewBuilder private var playerView: some View {
         if viewModel.isDownloadCompleted, let fileURL = viewModel.downloadFileVM?.fileURL {
+            let mtd = viewModel.calculatedMessage.fileMetaData
             VideoPlayerView()
                 .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
-                                                        ext: viewModel.fileMetaData?.file?.mimeType?.ext,
-                                                        title: viewModel.fileMetaData?.name,
-                                                        subtitle: viewModel.fileMetaData?.file?.originalName ?? ""))
+                                                        ext: mtd?.file?.mimeType?.ext,
+                                                        title: mtd?.name,
+                                                        subtitle: mtd?.file?.originalName ?? ""))
                 .id(fileURL)
         }
     }

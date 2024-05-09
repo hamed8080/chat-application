@@ -897,8 +897,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func setRowsIsInSelectMode(newValue: Bool) {
         sections.forEach { section in
             section.vms.forEach { vm in
-                if newValue != vm.isInSelectMode {
-                    vm.isInSelectMode = newValue
+                if newValue != vm.state.isInSelectMode {
+                    vm.state.isInSelectMode = newValue
                     vm.animateObjectWillChange()
                 }
             }

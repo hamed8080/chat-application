@@ -20,7 +20,7 @@ struct AvatarView: View {
     static func emptyViewSender(trailing: CGFloat = 8) -> some View {
         Rectangle()
             .fill(Color.clear)
-            .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
+            .frame(width: MessageRowSizes.avatarSize, height: MessageRowSizes.avatarSize)
             .padding(.trailing, trailing)
     }
 
@@ -36,20 +36,20 @@ struct AvatarView: View {
                         .id(imageLoaderId)
                         .font(.iransansCaption)
                         .foregroundColor(.white)
-                        .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(viewModel.avatarColor)
-                        .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
+                        .frame(width: MessageRowSizes.avatarSize, height: MessageRowSizes.avatarSize)
+                        .background(viewModel.calculatedMessage.avatarColor)
+                        .clipShape(RoundedRectangle(cornerRadius:(MessageRowSizes.avatarSize / 2)))
                 } else {
-                    Text(verbatim: viewModel.avatarSplitedCharaters)
+                    Text(verbatim: viewModel.calculatedMessage.avatarSplitedCharaters)
                         .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
                         .font(.iransansCaption)
                         .foregroundColor(.white)
-                        .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(viewModel.avatarColor)
-                        .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
+                        .frame(width: MessageRowSizes.avatarSize, height: MessageRowSizes.avatarSize)
+                        .background(viewModel.calculatedMessage.avatarColor)
+                        .clipShape(RoundedRectangle(cornerRadius:(MessageRowSizes.avatarSize / 2)))
                 }
             }
-            .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
+            .frame(width: MessageRowSizes.avatarSize, height: MessageRowSizes.avatarSize)
             .padding(.trailing, 2)
             .onTapGesture {
                 if let participant = message.participant {
@@ -58,12 +58,12 @@ struct AvatarView: View {
             }
         } else if isSameUser {
             /// Place a empty view to show the message has sent by the same user.
-            AvatarView.emptyViewSender(trailing: viewModel.isLastMessageOfTheUser ? 8 : 0)
+            AvatarView.emptyViewSender(trailing: viewModel.calculatedMessage.isLastMessageOfTheUser ? 8 : 0)
         }
     }
 
     private var hiddenView: Bool {
-        viewModel.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false
+        viewModel.state.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false
     }
 
     private var imageLoaderId: String {
@@ -71,10 +71,10 @@ struct AvatarView: View {
     }
 
     private var showAvatarOrUserName: Bool {
-        !viewModel.isMe && viewModel.isLastMessageOfTheUser && viewModel.isCalculated
+        !viewModel.calculatedMessage.isMe && viewModel.calculatedMessage.isLastMessageOfTheUser && viewModel.calculatedMessage.isCalculated
     }
 
     private var isSameUser: Bool {
-        !viewModel.isMe && !viewModel.isLastMessageOfTheUser
+        !viewModel.calculatedMessage.isMe && !viewModel.calculatedMessage.isLastMessageOfTheUser
     }
 }

@@ -26,11 +26,11 @@ struct TextMessageType: View {
 
     var textMessageView: some View {
         HStack(spacing: 0) {
-            if !viewModel.isMe {
+            if !viewModel.calculatedMessage.isMe {
                 SelectMessageRadio()
             }
 
-            if viewModel.isMe {
+            if viewModel.calculatedMessage.isMe {
                 Spacer()
             }
 
@@ -41,16 +41,16 @@ struct TextMessageType: View {
 
             MutableMessageView(viewModel: viewModel)
 
-            if !viewModel.isMe {
+            if !viewModel.calculatedMessage.isMe {
                 Spacer()
             }
 
-            if viewModel.isMe {
+            if viewModel.calculatedMessage.isMe {
                 SelectMessageRadio()
             }
         }
         .environmentObject(viewModel)
-        .padding(EdgeInsets(top: viewModel.isFirstMessageOfTheUser ? 6 : 1, leading: 8, bottom: 1, trailing: 8))
+        .padding(EdgeInsets(top: viewModel.calculatedMessage.isFirstMessageOfTheUser ? 6 : 1, leading: 8, bottom: 1, trailing: 8))
     }
 }
 
@@ -58,14 +58,14 @@ struct SelectMessageRadio: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.isInSelectMode {
+        if viewModel.state.isInSelectMode {
             VStack {
                 Spacer()
-                RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { _ in
+                RadioButton(visible: $viewModel.state.isInSelectMode, isSelected: $viewModel.state.isSelected) { _ in
                     viewModel.toggleSelection()
                 }
             }
-            .padding(viewModel.paddings.radioPadding)
+            .padding(viewModel.sizes.paddings.radioPadding)
         }
     }
 }
@@ -79,7 +79,7 @@ struct MutableMessageView: View {
         HStack {
            InnerMessage(viewModel: viewModel)
         }
-        .frame(minWidth: 128, maxWidth: viewModel.imageWidth ?? ThreadViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .trailing : .leading)
+        .frame(minWidth: 128, maxWidth: viewModel.sizes.imageWidth ?? ThreadViewModel.maxAllowedWidth, alignment: viewModel.calculatedMessage.isMe ? .trailing : .leading)
         .simultaneousGesture(TapGesture().onEnded { _ in }, including: message.isVideo ? .subviews : .all)
     }
 }
@@ -89,8 +89,8 @@ struct InnerMessage: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 0) {
-            if viewModel.isFirstMessageOfTheUser {
+        VStack(alignment: viewModel.calculatedMessage.isMe ? .trailing : .leading, spacing: 0) {
+            if viewModel.calculatedMessage.isFirstMessageOfTheUser {
                 GroupParticipantNameView()
             }
             if viewModel.rowType.isReply {
@@ -133,9 +133,9 @@ struct InnerMessage: View {
             }
         }
         .environmentObject(viewModel)
-        .padding(viewModel.paddings.paddingEdgeInset)
+        .padding(viewModel.sizes.paddings.paddingEdgeInset)
         .background(MessageRowBackgroundView(viewModel: viewModel))
-        .contentShape(viewModel.isLastMessageOfTheUser ? MessageRowBackground.withTail : MessageRowBackground.noTail)
+        .contentShape(viewModel.calculatedMessage.isLastMessageOfTheUser ? MessageRowBackground.withTail : MessageRowBackground.noTail)
         .customContextMenu(id: message.id, self: SelfContextMenu(viewModel: viewModel), menus: { ContextMenuContent(viewModel: viewModel) })
         .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
     }
@@ -145,14 +145,14 @@ struct MessageRowBackgroundView: View {
     let viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.isLastMessageOfTheUser {
+        if viewModel.calculatedMessage.isLastMessageOfTheUser {
             MessageRowBackground.withTail
-                .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-                .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
+                .fill(viewModel.calculatedMessage.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+                .scaleEffect(x: viewModel.calculatedMessage.isMe ? 1 : -1, y: 1)
         } else {
             MessageRowBackground.noTail
-                .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-                .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
+                .fill(viewModel.calculatedMessage.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+                .scaleEffect(x: viewModel.calculatedMessage.isMe ? 1 : -1, y: 1)
         }
     }
 }
@@ -162,7 +162,7 @@ struct ContextMenuContent: View {
 
     var body: some View {
         VStack {
-            if viewModel.isInTwoWeekPeriod {
+            if viewModel.calculatedMessage.isInTwoWeekPeriod {
                 ReactionMenuView()
                     .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
                     .environmentObject(viewModel)

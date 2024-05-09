@@ -1,6 +1,12 @@
+//
+//  MessagePaddings.swift
+//  TalkViewModels
+//
+//  Created by Hamed Hosseini on 5/27/21.
+//
+
 import Foundation
 import SwiftUI
-import ChatModels
 
 public struct MessagePaddings {
     public var textViewPadding: EdgeInsets
@@ -12,7 +18,7 @@ public struct MessagePaddings {
     public var radioPadding: EdgeInsets = .init(top: 0, leading: 0, bottom: 8, trailing: 0)
     public var mapViewSapcingTop: CGFloat = 0
     public var groupParticipantNamePadding: EdgeInsets = .init(top: 0, leading: 0, bottom: 8, trailing: 0)
-    
+
     public init(
         textViewPadding: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
     ) {

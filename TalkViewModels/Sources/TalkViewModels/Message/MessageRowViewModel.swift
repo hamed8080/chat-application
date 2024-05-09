@@ -28,70 +28,27 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public let uniqueId: String = UUID().uuidString
     public var id: Int { message.id ?? -1 }
-    public var isCalculated = false
-    public var isEnglish = true
-    public var markdownTitle = AttributedString()
-    public var timeString: String = ""
-    public static var avatarSize: CGFloat = 37
     public var reactionsModel: ReactionRowsCalculated
     public var downloadFileVM: DownloadFileViewModel?
     public var uploadViewModel: UploadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     public var message: Message
-    public var isInSelectMode: Bool = false
-    public var isMe: Bool
-    public var isHighlited: Bool = false
     public var highlightTimer: Timer?
-    public var isSelected = false
-    public var showReactionsOverlay = false
-    public var isFirstMessageOfTheUser: Bool = false
-    public var isLastMessageOfTheUser: Bool = false
-    public var canShowIconFile: Bool = false
-    public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
-    public var imageWidth: CGFloat? = nil
-    public var imageHeight: CGFloat? = nil
-    public var isReplyImage: Bool = false
-    public var replyLink: String?
-    public var participantColor: Color? = nil
-    public var computedFileSize: String? = nil
-    public var extName: String? = nil
-    public var fileName: String? = nil
-    public var blurRadius: CGFloat? = 0
-    public var addOrRemoveParticipantsAttr: AttributedString? = nil
-    public var avatarColor: Color = .blue
-    public var avatarSplitedCharaters = ""
-    public var isInTwoWeekPeriod: Bool = false
 
-    public var localizedReplyFileName: String? = nil
-    public var callDateText: String = ""
-    public var callTypeKey = ""
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         formatter.locale = Language.preferredLocale
         return formatter
     }()
-    public var fileMetaData: FileMetaData?
-    private static var emptyImage = UIImage(named: "empty_image")!
-    public var image: UIImage = MessageRowViewModel.emptyImage
-    public var groupMessageParticipantName: String?
+
+    public static var emptyImage = UIImage(named: "empty_image")!
     public var avatarImageLoader: ImageLoaderViewModel?
-    public var replyContainerWidth: CGFloat?
-    public var forwardContainerWidth: CGFloat?
     private var cancelable: AnyCancellable?
-    public var paddings = MessagePaddings()
     public var rowType = MessageViewRowType()
-    public var width: CGFloat? = nil
-    public var height: CGFloat? = nil
-    public private(set) var isPreparingThumbnailImageForUploadedImage = false
-
-    public static let tailSize: CGSize = .init(width: 6, height: 12)
-
-    /// We use max to at least have a width, because there are times that maxWidth is nil.
-    public let mapWidth = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowViewModel.tailSize.width)
-    /// We use max to at least have a width, because there are times that maxWidth is nil.
-    /// We use min to prevent the image gets bigger than 320 if it's bigger.
-    public let mapHeight = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
+    public var calculatedMessage = MessageRowCalculatedData()
+    public var sizes = MessageRowSizes()
+    public var state = MessageRowState()
 
     public var isDownloadCompleted: Bool {
         downloadFileVM?.state == .completed
@@ -111,13 +68,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             self.downloadFileVM = DownloadFileViewModel(message: message)
         }
         self.threadVM = viewModel
-        self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        self.calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         reactionsModel = .init(rows: [], topPadding: 0)
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
-            isMe = true
+            calculatedMessage.isMe = true
         }
-        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
+        calculatedMessage.canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
         registerObservers()
     }
 
@@ -133,7 +90,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func startHighlightTimer() {
         highlightTimer?.invalidate()
         highlightTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { [weak self] _ in
-            self?.isHighlited = false
+            self?.state.isHighlited = false
             self?.animateObjectWillChange()
         }
     }
@@ -141,11 +98,11 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculatePaddings() {
         let isReplyOrForward = (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
         let tailWidth: CGFloat = 6
-        let paddingLeading = isReplyOrForward ? (isMe ? 10 : 16) : (isMe ? 4 : 4 + tailWidth)
-        let paddingTrailing: CGFloat = isReplyOrForward ? (isMe ? 16 : 10) : (isMe ? 4 + tailWidth : 4)
+        let paddingLeading = isReplyOrForward ? (calculatedMessage.isMe ? 10 : 16) : (calculatedMessage.isMe ? 4 : 4 + tailWidth)
+        let paddingTrailing: CGFloat = isReplyOrForward ? (calculatedMessage.isMe ? 16 : 10) : (calculatedMessage.isMe ? 4 + tailWidth : 4)
         let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
         let paddingBottom: CGFloat = 4
-        paddings.paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
+        sizes.paddings.paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
     }
 
     public func recalculateWithAnimation() async {
@@ -154,25 +111,26 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     public func performaCalculation() async {
-        isCalculated = true
-        fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
+        calculatedMessage.isCalculated = true
+        calculatedMessage.fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
         calculateImageSize()
         setReplyInfo()
         calculatePaddings()
         calculateCallTexts()
         setAvatarViewModel()
-        rowType.isMap = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
+        calculatedMessage.canEdit = (message.editable == true && calculatedMessage.isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true)
+        rowType.isMap = calculatedMessage.fileMetaData?.mapLink != nil || calculatedMessage.fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
         let isFirstMessageOfTheUser = await (threadVM?.historyVM.isFirstMessageOfTheUser(message) == true)
-        self.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
+        self.calculatedMessage.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
         let isLastMessageOfTheUser = await (threadVM?.historyVM.isLastMessageOfTheUser(message) == true)
-        self.isLastMessageOfTheUser = isLastMessageOfTheUser
-        isEnglish = message.message?.naturalTextAlignment == .leading
-        markdownTitle = AttributedString(message.markdownTitle)
+        self.calculatedMessage.isLastMessageOfTheUser = isLastMessageOfTheUser
+        calculatedMessage.isEnglish = message.message?.naturalTextAlignment == .leading
+        calculatedMessage.markdownTitle = AttributedString(message.markdownTitle)
         rowType.isPublicLink = message.isPublicLink
         rowType.isFile = message.isFileType && !rowType.isMap && !message.isImage && !message.isAudio && !message.isVideo
         rowType.isReply = message.replyInfo != nil
         if let date = message.time?.date {
-            timeString = MessageRowViewModel.formatter.string(from: date)
+            calculatedMessage.timeString = MessageRowViewModel.formatter.string(from: date)
         }
         rowType.isImage = !rowType.isMap && message.isImage
         rowType.isVideo = message.isVideo
@@ -180,22 +138,22 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         rowType.isForward = message.forwardInfo != nil
         rowType.isUnSent = message.isUnsentMessage
         rowType.hasText = !rowType.isPublicLink && message.message?.isEmpty == false
-        callTypeKey = message.callHistory?.status?.key?.bundleLocalized() ?? ""
+        calculatedMessage.callTypeKey = message.callHistory?.status?.key?.bundleLocalized() ?? ""
         async let color = threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
-        participantColor = await Color(uiColor: color ?? .clear)
+        calculatedMessage.participantColor = await Color(uiColor: color ?? .clear)
         await downloadFileVM?.setup()
         manageDownload()
-        computedFileSize = calculateFileSize()
-        extName = calculateFileTypeWithExt()
-        fileName = calculateFileName()
-        addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
-        paddings.textViewPadding = calculateTextViewPadding()
-        localizedReplyFileName = calculateLocalizeReplyFileName()
+        calculatedMessage.computedFileSize = calculateFileSize()
+        calculatedMessage.extName = calculateFileTypeWithExt()
+        calculatedMessage.fileName = calculateFileName()
+        calculatedMessage.addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
+        sizes.paddings.textViewPadding = calculateTextViewPadding()
+        calculatedMessage.localizedReplyFileName = calculateLocalizeReplyFileName()
         calculateGroupParticipantName()
-        replyContainerWidth = await calculateReplyContainerWidth()
-        forwardContainerWidth = await calculateForwardContainerWidth()
-        isInTwoWeekPeriod = calculateIsInTwoWeekPeriod()
-        isInSelectMode = threadVM?.selectedMessagesViewModel.isInSelectMode ?? false
+        sizes.replyContainerWidth = await calculateReplyContainerWidth()
+        sizes.forwardContainerWidth = await calculateForwardContainerWidth()
+        calculatedMessage.isInTwoWeekPeriod = calculateIsInTwoWeekPeriod()
+        state.isInSelectMode = threadVM?.selectedMessagesViewModel.isInSelectMode ?? false
         calculateSpacingPaddings()
         setAvatarColor()
     }
@@ -206,10 +164,10 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             let uploadMapSizeWidth = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.width) : nil
             let uploadMapSizeHeight = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.height) : nil
             let uploadImageReq = (message as? UploadFileMessage)?.uploadImageRequest
-            let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? uploadImageReq?.wC ?? uploadMapSizeWidth ?? 0)
+            let imageWidth = CGFloat(calculatedMessage.fileMetaData?.file?.actualWidth ?? uploadImageReq?.wC ?? uploadMapSizeWidth ?? 0)
             let maxWidth = ThreadViewModel.maxAllowedWidth
             /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? uploadImageReq?.hC ?? uploadMapSizeHeight ?? 0)
+            let imageHeight = CGFloat(calculatedMessage.fileMetaData?.file?.actualHeight ?? uploadImageReq?.hC ?? uploadMapSizeHeight ?? 0)
             let originalWidth: CGFloat = imageWidth
             let originalHeight: CGFloat = imageHeight
             var designerWidth: CGFloat = maxWidth
@@ -222,12 +180,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
                 designerWidth = designerHeight * originalRatio
             }
             let isSquare = originalRatio >= 1 && originalRatio <= 1.5
-            self.imageWidth = isSquare ? designerWidth : designerWidth * 1.5
-            self.imageHeight = isSquare ? designerHeight : designerHeight * 1.5
+            self.sizes.imageWidth = isSquare ? designerWidth : designerWidth * 1.5
+            self.sizes.imageHeight = isSquare ? designerHeight : designerHeight * 1.5
             // We do this because if we got NAN as a result of 0 / 0 we have to prepare a value other than zero
             // Because in maxWidth we can not say maxWidth is Equal zero and minWidth is equal 128
-            if self.imageWidth == 0 {
-                self.imageWidth = ThreadViewModel.maxAllowedWidth
+            if self.sizes.imageWidth == 0 {
+                self.sizes.imageWidth = ThreadViewModel.maxAllowedWidth
             }
         }
     }
@@ -235,17 +193,17 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func setReplyInfo() {
         /// Reply file info
         if let replyInfo = message.replyInfo {
-            self.isReplyImage = [MessageType.picture, .podSpacePicture].contains(replyInfo.messageType)
+            self.calculatedMessage.isReplyImage = [MessageType.picture, .podSpacePicture].contains(replyInfo.messageType)
             let metaData = replyInfo.metadata
             if let data = metaData?.data(using: .utf8), let fileMetaData = try? JSONDecoder.instance.decode(FileMetaData.self, from: data) {
-                replyLink = fileMetaData.file?.link
+                calculatedMessage.replyLink = fileMetaData.file?.link
             }
         }
     }
 
     public func toggleSelection() {
-        withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
-            isSelected.toggle()
+        withAnimation(!state.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
+            state.isSelected.toggle()
             threadVM?.selectedMessagesViewModel.animateObjectWillChange()
             animateObjectWillChange()
         }
@@ -266,19 +224,19 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         guard let vm = downloadFileVM, message.isImage && !rowType.isMap else { return }
         if vm.thumbnailData != nil && vm.state == .downloading { return }
         if vm.state == .completed, let realImage = realImage {
-            image = realImage
-            blurRadius = 0
+            calculatedMessage.image = realImage
+            sizes.blurRadius = 0
             clearDownloadViewModel()
         } else if let blurImage = blurImage {
-            isPreparingThumbnailImageForUploadedImage = false
-            image = blurImage
-            blurRadius = 16
-        } else if isPreparingThumbnailImageForUploadedImage {
+            state.isPreparingThumbnailImageForUploadedImage = false
+            calculatedMessage.image = blurImage
+            sizes.blurRadius = 16
+        } else if state.isPreparingThumbnailImageForUploadedImage {
             // do nothing stay with the current uploaded image in local until it will set by a new thumbnail data.
             // It will help the UI stay stable during changes and not shaking after uploading image
         } else {
-            image = MessageRowViewModel.emptyImage
-            blurRadius = 0
+            calculatedMessage.image = MessageRowViewModel.emptyImage
+            sizes.blurRadius = 0
         }
         await asyncAnimateObjectWillChange()
     }
@@ -309,7 +267,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     public func onTap() {
-        if downloadFileVM == nil && image != MessageRowViewModel.emptyImage {
+        if downloadFileVM == nil && calculatedMessage.image != MessageRowViewModel.emptyImage {
             AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
         } else if downloadFileVM?.state != .completed && downloadFileVM?.thumbnailData != nil {
             downloadFileVM?.startDownload()
@@ -318,24 +276,24 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     private func calculateFileSize() -> String? {
         let uploadFileSize: Int64 = Int64(message.uploadFile?.uploadFileRequest?.data.count ?? 0)
-        let realServerFileSize = fileMetaData?.file?.size
+        let realServerFileSize = calculatedMessage.fileMetaData?.file?.size
         let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale)?.replacingOccurrences(of: "٫", with: ".")
         return fileSize
     }
 
     private func calculateFileTypeWithExt() -> String? {
         let uploadFileType = message.uploadFile?.uploadFileRequest?.originalName ?? message.uploadFile?.uploadImageRequest?.originalName
-        let serverFileType = fileMetaData?.file?.originalName
+        let serverFileType = calculatedMessage.fileMetaData?.file?.originalName
         let split = (serverFileType ?? uploadFileType)?.split(separator: ".")
-        let ext = fileMetaData?.file?.extension
+        let ext = calculatedMessage.fileMetaData?.file?.extension
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
         return extensionName.isEmpty ? nil : extensionName.uppercased()
     }
 
     private func calculateFileName() -> String? {
-        let fileName = fileMetaData?.file?.name
-        if fileName == "" || fileName == "blob", let originalName = fileMetaData?.file?.originalName {
+        let fileName = calculatedMessage.fileMetaData?.file?.name
+        if fileName == "" || fileName == "blob", let originalName = calculatedMessage.fileMetaData?.file?.originalName {
             return originalName
         }
         return fileName ?? message.uploadFileName?.replacingOccurrences(of: ".\(message.fileExtension ?? "")", with: "")
@@ -347,7 +305,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let string = "\(message.addOrRemoveParticipantString(meId: AppState.shared.user?.id) ?? "") \(date)"
         let attr = NSMutableAttributedString(string: string)
         let isMeDoer = "General.you".bundleLocalized()
-        let doer =  isMe ? isMeDoer : (message.participant?.name ?? "")
+        let doer = calculatedMessage.isMe ? isMeDoer : (message.participant?.name ?? "")
         let doerRange = NSString(string: string).range(of: doer)
         attr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "accent") ?? .orange], range: doerRange)
         return AttributedString(attr)
@@ -370,21 +328,21 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateCallTexts() {
         if ![.endCall, .startCall].contains(message.type) { return }
         let date = Date(milliseconds: Int64(message.time ?? 0))
-        callDateText = date.onlyLocaleTime
+        calculatedMessage.callDateText = date.onlyLocaleTime
     }
 
     private func setAvatarViewModel() {
-        avatarSplitedCharaters = String.splitedCharacter(message.participant?.name ?? message.participant?.username ?? "")
+        calculatedMessage.avatarSplitedCharaters = String.splitedCharacter(message.participant?.name ?? message.participant?.username ?? "")
         if let image = message.participant?.image {
-            avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: avatarSplitedCharaters)
+            avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: calculatedMessage.avatarSplitedCharaters)
         }
     }
 
     private func calculateGroupParticipantName() {
-        let canShowGroupName = !isMe && threadVM?.thread.group == true && threadVM?.thread.type?.isChannelType == false
-        && isFirstMessageOfTheUser
+        let canShowGroupName = !calculatedMessage.isMe && threadVM?.thread.group == true && threadVM?.thread.type?.isChannelType == false
+        && calculatedMessage.isFirstMessageOfTheUser
         if canShowGroupName {
-            groupMessageParticipantName = message.participant?.contactName ?? message.participant?.name
+            calculatedMessage.groupMessageParticipantName = message.participant?.contactName ?? message.participant?.name
         }
     }
 
@@ -409,7 +367,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func replyPrimaryMessageFileIconWidth() -> CGFloat {
-        if fileName == nil || fileName?.isEmpty == true { return 0 }
+        if calculatedMessage.fileName == nil || calculatedMessage.fileName?.isEmpty == true { return 0 }
         return 32
     }
 
@@ -418,19 +376,19 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let font = UIFont(name: "IRANSansX", size: 14) ?? .systemFont(ofSize: 14)
         let textWidth = text.widthOfString(usingFont: font) + replyPrimaryMessageFileIconWidth()
         let minimumWidth: CGFloat = 128
-        let maxOriginal = max(minimumWidth, textWidth + paddings.paddingEdgeInset.leading + paddings.paddingEdgeInset.trailing)
+        let maxOriginal = max(minimumWidth, textWidth + sizes.paddings.paddingEdgeInset.leading + sizes.paddings.paddingEdgeInset.trailing)
         return maxOriginal
     }
 
     private func textForContianerCalculation() -> String {
-        let fileNameText = fileName ?? ""
+        let fileNameText = calculatedMessage.fileName ?? ""
         let messageText = message.message?.prefix(150).replacingOccurrences(of: "\n", with: " ") ?? ""
         let messageFileText = messageText.count > fileNameText.count ? messageText : fileNameText
         return messageFileText
     }
 
     private func replyIconOrImageWidth() -> CGFloat {
-        let isReplyImageOrIcon = isReplyImage || canShowIconFile
+        let isReplyImageOrIcon = calculatedMessage.isReplyImage || calculatedMessage.canShowIconFile
         return isReplyImageOrIcon ? 32 : 0
     }
 
@@ -458,13 +416,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     private func calculateForwardContainerWidth() async -> CGFloat? {
         if rowType.isMap {
-            return mapWidth - 8
+            return sizes.mapWidth - 8
         }
         return .infinity
     }
 
     public func setHighlight() {
-        isHighlited = true
+        state.isHighlited = true
         animateObjectWillChange()
         startHighlightTimer()
     }
@@ -512,7 +470,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public func uploadCompleted(_ uniqueId: String?, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
         if message.isImage {
-            isPreparingThumbnailImageForUploadedImage = true
+            state.isPreparingThumbnailImageForUploadedImage = true
             setAsDownloadedImage()
         }
     }
@@ -523,15 +481,15 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateSpacingPaddings() {
-        paddings.textViewSpacingTop = (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
-        paddings.replyViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
-        paddings.forwardViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
-        paddings.fileViewSpacingTop = (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
-        paddings.radioPadding = EdgeInsets(top: 0, leading: isMe ? 8 : 0, bottom: 8, trailing: isMe ? 8 : 0)
-        paddings.mapViewSapcingTop =  (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
+        sizes.paddings.textViewSpacingTop = (calculatedMessage.groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
+        sizes.paddings.replyViewSpacingTop = calculatedMessage.groupMessageParticipantName != nil ? 10 : 0
+        sizes.paddings.forwardViewSpacingTop = calculatedMessage.groupMessageParticipantName != nil ? 10 : 0
+        sizes.paddings.fileViewSpacingTop = (calculatedMessage.groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
+        sizes.paddings.radioPadding = EdgeInsets(top: 0, leading: calculatedMessage.isMe ? 8 : 0, bottom: 8, trailing: calculatedMessage.isMe ? 8 : 0)
+        sizes.paddings.mapViewSapcingTop =  (calculatedMessage.groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
         let hasAlreadyPadding = message.replyInfo != nil || message.forwardInfo != nil
         let padding: CGFloat = hasAlreadyPadding ? 0 : 4
-        paddings.groupParticipantNamePadding = .init(top: padding, leading: padding, bottom: 0, trailing: padding)
+        sizes.paddings.groupParticipantNamePadding = .init(top: padding, leading: padding, bottom: 0, trailing: padding)
     }
 
     public func swapUploadMessageWith(_ message: Message) {
@@ -542,7 +500,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func setAvatarColor() {
-        avatarColor = String.getMaterialColorByCharCode(str: message.participant?.name ?? message.participant?.username ?? "")
+        calculatedMessage.avatarColor = String.getMaterialColorByCharCode(str: message.participant?.name ?? message.participant?.username ?? "")
     }
 
     private func clearDownloadViewModel() {
@@ -556,14 +514,14 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         if message.isFileType {
             self.downloadFileVM = DownloadFileViewModel(message: message)
         }
-        self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        self.calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
-            isMe = true
+            calculatedMessage.isMe = true
         }
-        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
-        width = nil
-        height = nil
+        calculatedMessage.canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
+        sizes.width = nil
+        sizes.height = nil
         registerObservers()
     }
 

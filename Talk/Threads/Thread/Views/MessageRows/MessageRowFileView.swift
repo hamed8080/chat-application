@@ -19,7 +19,7 @@ struct MessageRowFileView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            if !viewModel.isMe {
+            if !viewModel.calculatedMessage.isMe {
                 button
             }
             
@@ -30,22 +30,22 @@ struct MessageRowFileView: View {
                     fileSizeView
                 }
             }
-            if viewModel.isMe {
+            if viewModel.calculatedMessage.isMe {
                 button
             }
         }
         .padding(4)
-        .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .padding(.top, viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         .task {
             viewModel.uploadViewModel?.startUploadFile()
         }
         .sheet(isPresented: $shareDownloadedFile) {
-            ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.fileMetaData?.file?.originalName)
+            ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.calculatedMessage.fileMetaData?.file?.originalName)
         }
     }
 
     @ViewBuilder private var fileNameView: some View {
-        if let fileName = viewModel.fileName {
+        if let fileName = viewModel.calculatedMessage.fileName {
             Text(fileName)
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
@@ -55,7 +55,7 @@ struct MessageRowFileView: View {
     }
 
     @ViewBuilder private var fileTypeView: some View {
-        if let extName = viewModel.extName {
+        if let extName = viewModel.calculatedMessage.extName {
             Text(extName)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
@@ -64,7 +64,7 @@ struct MessageRowFileView: View {
     }
 
     @ViewBuilder private var fileSizeView: some View {
-        if let fileZize = viewModel.computedFileSize {
+        if let fileZize = viewModel.calculatedMessage.computedFileSize {
             Text(fileZize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)

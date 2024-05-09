@@ -25,11 +25,11 @@ struct MessageFooterView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            if !viewModel.isMe {
+            if !viewModel.calculatedMessage.isMe {
                 timeView
             }
             editedText
-            if viewModel.isMe {
+            if viewModel.calculatedMessage.isMe {
                 timeView
             }
             statusImage
@@ -40,7 +40,7 @@ struct MessageFooterView: View {
     }
 
     private var timeView: some View {
-        Text(viewModel.timeString)
+        Text(viewModel.calculatedMessage.timeString)
             .foregroundColor(Color.App.textPrimary.opacity(0.5))
             .font(.iransansCaption2)
             .fontWeight(.medium)
@@ -70,7 +70,7 @@ struct MessageFooterView: View {
 
     @ViewBuilder
     private var statusImage: some View {
-        let canShowStatus = viewModel.isMe && isSelfThreadDelvived
+        let canShowStatus = viewModel.calculatedMessage.isMe && isSelfThreadDelvived
         Image(uiImage: message.footerStatus.image)
             .interpolation(.none)
             .resizable()

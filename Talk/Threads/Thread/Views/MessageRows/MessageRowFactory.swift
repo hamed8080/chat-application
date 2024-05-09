@@ -39,7 +39,7 @@ struct MessageRowFactory: View {
             }
         }
         .background(TextMessageSelectedBackground().environmentObject(viewModel))
-        .transition(.asymmetric(insertion: .push(from: viewModel.isMe ? .trailing : .leading), removal: .move(edge: viewModel.isMe ? .trailing : .leading)))
+        .transition(.asymmetric(insertion: .push(from: viewModel.calculatedMessage.isMe ? .trailing : .leading), removal: .move(edge: viewModel.calculatedMessage.isMe ? .trailing : .leading)))
     }
 }
 
@@ -49,12 +49,12 @@ struct TextMessageSelectedBackground: View {
 
     var body: some View {
         let selectedColor = colorScheme == .dark ? Color.App.accent.opacity(0.4) : Color.App.dividerPrimary.opacity(0.5)
-        let color: Color = viewModel.isHighlited || viewModel.isSelected ? selectedColor : Color.clear
+        let color: Color = viewModel.state.isHighlited || viewModel.state.isSelected ? selectedColor : Color.clear
         color
             .contentShape(Rectangle())
             .onTapGesture {
                 if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
-                    viewModel.isSelected.toggle()
+                    viewModel.state.isSelected.toggle()
                     viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
                     viewModel.animateObjectWillChange()
                 }

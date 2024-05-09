@@ -15,7 +15,7 @@ import TalkModels
 public final class ThreadSelectedMessagesViewModel: ObservableObject {
     @Published public var isInSelectMode: Bool = false
     public weak var viewModel: ThreadViewModel?
-    public var selectedMessages: [MessageRowViewModel] { viewModel?.historyVM.sections.flatMap{$0.vms}.filter({$0.isSelected}) ?? []}
+    public var selectedMessages: [MessageRowViewModel] { viewModel?.historyVM.sections.flatMap{$0.vms}.filter({$0.state.isSelected}) ?? []}
     public init() {}
 
     public func setup(viewModel: ThreadViewModel? = nil) {
@@ -24,7 +24,7 @@ public final class ThreadSelectedMessagesViewModel: ObservableObject {
 
     public func clearSelection() {
         selectedMessages.forEach { viewModel in
-            viewModel.isSelected = false
+            viewModel.state.isSelected = false
             viewModel.animateObjectWillChange()
         }
         setInSelectionMode(isInSelectionMode: false)

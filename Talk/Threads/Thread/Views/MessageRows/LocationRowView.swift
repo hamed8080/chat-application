@@ -24,7 +24,7 @@ struct LocationRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
             }
         }
-        .padding(.top, viewModel.paddings.mapViewSapcingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .padding(.top, viewModel.sizes.paddings.mapViewSapcingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         .onTapGesture {
             if let url = message.neshanURL, UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
@@ -58,7 +58,7 @@ struct MapImageDownloader: View {
             .interpolation(.none)
             .resizable()
             .scaledToFill()
-            .frame(width: messageVM.mapWidth, height: messageVM.mapHeight)
+            .frame(width: messageVM.sizes.mapWidth, height: messageVM.sizes.mapHeight)
             .clipped()
             .zIndex(0)
             .opacity(opacity)

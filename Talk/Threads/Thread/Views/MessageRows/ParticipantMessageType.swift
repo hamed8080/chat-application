@@ -16,7 +16,7 @@ struct ParticipantMessageType: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if let attr = viewModel.addOrRemoveParticipantsAttr {
+        if let attr = viewModel.calculatedMessage.addOrRemoveParticipantsAttr {
             HStack(alignment: .center, spacing: 0) {
                 Text(attr)
                     .foregroundStyle(Color.App.white)

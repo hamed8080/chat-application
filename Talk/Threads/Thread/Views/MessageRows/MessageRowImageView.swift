@@ -18,16 +18,16 @@ struct MessageRowImageView: View {
 
     var body: some View {
         ZStack {
-            if (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.isPreparingThumbnailImageForUploadedImage {
-                Image(uiImage: viewModel.image)
+            if (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.state.isPreparingThumbnailImageForUploadedImage {
+                Image(uiImage: viewModel.calculatedMessage.image)
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: viewModel.imageWidth, maxHeight: viewModel.imageHeight)
+                    .frame(maxWidth: viewModel.sizes.imageWidth, maxHeight: viewModel.sizes.imageHeight)
                     .clipped()
                     .zIndex(0)
                     .background(gradient)
-                    .blur(radius: viewModel.blurRadius ?? 0, opaque: false)
+                    .blur(radius: viewModel.sizes.blurRadius ?? 0, opaque: false)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
                     .onTapGesture {
                         viewModel.onTap()
@@ -38,11 +38,11 @@ struct MessageRowImageView: View {
                 }
             }
 
-            if message.uploadFile?.uploadImageRequest != nil || viewModel.isPreparingThumbnailImageForUploadedImage {
+            if message.uploadFile?.uploadImageRequest != nil || viewModel.state.isPreparingThumbnailImageForUploadedImage {
                 UploadMessageImageView(viewModel: viewModel)
             }
         }
-        .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .padding(.top, viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         .clipped()
     }
 
@@ -129,7 +129,7 @@ struct OverlayDownloadImageButton: View {
     }
 
     @ViewBuilder private var sizeView: some View {
-        if let fileSize = messageRowVM.computedFileSize {
+        if let fileSize = messageRowVM.calculatedMessage.computedFileSize {
             Text(fileSize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption2)
@@ -159,7 +159,7 @@ public struct UploadMessageImageView: View {
                     .interpolation(.none)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: viewModel.imageWidth, height: viewModel.imageHeight)
+                    .frame(width: viewModel.sizes.imageWidth, height: viewModel.sizes.imageHeight)
                     .blur(radius: 16, opaque: false)
                     .clipped()
                     .zIndex(0)
@@ -240,7 +240,7 @@ struct OverladUploadImageButton: View {
 
     @ViewBuilder private var sizeView: some View {
         let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-        let realServerFileSize = messageRowVM.fileMetaData?.file?.size
+        let realServerFileSize = messageRowVM.calculatedMessage.fileMetaData?.file?.size
         if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
             Text(fileSize)
                 .multilineTextAlignment(.leading)
