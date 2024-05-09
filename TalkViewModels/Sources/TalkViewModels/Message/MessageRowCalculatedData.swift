@@ -8,8 +8,16 @@
 import Foundation
 import ChatModels
 import SwiftUI
+import TalkModels
 
 public struct MessageRowCalculatedData {
+    public static var formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        formatter.locale = Language.preferredLocale
+        return formatter
+    }()
+
     public var isCalculated = false
     public var timeString: String = ""
     public var isMe: Bool = false

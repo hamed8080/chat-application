@@ -28,27 +28,21 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public let uniqueId: String = UUID().uuidString
     public var id: Int { message.id ?? -1 }
+    public var message: Message
+
     public var reactionsModel: ReactionRowsCalculated
     public var downloadFileVM: DownloadFileViewModel?
     public var uploadViewModel: UploadFileViewModel?
-    public weak var threadVM: ThreadViewModel?
-    public var message: Message
-    public var highlightTimer: Timer?
-
-    private static var formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        formatter.locale = Language.preferredLocale
-        return formatter
-    }()
-
-    public static var emptyImage = UIImage(named: "empty_image")!
     public var avatarImageLoader: ImageLoaderViewModel?
-    private var cancelable: AnyCancellable?
+    public weak var threadVM: ThreadViewModel?
+
+    public var highlightTimer: Timer?
+    public static var emptyImage = UIImage(named: "empty_image")!
     public var rowType = MessageViewRowType()
     public var calculatedMessage = MessageRowCalculatedData()
     public var sizes = MessageRowSizes()
     public var state = MessageRowState()
+    private var cancelable: AnyCancellable?
 
     public var isDownloadCompleted: Bool {
         downloadFileVM?.state == .completed
@@ -64,11 +58,11 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
+        self.threadVM = viewModel
+        self.calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         if message.isFileType {
             self.downloadFileVM = DownloadFileViewModel(message: message)
         }
-        self.threadVM = viewModel
-        self.calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         reactionsModel = .init(rows: [], topPadding: 0)
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
@@ -95,14 +89,14 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    private func calculatePaddings() {
+    private func calculatePaddings() -> EdgeInsets {
         let isReplyOrForward = (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
         let tailWidth: CGFloat = 6
         let paddingLeading = isReplyOrForward ? (calculatedMessage.isMe ? 10 : 16) : (calculatedMessage.isMe ? 4 : 4 + tailWidth)
         let paddingTrailing: CGFloat = isReplyOrForward ? (calculatedMessage.isMe ? 16 : 10) : (calculatedMessage.isMe ? 4 + tailWidth : 4)
         let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
         let paddingBottom: CGFloat = 4
-        sizes.paddings.paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
+        return EdgeInsets(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
     }
 
     public func recalculateWithAnimation() async {
@@ -115,8 +109,8 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         calculatedMessage.fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
         calculateImageSize()
         setReplyInfo()
-        calculatePaddings()
-        calculateCallTexts()
+        sizes.paddings.paddingEdgeInset = calculatePaddings()
+        calculatedMessage.callDateText = calculateCallTexts()
         setAvatarViewModel()
         calculatedMessage.canEdit = (message.editable == true && calculatedMessage.isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true)
         rowType.isMap = calculatedMessage.fileMetaData?.mapLink != nil || calculatedMessage.fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
@@ -130,7 +124,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         rowType.isFile = message.isFileType && !rowType.isMap && !message.isImage && !message.isAudio && !message.isVideo
         rowType.isReply = message.replyInfo != nil
         if let date = message.time?.date {
-            calculatedMessage.timeString = MessageRowViewModel.formatter.string(from: date)
+            calculatedMessage.timeString = MessageRowCalculatedData.formatter.string(from: date)
         }
         rowType.isImage = !rowType.isMap && message.isImage
         rowType.isVideo = message.isVideo
@@ -149,7 +143,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         calculatedMessage.addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
         sizes.paddings.textViewPadding = calculateTextViewPadding()
         calculatedMessage.localizedReplyFileName = calculateLocalizeReplyFileName()
-        calculateGroupParticipantName()
+        calculatedMessage.groupMessageParticipantName = calculateGroupParticipantName()
         sizes.replyContainerWidth = await calculateReplyContainerWidth()
         sizes.forwardContainerWidth = await calculateForwardContainerWidth()
         calculatedMessage.isInTwoWeekPeriod = calculateIsInTwoWeekPeriod()
@@ -325,10 +319,10 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    private func calculateCallTexts() {
-        if ![.endCall, .startCall].contains(message.type) { return }
+    private func calculateCallTexts() -> String {
+        if ![.endCall, .startCall].contains(message.type) { return "" }
         let date = Date(milliseconds: Int64(message.time ?? 0))
-        calculatedMessage.callDateText = date.onlyLocaleTime
+        return date.onlyLocaleTime
     }
 
     private func setAvatarViewModel() {
@@ -338,12 +332,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    private func calculateGroupParticipantName() {
+    private func calculateGroupParticipantName() -> String? {
         let canShowGroupName = !calculatedMessage.isMe && threadVM?.thread.group == true && threadVM?.thread.type?.isChannelType == false
         && calculatedMessage.isFirstMessageOfTheUser
         if canShowGroupName {
-            calculatedMessage.groupMessageParticipantName = message.participant?.contactName ?? message.participant?.name
+            return message.participant?.contactName ?? message.participant?.name
         }
+        return nil
     }
 
     private func calculateReplyContainerWidth() async -> CGFloat? {
@@ -524,7 +519,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         sizes.height = nil
         registerObservers()
     }
-
 
     public func calulateReactions(reactions: ReactionInMemoryCopy) async {
         var rows: [ReactionRowsCalculated.Row] = []

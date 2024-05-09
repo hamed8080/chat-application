@@ -35,7 +35,7 @@ public struct AppOverlayView<Content>: View where Content: View {
                     .clipShape(RoundedRectangle(cornerRadius:(viewModel.radius)))
             }
 
-            if viewModel.showCloseButton && viewModel.isPresented {
+            if viewModel.showCloseButton && viewModel.isPresented && !viewModel.isError {
                 DismissAppOverlayButton()
             }
         }

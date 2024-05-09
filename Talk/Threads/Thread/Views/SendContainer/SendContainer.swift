@@ -26,6 +26,7 @@ struct SendContainer: View {
                         .frame(height: selectionHeight)
                         .clipped()
                         .environmentObject(threadVM.selectedMessagesViewModel)
+                        .disabled(!isInSelection)
                     MuteChannelViewPlaceholder()
                         .padding(viewModel.canShowMute ? 10 : 0)
                         .frame(height: cahnnelMuteHeight)
