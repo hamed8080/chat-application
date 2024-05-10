@@ -20,6 +20,7 @@ public final class ThreadReactionViewModel: ObservableObject {
     private var threadId: Int { thread?.id ?? -1 }
     private var chatReaction: ReactionProtocol? { ChatManager.activeInstance?.reaction }
     private var hasEverDisonnected = false
+    private var inQueueToGetReactions: [Int] = []
     public init() {}
 
     public func setup(viewModel: ThreadViewModel) {
@@ -115,18 +116,31 @@ public final class ThreadReactionViewModel: ObservableObject {
     internal func fetchReactions(messages: [Message]) {
         if threadVM?.searchedMessagesViewModel.isInSearchMode == false {
             let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
+            inQueueToGetReactions.append(contentsOf: messageIds)
             threadVM?.reactionViewModel.getReactionSummary(messageIds, conversationId: threadId)
         }
     }
 
     internal func updateReactions(reactions: [ReactionInMemoryCopy]) async {
-        guard let historyVM = threadVM?.historyVM else { return }
+        // We have to check if the response count is greater than zero because there is a chance to get reactions of zero count.
+        // And we need to remove older reactions if any of them were removed.
+        guard let historyVM = threadVM?.historyVM, reactions.count > 0 else { return }
         for copy in reactions {
+            inQueueToGetReactions.removeAll(where: {$0 == copy.messageId})
             if let vm = historyVM.messageViewModel(for: copy.messageId) {
                 await vm.setReaction(reactions: copy)
                 vm.animateObjectWillChange()
             }
         }
+
+        /// All things inisde the qeueu are old data and there will be a chance the reaction row has been removed.
+        for id in inQueueToGetReactions {
+            if let vm = historyVM.messageViewModel(for: id) {
+                vm.clearReactions()
+                vm.animateObjectWillChange()
+            }
+        }
+        inQueueToGetReactions.removeAll()
     }
 
     internal func clearReactionsOnReconnect() {

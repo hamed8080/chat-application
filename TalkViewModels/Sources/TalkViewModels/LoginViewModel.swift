@@ -213,6 +213,34 @@ public final class LoginViewModel: ObservableObject {
         timer = nil
     }
 
+    public func startNewPKCESession() {
+        let bundleIdentifier = Bundle.main.bundleIdentifier!
+        let auth0domain = "accounts.pod.ir"
+        let authorizeURL = "https://\(auth0domain)/oauth2/authorize"
+        let tokenURL = "https://\(auth0domain)/oauth2/token"
+        let clientId = "88413l69cd4051a039cf115ee4e073"
+        let redirectUri = "talk://login"
+        let parameters = OAuth2PKCEParameters(authorizeUrl: authorizeURL,
+                                              tokenUrl: tokenURL,
+                                              clientId: clientId,
+                                              redirectUri: redirectUri,
+                                              callbackURLScheme: bundleIdentifier)
+        let authenticator = OAuth2PKCEAuthenticator()
+        authenticator.authenticate(parameters: parameters) { [weak self] result in
+            switch result {
+            case .success(let accessTokenResponse):
+                Task { [weak self] in
+                    let ssoToken = accessTokenResponse
+                    await self?.saveTokenAndCreateChatObject(ssoToken)
+                }
+            case .failure(let error):
+                let message = error.localizedDescription
+                print(message)
+                self?.startNewPKCESession()
+            }
+        }
+    }
+
     private func doHaptic(failed: Bool = false) {
         UIImpactFeedbackGenerator(style: failed ? .rigid : .soft).impactOccurred()
     }

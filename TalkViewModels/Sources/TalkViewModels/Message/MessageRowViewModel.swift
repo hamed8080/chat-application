@@ -269,7 +269,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     func setReaction(reactions: ReactionInMemoryCopy) async {
+        isInvalid = false
         reactionsModel = await MessageRowCalculators.calulateReactions(reactions: reactions)
+    }
+
+    func clearReactions() {
+        isInvalid = false
+        reactionsModel = .init()
     }
 
     func invalid() {

@@ -78,8 +78,6 @@
 		054ED7ED2BEB735800F9EDB3 /* OTPTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054ED7EB2BEB735800F9EDB3 /* OTPTimerView.swift */; };
 		054ED7EF2BEB739000F9EDB3 /* OTPNumbers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054ED7EE2BEB739000F9EDB3 /* OTPNumbers.swift */; };
 		054ED7F02BEB739000F9EDB3 /* OTPNumbers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054ED7EE2BEB739000F9EDB3 /* OTPNumbers.swift */; };
-		054ED7F32BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054ED7F22BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift */; };
-		054ED7F42BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054ED7F22BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift */; };
 		05511D6F2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */; };
 		05511D702B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */; };
 		055444532B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */; };
@@ -438,7 +436,6 @@
 		054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPublicLink.swift; sourceTree = "<group>"; };
 		054ED7EB2BEB735800F9EDB3 /* OTPTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPTimerView.swift; sourceTree = "<group>"; };
 		054ED7EE2BEB739000F9EDB3 /* OTPNumbers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPNumbers.swift; sourceTree = "<group>"; };
-		054ED7F22BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2PKCEAuthenticator.swift; sourceTree = "<group>"; };
 		05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDetailDeleteContactDialog.swift; sourceTree = "<group>"; };
 		055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadTabDetailStickyHeaderSection.swift; sourceTree = "<group>"; };
 		05551C252AF4C631000F98B6 /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
@@ -697,7 +694,6 @@
 		054ED7F12BEB741900F9EDB3 /* Extra */ = {
 			isa = PBXGroup;
 			children = (
-				054ED7F22BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift */,
 				054ED7EB2BEB735800F9EDB3 /* OTPTimerView.swift */,
 				054ED7EE2BEB739000F9EDB3 /* OTPNumbers.swift */,
 			);
@@ -1461,7 +1457,6 @@
 				05E869C62AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0525571E2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
 				05EC8A302ACBED930016361F /* ReactionCountView.swift in Sources */,
-				054ED7F32BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift in Sources */,
 				0570CC432AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
 				05C27FA22AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC5B2AAEE98F001832E9 /* LinkView.swift in Sources */,
@@ -1643,7 +1638,6 @@
 				05E869C72AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0525571F2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
 				0570CC3E2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
-				054ED7F42BEBA61E00F9EDB3 /* OAuth2PKCEAuthenticator.swift in Sources */,
 				05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */,
 				05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC442AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
