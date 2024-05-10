@@ -24,6 +24,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public let uniqueId: String = UUID().uuidString
     public var id: Int { message.id ?? -1 }
     public var message: Message
+    public var isInvalid = false
 
     public var reactionsModel: ReactionRowsCalculated
     public var downloadFileVM: DownloadFileViewModel?
@@ -269,6 +270,10 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     func setReaction(reactions: ReactionInMemoryCopy) async {
         reactionsModel = await MessageRowCalculators.calulateReactions(reactions: reactions)
+    }
+
+    func invalid() {
+        isInvalid = true        
     }
 
     deinit {

@@ -38,6 +38,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var created: Bool = false
     private var isJumpedToLastMessage = false
     private var tasks: [Task<Void, Error>] = []
+    private var visibleTracker = VisibleMessagesTracker()
 
     // MARK: Computed Properties
     @MainActor public var isEmptyThread: Bool {
@@ -79,6 +80,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
+        visibleTracker.delegate = self
         setupNotificationObservers()
     }
 
@@ -528,7 +530,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         Task { @MainActor in
             lastItemIdInSections = sections.last?.vms.last?.id ?? 0
         }
-        fetchReactions(messages: messages)
+        viewModel?.reactionViewModel.fetchReactions(messages: messages)
     }
 
     fileprivate typealias SecionAndMessageIndex = (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)
@@ -588,26 +590,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
         needUpdates.append(vm)
     }
 
-    private func fetchReactions(messages: [Message]) {
-        if viewModel?.searchedMessagesViewModel.isInSearchMode == false {
-            let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
-            viewModel?.reactionViewModel.getReactionSummary(messageIds, conversationId: threadId)
-        }
-    }
-
-    internal func updateReactions(reactions: [ReactionInMemoryCopy]) async {
-        for copy in reactions {
-            if let vm = messageViewModel(for: copy.messageId) {
-                await vm.setReaction(reactions: copy)
-                vm.animateObjectWillChange()
-            }
-        }
-    }
-
     // MARK: Appear & Disappear
     @MainActor
     public func onMessageAppear(_ message: Message) async {
         let copy = message.copy
+        visibleTracker.append(message: message)
         log("Message appear id: \(message.id ?? 0) uniqueId: \(message.uniqueId ?? "") text: \(message.message ?? "")")
         guard let threadVM = viewModel else { return }
         if message.id == thread.lastMessageVO?.id, threadVM.scrollVM.isAtBottomOfTheList == false {
@@ -627,6 +614,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     @MainActor
     public func onMessegeDisappear(_ message: Message) async {
         log("Message disappeared id: \(message.id ?? 0) uniqueId: \(message.uniqueId ?? "") text: \(message.message ?? "")")
+        visibleTracker.remove(message: message)
         if message.id == thread.lastMessageVO?.id, viewModel?.scrollVM.isAtBottomOfTheList == true {
             viewModel?.scrollVM.isAtBottomOfTheList = false
             viewModel?.scrollVM.animateObjectWillChange()
@@ -1128,4 +1116,25 @@ public final class ThreadHistoryViewModel: ObservableObject {
             .store(in: &cancelable)
     }
 
+}
+
+extension ThreadHistoryViewModel: StabledVisibleMessageDelegate {
+    func onStableVisibleMessages(_ messages: [Message]) {
+        let invalidVisibleMessages = getInvalidVisibleMessages()
+        if invalidVisibleMessages.count > 0 {
+            viewModel?.reactionViewModel.fetchReactions(messages: invalidVisibleMessages)
+        }
+    }
+}
+
+extension ThreadHistoryViewModel {
+    internal func getInvalidVisibleMessages() -> [Message] {
+        var invalidMessages: [Message] =  []
+        visibleTracker.visibleMessages.forEach { message in
+            if let vm = messageViewModel(for: message.id ?? -1), vm.isInvalid {
+                invalidMessages.append(message)
+            }
+        }
+        return invalidMessages
+    }
 }
