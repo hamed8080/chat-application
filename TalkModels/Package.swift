@@ -18,18 +18,21 @@ let package = Package(
             targets: ["TalkModels"]),
     ],
     dependencies: [
-        .package(path: "../../Chat"),
+        .package(url: "https://pubgi.fanapsoft.ir/chat/ios/chat.git", from: "2.0.0"),
     ],
     targets: [
         .target(
             name: "TalkModels",
             dependencies: [
-                "Chat",
+                .product(name: "Chat", package: "chat"),
             ]
         ),
         .testTarget(
             name: "TalkModelsTests",
-            dependencies: ["TalkModels"],
+            dependencies: [
+                "TalkModels",
+                .product(name: "Chat", package: "chat"),
+            ],
             resources: [
                 .copy("Resources/icon.png")
             ]

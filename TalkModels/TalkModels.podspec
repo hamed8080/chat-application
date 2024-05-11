@@ -11,4 +11,5 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://pubgi.fanapsoft.ir/chat/ios/chat-ap-models", :tag => s.version }
   s.source_files = "Sources/Additive/**/*.{h,swift,xcdatamodeld,m,momd}"
   s.frameworks  = "Foundation"
+  s.dependency "Chat", '~> 2.0.0'
 end

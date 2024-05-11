@@ -1,12 +1,120 @@
 {
   "pins" : [
     {
+      "identity" : "additive",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/additive",
+      "state" : {
+        "revision" : "6228d527cabc4191e5925a833d01204b05ad1ae9",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "additive-ui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/additive-ui",
+      "state" : {
+        "revision" : "c1983c79df000737c7cb053064d83e5315722453",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "async",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/async",
+      "state" : {
+        "revision" : "56b1bfc7bba1f6db6681e001b7a2385cffdb3796",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "chat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/chat.git",
+      "state" : {
+        "revision" : "90755907846def9f4ec3eb28bb50de3a12e1dc98",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "chat-cache",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/chat-cache",
+      "state" : {
+        "revision" : "47ca6e2cf72528f29cf0d4cb585b5a4f9d31fe2e",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "chat-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/chat-core",
+      "state" : {
+        "revision" : "f241f4f4e763cdfe53a16292cc572e24556b3b85",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "chat-dto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/chat-dto",
+      "state" : {
+        "revision" : "aa770547151dd1b50ce45ed7834575274cefcd9f",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "chat-extensions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/chat-extensions",
+      "state" : {
+        "revision" : "113517f2468a070eb791d78c6184e9e25ac05e84",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "chat-models",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/chat-models",
+      "state" : {
+        "revision" : "6a4f801a5d88ca261e52f33bf0f03f186fbccbad",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "chat-transceiver",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/chat-transceiver",
+      "state" : {
+        "revision" : "29a811250c4a9c7448ce554afe4b21045d854b72",
+        "version" : "2.0.0"
+      }
+    },
+    {
       "identity" : "dswaveformimage",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/dmrschmidt/DSWaveformImage",
       "state" : {
         "revision" : "89300494dab28d7c9718148ec0b5936b9dfd8c81",
         "version" : "14.2.1"
+      }
+    },
+    {
+      "identity" : "logger",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/logger",
+      "state" : {
+        "revision" : "18e454d237113db025bc6b590dca0d26a85b4832",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "mocks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/mocks",
+      "state" : {
+        "revision" : "67d91e506a39807c6929c532bb48898a286314bb",
+        "version" : "1.2.0"
       }
     },
     {
