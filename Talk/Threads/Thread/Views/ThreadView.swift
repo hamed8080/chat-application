@@ -98,9 +98,6 @@ struct ThreadView: View, DropDelegate {
     }
 
     private func hideKeyboardOnTapOrDrag() {
-        if viewModel.searchedMessagesViewModel.searchText.isEmpty {
-            NotificationCenter.cancelSearch.post(name: .cancelSearch, object: true)
-        }
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.state.showReactionsOverlay == true }.forEach { rowViewModel in
             rowViewModel.state.showReactionsOverlay = false

@@ -182,9 +182,9 @@ public extension AppState {
     }
 
     func openThread(contact: Contact) {
-        let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
+        let coreUserId = contact.user?.coreUserId ?? contact.user?.id ?? -1
         appStateNavigationModel.userToCreateThread = contact.toParticipant
-        searchForP2PThread(coreUserId: userId)
+        searchForP2PThread(coreUserId: coreUserId)
     }
 
     func openThread(participant: Participant) {

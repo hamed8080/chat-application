@@ -719,6 +719,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func onEdited(_ response: ChatResponse<Message>) {
         if let message = response.result, let vm = messageViewModel(for: message.id ?? -1) {
             vm.setEdited(message)
+            Task { @MainActor in
+                await viewModel?.scrollVM.scrollToBottomIfIsAtBottom()
+            }
         }
     }
 

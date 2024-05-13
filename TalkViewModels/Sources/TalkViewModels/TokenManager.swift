@@ -20,6 +20,7 @@ public final class TokenManager: ObservableObject {
     public static let ssoTokenKey = "ssoTokenKey"
     public static let ssoTokenCreateDate = "ssoTokenCreateDate"
     public let session: URLSession
+    public var isInFetchingRefreshToken = false
 
     private init(session: URLSession = .shared) {
         self.session = session
@@ -64,8 +65,13 @@ public final class TokenManager: ObservableObject {
         return urlReq
     }
 
-    public func getNewTokenWithRefreshToken() async {
-        await getOTPNewTokenWithRefreshToken()
+    public func getNewTokenWithRefreshToken() {
+        if isInFetchingRefreshToken { return }
+        isInFetchingRefreshToken = true        
+        Task { @MainActor in
+            await getOTPNewTokenWithRefreshToken()
+            isInFetchingRefreshToken = false
+        }
     }
 
     public func getOTPNewTokenWithRefreshToken() async {

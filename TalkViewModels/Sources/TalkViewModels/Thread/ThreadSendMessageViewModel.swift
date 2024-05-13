@@ -61,16 +61,16 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             sendNormalMessage()
         }
 
-        /// A delay is essential for creating a conversation with a person for the person if we are in simulated mode.
-        /// It prevents to delete textMessage inside the SendContainerViewModel with the clear method.
-        Timer.scheduledTimer(withTimeInterval: viewModel?.isSimulatedThared == true ? 0.5 : 0, repeats: false) { [weak self] _ in
-            self?.sendVM.clear() // close ui
-        }
         seenVM?.sendSeenForAllUnreadMessages()
         viewModel?.mentionListPickerViewModel.text = ""
         viewModel?.sheetType = nil
         viewModel?.animateObjectWillChange()
-        await viewModel?.scrollVM.scrollToBottomIfIsAtBottom()
+        /// A delay is essential for creating a conversation with a person for the person if we are in simulated mode.
+        /// It prevents to delete textMessage inside the SendContainerViewModel with the clear method.
+        if viewModel?.isSimulatedThared == true {
+            try? await Task.sleep(for: .milliseconds(500))
+        }
+        sendVM.clear() // close ui
     }
 
     private func isOriginForwardThread() -> Bool {
@@ -131,17 +131,20 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func sendReplyPrivatelyMessage() {
-        if attVM.attachments.count == 1, let first = attVM.attachments.first {
-            sendSingleReplyPrivatelyAttachment(first)
-        } else if attVM.attachments.count > 1 {
-            sendMultipleAttachemntWithReplyPrivately()
-        } else if recorderVM.recordingOutputPath != nil {
-            sendReplyPrivatelyWithVoice()
-        } else {
-            sendTextOnlyReplyPrivately()
+        send { [weak self] in
+            guard let self = self else { return }
+            if attVM.attachments.count == 1, let first = attVM.attachments.first {
+                sendSingleReplyPrivatelyAttachment(first)
+            } else if attVM.attachments.count > 1 {
+                sendMultipleAttachemntWithReplyPrivately()
+            } else if recorderVM.recordingOutputPath != nil {
+                sendReplyPrivatelyWithVoice()
+            } else {
+                sendTextOnlyReplyPrivately()
+            }
+            attVM.clear()
+            navModel = .init()
         }
-        attVM.clear()
-        navModel = .init()
     }
 
     private func sendMultipleAttachemntWithReplyPrivately() {
@@ -184,19 +187,18 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func sendNormalMessage() {
-        send {
-            Task { [weak self] in
-                guard let self = self else { return }
-                let tuple = Message.makeRequest(model: makeModel(), checkLink: true)
-                await self.historyVM?.appendMessagesAndSort([tuple.message])
-                ChatManager.activeInstance?.message.send(tuple.req)
-            }
+        send { [weak self] in
+            guard let self = self else { return }
+            let tuple = Message.makeRequest(model: makeModel(), checkLink: true)
+            ChatManager.activeInstance?.message.send(tuple.req)
         }
     }
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
         sendVM.clear() /// Close edit mode in ui
+        seenVM?.animateObjectWillChange()
         viewModel?.sheetType = nil
+        viewModel?.animateObjectWillChange()
         animateObjectWillChange()
         let messages = selectVM.selectedMessages.compactMap{$0.message}
         if let contact = contact {
@@ -307,8 +309,8 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func createP2PThread(_ completion: @escaping () -> Void) {
-        if let coreuserId = navModel.userToCreateThread?.id {
-            creator = P2PConversationBuilder()
+        creator = P2PConversationBuilder()
+        if let coreuserId = navModel.userToCreateThread?.coreUserId {
             creator?.create(coreUserId: coreuserId) { [weak self] conversation in
                 self?.onCreateP2PThread(conversation)
                 completion()

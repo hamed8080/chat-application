@@ -121,13 +121,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
     }
 
     private func handleTaskRefreshToken(_ task: BGAppRefreshTask) {
-        Task { [weak self] in
-            guard let self = self else { return }
-            let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in handleTaskRefreshToken method", level: .error, type: .sent, userInfo: nil)
-            self.log(log)
-            await TokenManager.shared.getNewTokenWithRefreshToken()
-            scheduleAppRefreshToken() /// Reschedule again when user receive a token.
-        }
+        let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in handleTaskRefreshToken method", level: .error, type: .sent, userInfo: nil)
+        self.log(log)
+        TokenManager.shared.getNewTokenWithRefreshToken()
+        scheduleAppRefreshToken() /// Reschedule again when user receive a token.        
     }
 
     private func log(_ log: Log) {

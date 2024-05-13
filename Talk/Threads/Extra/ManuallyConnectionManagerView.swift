@@ -35,11 +35,9 @@ struct ManuallyConnectionManagerView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack {
                 SubmitBottomButton(text: "Refresh Token", color: Color.App.red) {
-                    Task {
-                        let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in ManuallyConnectionManagerView method", level: .error, type: .sent, userInfo: nil)
-                        NotificationCenter.logs.post(name: .logs, object: log)
-                        await TokenManager.shared.getNewTokenWithRefreshToken()
-                    }
+                    let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in ManuallyConnectionManagerView method", level: .error, type: .sent, userInfo: nil)
+                    NotificationCenter.logs.post(name: .logs, object: log)
+                    TokenManager.shared.getNewTokenWithRefreshToken()
                 }
 
                 SubmitBottomButton(text: "Destroy token", color: Color.App.red) {

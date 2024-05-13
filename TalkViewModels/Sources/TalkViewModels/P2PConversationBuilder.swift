@@ -35,6 +35,11 @@ public class P2PConversationBuilder {
         create(invitee: invitee, completion: completion)
     }
 
+    public func create(userId: Int, completion: CompletionHandler? = nil) {
+        let invitee = Invitee(id: "\(userId)", idType: .userId)
+        create(invitee: invitee, completion: completion)
+    }
+
     private func onCreateP2PThread(_ response: ChatResponse<Conversation>) {
         guard response.pop(prepend: id) != nil, let thread = response.result else { return }
         completion?(thread)

@@ -229,8 +229,8 @@ class MessageRowCalculators {
             }
             let isSquare = originalRatio >= 1 && originalRatio <= 1.5
             var newSizes = CGSize(width: 0, height: 0)
-            newSizes.width = isSquare ? designerWidth : designerWidth * 1.5
-            newSizes.height = isSquare ? designerHeight : designerHeight * 1.5
+            newSizes.width = isSquare ? designerWidth : min(designerWidth * 1.5, maxWidth)
+            newSizes.height = isSquare ? designerHeight : min(designerHeight * 1.5, maxWidth)
             // We do this because if we got NAN as a result of 0 / 0 we have to prepare a value other than zero
             // Because in maxWidth we can not say maxWidth is Equal zero and minWidth is equal 128
             if newSizes.width == 0 {

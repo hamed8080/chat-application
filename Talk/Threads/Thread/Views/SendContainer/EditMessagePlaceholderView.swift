@@ -81,9 +81,11 @@ struct EditMessagePlaceholderView: View {
 
     private func onCloseTapped() {
         Task { @MainActor in
-            await threadVM.scrollVM.scrollToBottomIfIsAtBottom()
             await threadVM.scrollVM.disableExcessiveLoading()
             viewModel.clear()
+            await threadVM.asyncAnimateObjectWillChange()
+            try? await Task.sleep(for: .milliseconds(300))
+            await threadVM.scrollVM.scrollToBottomIfIsAtBottom()
         }
     }
 }

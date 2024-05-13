@@ -41,7 +41,9 @@ struct ReplyPrivatelyMessageViewPlaceholder: View {
                     Task {
                         await viewModel.scrollVM.disableExcessiveLoading()
                         AppState.shared.appStateNavigationModel = .init()
-                        viewModel.animateObjectWillChange()
+                        await viewModel.asyncAnimateObjectWillChange()
+                        try? await Task.sleep(for: .milliseconds(300))
+                        await viewModel.scrollVM.scrollToBottomIfIsAtBottom()
                     }
                 }
                 .padding(.trailing, 4)

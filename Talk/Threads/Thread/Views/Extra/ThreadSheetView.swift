@@ -86,19 +86,12 @@ struct ThreadSheetView: View {
             MyPHPicker() { itemProviders in
 
                 itemProviders.forEach { provider in
+                    let name = provider.suggestedName ?? "unknown"
                     if provider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
                         _ = provider.loadDataRepresentation(for: .movie) { data, error in
                             Task {
-                                DispatchQueue.main.async {
-                                    if let data = data {
-                                        let item = ImageItem(isVideo: true,
-                                                             data: data,
-                                                             width: 0,
-                                                             height: 0,
-                                                             originalFilename: provider.suggestedName ?? "unknown")
-                                        self.viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
-                                        viewModel.animateObjectWillChange() /// Send button to appear
-                                    }
+                                if let data = data {
+                                    await processVideo(data: data, name: name)
                                 }
                             }
                         }
@@ -107,12 +100,9 @@ struct ThreadSheetView: View {
                     if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                         provider.loadObject(ofClass: UIImage.self) { item, error in
                             if let image = item as? UIImage {
-                                let item = ImageItem(data: image.pngData() ?? Data(),
-                                                     width: Int(image.size.width),
-                                                     height: Int(image.size.height),
-                                                     originalFilename: provider.suggestedName ?? "unknown")
-                                viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
-                                viewModel.animateObjectWillChange() /// Send button to appear
+                                Task {
+                                    await processImage(image: image, name: name)
+                                }
                             }
                         }
                     }
@@ -133,6 +123,41 @@ struct ThreadSheetView: View {
         sheetBinding = false
         viewModel.sheetType = nil
         viewModel.animateObjectWillChange()
+    }
+
+    private func processImage(image: UIImage, name: String) async {
+        let data = await lessThanTwoMegabyteImage(image: image, quality: 100) ?? .init()
+        let image = UIImage(data: data) ?? .init()
+        let item = ImageItem(data: data,
+                             width: Int(image.size.width),
+                             height: Int(image.size.height),
+                             originalFilename: name)
+        await MainActor.run {
+            viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+            viewModel.animateObjectWillChange() /// Send button to appear
+        }
+    }
+
+    private func processVideo(data: Data, name: String) async {
+        let item = ImageItem(isVideo: true,
+                             data: data,
+                             width: 0,
+                             height: 0,
+                             originalFilename: name)
+        self.viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+        viewModel.animateObjectWillChange() /// Send button to appear
+    }
+
+    private func lessThanTwoMegabyteImage(image: UIImage, quality: CGFloat) async -> Data? {
+        let data = autoreleasepool { image.jpegData(compressionQuality: quality / 100.0) }
+        // It means the compression won't work anymore than this.
+        if quality == 1 {
+            return data
+        }
+        if let data = data, data.count > 2_000_000 {
+            return await lessThanTwoMegabyteImage(image: image, quality: max(1, quality - 40.0))
+        }
+        return data
     }
 }
 

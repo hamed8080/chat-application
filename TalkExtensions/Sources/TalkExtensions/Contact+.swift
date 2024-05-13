@@ -44,6 +44,7 @@ public extension Contact {
     var toParticipant: Participant {
         return Participant(
             contactId: id,
+            coreUserId: user?.coreUserId,
             id: user?.id ?? user?.coreUserId ?? -1,
             image: image ?? user?.image,
             name: "\(firstName ?? "") \(lastName ?? "")"

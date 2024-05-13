@@ -84,8 +84,7 @@ public final class SendContainerViewModel: ObservableObject {
     public func clear() {
         textMessage = ""
         editMessage = nil
-        isInEditMode = false
-        viewModel?.animateObjectWillChange()
+        isInEditMode = false        
     }
 
     private func isTextEmpty(text: String) -> Bool {
