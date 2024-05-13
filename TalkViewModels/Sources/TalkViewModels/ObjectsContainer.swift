@@ -66,10 +66,14 @@ public final class ObjectsContainer: ObservableObject {
     private func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case .new(let chatResponse):
-            onNewMessage(chatResponse)
+            if !audioPlayerVM.isPlaying {
+                onNewMessage(chatResponse)
+            }
             break
         case .sent(_):
-            playMessageSound(sent: true)
+            if !audioPlayerVM.isPlaying {
+                playMessageSound(sent: true)
+            }
             break
         default:
             break

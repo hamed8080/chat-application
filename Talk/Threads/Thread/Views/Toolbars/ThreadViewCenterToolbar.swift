@@ -45,7 +45,7 @@ struct ThreadViewCenterToolbar: View {
                 .opacity(showSignaling ? 1 : 0)
                 .scaleEffect(x: showSignaling ? 1 : 0, y: showSignaling ? 1 : 0, anchor: .center)
                 .clipped()
-            Text(numberOfParticipants)
+            Text(verbatim: numberOfParticipants)
                 .foregroundColor(Color.App.toolbarSecondaryText)
                 .font(.iransansFootnote)
                 .frame(height: showParticipantCount ? nil : 0)
@@ -156,7 +156,7 @@ struct ThreadViewCenterToolbar: View {
     private var numberOfParticipants: String {
         if thread.group == true, let participantsCount = participantsCount?.localNumber(locale: Language.preferredLocale) {
             let localizedLabel = String(localized: "Thread.Toolbar.participants", bundle: Language.preferedBundle)
-            return "\(localizedLabel) \(participantsCount)"
+            return "\(participantsCount) \(localizedLabel)"
         } else {
             return ""
         }
