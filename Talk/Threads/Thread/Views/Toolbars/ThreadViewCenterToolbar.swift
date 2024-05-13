@@ -90,7 +90,15 @@ struct ThreadViewCenterToolbar: View {
             Text(title)
                 .font(.iransansBoldBody)
                 .foregroundStyle(Color.App.white)
-                .padding(.horizontal, 48) // for super large titles we need to cut the text the best way for this is add a horizontal padding
+                .padding(.horizontal, thread.isTalk ? 0 : 48) // for super large titles we need to cut the text the best way for this is add a horizontal padding
+
+            if thread.isTalk {
+                Image("ic_approved")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .offset(x: -4)
+            }
         }
         .buttonStyle(.plain)
     }

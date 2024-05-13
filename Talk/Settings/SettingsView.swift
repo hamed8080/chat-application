@@ -520,7 +520,7 @@ struct VersionNumberView: View {
     }
 
     private var localVersionNumber: String {
-        let version = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         let splited = version.split(separator: ".")
         let numbers = splited.compactMap({Int($0)})
         let localStr = numbers.compactMap{$0.localNumber(locale: Language.preferredLocale)}

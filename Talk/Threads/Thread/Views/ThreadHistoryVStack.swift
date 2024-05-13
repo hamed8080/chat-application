@@ -51,6 +51,9 @@ struct ThreadHistoryList: View {
                 MessageList(vms: section.vms, viewModel: viewModel)
             }
 
+//            UnsentMessagesLoop(historyVM: viewModel)
+//                .id(-4)
+
             SpaceForAttachment()
                 .id(-3)
                 .listRowSeparator(.hidden)
@@ -65,7 +68,6 @@ struct ThreadHistoryList: View {
                 .padding([.top, .bottom], viewModel.bottomLoading ? 8 : 0)
                 .animation(.easeInOut, value: viewModel.bottomLoading)
 
-            UnsentMessagesLoop(historyVM: viewModel)
         }
         .environment(\.defaultMinListRowHeight, 0)
         .listStyle(.plain)
@@ -133,8 +135,11 @@ struct UnsentMessagesLoop: View {
 
     var body: some View {
         /// We have to use \.uniqueId to force the ForLoop to use uniqueId instead of default \.id because id is nil when a message is unsent.
-        ForEach(viewModel.rowViewModels) { messageRowVM in
+        ForEach(viewModel.rowViewModels, id: \.uniqueId) { messageRowVM in
             MessageRowFactory(viewModel: messageRowVM)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
         }
         .animation(.easeInOut, value: viewModel.rowViewModels.count)
     }

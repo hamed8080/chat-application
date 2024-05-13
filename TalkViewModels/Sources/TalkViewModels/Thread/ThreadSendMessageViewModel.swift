@@ -42,7 +42,8 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     /// It triggers when send button tapped
-    public func sendTextMessage() {
+    @MainActor
+    public func sendTextMessage() async {
         if isOriginForwardThread() { return }
         if navModel.forwardMessageRequest?.threadId == threadId {
             sendForwardMessages()
@@ -66,6 +67,10 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             self?.sendVM.clear() // close ui
         }
         seenVM?.sendSeenForAllUnreadMessages()
+        viewModel?.mentionListPickerViewModel.text = ""
+        viewModel?.sheetType = nil
+        viewModel?.animateObjectWillChange()
+        await viewModel?.scrollVM.scrollToBottomIfIsAtBottom()
     }
 
     private func isOriginForwardThread() -> Bool {

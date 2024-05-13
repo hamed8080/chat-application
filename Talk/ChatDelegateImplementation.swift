@@ -7,16 +7,12 @@
 
 import Chat
 import ChatCore
-import ChatDTO
 import ChatModels
 import Foundation
 import Logger
-import TalkExtensions
 import TalkModels
 import TalkViewModels
-import UIKit
 import OSLog
-import TalkUI
 import SwiftUI
 
 final class ChatDelegateImplementation: ChatDelegate {

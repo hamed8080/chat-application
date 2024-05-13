@@ -10,6 +10,7 @@ import Foundation
 import TalkModels
 
 public extension Conversation {
+    private static let talkId = 49383566
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateValues(_ newThread: Conversation) {
         admin = newThread.admin ?? admin
@@ -101,6 +102,10 @@ public extension Conversation {
             // The current user is not an admin and the type of thread is channel
             return true
         }
+    }
+    
+    var isTalk: Bool {
+        return inviter?.coreUserId == Conversation.talkId
     }
 }
 

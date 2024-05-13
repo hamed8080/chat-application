@@ -26,45 +26,85 @@ public final class TokenManager: ObservableObject {
         getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
     }
 
-    public func getNewTokenWithRefreshToken() async {
+    public func getPKCENewTokenWithRefreshToken() async {
         guard let ssoTokenModel = getSSOTokenFromUserDefaults(),
               let codeVerifier = ssoTokenModel.codeVerifier
         else { return }
         do {
             let refreshToken = ssoTokenModel.refreshToken ?? ""
-//            let config = ChatManager.activeInstance?.config
-//            let serverType = Config.serverType(config: config) ?? .main
-
-            let clientId = "88413l69cd4051a039cf115ee4e073"
-            let url = URL(string: "https://accounts.pod.ir/oauth2/token")!
-            var urlReq = URLRequest(url: url)
-            urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
-            urlReq.httpMethod = "POST"
-            urlReq.httpBody = NSMutableData(data: "grant_type=refresh_token&client_id=\(clientId)&code_verifier=\(codeVerifier)&refresh_token=\(refreshToken)".data(using: String.Encoding.utf8)!) as Data
-            urlReq.allHTTPHeaderFields = ["content-type": "application/x-www-form-urlencoded", ]
+            let urlReq = pkceURLRequest(refreshToken: refreshToken, codeVerifier: codeVerifier)
             let resp = try await session.data(for: urlReq)
             let log = Logger.makeLog(prefix: "TALK_APP_REFRESH_TOKEN:", request: urlReq, response: resp)
             post(log: log)
-            let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
-            await MainActor.run {
-                var ssoToken = ssoToken
-                ssoToken.codeVerifier = codeVerifier
-                saveSSOToken(ssoToken: ssoToken)
-                ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
-                if AppState.shared.connectionStatus != .connected {
-                    AppState.shared.connectionStatus = .connected
-                    let log = Log(prefix: "TALK_APP", time: .now, message: "App State was not connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
-                    post(log: log)
-                } else {
-                    let log = Log(prefix: "TALK_APP", time: .now, message: "App State was connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
-                    post(log: log)
-                }
-            }
+            var ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
+            ssoToken.codeVerifier = codeVerifier
+            await onNewRefreshToken(ssoToken)
         } catch {
-            let log = Log(prefix: "TALK_APP", time: .now, message: error.localizedDescription, level: .error, type: .sent, userInfo: nil)
-            post(log: log)
-            self.log("error on getNewTokenWithRefreshToken:\(error.localizedDescription)")
+            onRefreshTokenError(error: error)
         }
+    }
+
+    private func pkceURLRequest(refreshToken: String, codeVerifier: String) -> URLRequest {
+        let clientId = "88413l69cd4051a039cf115ee4e073"
+        let url = URL(string: AppRoutes.pckeToken)!
+        var urlReq = URLRequest(url: url)
+        urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
+        urlReq.httpMethod = "POST"
+        urlReq.httpBody = NSMutableData(data: "grant_type=refresh_token&client_id=\(clientId)&code_verifier=\(codeVerifier)&refresh_token=\(refreshToken)".data(using: String.Encoding.utf8)!) as Data
+        urlReq.allHTTPHeaderFields = ["content-type": "application/x-www-form-urlencoded"]
+        return urlReq
+    }
+
+    private func otpURLrequest(refreshToken: String, keyId: String) -> URLRequest {
+        let config = ChatManager.activeInstance?.config
+        let serverType = Config.serverType(config: config) ?? .main
+        var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: serverType).refreshToken)!)
+        urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
+        urlReq.allHTTPHeaderFields = ["keyId": keyId]
+        return urlReq
+    }
+
+    public func getNewTokenWithRefreshToken() async {
+        await getOTPNewTokenWithRefreshToken()
+    }
+
+    public func getOTPNewTokenWithRefreshToken() async {
+        guard let ssoTokenModel = getSSOTokenFromUserDefaults(),
+              let keyId = ssoTokenModel.keyId
+        else { return }
+        do {
+            let refreshToken = ssoTokenModel.refreshToken ?? ""
+            let urlReq = otpURLrequest(refreshToken: refreshToken, keyId: keyId)
+            let resp = try await session.data(for: urlReq)
+            let log = Logger.makeLog(prefix: "TALK_APP_REFRESH_TOKEN:", request: urlReq, response: resp)
+            post(log: log)
+            var ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
+            ssoToken.keyId = keyId
+            await onNewRefreshToken(ssoToken)
+        } catch {
+            onRefreshTokenError(error: error)
+        }
+    }
+
+    private func onNewRefreshToken(_ ssoToken: SSOTokenResponse) async {
+        await MainActor.run {
+            saveSSOToken(ssoToken: ssoToken)
+            ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
+            if AppState.shared.connectionStatus != .connected {
+                AppState.shared.connectionStatus = .connected
+                let log = Log(prefix: "TALK_APP", time: .now, message: "App State was not connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
+                post(log: log)
+            } else {
+                let log = Log(prefix: "TALK_APP", time: .now, message: "App State was connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
+                post(log: log)
+            }
+        }
+    }
+
+    private func onRefreshTokenError(error: Error) {
+        let log = Log(prefix: "TALK_APP", time: .now, message: error.localizedDescription, level: .error, type: .sent, userInfo: nil)
+        post(log: log)
+        self.log("error on getNewTokenWithRefreshToken:\(error.localizedDescription)")
     }
 
     @discardableResult

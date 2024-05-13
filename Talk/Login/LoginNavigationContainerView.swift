@@ -18,10 +18,10 @@ struct LoginNavigationContainerView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-//            LoginContentView()
-//                .navigationDestination(for: LoginState.self) { _ in
-//                    VerifyContentView()
-//                }
+            LoginContentView()
+                .navigationDestination(for: LoginState.self) { _ in
+                    VerifyContentView()
+                }
         }
         .onReceive(viewModel.$state) { newState in
             if newState == .verify {
@@ -31,9 +31,9 @@ struct LoginNavigationContainerView: View {
             }
         }
         .animation(.easeOut, value: viewModel.state)
-        .onAppear {
-            viewModel.startNewPKCESession()
-        }
+//        .onAppear {
+//            viewModel.startNewPKCESession()
+//        }
     }
 }
 

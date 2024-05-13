@@ -32,6 +32,9 @@ struct ThreadHistoryShimmerView: View {
                 .transition(.opacity)
                 .onAppear() {
                     reader.scrollTo(10, anchor: .bottom)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        reader.scrollTo(10, anchor: .bottom)
+                    }
                 }
             }
         }

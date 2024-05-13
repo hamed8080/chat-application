@@ -54,6 +54,14 @@ struct ThreadRow: View {
                             .fontWeight(.semibold)
                     }
 
+                    if thread.isTalk {
+                        Image("ic_approved")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .offset(x: -4)
+                    }
+
                     Spacer()
                     MutableMessageStatusView(isSelected: isSelected)
                         .environmentObject(thread)

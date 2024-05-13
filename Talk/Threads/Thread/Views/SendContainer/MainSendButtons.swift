@@ -139,11 +139,10 @@ struct MainSendButtons: View {
         if viewModel.showSendButton {
             Button {
                 if viewModel.showSendButton {
-                    threadVM.sendMessageViewModel.sendTextMessage()
+                    Task {
+                        await threadVM.sendMessageViewModel.sendTextMessage()
+                    }
                 }
-                threadVM.mentionListPickerViewModel.text = ""
-                threadVM.sheetType = nil
-                threadVM.animateObjectWillChange()
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .interpolation(.none)
