@@ -228,7 +228,7 @@ public extension AppState {
         openThread(contact: contact)
     }
 
-    private func setupForwardRequest(from: Int, to: Int, messages: [Message]) {
+    func setupForwardRequest(from: Int, to: Int, messages: [Message]) {
         self.appStateNavigationModel.forwardMessages = messages
         let messageIds = messages.sorted{$0.time ?? 0 < $1.time ?? 0}.compactMap{$0.id}
         let req = ForwardMessageRequest(fromThreadId: from, threadId: to, messageIds: messageIds)

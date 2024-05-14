@@ -9,6 +9,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
+import ChatModels
 
 /// We have to use this due to in the ThreadView we used let viewModel in it will never trigger the sheet.
 struct SheetEmptyBackground: View {
@@ -53,8 +54,7 @@ struct ThreadSheetView: View {
             }
         case .threadPicker:
             SelectConversationOrContactList { (conversation, contact) in
-                viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)
-                viewModel.selectedMessagesViewModel.clearSelection() // it is essential to clean up the ui after the user tap on either a contact or a thread
+                onThreadPickerResult(conversation, contact)
             }
             .onDisappear {
                 closeSheet()
@@ -91,6 +91,26 @@ struct ThreadSheetView: View {
         sheetBinding = false
         viewModel.sheetType = nil
         viewModel.animateObjectWillChange()
+    }
+
+    private func onThreadPickerResult(_ conversation: Conversation?, _ contact: Contact?) {
+        if conversation?.id == viewModel.threadId || contact?.userId == viewModel.thread.partner {
+            forwardToItself()
+        } else {
+            viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)
+            viewModel.selectedMessagesViewModel.clearSelection() // it is essential to clean up the ui after the user tap on either a contact or a thread
+        }
+    }
+
+    private func forwardToItself() {
+        let messages = viewModel.selectedMessagesViewModel.selectedMessages.compactMap{$0.message}
+        AppState.shared.setupForwardRequest(from: viewModel.threadId, to: viewModel.threadId, messages: messages)
+        viewModel.sheetType = nil
+        viewModel.animateObjectWillChange()
+        viewModel.selectedMessagesViewModel.clearSelection() // it is essential to clean up the ui after the user tap on either a contact or a thread
+        Task { @MainActor in
+            await viewModel.scrollVM.scrollToBottomIfIsAtBottom()
+        }
     }
 }
 
