@@ -18,7 +18,7 @@ struct MessageRowImageView: View {
 
     var body: some View {
         ZStack {
-            if (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.state.isPreparingThumbnailImageForUploadedImage {
+            if showImage {
                 Image(uiImage: viewModel.calculatedMessage.image)
                     .interpolation(.none)
                     .resizable()
@@ -38,12 +38,20 @@ struct MessageRowImageView: View {
                 }
             }
 
-            if message.uploadFile?.uploadImageRequest != nil || viewModel.state.isPreparingThumbnailImageForUploadedImage {
+            if showUpload {
                 UploadMessageImageView(viewModel: viewModel)
             }
         }
         .padding(.top, viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         .clipped()
+    }
+
+    private var showImage: Bool {
+        (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.state.isPreparingThumbnailImageForUploadedImage
+    }
+
+    private var showUpload: Bool {
+        message.uploadFile?.uploadImageRequest != nil || viewModel.state.isPreparingThumbnailImageForUploadedImage
     }
 
     private static let clearGradient = LinearGradient(colors: [.clear], startPoint: .top, endPoint: .bottom)

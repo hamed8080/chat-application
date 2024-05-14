@@ -94,6 +94,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         uploadMessagesViewModel.setup(viewModel: self)
         exportMessagesViewModel.setup(viewModel: self)
         reactionViewModel.setup(viewModel: self)
+        attachmentsViewModel.setup(viewModel: self)
         registerNotifications()
         setAppSettingsModel()
     }
