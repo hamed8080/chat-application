@@ -244,10 +244,6 @@
 		0570CC7A2AAEE98F001832E9 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBC42AAEE98E001832E9 /* Localizable.strings */; };
 		0570CC7B2AAEE98F001832E9 /* LaunchScreen.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBCC2AAEE98E001832E9 /* LaunchScreen.strings */; };
 		0570CC7C2AAEE98F001832E9 /* LaunchScreen.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBCC2AAEE98E001832E9 /* LaunchScreen.strings */; };
-		0570CC7D2AAEE98F001832E9 /* webrtc_user_a.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBCE2AAEE98E001832E9 /* webrtc_user_a.mp4 */; };
-		0570CC7E2AAEE98F001832E9 /* webrtc_user_a.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBCE2AAEE98E001832E9 /* webrtc_user_a.mp4 */; };
-		0570CC7F2AAEE98F001832E9 /* webrtc_user_b.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD02AAEE98E001832E9 /* webrtc_user_b.mp4 */; };
-		0570CC802AAEE98F001832E9 /* webrtc_user_b.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD02AAEE98E001832E9 /* webrtc_user_b.mp4 */; };
 		0570CC812AAEE98F001832E9 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD22AAEE98E001832E9 /* Config.json */; };
 		0570CC822AAEE98F001832E9 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD22AAEE98E001832E9 /* Config.json */; };
 		0570CC832AAEE98F001832E9 /* (null) in Resources */ = {isa = PBXBuildFile; };
@@ -525,9 +521,7 @@
 		0570CBC92AAEE98E001832E9 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0570CBCA2AAEE98E001832E9 /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		0570CBCD2AAEE98E001832E9 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		0570CBCE2AAEE98E001832E9 /* webrtc_user_a.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_a.mp4; sourceTree = "<group>"; };
 		0570CBCF2AAEE98E001832E9 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		0570CBD02AAEE98E001832E9 /* webrtc_user_b.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_b.mp4; sourceTree = "<group>"; };
 		0570CBD12AAEE98E001832E9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0570CBD22AAEE98E001832E9 /* Config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Config.json; sourceTree = "<group>"; };
 		0570CBD42AAEE98E001832E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -1000,8 +994,6 @@
 			children = (
 				0570CBC42AAEE98E001832E9 /* Localizable.strings */,
 				0570CBCC2AAEE98E001832E9 /* LaunchScreen.strings */,
-				0570CBCE2AAEE98E001832E9 /* webrtc_user_a.mp4 */,
-				0570CBD02AAEE98E001832E9 /* webrtc_user_b.mp4 */,
 				0570CBD22AAEE98E001832E9 /* Config.json */,
 				0570CBD42AAEE98E001832E9 /* Assets.xcassets */,
 				0570CBD62AAEE98E001832E9 /* LaunchScreen.storyboard */,
@@ -1255,10 +1247,8 @@
 				0570CC772AAEE98F001832E9 /* Preview Assets.xcassets in Resources */,
 				0570CC8F2AAEE98F001832E9 /* MockData.json in Resources */,
 				0570CC812AAEE98F001832E9 /* Config.json in Resources */,
-				0570CC7D2AAEE98F001832E9 /* webrtc_user_a.mp4 in Resources */,
 				0570CC892AAEE98F001832E9 /* sent_message.mp3 in Resources */,
 				0570CC7B2AAEE98F001832E9 /* LaunchScreen.strings in Resources */,
-				0570CC7F2AAEE98F001832E9 /* webrtc_user_b.mp4 in Resources */,
 				0570CC832AAEE98F001832E9 /* (null) in Resources */,
 				0570CC8D2AAEE98F001832E9 /* Ringtone.aif in Resources */,
 				0570CC912AAEE98F001832E9 /* (null) in Resources */,
@@ -1276,10 +1266,8 @@
 				0570CC782AAEE98F001832E9 /* Preview Assets.xcassets in Resources */,
 				0570CC902AAEE98F001832E9 /* MockData.json in Resources */,
 				0570CC822AAEE98F001832E9 /* Config.json in Resources */,
-				0570CC7E2AAEE98F001832E9 /* webrtc_user_a.mp4 in Resources */,
 				0570CC8A2AAEE98F001832E9 /* sent_message.mp3 in Resources */,
 				0570CC7C2AAEE98F001832E9 /* LaunchScreen.strings in Resources */,
-				0570CC802AAEE98F001832E9 /* webrtc_user_b.mp4 in Resources */,
 				0570CC842AAEE98F001832E9 /* (null) in Resources */,
 				0570CC8E2AAEE98F001832E9 /* Ringtone.aif in Resources */,
 				0570CC922AAEE98F001832E9 /* (null) in Resources */,

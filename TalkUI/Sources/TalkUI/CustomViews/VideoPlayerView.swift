@@ -129,7 +129,7 @@ public extension AVPlayerViewController {
 struct VideoPlayerView_Previews: PreviewProvider {
     static var previews: some View {
         VideoPlayerView()
-            .environmentObject(VideoPlayerViewModel(fileURL: URL(filePath: "/Users/hamed/Desktop/Workspace/ios/Fanap/Talk/Talk/Supporting Files/webrtc_user_a.mp4"), directLink: true))
+            .environmentObject(VideoPlayerViewModel(fileURL: URL(filePath: ""), directLink: true))
             .frame(width: 480, height: 400)
     }
 }
