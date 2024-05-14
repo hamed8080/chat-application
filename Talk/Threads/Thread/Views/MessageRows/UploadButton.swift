@@ -10,43 +10,29 @@ import TalkViewModels
 import ChatModels
 
 struct UploadButton: View {
-    @EnvironmentObject var messageRowVM: MessageRowViewModel
-    @EnvironmentObject var viewModel: UploadFileViewModel
+    @EnvironmentObject var viewModel: MessageRowViewModel
     @Environment(\.colorScheme) var scheme
-    var message: Message { messageRowVM.message }
-    var percent: Int64 { viewModel.uploadPercent }
-    var stateIcon: String {
-        if viewModel.state == .uploading {
-            return "xmark"
-        } else if viewModel.state == .paused {
-            return "play.fill"
-        } else {
-            return "arrow.up"
-        }
-    }
 
     var body: some View {
-        if message.uploadFile != nil, viewModel.state != .completed {
-            Button {
-                manageUpload()
-            } label: {
-                ZStack {
-                    iconView
-                    progress
-                }
-                .frame(width: 46, height: 46)
-                .background(Color.App.accent)
-                .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
+        Button {
+            viewModel.cancelUpload()
+        } label: {
+            ZStack {
+                iconView
+                progress
             }
-            .animation(.easeInOut, value: percent)
-            .animation(.easeInOut, value: stateIcon)
-            .buttonStyle(.borderless)
-            .transition(.scale)
+            .frame(width: 46, height: 46)
+            .background(Color.App.accent)
+            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
         }
+        .animation(.easeInOut, value: viewModel.fileState.progress)
+        .animation(.easeInOut, value: viewModel.fileState.iconState)
+        .buttonStyle(.borderless)
+        .transition(.scale)
     }
 
     @ViewBuilder private var iconView: some View {
-        Image(systemName: stateIcon.replacingOccurrences(of: ".circle", with: ""))
+        Image(systemName: viewModel.fileState.iconState.replacingOccurrences(of: ".circle", with: ""))
             .interpolation(.none)
             .resizable()
             .scaledToFit()
@@ -57,22 +43,14 @@ struct UploadButton: View {
 
     @ViewBuilder private var progress: some View {
         Circle()
-            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+            .trim(from: 0.0, to: viewModel.fileState.progress)
             .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
             .foregroundStyle(Color.App.white)
             .rotationEffect(Angle(degrees: 270))
             .frame(width: 42, height: 42)
             .environment(\.layoutDirection, .leftToRight)
             .fontWeight(.semibold)
-            .rotateAnimtion(pause: viewModel.state == .paused)
-    }
-
-    private func manageUpload() {
-        if viewModel.state == .paused {
-            viewModel.resumeUpload()
-        } else if viewModel.state == .uploading {
-            viewModel.cancelUpload()
-        }
+            .rotateAnimtion(pause: !viewModel.fileState.isUploading)
     }
 }
 

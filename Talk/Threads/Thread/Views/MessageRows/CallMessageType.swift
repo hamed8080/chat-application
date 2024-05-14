@@ -19,8 +19,8 @@ struct CallMessageType: View {
     var body: some View {
         HStack(alignment: .center) {
             HStack(spacing: 2) {
-                Text(viewModel.calculatedMessage.callDateText)
-                Text(viewModel.calculatedMessage.callTypeKey)
+                Text(viewModel.calMessage.callDateText)
+                Text(viewModel.calMessage.callTypeKey)
             }
             .foregroundStyle(Color.App.white)
             .font(.iransansBody)

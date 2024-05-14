@@ -20,14 +20,14 @@ struct ReplyInfoMessageRow: View {
 
     var body: some View {
         replyContent()
-            .environment(\.layoutDirection, viewModel.calculatedMessage.isMe ? .rightToLeft : .leftToRight)
-            .padding(EdgeInsets(top: 6, leading: viewModel.calculatedMessage.isMe ? 6 : 0, bottom: 6, trailing: viewModel.calculatedMessage.isMe ? 0 : 6))
-            .frame(maxWidth: viewModel.sizes.replyContainerWidth, maxHeight: 52, alignment: .leading)
+            .environment(\.layoutDirection, viewModel.calMessage.isMe ? .rightToLeft : .leftToRight)
+            .padding(EdgeInsets(top: 6, leading: viewModel.calMessage.isMe ? 6 : 0, bottom: 6, trailing: viewModel.calMessage.isMe ? 0 : 6))
+            .frame(maxWidth: viewModel.calMessage.sizes.replyContainerWidth, maxHeight: 52, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(viewModel.calculatedMessage.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
+                    .fill(viewModel.calMessage.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
             )
-            .padding(.top, viewModel.sizes.paddings.replyViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+            .padding(.top, viewModel.calMessage.sizes.paddings.replyViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
     }
 
     @ViewBuilder private func replyContent() -> some View {
@@ -54,19 +54,19 @@ struct ReplyInfoMessageRow: View {
                     ReplyFileIcon()
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 2) {
-                            if viewModel.calculatedMessage.isMe {
+                            if viewModel.calMessage.isMe {
                                 isMeHeaderParticipantNameView
                             } else {
                                 partnerHeaderParticipantName
                             }
                         }
 
-                        if let hinTextMessage = viewModel.calculatedMessage.localizedReplyFileName, !hinTextMessage.isEmpty {
+                        if let hinTextMessage = viewModel.calMessage.localizedReplyFileName, !hinTextMessage.isEmpty {
                             Text(hinTextMessage)
                                 .font(.iransansCaption3)
                                 .clipShape(RoundedRectangle(cornerRadius:(8)))
                                 .foregroundStyle(Color.App.textPrimary.opacity(0.7))
-                                .multilineTextAlignment(viewModel.calculatedMessage.isEnglish || viewModel.calculatedMessage.isMe ? .leading : .trailing)
+                                .multilineTextAlignment(viewModel.calMessage.isEnglish || viewModel.calMessage.isMe ? .leading : .trailing)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
                         }
@@ -144,7 +144,7 @@ struct ReplyImageIcon: View {
     let viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.calculatedMessage.isReplyImage, let link = viewModel.calculatedMessage.replyLink {
+        if viewModel.calMessage.isReplyImage, let link = viewModel.calMessage.replyLink {
             let config = ImageLoaderConfig(url: link, size: .SMALL, metaData: viewModel.message.replyInfo?.metadata, thumbnail: true)
             ImageLoaderView(imageLoader: .init(config: config), contentMode: .fill)
                 .frame(width: 32, height: 32)
@@ -159,7 +159,7 @@ struct ReplyFileIcon: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if !viewModel.calculatedMessage.isReplyImage, viewModel.calculatedMessage.canShowIconFile {
+        if !viewModel.calMessage.isReplyImage, viewModel.calMessage.canShowIconFile {
             if let iconName = self.message.replyIconName {
                 Image(systemName: iconName)
                     .interpolation(.none)

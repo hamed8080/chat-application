@@ -18,7 +18,7 @@ struct SelectMessageInsideClickOverlay: View {
                 .fill(Color.clear)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    viewModel.state.isSelected.toggle()
+                    viewModel.calMessage.state.isSelected.toggle()
                     viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
                     viewModel.animateObjectWillChange()
                 }

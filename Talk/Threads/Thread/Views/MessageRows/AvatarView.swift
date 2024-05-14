@@ -37,15 +37,15 @@ struct AvatarView: View {
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowSizes.avatarSize, height: MessageRowSizes.avatarSize)
-                        .background(viewModel.calculatedMessage.avatarColor)
+                        .background(viewModel.calMessage.avatarColor)
                         .clipShape(RoundedRectangle(cornerRadius:(MessageRowSizes.avatarSize / 2)))
                 } else {
-                    Text(verbatim: viewModel.calculatedMessage.avatarSplitedCharaters)
+                    Text(verbatim: viewModel.calMessage.avatarSplitedCharaters)
                         .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowSizes.avatarSize, height: MessageRowSizes.avatarSize)
-                        .background(viewModel.calculatedMessage.avatarColor)
+                        .background(viewModel.calMessage.avatarColor)
                         .clipShape(RoundedRectangle(cornerRadius:(MessageRowSizes.avatarSize / 2)))
                 }
             }
@@ -58,12 +58,12 @@ struct AvatarView: View {
             }
         } else if isSameUser {
             /// Place a empty view to show the message has sent by the same user.
-            AvatarView.emptyViewSender(trailing: viewModel.calculatedMessage.isLastMessageOfTheUser ? 8 : 0)
+            AvatarView.emptyViewSender(trailing: viewModel.calMessage.isLastMessageOfTheUser ? 8 : 0)
         }
     }
 
     private var hiddenView: Bool {
-        viewModel.state.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false
+        viewModel.calMessage.state.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false
     }
 
     private var imageLoaderId: String {
@@ -71,10 +71,10 @@ struct AvatarView: View {
     }
 
     private var showAvatarOrUserName: Bool {
-        !viewModel.calculatedMessage.isMe && viewModel.calculatedMessage.isLastMessageOfTheUser && viewModel.calculatedMessage.isCalculated
+        !viewModel.calMessage.isMe && viewModel.calMessage.isLastMessageOfTheUser && viewModel.calMessage.isCalculated
     }
 
     private var isSameUser: Bool {
-        !viewModel.calculatedMessage.isMe && !viewModel.calculatedMessage.isLastMessageOfTheUser
+        !viewModel.calMessage.isMe && !viewModel.calMessage.isLastMessageOfTheUser
     }
 }

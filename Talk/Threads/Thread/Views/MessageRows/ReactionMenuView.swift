@@ -66,7 +66,7 @@ struct ReactionMenuView_Previews: PreviewProvider {
                 .environmentObject(viewModel)
                 .onAppear {
                     Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
-                        viewModel.state.showReactionsOverlay = true
+                        viewModel.calMessage.state.showReactionsOverlay = true
                         viewModel.animateObjectWillChange()
                     }
                 }

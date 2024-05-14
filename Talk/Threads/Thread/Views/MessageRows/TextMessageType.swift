@@ -26,11 +26,11 @@ struct TextMessageType: View {
 
     var textMessageView: some View {
         HStack(spacing: 0) {
-            if !viewModel.calculatedMessage.isMe {
+            if !viewModel.calMessage.isMe {
                 SelectMessageRadio()
             }
 
-            if viewModel.calculatedMessage.isMe {
+            if viewModel.calMessage.isMe {
                 Spacer()
             }
 
@@ -41,16 +41,16 @@ struct TextMessageType: View {
 
             MutableMessageView(viewModel: viewModel)
 
-            if !viewModel.calculatedMessage.isMe {
+            if !viewModel.calMessage.isMe {
                 Spacer()
             }
 
-            if viewModel.calculatedMessage.isMe {
+            if viewModel.calMessage.isMe {
                 SelectMessageRadio()
             }
         }
         .environmentObject(viewModel)
-        .padding(EdgeInsets(top: viewModel.calculatedMessage.isFirstMessageOfTheUser ? 6 : 1, leading: 8, bottom: 1, trailing: 8))
+        .padding(EdgeInsets(top: viewModel.calMessage.isFirstMessageOfTheUser ? 6 : 1, leading: 8, bottom: 1, trailing: 8))
     }
 }
 
@@ -58,14 +58,14 @@ struct SelectMessageRadio: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.state.isInSelectMode {
+        if viewModel.calMessage.state.isInSelectMode {
             VStack {
                 Spacer()
-                RadioButton(visible: $viewModel.state.isInSelectMode, isSelected: $viewModel.state.isSelected) { _ in
+                RadioButton(visible: $viewModel.calMessage.state.isInSelectMode, isSelected: $viewModel.calMessage.state.isSelected) { _ in
                     viewModel.toggleSelection()
                 }
             }
-            .padding(viewModel.sizes.paddings.radioPadding)
+            .padding(viewModel.calMessage.sizes.paddings.radioPadding)
         }
     }
 }
@@ -79,7 +79,7 @@ struct MutableMessageView: View {
         HStack {
            InnerMessage(viewModel: viewModel)
         }
-        .frame(minWidth: 128, maxWidth: viewModel.sizes.imageWidth ?? ThreadViewModel.maxAllowedWidth, alignment: viewModel.calculatedMessage.isMe ? .trailing : .leading)
+        .frame(minWidth: 128, maxWidth: viewModel.calMessage.sizes.imageWidth ?? ThreadViewModel.maxAllowedWidth, alignment: viewModel.calMessage.isMe ? .trailing : .leading)
         .simultaneousGesture(TapGesture().onEnded { _ in }, including: message.isVideo ? .subviews : .all)
     }
 }
@@ -89,40 +89,40 @@ struct InnerMessage: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        VStack(alignment: viewModel.calculatedMessage.isMe ? .trailing : .leading, spacing: 0) {
-            if viewModel.calculatedMessage.isFirstMessageOfTheUser {
+        VStack(alignment: viewModel.calMessage.isMe ? .trailing : .leading, spacing: 0) {
+            if viewModel.calMessage.isFirstMessageOfTheUser {
                 GroupParticipantNameView()
             }
-            if viewModel.rowType.isReply {
+            if viewModel.calMessage.rowType.isReply {
                 ReplyInfoMessageRow()
             }
-            if viewModel.rowType.isForward {
+            if viewModel.calMessage.rowType.isForward {
                 ForwardMessageRow()
             }
             Group {
-                if viewModel.rowType.isMap {
+                if viewModel.calMessage.rowType.isMap {
                     LocationRowView()
                 }
-                if viewModel.rowType.isFile {
+                if viewModel.calMessage.rowType.isFile {
                     MessageRowFileView()
                 }
-                if viewModel.rowType.isImage {
+                if viewModel.calMessage.rowType.isImage {
                     MessageRowImageView()
                 }
-                if viewModel.rowType.isVideo {
+                if viewModel.calMessage.rowType.isVideo {
                     MessageRowVideoView()
                 }
-                if viewModel.rowType.isAudio {
+                if viewModel.calMessage.rowType.isAudio {
                     MessageRowAudioView()
                 }
             }
 
             MessageTextView()
 
-            if viewModel.rowType.isPublicLink {
+            if viewModel.calMessage.rowType.isPublicLink {
                 JoinPublicLink(viewModel: viewModel)
             }
-            if viewModel.rowType.isUnSent {
+            if viewModel.calMessage.rowType.isUnSent {
                 UnsentMessageView()
             }
             Group {
@@ -131,9 +131,9 @@ struct InnerMessage: View {
             }
         }
         .environmentObject(viewModel)
-        .padding(viewModel.sizes.paddings.paddingEdgeInset)
+        .padding(viewModel.calMessage.sizes.paddings.paddingEdgeInset)
         .background(MessageRowBackgroundView(viewModel: viewModel))
-        .contentShape(viewModel.calculatedMessage.isLastMessageOfTheUser ? MessageRowBackground.withTail : MessageRowBackground.noTail)
+        .contentShape(viewModel.calMessage.isLastMessageOfTheUser ? MessageRowBackground.withTail : MessageRowBackground.noTail)
         .customContextMenu(id: message.id, self: SelfContextMenu(viewModel: viewModel), menus: { ContextMenuContent(viewModel: viewModel) })
         .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
     }
@@ -143,14 +143,14 @@ struct MessageRowBackgroundView: View {
     let viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.calculatedMessage.isLastMessageOfTheUser {
+        if viewModel.calMessage.isLastMessageOfTheUser {
             MessageRowBackground.withTail
-                .fill(viewModel.calculatedMessage.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-                .scaleEffect(x: viewModel.calculatedMessage.isMe ? 1 : -1, y: 1)
+                .fill(viewModel.calMessage.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+                .scaleEffect(x: viewModel.calMessage.isMe ? 1 : -1, y: 1)
         } else {
             MessageRowBackground.noTail
-                .fill(viewModel.calculatedMessage.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-                .scaleEffect(x: viewModel.calculatedMessage.isMe ? 1 : -1, y: 1)
+                .fill(viewModel.calMessage.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+                .scaleEffect(x: viewModel.calMessage.isMe ? 1 : -1, y: 1)
         }
     }
 }
@@ -160,7 +160,7 @@ struct ContextMenuContent: View {
 
     var body: some View {
         VStack {
-            if viewModel.calculatedMessage.isInTwoWeekPeriod {
+            if viewModel.calMessage.isInTwoWeekPeriod {
                 ReactionMenuView()
                     .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
                     .environmentObject(viewModel)

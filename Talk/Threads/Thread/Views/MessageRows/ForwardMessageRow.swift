@@ -28,19 +28,19 @@ struct ForwardMessageRow: View {
                         participantName
                     }
                 }
-                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.calculatedMessage.isMe ? 4 : 8))
+                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.calMessage.isMe ? 4 : 8))
                 .overlay(alignment: .leading) {
                     orangeLeadingBar
                 }
             }
-            .frame(maxWidth: viewModel.sizes.forwardContainerWidth, alignment: .leading)
+            .frame(maxWidth: viewModel.calMessage.sizes.forwardContainerWidth, alignment: .leading)
             .buttonStyle(.borderless)
             .truncationMode(.tail)
             .contentShape(Rectangle())
-            .padding(EdgeInsets(top: 6, leading: viewModel.calculatedMessage.isMe ? 6 : 0, bottom: 6, trailing: viewModel.calculatedMessage.isMe ? 0 : 6))
-            .background(viewModel.calculatedMessage.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
+            .padding(EdgeInsets(top: 6, leading: viewModel.calMessage.isMe ? 6 : 0, bottom: 6, trailing: viewModel.calMessage.isMe ? 0 : 6))
+            .background(viewModel.calMessage.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
             .clipShape(RoundedRectangle(cornerRadius: 6))
-            .padding(.top,viewModel.sizes.paddings.forwardViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+            .padding(.top,viewModel.calMessage.sizes.paddings.forwardViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
     }
 
     private var statcForwardText: some View {

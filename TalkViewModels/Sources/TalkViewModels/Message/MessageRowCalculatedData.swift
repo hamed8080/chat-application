@@ -41,7 +41,12 @@ public struct MessageRowCalculatedData {
     public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
     public var groupMessageParticipantName: String?
-    public var image: UIImage = MessageRowViewModel.emptyImage
+    public var image: UIImage?
     public var canEdit: Bool = false
+
+    public var sizes = MessageRowSizes()
+    public var state = MessageRowState()
+    public var rowType = MessageViewRowType()
+    
     public init() {}
 }

@@ -15,13 +15,10 @@ struct MessageRowAudioView: View {
     /// We have to use EnvironmentObject due to we need to update ui after the audio has been uploaded so downloadVM now is not a nil value.
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
-    @EnvironmentObject var audioVM: AVAudioPlayerViewModel
-    private var isSameFile: Bool { viewModel.downloadFileVM?.fileURL != nil && audioVM.fileURL?.absoluteString == viewModel.downloadFileVM?.fileURL?.absoluteString }
-    private var progress: CGFloat { isSameFile ? min(audioVM.currentTime / audioVM.duration, 1.0) : 0 }
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            if !viewModel.calculatedMessage.isMe {
+            if !viewModel.calMessage.isMe {
                 button
             }
 
@@ -34,29 +31,18 @@ struct MessageRowAudioView: View {
                 }
             }
 
-            if viewModel.calculatedMessage.isMe {
+            if viewModel.calMessage.isMe {
                 button
             }
         }
         .padding(4)
-        .padding(.top, viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-        .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
-        .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
-        .task {
-            viewModel.uploadViewModel?.startUploadFile()
-        }
-        .task {
-            if viewModel.downloadFileVM?.isInCache == true {
-                viewModel.downloadFileVM?.state = .completed
-                viewModel.downloadFileVM?.animateObjectWillChange()
-            }
-        }
+        .padding(.top, viewModel.calMessage.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
     }
 
     @ViewBuilder private var audioProgress: some View {
         VStack(alignment: .leading, spacing: 1) {
-            let timerString = isSameFile ? "\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")" : " " // We use space to prevent the text collapse
-            ProgressView(value: progress, total: 1.0)
+            let timerString = viewModel.audioTimerString
+            ProgressView(value: viewModel.fileState.progress, total: 1.0)
                 .progressViewStyle(.linear)
                 .tint(Color.App.textPrimary)
                 .frame(maxWidth: 172)
@@ -67,7 +53,7 @@ struct MessageRowAudioView: View {
     }
 
     @ViewBuilder private var fileNameView: some View {
-        if let fileName = viewModel.calculatedMessage.fileName {
+        if let fileName = viewModel.calMessage.fileName {
             Text(fileName)
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
@@ -77,7 +63,7 @@ struct MessageRowAudioView: View {
     }
 
     @ViewBuilder private var fileTypeView: some View {
-        if let extName = viewModel.calculatedMessage.extName {
+        if let extName = viewModel.calMessage.extName {
             Text(extName)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
@@ -86,7 +72,7 @@ struct MessageRowAudioView: View {
     }
 
     @ViewBuilder private var fileSizeView: some View {
-        if let fileZize = viewModel.calculatedMessage.computedFileSize {
+        if let fileZize = viewModel.calMessage.computedFileSize {
             Text(fileZize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
@@ -96,65 +82,20 @@ struct MessageRowAudioView: View {
 
     @ViewBuilder private var button: some View {
         ZStack {
-            if let downloadVM = viewModel.downloadFileVM {
-                DownloadButton() {
-                    onTapGesture()
-                }
-                .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
-                .environmentObject(downloadVM)
+            DownloadButton() {
+                onTapGesture()
             }
-            if let uploadVM = viewModel.uploadViewModel {
+            .frame(width: !viewModel.fileState.isUploading ? 46 : 0, height: !viewModel.fileState.isUploading ? 46 : 0)
+            if viewModel.fileState.isUploading {
                 UploadButton()
-                    .environmentObject(uploadVM)
             }
         }
         .frame(width: 46, height: 46) /// prevent the button lead to huge resize afetr upload completed.
-        .animation(.easeInOut, value: viewModel.isUploadCompleted)
+        .animation(.easeInOut, value: viewModel.fileState.isUploading)
     }
 
     private func onTapGesture() {
-        if viewModel.downloadFileVM?.state == .completed {
-            if isSameFile {
-                togglePlaying()
-            } else {
-                audioVM.close()
-                togglePlaying()
-            }
-
-        } else {
-            manageDownload()
-        }
-
-        if viewModel.threadVM?.scrollVM.isAtBottomOfTheList == true {
-            Task {
-                try? await Task.sleep(for: .seconds(0.2))
-                viewModel.threadVM?.scrollVM.scrollToBottom()
-            }
-        }
-    }
-
-    private func togglePlaying() {
-        if let fileURL = viewModel.downloadFileVM?.fileURL {
-            let mtd = viewModel.calculatedMessage.fileMetaData
-            try? audioVM.setup(message: message,
-                               fileURL: fileURL,
-                               ext: mtd?.file?.mimeType?.ext,
-                               title: mtd?.file?.originalName ?? mtd?.name ?? "",
-                               subtitle: mtd?.file?.originalName ?? "")
-            audioVM.toggle()
-        }
-    }
-
-    private func manageDownload() {
-        if let downloadVM = viewModel.downloadFileVM {
-            if downloadVM.state == .paused {
-                downloadVM.resumeDownload()
-            } else if downloadVM.state == .downloading {
-                downloadVM.pauseDownload()
-            } else {
-                downloadVM.startDownload()
-            }
-        }
+        viewModel.onTap()
     }
 }
 

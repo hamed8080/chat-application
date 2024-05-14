@@ -106,7 +106,7 @@ struct EditMessageImage: View {
 
     @ViewBuilder func image(viewModel: MessageRowViewModel) -> some View {
         if viewModel.message.isImage {
-            Image(uiImage: viewModel.calculatedMessage.image)
+            Image(uiImage: viewModel.fileState.image ?? .init())
                 .interpolation(.none)
                 .frame(width: 32, height: 32)
                 .clipShape(RoundedRectangle(cornerRadius: 4))

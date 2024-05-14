@@ -47,6 +47,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var threadPinMessageViewModel: ThreadPinMessageViewModel = .init()
     public var reactionViewModel: ThreadReactionViewModel = .init()
     public var seenVM: HistorySeenViewModel = .init()
+    public var downloadFileManager: DownloadFileManager = .init()
+    public var uploadFileManager: UploadFileManager = .init()
     public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
@@ -95,6 +97,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         exportMessagesViewModel.setup(viewModel: self)
         reactionViewModel.setup(viewModel: self)
         attachmentsViewModel.setup(viewModel: self)
+        downloadFileManager.setup(viewModel: self)
+        uploadFileManager.setup(viewModel: self)
         registerNotifications()
         setAppSettingsModel()
     }

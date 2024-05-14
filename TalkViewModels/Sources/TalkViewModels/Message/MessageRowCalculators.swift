@@ -13,15 +13,14 @@ import Chat
 
 class MessageRowCalculators {
 
-    typealias CalculatedReturnTypes = (data: MessageRowCalculatedData, sizes: MessageRowSizes, rowType: MessageViewRowType)
-    class func calculate(message: Message, threadVM: ThreadViewModel?, oldData: MessageRowCalculatedData) async -> CalculatedReturnTypes {
+    class func calculate(message: Message, threadVM: ThreadViewModel?, oldData: MessageRowCalculatedData) async -> MessageRowCalculatedData {
         let oldImage = oldData.image
         var calculatedMessage = MessageRowCalculatedData()
         var sizes = MessageRowSizes()
         var rowType = MessageViewRowType()
 
         // image has been calculated before so DownloadFileViewModel.data is nil, we have to use the old value
-        if oldImage.size.width > 0, oldImage != MessageRowViewModel.emptyImage {
+        if let oldImage = oldImage, oldImage.size.width > 0, oldImage != DownloadFileManager.emptyImage {
             calculatedMessage.image = oldImage
         }
 
@@ -80,7 +79,13 @@ class MessageRowCalculators {
         sizes.paddings.textViewPadding = originalPaddings.textViewPadding
         sizes.paddings.paddingEdgeInset = originalPaddings.paddingEdgeInset
 
-        return (data: calculatedMessage, sizes: sizes, rowType: rowType)
+        calculatedMessage.avatarColor = String.getMaterialColorByCharCode(str: message.participant?.name ?? message.participant?.username ?? "")
+        calculatedMessage.state.isInSelectMode = threadVM?.selectedMessagesViewModel.isInSelectMode ?? false
+
+        calculatedMessage.rowType = rowType
+        calculatedMessage.sizes = sizes
+
+        return calculatedMessage
     }
 
     class func calculatePaddings(message: Message, calculatedMessage: MessageRowCalculatedData) -> EdgeInsets {
@@ -215,8 +220,8 @@ class MessageRowCalculators {
     class func calculateImageSize(message: Message, calculatedMessage: MessageRowCalculatedData) -> CGSize? {
         if message.isImage {
             /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let uploadMapSizeWidth = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.width) : nil
-            let uploadMapSizeHeight = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.height) : nil
+            let uploadMapSizeWidth = message is UploadFileWithLocationMessage ? Int(DownloadFileManager.emptyImage.size.width) : nil
+            let uploadMapSizeHeight = message is UploadFileWithLocationMessage ? Int(DownloadFileManager.emptyImage.size.height) : nil
             let uploadImageReq = (message as? UploadFileMessage)?.uploadImageRequest
             let imageWidth = CGFloat(calculatedMessage.fileMetaData?.file?.actualWidth ?? uploadImageReq?.wC ?? uploadMapSizeWidth ?? 0)
             let maxWidth = ThreadViewModel.maxAllowedWidth

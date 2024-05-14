@@ -11,30 +11,8 @@ import TalkModels
 import ChatModels
 
 struct DownloadButton: View {
-    @EnvironmentObject var viewModel: DownloadFileViewModel
-    @EnvironmentObject var messageRowVM: MessageRowViewModel
-    @EnvironmentObject var audioVM: AVAudioPlayerViewModel
-    private var isSameFile: Bool { viewModel.fileURL != nil && audioVM.fileURL?.absoluteString == viewModel.fileURL?.absoluteString }
-    private var message: Message? { viewModel.message }
-    private var percent: Int64 { viewModel.downloadPercent }
+    @EnvironmentObject var viewModel: MessageRowViewModel
     let action: () -> Void
-    private var stateIcon: String {
-        if message?.isAudio == true, viewModel.state == .completed, isSameFile {
-            if audioVM.isPlaying {
-                return "pause.fill"
-            } else {
-                return "play.fill"
-            }
-        } else if let iconName = message?.iconName, viewModel.state == .completed {
-            return iconName
-        } else if viewModel.state == .downloading {
-            return "pause.fill"
-        } else if viewModel.state == .paused {
-            return "play.fill"
-        } else {
-            return "arrow.down"
-        }
-    }
 
     var body: some View {
         Button {
@@ -52,7 +30,7 @@ struct DownloadButton: View {
     }
 
     @ViewBuilder private var iconView: some View {
-        Image(systemName: stateIcon.replacingOccurrences(of: ".circle", with: ""))
+        Image(systemName: viewModel.fileState.iconState)
             .interpolation(.none)
             .resizable()
             .scaledToFit()
@@ -62,16 +40,16 @@ struct DownloadButton: View {
     }
 
     @ViewBuilder private var progress: some View {
-        if viewModel.state == .downloading {
+        if viewModel.fileState.state == .downloading {
             Circle()
-                .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                .trim(from: 0.0, to: viewModel.fileState.progress)
                 .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                 .foregroundStyle(Color.App.white)
                 .rotationEffect(Angle(degrees: 270))
                 .frame(width: 42, height: 42)
                 .environment(\.layoutDirection, .leftToRight)
                 .fontWeight(.semibold)
-                .rotateAnimtion(pause: viewModel.state == .paused)
+                .rotateAnimtion(pause: viewModel.fileState.state == .paused)
         }
     }
 }

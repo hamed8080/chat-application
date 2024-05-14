@@ -11,8 +11,9 @@ public final class UploadFileViewModel: ObservableObject {
     @Published public private(set) var uploadPercent: Int64 = 0
     @Published public var state: UploadFileState = .paused
     public var message: Message
-    var threadId: Int? { (message.uploadFile as? UploadFileMessage)?.conversation?.id }
-    public var uploadFileWithTextMessage: UploadWithTextMessageProtocol { message as! UploadWithTextMessageProtocol }
+    var locationThreadId: Int? { (message as? UploadFileWithLocationMessage)?.threadId }
+    var threadId: Int? { (message.uploadFile as? UploadFileMessage)?.conversation?.id ?? locationThreadId }
+    public var uploadFileWithTextMessage: UploadWithTextMessageProtocol? { message as? UploadWithTextMessageProtocol }
     public var uploadUniqueId: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
 
@@ -48,7 +49,7 @@ public final class UploadFileViewModel: ObservableObject {
         let isImage: Bool = message.isImage
         let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : message.messageType ?? .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
-        if let fileRequest = uploadFileWithTextMessage.uploadFileRequest {
+        if let fileRequest = uploadFileWithTextMessage?.uploadFileRequest {
             uploadFile(message, fileRequest)
         }
     }
@@ -60,8 +61,12 @@ public final class UploadFileViewModel: ObservableObject {
         let isImage: Bool = message.isImage
         let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
-        if let imageRequest = uploadFileWithTextMessage.uploadImageRequest {
+        if let imageRequest = uploadFileWithTextMessage?.uploadImageRequest {
             uploadImage(message, imageRequest)
+        } else if let uploadLoaction = self.message as? UploadFileWithLocationMessage {
+            let req = uploadLoaction
+            uploadUniqueId = req.uniqueId
+            ChatManager.activeInstance?.message.send(req.locationRequest)
         }
     }
 

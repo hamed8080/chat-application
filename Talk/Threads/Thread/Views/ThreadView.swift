@@ -99,8 +99,8 @@ struct ThreadView: View, DropDelegate {
 
     private func hideKeyboardOnTapOrDrag() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.state.showReactionsOverlay == true }.forEach { rowViewModel in
-            rowViewModel.state.showReactionsOverlay = false
+        viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.calMessage.state.showReactionsOverlay == true }.forEach { rowViewModel in
+            rowViewModel.calMessage.state.showReactionsOverlay = false
             rowViewModel.animateObjectWillChange()
         }
     }

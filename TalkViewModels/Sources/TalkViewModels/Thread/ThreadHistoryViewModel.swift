@@ -537,7 +537,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     fileprivate func updateMessage(_ message: Message, _ indices: SecionAndMessageIndex?) -> MessageRowViewModel? {
         guard let indices = indices else { return nil }
         let vm = sections[indices.sectionIndex].vms[indices.messageIndex]
-        if vm.uploadViewModel != nil || vm.message is UploadFileWithLocationMessage {
+        if vm.fileState.isUploading || vm.message is UploadFileWithLocationMessage {
             /// We have to update animateObjectWillChange because after onNewMessage we will not call it, so upload file not work properly.
             vm.swapUploadMessageWith(message)
         } else {
@@ -628,16 +628,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         switch event {
         case .canceled(let uniqueId):
             onUploadCanceled(uniqueId)
-        case .completed(let uniqueId, let fileMetaData, let data, let error):
-            onUploadCompleted(uniqueId, fileMetaData, data, error)
         default:
             break
-        }
-    }
-
-    private func onUploadCompleted(_ uniqueId: String?, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
-        if let uniqueId = uniqueId, let vm = messageViewModel(for: uniqueId) {
-            vm.uploadCompleted(uniqueId, fileMetaData, data, error)
         }
     }
 
@@ -910,8 +902,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func setRowsIsInSelectMode(newValue: Bool) {
         sections.forEach { section in
             section.vms.forEach { vm in
-                if newValue != vm.state.isInSelectMode {
-                    vm.state.isInSelectMode = newValue
+                if newValue != vm.calMessage.state.isInSelectMode {
+                    vm.calMessage.state.isInSelectMode = newValue
                     vm.animateObjectWillChange()
                 }
             }
@@ -932,6 +924,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func updateNeeded() async {
         for (_, vm) in needUpdates.enumerated() {
             await vm.asyncAnimateObjectWillChange()
+            if vm.calMessage.rowType.isMap {
+                vm.downloadMap() // For downloading the map after upload
+            }
         }
         needUpdates.removeAll()
     }
