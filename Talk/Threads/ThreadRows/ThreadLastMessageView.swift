@@ -39,72 +39,121 @@ struct NormalLastMessageContainer: View {
 
     var body: some View {
         if let callMessage = callMessage {
-            ConversationCallMessageType(message: callMessage)
-                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 0) {
+                ConversationCallMessageType(message: callMessage)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                Spacer()
+                muteView
+                pinView
+            }
         } else {
             HStack(spacing: 0) {
-                if let addOrRemoveParticipant = addOrRemoveParticipant {
-                    Text(addOrRemoveParticipant)
-                        .font(.iransansCaption2)
-                        .fontWeight(.medium)
-                        .lineLimit(1)
-                        .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
-                } else if let participantName = participantName {
-                    Text(participantName)
-                        .font(.iransansCaption2)
-                        .fontWeight(.medium)
-                        .lineLimit(1)
-                        .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
+                if addOrRemoveParticipant != nil {
+                    addOrRemoveParticipantsView
+                } else if participantName != nil {
+                    praticipantNameView
                 }
 
-                //            if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
-                //                Image(systemName: iconName)
-                //                    .resizable()
-                //                    .frame(width: 16, height: 16)
-                //                    .foregroundStyle(Color.App.color1)
-                //            }
-
-                if let fiftyFirstCharacter = fiftyFirstCharacter {
-                    Text(verbatim: fiftyFirstCharacter)
-                        .font(.iransansCaption2)
-                        .fontWeight(.regular)
-                        .lineLimit(1)
-                        .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
-                } else if let sentFileString = sentFileString {
-                    Text(sentFileString)
-                        .font(.iransansCaption2)
-                        .fontWeight(.regular)
-                        .lineLimit(thread.group == false ? 2 : 1)
-                        .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
+                if fiftyFirstCharacter != nil {
+                    fiftyFirstTextView
+                } else if sentFileString != nil {
+                    fileNameLastMessageTextView
                 }
-
-                if let createConversationString = createConversationString {
-                    Text(createConversationString)
-                        .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
-                        .font(.iransansCaption2)
-                        .fontWeight(.regular)
+                if createConversationString != nil {
+                    createdConversation
                 }
                 Spacer()
-
-                if thread.mute == true {
-                    Image(systemName: "bell.slash.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
-                }
-
-
-                if thread.pin == true, hasSpaceToShowPin {
-                    NormalLastMessageContainer.pinImage
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                        .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
-                        .padding(.leading, thread.pin == true ? 4 : 0)
-                        .offset(y: -2)
-                }
+                muteView
+                pinView
             }
+        }
+    }
+
+    @ViewBuilder
+    private var addOrRemoveParticipantsView: some View {
+        if let addOrRemoveParticipant = addOrRemoveParticipant {
+            Text(addOrRemoveParticipant)
+                .font(.iransansCaption2)
+                .fontWeight(.medium)
+                .lineLimit(1)
+                .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
+        }
+    }
+
+    @ViewBuilder
+    private var praticipantNameView: some View {
+        if let participantName = participantName {
+            Text(participantName)
+                .font(.iransansCaption2)
+                .fontWeight(.medium)
+                .lineLimit(1)
+                .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
+        }
+    }
+
+//    @ViewBuilder
+//    private var lastMessageIcon: some View {
+//        //            if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
+//        //                Image(systemName: iconName)
+//        //                    .resizable()
+//        //                    .frame(width: 16, height: 16)
+//        //                    .foregroundStyle(Color.App.color1)
+//        //            }
+//    }
+
+    @ViewBuilder
+    private var createdConversation: some View {
+        if let createConversationString = createConversationString {
+            Text(createConversationString)
+                .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
+                .font(.iransansCaption2)
+                .fontWeight(.regular)
+        }
+    }
+
+    @ViewBuilder
+    private var fiftyFirstTextView: some View {
+        if let fiftyFirstCharacter = fiftyFirstCharacter {
+            Text(verbatim: fiftyFirstCharacter)
+                .font(.iransansCaption2)
+                .fontWeight(.regular)
+                .lineLimit(1)
+                .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
+        }
+    }
+
+    @ViewBuilder
+    private var fileNameLastMessageTextView: some View {
+        if let sentFileString = sentFileString {
+            Text(sentFileString)
+                .font(.iransansCaption2)
+                .fontWeight(.regular)
+                .lineLimit(thread.group == false ? 2 : 1)
+                .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
+        }
+    }
+
+    @ViewBuilder
+    private var muteView: some View {
+        if thread.mute == true {
+            Image(systemName: "bell.slash.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
+        }
+    }
+
+    @ViewBuilder
+    private var pinView: some View {
+        if thread.pin == true, hasSpaceToShowPin {
+            NormalLastMessageContainer.pinImage
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
+                .padding(.leading, thread.pin == true ? 4 : 0)
+                .offset(y: -2)
         }
     }
 

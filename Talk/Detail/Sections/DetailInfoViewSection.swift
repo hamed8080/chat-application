@@ -110,8 +110,8 @@ struct DetailInfoViewSection: View {
     private var participantsCount: some View {
         let count = viewModel.threadVM?.participantsViewModel.thread?.participantCount
         if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
-            let label = String(localized: .init("Participant"), bundle: Language.preferedBundle)
-            Text("\(label) \(countString)")
+            let label = String(localized: .init("Thread.Toolbar.participants"), bundle: Language.preferedBundle)
+            Text(verbatim: "\(countString) \(label)")
                 .font(.iransansCaption3)
                 .foregroundStyle(Color.App.textSecondary)
         }

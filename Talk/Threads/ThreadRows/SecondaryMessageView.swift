@@ -21,8 +21,10 @@ struct SecondaryMessageView: View {
         HStack {
             if draft.isEmpty {
                 ThreadLastMessageView(isSelected: isSelected, thread: thread)
+                    .id(thread.lastMessageVO?.id)
             } else {
                 DraftView(draft: draft)
+                    .id(draft)
             }
         }
         .animation(.easeInOut, value: draft.isEmpty)

@@ -17,7 +17,7 @@ struct ThreadRow: View {
     @State private var isSelected: Bool = false
     @EnvironmentObject var viewModel: ThreadsViewModel
     var isInForwardMode: Bool?
-    var thread: Conversation
+    let thread: Conversation
     let onTap: (() -> Void)?
     private var searchVM: ThreadsSearchViewModel { AppState.shared.objectsContainer.searchVM }
 
@@ -25,6 +25,7 @@ struct ThreadRow: View {
         HStack(spacing: 12) {
             SelectedThreadBar(thread: thread, isSelected: isSelected)
             ThreadImageView(thread: thread, threadsVM: viewModel)
+                .id(thread.image ?? thread.metadata)
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     if thread.type?.isChannelType == true {
@@ -48,10 +49,12 @@ struct ThreadRow: View {
                             .font(.iransansSubheadline)
                             .fontWeight(.semibold)
                     } else {
-                        Text(thread.titleRTLString)
+                        let title = thread.titleRTLString
+                        Text(title)
                             .lineLimit(1)
                             .font(.iransansSubheadline)
                             .fontWeight(.semibold)
+                            .animation(.easeInOut, value: title)
                     }
 
                     if thread.isTalk {
@@ -66,15 +69,19 @@ struct ThreadRow: View {
                     MutableMessageStatusView(isSelected: isSelected)
                         .environmentObject(thread)
                     ThreadTimeText(thread: thread, isSelected: isSelected)
+                        .id(thread.time)
                 }
                 HStack {
                     SecondaryMessageView(isSelected: isSelected, thread: thread)
+                        .id(thread.lastMessageVO?.id)
                         .environmentObject(viewModel.threadEventModels.first{$0.threadId == thread.id} ?? .init(threadId: thread.id ?? 0))
                     Spacer()
                     if isInForwardMode == nil {
                         ThreadMentionSign()
+                            .id(thread.mentioned)
                             .environmentObject(thread)
                         ThreadUnreadCount(isSelected: isSelected)
+                            .id(thread.unreadCount)
                             .environmentObject(thread)
                     }
                 }
