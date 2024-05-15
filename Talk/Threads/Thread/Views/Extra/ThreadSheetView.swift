@@ -94,7 +94,9 @@ struct ThreadSheetView: View {
     }
 
     private func onThreadPickerResult(_ conversation: Conversation?, _ contact: Contact?) {
-        if conversation?.id == viewModel.threadId || contact?.userId == viewModel.thread.partner {
+        let conversarionId = conversation?.id ?? -1
+        let contactUserId = contact?.userId ?? -1
+        if conversarionId == viewModel.threadId || contactUserId == viewModel.thread.partner {
             forwardToItself()
         } else {
             viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)

@@ -705,8 +705,30 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
+            let isMe = (response.result?.participant?.id ?? -1) == AppState.shared.user?.id
             Task { [weak self] in
                 guard let self = self else { return }
+                // MARK: Update thread properites
+                /*
+                 We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
+                 Although in message object Message.id / Message.time / Message.timeNanos are right.
+                 We only do this for ourselves, because the only person who can change these values is ourselves.
+                 We do this in ThreadsViewModel too, because there is a chance of reconnect so objects are distinict
+                 or if we are in forward mode the objects are different than what exist in ThreadsViewModel.
+                 */
+                if isMe {
+                    thread.lastSeenMessageId = message.id
+                    thread.lastSeenMessageTime = message.time
+                    thread.lastSeenMessageNanos = message.timeNanos
+                }
+                thread.time = message.time
+                thread.lastMessageVO = message
+                thread.lastMessage = response.result?.message
+                if response.result?.mentioned == true {
+                    thread.mentioned = true
+                }
+                // MARK: End Update thread properites
+
                 await appendMessagesAndSort([message])
                 await updateNeeded()
                 await asyncAnimateObjectWillChange()
