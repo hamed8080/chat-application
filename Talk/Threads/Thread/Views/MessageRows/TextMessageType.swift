@@ -117,9 +117,7 @@ struct InnerMessage: View {
                 }
             }
 
-            if viewModel.rowType.hasText {
-                MessageTextView()
-            }
+            MessageTextView()
 
             if viewModel.rowType.isPublicLink {
                 JoinPublicLink(viewModel: viewModel)

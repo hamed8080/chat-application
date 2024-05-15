@@ -62,19 +62,30 @@ public final class ThreadsViewModel: ObservableObject {
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if let message = response.result, let index = firstIndex(message.conversation?.id) {
             let thread = threads[index]
-            thread.time = response.result?.conversation?.time
             let isMe = response.result?.participant?.id == AppState.shared.user?.id
             if !isMe {
                 thread.unreadCount = (threads[index].unreadCount ?? 0) + 1
             } else if isMe {
                 thread.unreadCount = 0
             }
-            thread.lastMessageVO = response.result
-            thread.lastSeenMessageId = response.result?.conversation?.lastSeenMessageId
-            thread.lastSeenMessageTime = response.result?.conversation?.lastSeenMessageTime
-            thread.lastSeenMessageNanos = response.result?.conversation?.lastSeenMessageNanos
+            thread.time = message.time
+            thread.lastMessageVO = message
+
+            /*
+             We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
+             Although in message object Message.id / Message.time / Message.timeNanos are right.
+             We only do this for ourselves, because the only person who can change these values is ourselves.
+            */
+            if isMe {
+                thread.lastSeenMessageId = message.id
+                thread.lastSeenMessageTime = message.time
+                thread.lastSeenMessageNanos = message.timeNanos
+            }
             thread.lastMessage = response.result?.message
-            /// We only set the mentioned true because if the user sends multiple messages inside a thread but one message has been mention, the list will set it to false which is wrong.
+            /* We only set the mentioned to "true" because if the user sends multiple
+             messages inside a thread but one message has been mentioned.
+             The list will set it to false which is wrong.
+             */
             if response.result?.mentioned == true {
                 thread.mentioned = true
             }

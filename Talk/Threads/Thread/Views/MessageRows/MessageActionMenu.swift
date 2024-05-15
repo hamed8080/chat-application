@@ -198,6 +198,9 @@ struct MessageActionMenu: View {
         withAnimation(animation(appear: threadVM?.sendContainerViewModel.editMessage != nil)) {
             threadVM?.sendContainerViewModel.editMessage = message
             threadVM?.objectWillChange.send()
+            Task { @MainActor in
+                await threadVM?.scrollVM.scrollToBottomIfIsAtBottom()
+            }
         }
     }
 

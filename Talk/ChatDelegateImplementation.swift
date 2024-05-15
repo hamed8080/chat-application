@@ -65,8 +65,6 @@ final class ChatDelegateImplementation: ChatDelegate {
                     self.onSystemEvent(systemEventTypes)
                 case let .user(userEventTypes):
                     self.onUserEvent(userEventTypes)
-                case let .message(response):
-                    self.onMessageEvent(response)
                 default:
                     break
                 }
@@ -111,12 +109,6 @@ final class ChatDelegateImplementation: ChatDelegate {
                 AppState.shared.animateAndShowError(error)
             }
         }
-    }
-
-    private func onMessageEvent(_ event: MessageEventTypes) {
-//        if case .new(let response) = event, let message = response.result, canNotify(response) {
-//            UNUserNotificationCenter.localNewMessageNotif(message, showName: AppSettingsModel.restore().notificationSettings.showDetails)
-//        }
     }
 
     private func canNotify(_ response: ChatResponse<Message>) -> Bool {
