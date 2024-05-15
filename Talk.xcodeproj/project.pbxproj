@@ -1819,7 +1819,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.48;
+				MARKETING_VERSION = 1.3.49;
 				PRODUCT_BUNDLE_IDENTIFIER = ir.pod.talk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1853,7 +1853,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.48;
+				MARKETING_VERSION = 1.3.49;
 				PRODUCT_BUNDLE_IDENTIFIER = ir.pod.talk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1886,7 +1886,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.48;
+				MARKETING_VERSION = 1.3.49;
 				PRODUCT_BUNDLE_IDENTIFIER = "ir.pod.talk-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1920,7 +1920,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.48;
+				MARKETING_VERSION = 1.3.49;
 				PRODUCT_BUNDLE_IDENTIFIER = "ir.pod.talk-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

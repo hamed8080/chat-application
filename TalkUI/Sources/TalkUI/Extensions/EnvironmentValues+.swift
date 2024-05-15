@@ -12,8 +12,9 @@ public extension EnvironmentValues {
     static var isDebug: Bool {
 #if DEBUG
         return true
-#endif
+#else
         return false
+#endif
     }
 
     static var isTalkTest: Bool {
