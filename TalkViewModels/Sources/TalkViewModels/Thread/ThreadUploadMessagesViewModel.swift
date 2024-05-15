@@ -36,7 +36,7 @@ public final class ThreadUploadMessagesViewModel {
     }
 
     internal func append(contentsOf requests: [Message]) {
-        Task {
+        Task { @MainActor in
             await viewModel?.historyVM.appendMessagesAndSort(requests)
             await viewModel?.historyVM.asyncAnimateObjectWillChange()
             if let last = requests.last {

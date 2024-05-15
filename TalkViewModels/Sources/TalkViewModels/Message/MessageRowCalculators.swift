@@ -14,10 +14,16 @@ import Chat
 class MessageRowCalculators {
 
     typealias CalculatedReturnTypes = (data: MessageRowCalculatedData, sizes: MessageRowSizes, rowType: MessageViewRowType)
-    class func calculate(message: Message, threadVM: ThreadViewModel?) async -> CalculatedReturnTypes {
+    class func calculate(message: Message, threadVM: ThreadViewModel?, oldData: MessageRowCalculatedData) async -> CalculatedReturnTypes {
+        let oldImage = oldData.image
         var calculatedMessage = MessageRowCalculatedData()
         var sizes = MessageRowSizes()
         var rowType = MessageViewRowType()
+
+        // image has been calculated before so DownloadFileViewModel.data is nil, we have to use the old value
+        if oldImage.size.width > 0, oldImage != MessageRowViewModel.emptyImage {
+            calculatedMessage.image = oldImage
+        }
 
         calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         

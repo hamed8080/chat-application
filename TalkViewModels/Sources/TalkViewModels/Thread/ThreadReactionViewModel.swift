@@ -115,7 +115,7 @@ public final class ThreadReactionViewModel: ObservableObject {
 
     internal func fetchReactions(messages: [Message]) {
         if threadVM?.searchedMessagesViewModel.isInSearchMode == false {
-            let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
+            let messageIds = messages.filter({$0.id ?? -1 > 0}).filter({$0.reactionableType}).compactMap({$0.id})
             inQueueToGetReactions.append(contentsOf: messageIds)
             threadVM?.reactionViewModel.getReactionSummary(messageIds, conversationId: threadId)
         }

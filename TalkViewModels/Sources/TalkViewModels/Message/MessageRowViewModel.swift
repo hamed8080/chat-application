@@ -88,10 +88,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     public func performaCalculation() async {
-        let result = await MessageRowCalculators.calculate(message: message, threadVM: threadVM)
+        let result = await MessageRowCalculators.calculate(message: message, threadVM: threadVM, oldData: calculatedMessage)
         rowType = result.rowType
         calculatedMessage = result.data
         sizes = result.sizes
+        if downloadFileVM?.state == .thumbnail {
+            sizes.blurRadius = 16
+        }
         setAvatarViewModel()
         await downloadFileVM?.setup()
         manageDownload()
