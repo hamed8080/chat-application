@@ -70,16 +70,30 @@ struct MessageRowFileView: View {
 
     @ViewBuilder private var button: some View {
         ZStack {
-            DownloadButton() {
-                viewModel.onTap()
-            }
-            .frame(width: !viewModel.fileState.isUploading ? 46 : 0, height: !viewModel.fileState.isUploading ? 46 : 0)
-            if viewModel.fileState.isUploading {
+            if showDownloadButton {
+                DownloadButton() {
+                    viewModel.onTap()
+                }
+            } else if isUploading {
                 UploadButton()
             }
         }
         .frame(width: 46, height: 46) /// prevent the button lead to huge resize afetr upload completed.
         .animation(.easeInOut, value: viewModel.fileState.isUploading)
+    }
+}
+
+private extension MessageRowFileView {
+    var isUploading: Bool {
+        viewModel.fileState.isUploading && !viewModel.fileState.isUploadCompleted
+    }
+
+    var isCompleted: Bool {
+        viewModel.fileState.state == .completed && viewModel.fileState.state != .undefined
+    }
+
+    var showDownloadButton: Bool {
+        !isUploading
     }
 }
 

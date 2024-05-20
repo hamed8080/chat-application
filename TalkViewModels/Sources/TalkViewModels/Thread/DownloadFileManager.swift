@@ -167,6 +167,7 @@ public final class DownloadFileManager: ObservableObject {
         guard let vm = viewModel(for: messageId) else { return }
         let progress = vm.downloadPercent
         let state = MessageFileState(
+            url: message.fileURL,
             progress: min(CGFloat(progress) / 100, 1.0),
             showImage: true,
             showDownload: vm.state != .completed,

@@ -17,11 +17,6 @@ struct MessageFooterView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     private var thread: Conversation? { threadVM?.thread }
-    private var isSelfThread: Bool { thread?.type == .selfThread }
-    private var isSelfThreadDelvived: Bool {
-        if !isSelfThread { return true }
-        return message.id != nil
-    }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -32,7 +27,7 @@ struct MessageFooterView: View {
             if viewModel.calMessage.isMe {
                 timeView
             }
-            statusImage
+            StatusIcon()
             pinImage
         }
         .font(.subheadline)
@@ -65,18 +60,6 @@ struct MessageFooterView: View {
             .scaledToFit()
             .frame(width: isPin ? 12 : 0, height: isPin ? 12 : 0)
             .foregroundColor(Color.App.accent)
-            .padding(.trailing, 2)
-    }
-
-    @ViewBuilder
-    private var statusImage: some View {
-        let canShowStatus = viewModel.calMessage.isMe && isSelfThreadDelvived
-        Image(uiImage: message.footerStatus.image)
-            .interpolation(.none)
-            .resizable()
-            .scaledToFit()
-            .frame(width: canShowStatus ? 16 : 0, height: canShowStatus ? 16 : 0)
-            .foregroundColor(message.footerStatus.fgColor)
             .padding(.trailing, 2)
     }
 }
