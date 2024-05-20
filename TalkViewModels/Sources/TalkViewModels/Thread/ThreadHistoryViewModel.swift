@@ -770,6 +770,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         guard threadId == response.result?.threadId else { return }
         if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
             vm.setSent(messageTime: response.result?.messageTime)
+        } else if let uniqueId = response.uniqueId, let vm = messageViewModel(for: uniqueId) {
+            // When Sending a file it is likely to not have the messageId, so it's better to use a uniqueId in the message object.
+            vm.setSent(messageTime: response.result?.messageTime)
         }
     }
 
@@ -1036,6 +1039,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public func messageViewModel(for uniqueId: String) -> MessageRowViewModel? {
         guard let indicies = indicesByMessageUniqueId(uniqueId) else {return nil}
         return sections[indicies.sectionIndex].vms[indicies.messageIndex]
+    }
+
+    @discardableResult
+    public func messageViewModel(viewModelUniqueId: String) -> MessageRowViewModel? {
+        return sections.flatMap({$0.vms}).first(where: {$0.uniqueId == viewModelUniqueId})
     }
 
     /// We retrieve previous message when messages are beneath the sand bar.

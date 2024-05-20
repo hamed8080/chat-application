@@ -46,7 +46,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public func performaCalculation() async {
         if !fileState.isUploadCompleted {
-            threadVM?.uploadFileManager.register(message: message)
+            threadVM?.uploadFileManager.register(message: message, viewModelUniqueId: uniqueId)
         }
         threadVM?.downloadFileManager.register(message: message)
         calMessage = await MessageRowCalculators.calculate(message: message, threadVM: threadVM, oldData: calMessage)
@@ -156,10 +156,8 @@ public extension MessageRowViewModel {
     }
 
     func cancelUpload() {
-        if let messageId = message.id {
-            Task {
-                await threadVM?.uploadFileManager.cancel(messageId: messageId)
-            }
+        Task {
+            await threadVM?.uploadFileManager.cancel(viewModelUniqueId: uniqueId)
         }
     }
 }

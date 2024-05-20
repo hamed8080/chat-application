@@ -15,6 +15,8 @@
 		050620422B0B1FE10024476C /* MessageRowBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050620402B0B1FE10024476C /* MessageRowBackground.swift */; };
 		0506DE1F2AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
 		0506DE202AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
+		050868482BFB2A0100549DB7 /* StatusIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050868472BFB2A0100549DB7 /* StatusIcon.swift */; };
+		050868492BFB2A0100549DB7 /* StatusIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050868472BFB2A0100549DB7 /* StatusIcon.swift */; };
 		050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
 		050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
 		050B29182AB40DC20072706C /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290E2AB40DC20072706C /* ToolbarView.swift */; };
@@ -400,6 +402,7 @@
 		0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditGroup.swift; sourceTree = "<group>"; };
 		050620402B0B1FE10024476C /* MessageRowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowBackground.swift; sourceTree = "<group>"; };
 		0506DE1E2AD42AF00009701E /* Talk.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Talk.docc; sourceTree = "<group>"; };
+		050868472BFB2A0100549DB7 /* StatusIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusIcon.swift; sourceTree = "<group>"; };
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
 		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NothingHasBeenSelectedView.swift; sourceTree = "<group>"; };
@@ -863,6 +866,7 @@
 				05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */,
 				05D1F2DD2B70D421000CE1FB /* DownloadButton.swift */,
 				05D1F2E02B70D461000CE1FB /* UploadButton.swift */,
+				050868472BFB2A0100549DB7 /* StatusIcon.swift */,
 			);
 			path = MessageRows;
 			sourceTree = "<group>";
@@ -1436,6 +1440,7 @@
 				0570CC112AAEE98F001832E9 /* UnknownMessageType.swift in Sources */,
 				0570CC592AAEE98F001832E9 /* MutualThreadsView.swift in Sources */,
 				054ED7EC2BEB735800F9EDB3 /* OTPTimerView.swift in Sources */,
+				050868482BFB2A0100549DB7 /* StatusIcon.swift in Sources */,
 				05D1F2E12B70D461000CE1FB /* UploadButton.swift in Sources */,
 				0525571A2BE94BA900DFCE54 /* DetailTopButtonsSection.swift in Sources */,
 				051ED3232B4D75BC00D963A0 /* LeaveThreadDialog.swift in Sources */,
@@ -1617,6 +1622,7 @@
 				0570CC4E2AAEE98F001832E9 /* SettingsView.swift in Sources */,
 				0570CC122AAEE98F001832E9 /* UnknownMessageType.swift in Sources */,
 				054ED7ED2BEB735800F9EDB3 /* OTPTimerView.swift in Sources */,
+				050868492BFB2A0100549DB7 /* StatusIcon.swift in Sources */,
 				05D1F2E22B70D461000CE1FB /* UploadButton.swift in Sources */,
 				0525571B2BE94BA900DFCE54 /* DetailTopButtonsSection.swift in Sources */,
 				051ED3242B4D75BC00D963A0 /* LeaveThreadDialog.swift in Sources */,
@@ -1819,7 +1825,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.49;
+				MARKETING_VERSION = 1.3.50;
 				PRODUCT_BUNDLE_IDENTIFIER = ir.pod.talk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1853,7 +1859,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.49;
+				MARKETING_VERSION = 1.3.50;
 				PRODUCT_BUNDLE_IDENTIFIER = ir.pod.talk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1886,7 +1892,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.49;
+				MARKETING_VERSION = 1.3.50;
 				PRODUCT_BUNDLE_IDENTIFIER = "ir.pod.talk-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1920,7 +1926,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.49;
+				MARKETING_VERSION = 1.3.50;
 				PRODUCT_BUNDLE_IDENTIFIER = "ir.pod.talk-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

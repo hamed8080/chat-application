@@ -132,7 +132,7 @@ struct ThreadViewCenterToolbar: View {
     func onThreadSystemEvent(_ event: SystemEventTypes) {
         switch event {
         case .systemMessage(let chatResponse):
-            guard let result = chatResponse.result else { return }
+            guard chatResponse.subjectId == viewModel.threadId, let result = chatResponse.result else { return }
             eventVM.startEventTimer(result)
         default:
             break

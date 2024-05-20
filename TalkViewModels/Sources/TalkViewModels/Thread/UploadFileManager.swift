@@ -14,7 +14,7 @@ import UIKit
 
 public final class UploadFileManager: ObservableObject {
     private weak var viewModel: ThreadViewModel?
-    private var uploadVMS: [UploadFileViewModel] = []
+    private var uploadVMS: [String: UploadFileViewModel] = [:]
     private var cancelableSet: Set<AnyCancellable> = Set()
     private var queue = DispatchQueue(label: "UploadFileManagerSerialQueue")
     public init() {}
@@ -23,24 +23,24 @@ public final class UploadFileManager: ObservableObject {
         self.viewModel = viewModel
     }
 
-    private func viewModel(for messageId: Int) -> UploadFileViewModel? {
+    private func viewModel(for viewModelUniqueId: String) -> UploadFileViewModel? {
         queue.sync {
-            uploadVMS.first(where: {$0.message.id == messageId})
+            uploadVMS.first(where: {$0.key == viewModelUniqueId})?.value
         }
     }
 
-    public func register(message: Message) {
-        let isInQueue = uploadVMS.contains(where: {$0.message.id == message.id})
+    public func register(message: Message, viewModelUniqueId: String) {
+        let isInQueue = uploadVMS.contains(where: {$0.key == viewModelUniqueId})
         let isFileOrMap = message.uploadFile != nil || message is UploadFileWithLocationMessage
         let canUpload = isFileOrMap && !isInQueue
         if canUpload {
             let uploadFileVM = UploadFileViewModel(message: message)
             queue.sync {
-                uploadVMS.append(uploadFileVM)
+                uploadVMS[viewModelUniqueId] = uploadFileVM
             }
             uploadFileVM.objectWillChange.sink {
                 Task { [weak self] in
-                    await self?.onUploadChanged(uploadFileVM, message)
+                    await self?.onUploadChanged(uploadFileVM, message, viewModelUniqueId: viewModelUniqueId)
                 }
             }
             .store(in: &cancelableSet)
@@ -52,17 +52,19 @@ public final class UploadFileManager: ObservableObject {
         }
     }
 
-    private func unRegister(messageId: Int) {
+    private func unRegister(viewModelUniqueId: String) {
         queue.sync {
             // $0.message.id == nil in uploading locaiton is nil
-            uploadVMS.removeAll(where: {$0.message.id == messageId || $0.message.id == nil })
+            if uploadVMS.contains(where: {$0.key == viewModelUniqueId}) {
+                uploadVMS.removeValue(forKey: viewModelUniqueId)
+            }
         }
     }
 
-    public func cancel(messageId: Int) async {
-        if let vm = uploadVMS.first(where: {$0.message.id == messageId}) {
+    public func cancel(viewModelUniqueId: String) async {
+        if let vm = uploadVMS.first(where: {$0.key == viewModelUniqueId})?.value {
             vm.cancelUpload()
-            unRegister(messageId: messageId)
+            unRegister(viewModelUniqueId: viewModelUniqueId)
         }
     }
 
@@ -78,7 +80,7 @@ public final class UploadFileManager: ObservableObject {
         }
     }
 
-    private func onUploadChanged(_ vm: UploadFileViewModel, _ message: Message) async {
+    private func onUploadChanged(_ vm: UploadFileViewModel, _ message: Message, viewModelUniqueId: String) async {
         let isCompleted = vm.state == .completed
         let isUploading = vm.state == .uploading
         let progress = min(CGFloat(vm.uploadPercent) / 100, 1.0)
@@ -99,18 +101,18 @@ public final class UploadFileManager: ObservableObject {
                                               iconState: iconState,
                                               blurRadius: blurRadius,
                                               image: image)
-        await changeStateTo(state: fileState, messageId: vm.message.id ?? -1)
+        await changeStateTo(state: fileState, viewModelUniqueId: viewModelUniqueId)
     }
 
-    private func changeStateTo(state: MessageFileState, messageId: Int) async {
-        let vm = viewModel?.historyVM.messageViewModel(for: messageId)
+    private func changeStateTo(state: MessageFileState, viewModelUniqueId: String) async {
+        let vm = viewModel?.historyVM.messageViewModel(viewModelUniqueId: viewModelUniqueId)
         await MainActor.run {
             guard let vm = vm else { return }
             vm.setFileState(state)
             vm.animateObjectWillChange()
         }
         if state.isUploadCompleted {
-            unRegister(messageId: messageId)
+            unRegister(viewModelUniqueId: viewModelUniqueId)
         }
     }
 }
