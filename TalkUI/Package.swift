@@ -17,7 +17,7 @@ let package = Package(
             targets: ["TalkUI"]),
     ],
     dependencies: [
-        .package(url: "https://pubgi.fanapsoft.ir/chat/ios/additive-ui", from: "1.2.0"),
+        .package(path: "../../AdditiveUI"),
         .package(path: "../TalkModels"),
         .package(path: "../TalkExtensions"),
         .package(path: "../TalkViewModels"),
@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "TalkUI",
             dependencies: [
-                .product(name: "AdditiveUI", package: "additive-ui"),
+                .product(name: "AdditiveUI", package: "AdditiveUI"),
                 "TalkModels",
                 "TalkExtensions",
                 "TalkViewModels"
@@ -37,7 +37,7 @@ let package = Package(
             name: "TalkUITests",
             dependencies: [
                 "TalkUI",
-                .product(name: "AdditiveUI", package: "additive-ui"),
+                .product(name: "AdditiveUI", package: "AdditiveUI"),
             ],
             resources: [
                 .copy("Resources/icon.png")
