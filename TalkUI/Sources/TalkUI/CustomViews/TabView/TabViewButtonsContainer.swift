@@ -36,7 +36,7 @@ public struct TabViewButtonsContainer: View {
                                             .foregroundColor(Color.App.textSecondary)
                                             .fixedSize()
                                     }
-                                    Text(String(localized: .init(tab.title)))
+                                    Text(tab.title)
                                         .font(index == selectedTabIndex ? .iransansBoldCaption : .iransansCaption)
                                         .fixedSize()
                                         .foregroundStyle(index == selectedTabIndex ? Color.App.textPrimary : Color.App.textSecondary)

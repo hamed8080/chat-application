@@ -65,7 +65,7 @@ public final class RecordedAudioView: UIStackView {
 
         let image = UIImage(systemName: "arrow.up") ?? .init()
         btnSend.setup(image: image) { [weak self] in
-            self?.viewModel.sendMessageViewModel.sendAudiorecording()
+//            self?.viewModel.sendMessageViewModel.sendAudiorecording()
         }
 
         let btnDelete = UIButton(type: .system)

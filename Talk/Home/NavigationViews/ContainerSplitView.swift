@@ -39,6 +39,7 @@ struct iPadStackContentView<Content: View>: View {
     var body: some View {
         HStack(spacing: 0) {
             sidebarView
+                .toolbar(.hidden)
                 .frame(width: showSideBar ? maxComputed : 0)
 
             NavigationStack(path: $navVM.paths) {
@@ -68,6 +69,7 @@ struct iPhoneStackContentView<Content: View>: View {
     var body: some View {
         NavigationStack(path: $navVM.paths) {
             sidebarView
+                .toolbar(.hidden)
                 .navigationDestination(for: NavigationType.self) { value in
                     NavigationTypeView(type: value, container: container)
                 }
@@ -82,7 +84,7 @@ struct NavigationTypeView: View {
     var body: some View {
         switch type {
         case .threadViewModel(let viewModel):
-            UIKitThreadViewWrapper(threadVM: viewModel)
+            UIKitThreadViewWrapper(threadVM: viewModel.viewModel)
                 .ignoresSafeArea()
 //                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
 //                    .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
@@ -97,14 +99,6 @@ struct NavigationTypeView: View {
 //                    .environmentObject(viewModel.historyVM)
 //                    .environmentObject(viewModel.uploadMessagesViewModel)
 //                    .environmentObject(viewModel.unssetMessagesViewModel)
-        case .contact(let contact):
-            Text(contact.firstName ?? "")
-                .environmentObject(container.appOverlayVM)
-        case .threadDetil(let detailViewModel):
-            ThreadDetailView(thread: detailViewModel.thread)
-                .environmentObject(container.appOverlayVM)
-                .environmentObject(detailViewModel)
-                .environmentObject(container.threadsVM)
         case .preference(_):
             PreferenceView()
                 .environmentObject(container.appOverlayVM)
@@ -128,13 +122,15 @@ struct NavigationTypeView: View {
                 .environmentObject(container.archivesVM)
         case .messageParticipantsSeen(let model):
             MessageParticipantsSeen(message: model.message)
-                .environmentObject(model.threadVM)
+//                .environmentObject(model.threadVM)
         case .language(_):
             LanguageView(container: container)
         case .editProfile(_):
             EditProfileView()
         case .loadTests(_):
             LoadTestsView()
+        case .threadDetail(_):
+            EmptyView()
         }
     }
 }

@@ -11,20 +11,17 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct SelectConversationOrContactList: View {
     @StateObject var viewModel: ThreadOrContactPickerViewModel = .init()
     var onSelect: (Conversation?, Contact?) -> Void
     @Environment(\.dismiss) var dismiss
     @State var selectedTabId: Int = 0
-    let tabs: [Tab]
+    @State private var tabs: [Tab] = []
 
     init(onSelect: @escaping (Conversation?, Contact?) -> Void) {
         self.onSelect = onSelect
-        tabs = [
-            .init(title: "Tab.chats", view: AnyView(SelectConversationTab(onSelect: onSelect))),
-            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
-        ]
     }
 
     var body: some View {
@@ -37,9 +34,19 @@ struct SelectConversationOrContactList: View {
                 SearchInSelectConversationOrContact()
                     .environmentObject(viewModel)
             }
+            .onAppear {
+                makeTabs()
+            }
             .onDisappear {
                 viewModel.cancelObservers()
             }
+    }
+
+    private func makeTabs() {
+        tabs = [
+            .init(title: "Tab.chats", view: AnyView(SelectConversationTab(onSelect: onSelect))),
+            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
+        ]
     }
 }
 
@@ -48,7 +55,7 @@ struct SearchInSelectConversationOrContact: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            TextField("General.searchHere", text: $viewModel.searchText)
+            TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchText)
                 .frame(height: 48)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
@@ -66,26 +73,28 @@ struct SelectConversationTab: View {
     var body: some View {
         List {
             ForEach(conversations) { conversation in
-                ThreadRow(forceSelected: false, thread: conversation) {
+                ThreadRow(isInForwardMode: true, thread: conversation) {
                     onSelect(conversation, nil)
                     dismiss()
                 }
                 .listRowBackground(Color.App.bgPrimary)
                 .onAppear {
-                    if conversation == conversations.last {
-                        viewModel.loadMore()
+                    Task {
+                        if conversation == conversations.last {
+                            await viewModel.loadMore()
+                        }
                     }
                 }
             }
         }
         .safeAreaInset(edge: .top) {
-            if viewModel.isLoadingConversation {
+            if viewModel.conversationsLazyList.isLoading {
                 SwingLoadingIndicator()
             }
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.conversations.count)
-        .animation(.easeInOut, value: viewModel.isLoadingConversation)
+        .animation(.easeInOut, value: viewModel.conversationsLazyList.isLoading)
     }
 }
 
@@ -97,27 +106,30 @@ struct SelectContactTab: View {
     var body: some View {
         List {
             ForEach(viewModel.contacts) { contact in
-                ContactRow(isInSelectionMode: .constant(false), contact: contact)
+                ContactRow(isInSelectionMode: .constant(false))
+                    .environmentObject(contact)
                     .onTapGesture {
                         onSelect(nil, contact)
                         dismiss()
                     }
                     .listRowBackground(Color.App.bgPrimary)
                     .onAppear {
-                        if contact == viewModel.contacts.last {
-                            viewModel.loadMoreContacts()
+                        Task {
+                            if contact == viewModel.contacts.last {
+                                await viewModel.loadMoreContacts()
+                            }
                         }
                     }
             }
         }
         .safeAreaInset(edge: .top) {
-            if viewModel.isLoadingContacts {
+            if viewModel.contactsLazyList.isLoading {
                 SwingLoadingIndicator()
             }
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.contacts.count)
-        .animation(.easeInOut, value: viewModel.isLoadingContacts)
+        .animation(.easeInOut, value: viewModel.contactsLazyList.isLoading)
     }
 }
 

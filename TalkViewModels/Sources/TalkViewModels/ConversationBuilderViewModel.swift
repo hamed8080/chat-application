@@ -24,7 +24,7 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     @Published public var isUploading: Bool = false
     private var uploadedImageFileMetaData: FileMetaData?
     @Published public var isCreateLoading = false
-    @Published public var createConversationType: ThreadTypes?
+    @Published public var createConversationType: StrictThreadTypeCreation?
     @Published var imageUploadingFailed: Bool = false
     /// Check public thread name.
     @Published public var isPublic: Bool = false
@@ -37,13 +37,18 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     @Published public var showTitleError: Bool = false
     @Published public var show = false
     @Published public var dismiss = false
+    private var objectId = UUID().uuidString
+    private let CREATE_THREAD_CONVERSATION_BUILDER_KEY: String
 
     public init() {
+        CREATE_THREAD_CONVERSATION_BUILDER_KEY = "CREATE-THREAD-CONVERSATION-BUILDER-KEY-\(objectId)"
         super.init(isBuilder: true)
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
-            .sink{ [weak self] event in
-                self?.onConversationEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onConversationEvent(event)
+                }
             }
             .store(in: &canceableSet)
 
@@ -63,9 +68,10 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
             .store(in: &canceableSet)
     }
 
-    public func show(type: ThreadTypes) {
+    @MainActor
+    public func show(type: StrictThreadTypeCreation) async {
         if contacts.isEmpty {
-            getContacts()
+            await getContacts()
         }
         show = true
         createConversationType = type
@@ -105,35 +111,38 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         guard let type = createConversationType else { return }
         isCreateLoading = true
         let invitees = selectedContacts.map { Invitee(id: "\($0.id ?? 0)", idType: .contactId) }
+        let calculatedType = isPublic ? type.toPublicType?.threadType ?? StrictThreadTypeCreation.privateGroup.threadType : type.threadType
         let req = CreateThreadRequest(description: threadDescription,
                                       image: uploadedImageFileMetaData?.file?.link,
                                       invitees: invitees,
                                       title: conversationTitle,
-                                      type: isPublic ? type.publicType : type,
+                                      type: calculatedType,
                                       uniqueName: isPublic ? UUID().uuidString : nil
         )
-        RequestsManager.shared.append(prepend: "ConversationBuilder", value: req)
+        RequestsManager.shared.append(prepend: CREATE_THREAD_CONVERSATION_BUILDER_KEY, value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }
 
-    public func onCreateGroup(_ response: ChatResponse<Conversation>) {
-        if response.pop(prepend: "ConversationBuilder") != nil {
-            clear()
+    @MainActor
+    public func onCreateGroup(_ response: ChatResponse<Conversation>) async {
+        if response.pop(prepend: CREATE_THREAD_CONVERSATION_BUILDER_KEY) != nil {
+            await clear()
             if let conversation = response.result {
                 if #available(iOS 17, *) {
-                    AppState.shared.showThread(thread: conversation, created: true)
+                    AppState.shared.showThread(conversation, created: true)
                 } else {
                     /// It will prevent a bug on small deveice can not click on the back button after creation.
                     Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false) { _ in
-                        AppState.shared.showThread(thread: conversation, created: true)
+                        AppState.shared.showThread(conversation, created: true)
                     }
                 }
             }
         }
     }
 
-    public override func clear() {
-        super.clear()
+    @MainActor
+    public override func clear() async {
+        await super.clear()
         dimissAnResetDismiss()
         resetImageUploading()
         createdConversation = nil
@@ -183,12 +192,12 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         }
     }
 
-    private func onConversationEvent(_ event: ThreadEventTypes?) {
+    private func onConversationEvent(_ event: ThreadEventTypes?) async {
         switch event {
         case .created(let response):
-            onCreateGroup(response)
+            await onCreateGroup(response)
         case .isNameAvailable(let response):
-            onIsNameAvailable(response)
+            await onIsNameAvailable(response)
         default:
             break
         }
@@ -212,7 +221,7 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         }
     }
 
-    private func onIsNameAvailable(_ response: ChatResponse<PublicThreadNameAvailableResponse>) {
+    private func onIsNameAvailable(_ response: ChatResponse<PublicThreadNameAvailableResponse>) async{
         if conversationTitle == response.result?.name {
             self.isPublicNameAvailable = true
         }

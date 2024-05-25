@@ -84,7 +84,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     private func close() {
         viewModel.scrollVM.disableExcessiveLoading()
         AppState.shared.appStateNavigationModel = .init()
-        viewModel.animateObjectWillChange()
+//        viewModel.animateObjectWillChange()
     }
 }
 

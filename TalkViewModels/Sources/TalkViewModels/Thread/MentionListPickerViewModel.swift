@@ -13,55 +13,60 @@ import ChatDTO
 import Combine
 
 public final class MentionListPickerViewModel: ObservableObject {
-    private let thread: Conversation
-    private var threadId: Int { thread.id ?? -1 }
+    private weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
+    private var threadId: Int { thread?.id ?? -1 }
     @Published public var text: String = ""
     public private(set) var mentionList: ContiguousArray<Participant> = .init()
     private var cancelable: Set<AnyCancellable> = []
+    private var searchText: String? = nil
+    @MainActor public var lazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let MENTION_PARTICIPANTS_KEY: String
 
-    public static func == (lhs: MentionListPickerViewModel, rhs: MentionListPickerViewModel) -> Bool {
-        rhs.thread.id == lhs.thread.id
+    public init() {
+       MENTION_PARTICIPANTS_KEY = "MENTION-PARTICIPANTS-KEY-\(objectId)"
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread)
-    }
-
-    public init(thread: Conversation) {
-        self.thread = thread
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         setupNotificationObservers()
     }
 
     private func setupNotificationObservers() {
         $text
             .debounce(for: 0.5, scheduler: RunLoop.main)
-            .sink { [weak self] newValue in
-            self?.searchForParticipantInMentioning(newValue)
-        }
-        .store(in: &cancelable)
+            .sink { newValue in
+                Task { [weak self] in
+                    await self?.searchForParticipantInMentioning(newValue)
+                }
+            }
+            .store(in: &cancelable)
 
         NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
-            .sink { [weak self] event in
-                self?.onParticipantsEvent(event)
+            .sink { event in
+                Task { [weak self] in
+                    await self?.onParticipantsEvent(event)
+                }
             }
             .store(in: &cancelable)
     }
 
-    public func searchForParticipantInMentioning(_ text: String) {
-        if thread.group == false || thread.group == nil { return }
+    @MainActor
+    public func searchForParticipantInMentioning(_ text: String) async {
+        if thread?.group == false || thread?.group == nil { return }
         /// remove the hidden RTL character for forcing the UITextView to write from right to left.
         let text = text.replacingOccurrences(of: "\u{200f}", with: "")
         if text.last == "@" {
             // Fetch some data to show if the user typed an @.
-            let req = ThreadParticipantRequest(threadId: threadId, count: 15)
-            RequestsManager.shared.append(prepend: "MentionParticipants", value: req)
-            ChatManager.activeInstance?.conversation.participant.get(req)
+            searchText = nil
+            lazyList.reset()
+            await getParticipants()
         } else if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
-            let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
-            let req = ThreadParticipantRequest(threadId: threadId, count: 15, name: rangeText)
-            RequestsManager.shared.append(prepend: "MentionParticipants", value: req)
-            ChatManager.activeInstance?.conversation.participant.get(req)
+            searchText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
+            lazyList.reset()
+            await getParticipants()
         } else {
             let mentionListWasFill = mentionList.count > 0
             mentionList = []
@@ -71,22 +76,46 @@ public final class MentionListPickerViewModel: ObservableObject {
         }
     }
 
-    func onParticipants(_ response: ChatResponse<[Participant]>) {
-        if !response.cache, response.pop(prepend: "MentionParticipants") != nil, let participants = response.result {
-            self.mentionList.removeAll()
-            self.mentionList = .init(participants)
+    @MainActor
+    func onParticipants(_ response: ChatResponse<[Participant]>) async {
+        /// We have to check threadId when forwarding messages to prevent the previous thread catch the result.
+        if !response.cache, response.subjectId == viewModel?.threadId, response.pop(prepend: MENTION_PARTICIPANTS_KEY) != nil, let participants = response.result {
+            if lazyList.offset == 0 {
+                self.mentionList.removeAll()
+                self.mentionList = .init(participants)
+            } else {
+                lazyList.setHasNext(response.hasNext)
+                self.mentionList.append(contentsOf: participants)
+            }
+            lazyList.setLoading(false)
             mentionList.removeAll(where: {$0.id == AppState.shared.user?.id})
             animateObjectWillChange()
         }
     }
 
-    public func onParticipantsEvent(_ event: ParticipantEventTypes) {
+    public func onParticipantsEvent(_ event: ParticipantEventTypes) async {
         switch event {
         case .participants(let response):
-            onParticipants(response)
+            await onParticipants(response)
         default:
             break
         }
+    }
+
+    @MainActor
+    private func getParticipants() async {
+        lazyList.setLoading(true)
+        let count = lazyList.count
+        let offset = lazyList.offset
+        let req = ThreadParticipantRequest(threadId: threadId, offset: offset, count: count, name: searchText)
+        RequestsManager.shared.append(prepend: MENTION_PARTICIPANTS_KEY, value: req)
+        ChatManager.activeInstance?.conversation.participant.get(req)
+    }
+
+    public func loadMore() async {
+        if await !lazyList.canLoadMore() { return }
+        await lazyList.prepareForLoadMore()
+        await getParticipants()
     }
 
     public func cancelAllObservers() {

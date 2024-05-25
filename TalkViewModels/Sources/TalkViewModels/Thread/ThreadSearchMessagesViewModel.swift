@@ -14,7 +14,9 @@ import TalkModels
 import Combine
 
 public final class ThreadSearchMessagesViewModel: ObservableObject {
-    private let threadId: Int
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
+    private var threadId: Int { thread?.id ?? -1 }
     @Published public private(set) var searchedMessages: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
     public var isInSearchMode: Bool = false
@@ -23,17 +25,15 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     @Published public var searchText: String = ""
     private var hasMore = true
     @Published public var isLoading = false
+    private var objectId = UUID().uuidString
+    private let SEARCH_KEY: String
 
-    public static func == (lhs: ThreadSearchMessagesViewModel, rhs: ThreadSearchMessagesViewModel) -> Bool {
-        rhs.threadId == lhs.threadId
+    public init(){
+        SEARCH_KEY = "SEARCH-\(objectId)"
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(threadId)
-    }
-
-    public init(threadId: Int) {
-        self.threadId = threadId
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         setupNotificationObservers()
     }
 
@@ -81,7 +81,7 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
         offset = 0
         hasMore = true
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, query: "\(text)")
-        RequestsManager.shared.append(prepend: "SEARCH", value: req, autoCancel: false)
+        RequestsManager.shared.append(prepend: SEARCH_KEY, value: req, autoCancel: false)
         ChatManager.activeInstance?.message.history(req)
     }
 
@@ -90,13 +90,13 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
             self.offset = offset + count
             isLoading = true
             let req = GetHistoryRequest(threadId: threadId, count: count, offset: offset, query: "\(searchText)")
-            RequestsManager.shared.append(prepend: "SEARCH", value: req, autoCancel: false)
+            RequestsManager.shared.append(prepend: SEARCH_KEY, value: req, autoCancel: false)
             ChatManager.activeInstance?.message.history(req)
         }
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {
-        if !response.cache, response.pop(prepend: "SEARCH") != nil {
+        if !response.cache, response.pop(prepend: SEARCH_KEY) != nil {
             isLoading = false
             response.result?.forEach { message in
                 if !(searchedMessages.contains(where: { $0.id == message.id })) {
@@ -120,7 +120,7 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     }
 
     private func onCancelTimer(key: String) {
-        if isLoading, key.contains("SEARCH") {
+        if isLoading, key.contains(SEARCH_KEY) {
             isLoading = false
             animateObjectWillChange()
         }

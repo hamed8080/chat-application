@@ -27,9 +27,13 @@ struct LinkView: View {
                         viewModel.loadMore()
                     }
                 }
-            MessageListLinkView()
-                .padding(.top, 8)
-                .environmentObject(viewModel)
+            if viewModel.isLoading || viewModel.messages.count > 0 {
+                MessageListLinkView()
+                    .padding(.top, 8)
+                    .environmentObject(viewModel)
+            } else {
+                EmptyResultViewInTabs()
+            }
         }
     }
 }

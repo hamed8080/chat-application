@@ -47,7 +47,7 @@ public struct ToastView<ContentView: View>: View {
                     }
                     HStack(spacing: 8) {
                         leadingView()
-                        Text(String(localized: .init(message)))
+                        Text(message)
                             .font(messageFont)
                             .fontWeight(.light)
                             .foregroundStyle(messageColor)

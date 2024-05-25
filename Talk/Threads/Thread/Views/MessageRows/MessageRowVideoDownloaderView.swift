@@ -81,7 +81,7 @@ final class MessageRowVideoDownloaderView: UIStackView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         let message = viewModel.message
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressButton.animate(to: progress, systemIconName: stateIcon())
@@ -89,7 +89,7 @@ final class MessageRowVideoDownloaderView: UIStackView {
             progressButton.removeProgress()
         }
 
-        if let fileSize = viewModel.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale)  {
+        if let fileSize = viewModel.calculatedMessage.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale)  {
             fileSizeLabel.text = fileSize
         }
 
@@ -97,8 +97,8 @@ final class MessageRowVideoDownloaderView: UIStackView {
             fileNameLabel.text = fileName
         }
 
-        let split = viewModel.fileMetaData?.file?.originalName?.split(separator: ".")
-        let ext = viewModel.fileMetaData?.file?.extension
+        let split = viewModel.calculatedMessage.fileMetaData?.file?.originalName?.split(separator: ".")
+        let ext = viewModel.calculatedMessage.fileMetaData?.file?.extension
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
         fileTypeLabel.text = extensionName

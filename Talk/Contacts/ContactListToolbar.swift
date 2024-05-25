@@ -44,9 +44,11 @@ struct ContactListToolbar: View {
                 AppState.shared.objectsContainer.searchVM.searchText = ""
                 isInSearchMode.toggle()
             } label: {
-                Text("General.cancel")
-                    .padding(.leading)
-                    .font(.iransansBody)
+                Image(systemName: "xmark")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(12)
+                    .frame(width: 38, height: 38)
                     .foregroundStyle(Color.App.toolbarButton)
             }
             .buttonStyle(.borderless)

@@ -30,7 +30,7 @@ struct TabButtonItem: View {
                     .foregroundColor(isSelected ? Color.App.accent : Color.App.iconSecondary)
             }
 
-            Text(String(localized: .init(title)))
+            Text(title)
                 .font(.iransansBoldCaption)
                 .foregroundColor(isSelected ? Color.App.accent : Color.App.iconSecondary)
 

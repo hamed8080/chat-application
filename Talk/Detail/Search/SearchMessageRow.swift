@@ -20,11 +20,11 @@ struct SearchMessageRow: View {
         Button {
             if let time = message.time, let messageId = message.id {
                 AppState.shared.objectsContainer.threadDetailVM.clear()
-                AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
+                AppState.shared.objectsContainer.navVM.remove()
                 AppState.shared.objectsContainer.navVM.popLastPath() /// For click on item search                
                 threadVM?.historyVM.moveToTime(time, messageId)
                 threadVM?.searchedMessagesViewModel.cancel()
-                threadVM?.animateObjectWillChange()
+//                threadVM?.animateObjectWillChange()
             }
         } label: {
             HStack {

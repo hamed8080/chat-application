@@ -12,30 +12,50 @@ import ChatModels
 
 extension ThreadsViewModel {
 
-    func registerNotifications() {
+    @MainActor
+    func setupObservers() async {
+        lazyList.objectWillChange.sink { [weak self] _ in
+            self?.animateObjectWillChange()
+        }
+        .store(in: &cancelable)
+        AppState.shared.$connectionStatus
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onConnectionStatusChanged(event)
+                }
+            }
+            .store(in: &cancelable)
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
-            .sink{ [weak self] event in
-                self?.onThreadEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onThreadEvent(event)
+                }
             }
             .store(in: &cancelable)
         NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
-            .sink{ [weak self] event in
-                self?.onMessageEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onMessageEvent(event)
+                }
             }
             .store(in: &cancelable)
 
         NotificationCenter.call.publisher(for: .call)
             .compactMap { $0.object as? CallEventTypes }
-            .sink{ [weak self] event in
-                self?.onCallEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onCallEvent(event)
+                }
             }
             .store(in: &cancelable)
         NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
-            .sink{ [weak self] event in
-                self?.onParticipantEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onParticipantEvent(event)
+                }
             }
             .store(in: &cancelable)
         NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
@@ -45,23 +65,18 @@ extension ThreadsViewModel {
                 }
             }
             .store(in: &cancelable)
-        $showUnreadConversations.sink { [weak self] newValue in
-            if newValue == true {
-                self?.getUnreadConversations()
-            } else if newValue == false {
-                self?.resetUnreadConversations()
-            }
-        }
-        .store(in: &cancelable)
         NotificationCenter.system.publisher(for: .system)
             .compactMap { $0.object as? SystemEventTypes }
-            .sink { [weak self] systemMessageEvent in
-                self?.onThreadSystemEvent(systemMessageEvent)
+            .sink { systemMessageEvent in
+                Task { [weak self] in
+                    await self?.onThreadSystemEvent(systemMessageEvent)
+                }
             }
             .store(in: &cancelable)
     }
 
-    func onThreadSystemEvent(_ event: SystemEventTypes) {
+    @MainActor
+    func onThreadSystemEvent(_ event: SystemEventTypes) async {
         switch event {
         case .systemMessage(let chatResponse):
             guard let result = chatResponse.result else { return }
@@ -73,48 +88,39 @@ extension ThreadsViewModel {
         }
     }
 
-    func onParticipantEvent(_ event: ParticipantEventTypes) {
+    @MainActor
+    func onParticipantEvent(_ event: ParticipantEventTypes) async {
         switch event {
         case .add(let chatResponse):
-            Task {
-                await onAddPrticipant(chatResponse)
-            }
+            await onAddPrticipant(chatResponse)
         case .deleted(let chatResponse):
-            onDeletePrticipant(chatResponse)
+            await onDeletePrticipant(chatResponse)
         default:
             break
         }
     }
 
-    
-    func onThreadEvent(_ event: ThreadEventTypes?) {
+    @MainActor
+    func onThreadEvent(_ event: ThreadEventTypes?) async {
         switch event {
         case .threads(let response):
             if !response.cache {
-                Task {
-                    if isInCacheMode {                        
-                        clear()
-                    }
-                    if response.pop(prepend: "GET-THREADS") == nil {
-                        await onThreads(response)
-                    }
-                    if response.pop(prepend: "GET-UNREAD-THREADS") == nil {
-                        await onUnreadThreads(response)
-                    }
-                    if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") == nil {
-                        await onNotActiveThreads(response)
-                    }
+                if isInCacheMode {
+                    await clear()
+                    log("Clear all SQLITE cached version of conversions")
                 }
-            } else if response.cache && AppState.shared.connectionStatus != .connected {
-                Task {
-                    isInCacheMode = true
+                if response.pop(prepend: GET_THREADS_KEY) != nil {
                     await onThreads(response)
                 }
+                if response.pop(prepend: GET_NOT_ACTIVE_THREADS_KEY) != nil {
+                    await onNotActiveThreads(response)
+                }
+            } else if response.cache && AppState.shared.connectionStatus != .connected {
+                isInCacheMode = true
+                await onThreads(response)
             }
         case .created(let response):
-            Task {
-                await onCreate(response)
-            }
+            await onCreate(response)
         case .deleted(let response):
             onDeleteThread(response)
         case let .lastMessageDeleted(response), let .lastMessageEdited(response):
@@ -125,8 +131,6 @@ extension ThreadsViewModel {
             if let thread = response.result {
                 updateThreadInfo(thread)
             }
-        case .updatedUnreadCount(let response):
-            setUnreadCount(response.result?.unreadCount, threadId: response.result?.threadId)
         case .mute(let response):
             onMuteThreadChanged(mute: true, threadId: response.result)
         case .unmute(let response):
@@ -136,7 +140,7 @@ extension ThreadsViewModel {
         case .spammed(let response):
             onSpam(response)
         case .unreadCount(let response):
-            onUnreadCounts(response)
+            await onUnreadCounts(response)
         case .pin(let response):
             onPin(response)
         case .unpin(let response):
@@ -152,7 +156,8 @@ extension ThreadsViewModel {
         }
     }
 
-    func onCallEvent(_ event: CallEventTypes) {
+    @MainActor
+    func onCallEvent(_ event: CallEventTypes) async {
         switch event {
         case let .callEnded(response):
             activeCallThreads.removeAll(where: { $0.callId == response?.result })
@@ -165,7 +170,8 @@ extension ThreadsViewModel {
         }
     }
 
-    func onMessageEvent(_ event: MessageEventTypes) {
+    @MainActor
+    func onMessageEvent(_ event: MessageEventTypes) async {
         switch event {
         case .new(let chatResponse):
             onNewMessage(chatResponse)
@@ -175,6 +181,10 @@ extension ThreadsViewModel {
             onSeen(response)
         case .deleted(let response):
             onMessageDeleted(response)
+        case .pin(let response):
+            onPinMessage(response)
+        case .unpin(let response):
+            onUNPinMessage(response)
         default:
             break
         }

@@ -19,8 +19,10 @@ public struct CustomTabView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             TabViewButtonsContainer(selectedTabIndex: $selectedTabIndex, tabs: tabs)
-            tabs[selectedTabIndex].view
-                .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .trailing)))
+            if tabs.indices.contains(selectedTabIndex) {
+                tabs[selectedTabIndex].view
+                    .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .trailing)))
+            }
         }
     }
 }
@@ -38,8 +40,10 @@ public struct CustomDetailTabView<T: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             tabButtons()
-            tabs[tabIndex].view
-                .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .trailing)))
+            if tabs.indices.contains(tabIndex) {
+                tabs[tabIndex].view
+                    .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .trailing)))
+            }
         }
     }
 }

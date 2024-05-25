@@ -26,8 +26,11 @@ public final class FoldersViewModel: ObservableObject {
     private var threadsVM: ThreadsViewModel { AppState.shared.objectsContainer.threadsVM }
     public var selectedFolder: Tag?
     public var threads: ContiguousArray<Conversation> = []
+    private var objectId = UUID().uuidString
+    private let CONVERSATION_INSIDE_FOLDER_KEY: String
 
     public init() {
+        CONVERSATION_INSIDE_FOLDER_KEY = "CONVERSATION-INSIDE-FOLDER-\(objectId)"
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink{ [weak self] event in
@@ -58,7 +61,7 @@ public final class FoldersViewModel: ObservableObject {
         if threadIds.count == 0 { return }
         isLoading = true
         let req = ThreadsRequest(threadIds: threadIds)
-        RequestsManager.shared.append(prepend: "CONVERSATION-INSIDE-FOLDER", value: req)
+        RequestsManager.shared.append(prepend: CONVERSATION_INSIDE_FOLDER_KEY, value: req)
         ChatManager.activeInstance?.conversation.get(req)
         animateObjectWillChange()
     }
@@ -73,7 +76,7 @@ public final class FoldersViewModel: ObservableObject {
     }
 
     private func onConversationInsideFolder(_ response: ChatResponse<[Conversation]>) {
-        if response.pop(prepend: "CONVERSATION-INSIDE-FOLDER") != nil {
+        if response.pop(prepend: CONVERSATION_INSIDE_FOLDER_KEY) != nil {
             threads.append(contentsOf: response.result ?? [])
             animateObjectWillChange()
         }

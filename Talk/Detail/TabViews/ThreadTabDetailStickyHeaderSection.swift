@@ -22,7 +22,7 @@ public struct ThreadTabDetailStickyHeaderSection: View {
 
     public var body: some View {
         HStack {
-            Text(String(localized: .init(header)))
+            Text(header)
                 .foregroundColor(Color.App.textSecondary)
                 .font(.iransansCaption)
             Spacer()

@@ -25,8 +25,11 @@ public final class ArchiveThreadsViewModel: ObservableObject {
     private var canLoadMore: Bool { hasNext && !isLoading }
     public var archives: ContiguousArray<Conversation> = []
     private var threadsVM: ThreadsViewModel { AppState.shared.objectsContainer.threadsVM }
+    private var objectId = UUID().uuidString
+    private let GET_ARCHIVES_KEY: String
 
     public init() {
+        GET_ARCHIVES_KEY = "GET-ARCHIVES-\(objectId)"
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink{ [weak self] event in
@@ -80,13 +83,13 @@ public final class ArchiveThreadsViewModel: ObservableObject {
     public func getArchivedThreads() {
         isLoading = true
         let req = ThreadsRequest(count: count, offset: offset, archived: true)
-        RequestsManager.shared.append(prepend: "GET-ARCHIVES", value: req)
+        RequestsManager.shared.append(prepend: GET_ARCHIVES_KEY, value: req)
         ChatManager.activeInstance?.conversation.get(req)
         animateObjectWillChange()
     }
 
     public func onArchives(_ response: ChatResponse<[Conversation]>) {
-        if !response.cache, let archives = response.result, response.pop(prepend: "GET-ARCHIVES") != nil {
+        if !response.cache, let archives = response.result, response.pop(prepend: GET_ARCHIVES_KEY) != nil {
             self.archives.append(contentsOf: archives.filter({$0.isArchive == true}))
         }
         isLoading = false

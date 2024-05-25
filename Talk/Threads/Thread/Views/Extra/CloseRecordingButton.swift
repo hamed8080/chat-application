@@ -39,22 +39,7 @@ struct CloseRecordingButton: View {
                 .shadow(color: .gray.opacity(0.4), radius: 2)
             }
             .environment(\.layoutDirection, .leftToRight)
+            .padding(EdgeInsets(top: 0, leading: viewModel.isRecording ? 20 : 8, bottom: 8, trailing: 0))
         }
-    }
-}
-
-struct CloseRecordingButton_Previews: PreviewProvider {
-    static var vm = ThreadViewModel(thread: .init(id: 1))
-    static var previews: some View {
-        ZStack {
-            CloseRecordingButton()
-                .environmentObject(vm)
-                .onAppear {
-                    vm.scrollVM.isAtBottomOfTheList = false
-                    vm.thread.unreadCount = 10
-                    vm.animateObjectWillChange()
-                }
-        }
-        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
     }
 }

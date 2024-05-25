@@ -24,30 +24,32 @@ public final class ThreadViewModel: Identifiable, Hashable {
     }
 
     // MARK: Stored Properties
-    public var thread: Conversation
+    public private(set) var thread: Conversation
     public var replyMessage: Message?
     @Published public var dismiss = false
     public var exportMessagesViewModel: ExportMessagesViewModel = .init()
-    public var unsentMessagesViewModel: ThreadUnsentMessagesViewModel
-    public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
-    public var searchedMessagesViewModel: ThreadSearchMessagesViewModel
+    public var unsentMessagesViewModel: ThreadUnsentMessagesViewModel = .init()
+    public var uploadMessagesViewModel: ThreadUploadMessagesViewModel = .init()
+    public var searchedMessagesViewModel: ThreadSearchMessagesViewModel = .init()
     public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel = .init()
-    public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel
-    public var participantsViewModel: ParticipantsViewModel
+    public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel = .init()
+    public var participantsViewModel: ParticipantsViewModel = .init()
     public var attachmentsViewModel: AttachmentsViewModel = .init()
-    public var mentionListPickerViewModel: MentionListPickerViewModel
-    public var sendContainerViewModel: SendContainerViewModel
+    public var mentionListPickerViewModel: MentionListPickerViewModel = .init()
+    public var sendContainerViewModel: SendContainerViewModel = .init()
     public var audioRecoderVM: AudioRecordingViewModel = .init()
     public var scrollVM: ThreadScrollingViewModel = .init()
-    public var historyVM: ThreadHistoryViewModel!
-    public var sendMessageViewModel: ThreadSendMessageViewModel!
-    public weak var threadsViewModel: ThreadsViewModel?
+    public var historyVM: ThreadHistoryViewModel = .init()
+    public var sendMessageViewModel: ThreadSendMessageViewModel = .init()
     public var participantsColorVM: ParticipantsColorViewModel = .init()
-    public var threadPinMessageViewModel: ThreadPinMessageViewModel
+    public var threadPinMessageViewModel: ThreadPinMessageViewModel = .init()
+    public var reactionViewModel: ThreadReactionViewModel = .init()
+    public var seenVM: HistorySeenViewModel = .init()
+    public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
     public var signalMessageText: String?
-    public var forwardMessage: Message?
+    public weak var forwardMessage: Message?
     var model: AppSettingsModel = .init()
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false
@@ -55,43 +57,52 @@ public final class ThreadViewModel: Identifiable, Hashable {
     public weak var delegate: ThreadViewDelegate?
 
     // MARK: Computed Properties
+    public var id: Int { threadId }
     public var threadId: Int { thread.id ?? 0 }
     public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }
     public var isSimulatedThared: Bool {
         AppState.shared.appStateNavigationModel.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
     }
-    public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
+    public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowSizes.avatarSize)
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
-            maxAllowedWidth = min(400, ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize))
+            maxAllowedWidth = min(400, ThreadViewModel.threadWidth - (38 + MessageRowSizes.avatarSize))
         }
     }
 
     // MARK: Initializer
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
-        self.unsentMessagesViewModel = .init(thread: thread)
-        self.uploadMessagesViewModel = .init(thread: thread)
-        self.unreadMentionsViewModel = .init(thread: thread)
-        self.mentionListPickerViewModel = .init(thread: thread)
-        self.sendContainerViewModel = .init(thread: thread)
-        self.searchedMessagesViewModel = .init(threadId: thread.id ?? -1)
-        self.threadPinMessageViewModel = ThreadPinMessageViewModel(thread: thread)
-        self.readOnly = readOnly
-        self.thread = thread
         self.threadsViewModel = threadsViewModel
-        self.participantsViewModel = ParticipantsViewModel(thread: thread)
-        self.historyVM = ThreadHistoryViewModel(threadViewModel: self)
-        self.sendMessageViewModel = ThreadSendMessageViewModel(threadVM: self)
-        scrollVM.threadVM = self
+        self.thread = thread
+        self.readOnly = readOnly
+        setup()
+    }
+
+    public func setup() {
+        seenVM.setup(viewModel: self)
+        unreadMentionsViewModel.setup(viewModel: self)
+        mentionListPickerViewModel.setup(viewModel: self)
+        sendContainerViewModel.setup(viewModel: self)
+        searchedMessagesViewModel.setup(viewModel: self)
+        threadPinMessageViewModel.setup(viewModel: self)
+        participantsViewModel.setup(viewModel: self)
+        historyVM.setup(viewModel: self)
+        sendMessageViewModel.setup(viewModel: self)
+        scrollVM.setup(viewModel: self)
+        unsentMessagesViewModel.setup(viewModel: self)
+        selectedMessagesViewModel.setup(viewModel: self)
+        uploadMessagesViewModel.setup(viewModel: self)
+        exportMessagesViewModel.setup(viewModel: self)
+        reactionViewModel.setup(viewModel: self)
+        attachmentsViewModel.setup(viewModel: self)
         registerNotifications()
         setAppSettingsModel()
-        selectedMessagesViewModel.threadVM = self
-        sendContainerViewModel.threadVM = self
-        uploadMessagesViewModel.threadVM = self
-        unsentMessagesViewModel.threadVM = self
-        exportMessagesViewModel.thread = thread
-        threadPinMessageViewModel.historyVM = historyVM
+    }
+
+    public func updateConversation(_ conversation: Conversation) {
+        self.thread.updateValues(conversation)
+        self.thread.animateObjectWillChange()
     }
 
     // MARK: Actions
@@ -126,7 +137,6 @@ public final class ThreadViewModel: Identifiable, Hashable {
                 DispatchQueue.main.async {  [weak self] in
                     let item = DropItem(data: data, name: name, iconName: iconName, ext: ext)
                     self?.attachmentsViewModel.append(attachments: [.init(type: .drop, request: item)])
-                    self?.animateObjectWillChange()
                 }
             }
         }
@@ -135,35 +145,31 @@ public final class ThreadViewModel: Identifiable, Hashable {
     public func setupRecording() {
         audioRecoderVM.threadViewModel = self
         audioRecoderVM.toggle()
-        animateObjectWillChange()
     }
 
     public func setupExportMessage(startDate: Date, endDate: Date) {
         exportMessagesViewModel.objectWillChange
             .sink { [weak self] in
-                self?.animateObjectWillChange()
+//                self?.animateObjectWillChange()
             }
             .store(in: &cancelable)
         exportMessagesViewModel.exportChats(startDate: startDate, endDate: endDate)
-        animateObjectWillChange()
     }
 
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.
     private func setUnreadCount(_ newCount: Int?) {
         if newCount ?? 0 <= thread.unreadCount ?? 0 {
             thread.unreadCount = newCount
-            animateObjectWillChange()
         }
     }
 
     public func moveToFirstUnreadMessage() {
         if let unreadMessage = unreadMentionsViewModel.unreadMentions.first, let time = unreadMessage.time {
-            historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true)
+            historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true, moveToBottom: true)
             unreadMentionsViewModel.setAsRead(id: unreadMessage.id)
             if unreadMentionsViewModel.unreadMentions.count == 0 {
                 thread.mentioned = false
                 thread.animateObjectWillChange()
-                animateObjectWillChange()
             }
         }
     }
@@ -180,9 +186,7 @@ public final class ThreadViewModel: Identifiable, Hashable {
         case .lastMessageDeleted(let response), .lastMessageEdited(let response):
             if let thread = response.result {
                 onLastMessageChanged(thread)
-            }
-        case .updatedUnreadCount(let response):
-            onUnreadCount(response)
+            }        
         case .deleted(let response):
             onDeleteThread(response)
         case .userRemoveFormThread(let response):
@@ -212,7 +216,6 @@ public final class ThreadViewModel: Identifiable, Hashable {
             dismiss = true
         } else {
             thread.participantCount = (thread.participantCount ?? 0) - 1
-            animateObjectWillChange()
         }
     }
 
@@ -225,7 +228,6 @@ public final class ThreadViewModel: Identifiable, Hashable {
     private func onUnreadCount(_ response: ChatResponse<UnreadCount>) {
         if threadId == response.result?.threadId {
             setUnreadCount(response.result?.unreadCount)
-            animateObjectWillChange()
         }
     }
 
@@ -240,7 +242,6 @@ public final class ThreadViewModel: Identifiable, Hashable {
             self.thread.lastMessage = thread.lastMessage
             self.thread.lastMessageVO = thread.lastMessageVO
             setUnreadCount(thread.unreadCount)
-            animateObjectWillChange()
         }
     }
 
@@ -273,8 +274,9 @@ public final class ThreadViewModel: Identifiable, Hashable {
         participantsViewModel.cancelAllObservers()
         mentionListPickerViewModel.cancelAllObservers()
         sendContainerViewModel.cancelAllObservers()
-        historyVM.cancelAllObservers()
+        historyVM.cancel()
         threadPinMessageViewModel.cancelAllObservers()
+//        scrollVM.cancelAllObservers()
     }
 
     private func registerNotifications() {
@@ -345,7 +347,7 @@ public final class ThreadViewModel: Identifiable, Hashable {
 
     public func onDragged(translation: CGSize, startLocation: CGPoint) {
         scrollVM.cancelTask()
-        scrollVM.isProgramaticallyScroll = false
+//        scrollVM.setProgramaticallyScrollingState(newState: false)
         scrollVM.scrollingUP = translation.height > 10
         scrollVM.animateObjectWillChange()
         let isSwipeEdge = Language.isRTL ? (startLocation.x > ThreadViewModel.threadWidth - 20) : startLocation.x < 20

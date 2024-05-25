@@ -39,12 +39,14 @@ struct MemberView: View {
         .animation(.easeInOut, value: viewModel.participants.count)
         .animation(.easeInOut, value: viewModel.searchedParticipants.count)
         .animation(.easeInOut, value: viewModel.searchText)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .ignoresSafeArea(.all)
         .padding(.bottom)
         .onAppear {
             if viewModel.participants.count == 0 {
-                viewModel.getParticipants()
+                Task {
+                    await viewModel.getParticipants()
+                }
             }
         }
     }
@@ -76,7 +78,9 @@ struct ParticipantRowContainer: View {
             }
             .onAppear {
                 if viewModel.participants.last == participant {
-                    viewModel.loadMore()
+                    Task {
+                        await viewModel.loadMore()
+                    }
                 }
             }
             .onTapGesture {
@@ -92,21 +96,21 @@ struct ParticipantRowContainer: View {
             .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 0) {
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == false {
-                        ContextMenuButton(title: "Participant.addAdminAccess", image: "person.crop.circle.badge.plus") {
+                        ContextMenuButton(title: "Participant.addAdminAccess".bundleLocalized(), image: "person.crop.circle.badge.plus") {
                             viewModel.makeAdmin(participant)
                             showPopover.toggle()
                         }
                     }
 
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == true {
-                        ContextMenuButton(title: "Participant.removeAdminAccess", image: "person.crop.circle.badge.minus") {
+                        ContextMenuButton(title: "Participant.removeAdminAccess".bundleLocalized(), image: "person.crop.circle.badge.minus") {
                             viewModel.removeAdminRole(participant)
                             showPopover.toggle()
                         }
                     }
 
                     if !isMe, viewModel.thread?.admin == true {
-                        ContextMenuButton(title: "General.delete", image: "trash") {
+                        ContextMenuButton(title: "General.delete".bundleLocalized(), image: "trash") {
                             let dialog = AnyView(
                                 DeleteParticipantDialog(participant: participant)
                                     .environmentObject(viewModel)
@@ -181,7 +185,7 @@ struct ParticipantSearchView: View {
                     .scaledToFit()
                     .foregroundStyle(Color.App.textSecondary)
                     .frame(width: 16, height: 16)
-                TextField("General.searchHere", text: $viewModel.searchText)
+                TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchText)
                     .frame(minWidth: 0, minHeight: 48)
                     .font(.iransansBody)
             }
@@ -191,7 +195,7 @@ struct ParticipantSearchView: View {
                 showPopover.toggle()
             } label: {
                 HStack {
-                    Text(String(localized: .init(viewModel.searchType.rawValue)))
+                    Text(viewModel.searchType.rawValue)
                         .font(.iransansBoldCaption3)
                         .foregroundColor(Color.App.textSecondary)
                     Image(systemName: "chevron.down")
@@ -211,7 +215,7 @@ struct ParticipantSearchView: View {
                                 showPopover.toggle()
                             }
                         } label: {
-                            Text(String(localized: .init(item.rawValue)))
+                            Text(item.rawValue)
                                 .font(.iransansBoldCaption3)
                                 .foregroundColor(Color.App.textSecondary)
                         }
@@ -230,14 +234,11 @@ struct ParticipantSearchView: View {
 
 struct MemberView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = ParticipantsViewModel(thread: MockData.thread)
+        let viewModel = ParticipantsViewModel()
         List {
             MemberView()
         }
         .listStyle(.plain)
         .environmentObject(viewModel)
-        .onAppear {
-            viewModel.appendParticipants(participants: MockData.generateParticipants())
-        }
     }
 }

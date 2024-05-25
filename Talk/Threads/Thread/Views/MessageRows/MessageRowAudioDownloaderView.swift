@@ -87,7 +87,7 @@ final class MessageRowAudioDownloaderView: UIStackView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         self.viewModel = viewModel
         let message = viewModel.message
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
@@ -96,7 +96,7 @@ final class MessageRowAudioDownloaderView: UIStackView {
             progressButton.removeProgress()
         }
 
-        if let fileSize = viewModel.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale)  {
+        if let fileSize = viewModel.calculatedMessage.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale)  {
             fileSizeLabel.text = fileSize
         }
 
@@ -104,8 +104,8 @@ final class MessageRowAudioDownloaderView: UIStackView {
             fileNameLabel.text = fileName
         }
 
-        let split = viewModel.fileMetaData?.file?.originalName?.split(separator: ".")
-        let ext = viewModel.fileMetaData?.file?.extension
+        let split = viewModel.calculatedMessage.fileMetaData?.file?.originalName?.split(separator: ".")
+        let ext = viewModel.calculatedMessage.fileMetaData?.file?.extension
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
         fileTypeLabel.text = extensionName
@@ -140,11 +140,13 @@ final class MessageRowAudioDownloaderView: UIStackView {
 
     private func togglePlaying(viewModel: MessageRowViewModel) {
         if let fileURL = viewModel.downloadFileVM?.fileURL {
+            let mtd = viewModel.calculatedMessage.fileMetaData
+            let file = mtd?.file
             try? AppState.shared.objectsContainer.audioPlayerVM.setup(message: viewModel.message,
                                fileURL: fileURL,
-                               ext: viewModel.fileMetaData?.file?.mimeType?.ext,
-                               title: viewModel.fileMetaData?.file?.originalName ?? viewModel.fileMetaData?.name ?? "",
-                               subtitle: viewModel.fileMetaData?.file?.originalName ?? "")
+                               ext: file?.mimeType?.ext,
+                               title: file?.originalName ?? mtd?.name ?? "",
+                               subtitle: file?.originalName ?? "")
             AppState.shared.objectsContainer.audioPlayerVM.toggle()
         }
     }

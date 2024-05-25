@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import TalkModels
+
 extension View {
     @ViewBuilder
     func compatibleConfirmationDialog(_ isPresented: Binding<Bool>, message: String? = nil, title: String? = nil, _ buttons: [DialogButton]) -> some View {
@@ -44,11 +46,16 @@ struct DialogButton: Hashable, Identifiable {
     var id = UUID().uuidString
 }
 
-
 public extension UIStackView {
     func addArrangedSubviews(_ views: [UIView]) {
         views.forEach { view in
             addArrangedSubview(view)
         }
+    }
+}
+
+public extension Text {
+    init(_ key: String) {
+        self.init(.init(key), tableName: nil, bundle: Language.preferedBundle, comment: "")
     }
 }

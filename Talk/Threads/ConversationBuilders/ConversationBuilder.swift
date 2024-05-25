@@ -10,6 +10,7 @@ import TalkViewModels
 import TalkUI
 import PhotosUI
 import ChatModels
+import TalkModels
 
 struct ConversationBuilder: View {
     @EnvironmentObject var viewModel: ConversationBuilderViewModel
@@ -17,43 +18,52 @@ struct ConversationBuilder: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                if viewModel.searchedContacts.count > 0 {
-                    StickyHeaderSection(header: "Contacts.searched")
-                        .listRowInsets(.zero)
-                        .listRowSeparator(.hidden)
-                    ForEach(viewModel.searchedContacts) { contact in
-                        BuilderContactRowContainer(contact: contact, isSearchRow: true)
-                    }
-                    .padding()
-                    .listRowInsets(.zero)
-                }
-
-                StickyHeaderSection(header: "Contacts.selectContacts")
-                    .listRowInsets(.zero)
-                    .listRowSeparator(.hidden)
-                ForEach(viewModel.contacts) { contact in
-                    BuilderContactRowContainer(contact: contact, isSearchRow: false)
-                        .onAppear {
-                            if viewModel.contacts.last == contact {
-                                viewModel.loadMore()
+            VStack(spacing: 0) {
+                SelectedContactsView()
+                    .padding(.horizontal, 8)
+                    .background(Color.App.bgPrimary)
+                ScrollViewReader { proxy in
+                    List {
+                        if viewModel.searchedContacts.count > 0 {
+                            StickyHeaderSection(header: "Contacts.searched")
+                                .listRowInsets(.zero)
+                                .listRowSeparator(.hidden)
+                            ForEach(viewModel.searchedContacts) { contact in
+                                BuilderContactRowContainer(contact: contact, isSearchRow: true)
                             }
+                            .padding()
+                            .listRowInsets(.zero)
                         }
+
+                        StickyHeaderSection(header: "Contacts.selectContacts")
+                            .listRowInsets(.zero)
+                            .listRowSeparator(.hidden)
+                        ForEach(viewModel.contacts) { contact in
+                            BuilderContactRowContainer(contact: contact, isSearchRow: false)
+                                .onAppear {
+                                    Task {
+                                        if viewModel.contacts.last == contact {
+                                            await viewModel.loadMore()
+                                        }
+                                    }
+                                }
+                        }
+                        .onDelete(perform: viewModel.delete)
+                        .padding()
+                        .listRowInsets(.zero)
+                    }
+                    .listStyle(.plain)
+                    .onAppear {
+                        viewModel.builderScrollProxy = proxy
+                    }
                 }
-                .onDelete(perform: viewModel.delete)
-                .padding()
-                .listRowInsets(.zero)
             }
-            .listStyle(.plain)
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    TextField("General.searchHere", text: $viewModel.searchContactString)
+                    TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchContactString)
                         .frame(height: 48)
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
-                    SelectedContactsView()
-                        .padding(.horizontal, 8)
-                        .frame(height: 48)
                 }
                 .background(.ultraThinMaterial)
             }
@@ -74,6 +84,7 @@ struct ConversationBuilder: View {
         .animation(.easeInOut, value: viewModel.isCreateLoading)
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isCreateLoading)
+                .id(UUID())
         }
         .onAppear {
             /// We use BuilderContactRowContainer view because it is essential to force the ineer contactRow View to show radio buttons.
@@ -85,23 +96,50 @@ struct ConversationBuilder: View {
     }
 
     private var enabeleButton: Bool {
-        viewModel.selectedContacts.count > 1 && !viewModel.isLoading
+        viewModel.selectedContacts.count > 1 && !viewModel.lazyList.isLoading
     }
 }
 
 struct SelectedContactsView: View {
     @EnvironmentObject var viewModel: ConversationBuilderViewModel
+    @State private var width: CGFloat = 200
 
     var body: some View {
-        if viewModel.selectedContacts.count > 0 {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(viewModel.selectedContacts) { contact in
-                        SelectedContact(viewModel: viewModel, contact: contact)
-                    }
+        ScrollView(.vertical, showsIndicators: false) {
+            LazyVGrid(columns: columns, alignment: .center) {
+                ForEach(viewModel.selectedContacts) { contact in
+                    SelectedContact(viewModel: viewModel, contact: contact)
                 }
             }
         }
+        .padding(.vertical, viewModel.selectedContacts.count == 0 ? 0 : 4 )
+        .background(frameReader)
+        .frame(height: height)
+        .clipped()
+    }
+
+    private var frameReader: some View {
+        GeometryReader { reader in
+            Color.clear.onAppear {
+                width = reader.size.width
+                print("width offf:\(width)_")
+            }
+        }
+    }
+
+    private var height: CGFloat {
+        if viewModel.selectedContacts.count == 0 { return 0 }
+        let MAX: CGFloat = 126
+        let rows: CGFloat = ceil(CGFloat(viewModel.selectedContacts.count) / CGFloat(2))
+        if rows >= 4 { return MAX }
+        return max(48, rows * 42)
+    }
+
+    private var columns: Array<GridItem> {
+        let numberOfColumns = width / 2
+        let flexible = GridItem.Size.flexible(minimum: numberOfColumns, maximum: numberOfColumns)
+        let item = GridItem(flexible,spacing: 8)
+        return Array(repeating: item, count: 2)
     }
 }
 
@@ -109,40 +147,51 @@ struct SelectedContactsView: View {
 struct EditCreatedConversationDetail: View {
     @EnvironmentObject var viewModel: ConversationBuilderViewModel
     @State var showImagePicker = false
+    @FocusState private var focused: FocusFields?
+
+    private enum FocusFields: Hashable {
+        case title
+    }
 
     var body: some View {
         List {
             HStack {
                 imagePickerButton
-                TextField(viewModel.createConversationType == .normal ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName" , text: $viewModel.conversationTitle)
-                    .textContentType(.name)
-                    .padding()
-                    .font(.iransansBody)
-                    .applyAppTextfieldStyle(innerBGColor: Color.clear, error: viewModel.showTitleError ? "ConversationBuilder.atLeatsEnterTwoCharacter" : nil)
+                titleTextField
             }
             .frame(height: 88)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
-            
+
             StickyHeaderSection(header: "", height: 10)
                 .listRowInsets(.zero)
                 .listRowSeparator(.hidden)
 
             let type = viewModel.createConversationType
-            let isChannel = type == .channel || type == .publicChannel
-            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
-            let localizedPublic = String(localized: .init("Thread.public"))
+            let isChannel = type?.isChannelType == true
+            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"), bundle: Language.preferedBundle)
+            let localizedPublic = String(localized: .init("Thread.public"), bundle: Language.preferedBundle)
 
-            Toggle(isOn: $viewModel.isPublic) {
+
+            HStack(spacing: 8) {
                 Text(String(format: localizedPublic, typeName))
+                    .foregroundColor(Color.App.textPrimary)
+                    .lineLimit(1)
+                    .layoutPriority(1)
+                Spacer()
+                Toggle("", isOn: $viewModel.isPublic)
+                    .tint(Color.App.accent)
+                    .scaleEffect(x: 0.8, y: 0.8, anchor: .center)
+                    .offset(x: 8)
             }
-            .toggleStyle(MyToggleStyle())
+            .padding(.leading)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
 
             Section {
                 ForEach(viewModel.selectedContacts) { contact in
-                    ContactRow(isInSelectionMode: .constant(false), contact: contact)
+                    ContactRow(isInSelectionMode: .constant(false))
+                        .environmentObject(contact)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.dividerPrimary)
                 }
@@ -164,7 +213,7 @@ struct EditCreatedConversationDetail: View {
                 .foregroundStyle(Color.App.accent)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
+            SubmitBottomButton(text: viewModel.createConversationType?.isGroupType == true ? "Contacts.createGroup" : "Contacts.createChannel",
                                enableButton: .constant(!isLoading),
                                isLoading: .constant(isLoading))
             {
@@ -172,7 +221,8 @@ struct EditCreatedConversationDetail: View {
             }
         }
         .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.isLoading)
+            ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+                .id(UUID())
         }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(sourceType: .photoLibrary) { image, assestResources in
@@ -198,6 +248,19 @@ struct EditCreatedConversationDetail: View {
             imagePickerButtonView
         }
         .buttonStyle(.borderless)
+    }
+
+    @ViewBuilder
+    private var titleTextField: some View {
+        let key = viewModel.createConversationType?.isGroupType == true ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName"
+        let error = viewModel.showTitleError ? "ConversationBuilder.atLeatsEnterTwoCharacter" : nil
+        TextField(key.bundleLocalized(), text: $viewModel.conversationTitle)
+            .focused($focused, equals: .title)
+            .font(.iransansBody)
+            .padding()
+            .applyAppTextfieldStyle(topPlaceholder: "", error: error, isFocused: focused == .title) {
+                focused = .title
+            }
     }
 
     private var imagePickerButtonView: some View {
@@ -262,21 +325,25 @@ struct BuilderContactRowContainer: View {
 
     var body: some View {
         ‌BuilderContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
-            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)\(contact.blocked == true ? "Blocked" : "UnBlocked")")
+            .id("\(isSearchRow ? "SearchRow-" : "Normal-")\(contact.id ?? 0)")
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
             .onAppear {
-                if viewModel.contacts.last == contact {
-                    viewModel.loadMore()
+                Task {
+                    if viewModel.contacts.last == contact {
+                        await viewModel.loadMore()
+                    }
                 }
             }
             .onTapGesture {
-                if viewModel.isInSelectionMode {
-                    viewModel.toggleSelectedContact(contact: contact)
-                } else {
-                    viewModel.clear()
-                    AppState.shared.openThread(contact: contact)
+                Task {
+                    if viewModel.isInSelectionMode {
+                        viewModel.toggleSelectedContact(contact: contact)
+                    } else {
+                        await viewModel.clear()
+                        AppState.shared.openThread(contact: contact)
+                    }
                 }
             }
     }
@@ -290,6 +357,8 @@ struct ‌BuilderContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
+                BuilderContactRowRadioButton(contact: contact)
+                    .padding(.trailing, isInSelectionMode ? 8 : 0)
                 let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: String.splitedCharacter(contact.firstName ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config))
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
@@ -306,7 +375,7 @@ struct ‌BuilderContactRow: View {
                         .font(.iransansBoldBody)
                         .foregroundColor(Color.App.textPrimary)
 //                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
-//                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+//                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"), bundle: Language.preferedBundle)
 //                        let time = String(format: lastVisitedLabel, notSeenDuration)
 //                        Text(time)
 //                            .padding(.leading, 16)
@@ -321,7 +390,6 @@ struct ‌BuilderContactRow: View {
                         .foregroundColor(Color.App.red)
                         .padding(.trailing, 4)
                 }
-                BuilderContactRowRadioButton(contact: contact)
             }
         }
         .contentShape(Rectangle())

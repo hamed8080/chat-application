@@ -23,9 +23,11 @@ struct ThreadsSheetFactoryView: View {
             }
         case .addParticipant:
             AddParticipantsToThreadView() { contacts in
-                viewModel.addParticipantsToThread(contacts)
-                viewModel.sheetType = nil
-            }      
+                Task { @MainActor in
+                    await viewModel.addParticipantsToThread(contacts)
+                    viewModel.sheetType = nil
+                }
+            }
         case .none:
             Text("Not implemented a sheet type!")
         }

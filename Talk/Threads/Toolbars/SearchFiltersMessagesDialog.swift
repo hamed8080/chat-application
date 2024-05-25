@@ -12,7 +12,7 @@ import SwiftUI
 import TalkUI
 
 struct SearchFiltersMessagesDialog: View {
-    @EnvironmentObject var viewModel: ThreadsViewModel
+    @EnvironmentObject var viewModel: ThreadsSearchViewModel
     @State private var showUnreadConversationToggle: Bool = false
 
     var body: some View {
@@ -24,16 +24,6 @@ struct SearchFiltersMessagesDialog: View {
             }
             unreadToggle
             HStack {
-                Button {
-                    withAnimation {
-                        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-                    }
-                } label: {
-                    Text("General.cancel")
-                        .foregroundStyle(Color.App.textPlaceholder)
-                        .font(.iransansBody)
-                        .frame(minWidth: 48, minHeight: 48)
-                }
 
                 Button {
                     withAnimation {
@@ -45,6 +35,19 @@ struct SearchFiltersMessagesDialog: View {
                         .foregroundStyle(Color.App.accent)
                         .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
+                }
+
+                Button {
+                    withAnimation {
+                        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
+                    }
+                } label: {
+                    Text("General.cancel")
+                        .foregroundStyle(Color.App.textPlaceholder)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
                 }
             }
         }
@@ -52,7 +55,7 @@ struct SearchFiltersMessagesDialog: View {
         .padding(EdgeInsets(top: 16, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
         .onAppear {
-           showUnreadConversationToggle = viewModel.showUnreadConversations == true
+            showUnreadConversationToggle = viewModel.showUnreadConversations == true
         }
     }
 
@@ -67,12 +70,13 @@ struct SearchFiltersMessagesDialog: View {
                 .foregroundColor(Color.App.textPrimary)
                 .lineLimit(1)
                 .layoutPriority(1)
+            Spacer()
             Toggle("", isOn: $showUnreadConversationToggle)
+                .tint(Color.App.accent)
                 .scaleEffect(x: 0.8, y: 0.8, anchor: .center)
-                .offset(x: -12)
+                .offset(x: 8)
         }
-        .padding(.horizontal)
-        .toggleStyle(MyToggleStyle())
+        .padding(.leading)
     }
 }
 

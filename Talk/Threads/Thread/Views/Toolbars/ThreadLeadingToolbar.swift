@@ -24,7 +24,7 @@ struct ThreadLeadingToolbar: View {
             .foregroundStyle(Color.App.toolbarButton)
         }
 
-        NavigationBackButton {
+        NavigationBackButton(automaticDismiss: false) {
             AppState.shared.appStateNavigationModel = .init()
             AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.thread.id)
         }

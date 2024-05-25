@@ -36,6 +36,7 @@ struct ThreadSearchList: View {
             ZStack {
                 if viewModel.isLoading {
                     ListLoadingView(isLoading: $viewModel.isLoading)
+                        .id(UUID())
                 } else if viewModel.isInSearchMode {
                     Text("General.nothingFound")
                         .font(.iransansTitle)
@@ -45,24 +46,5 @@ struct ThreadSearchList: View {
             .background(Color.App.bgPrimary.ignoresSafeArea())
             .transition(.opacity)
         }
-    }
-}
-
-struct ThreadSearchList_Previews: PreviewProvider {
-    static var searchMessageText: Binding<String> {
-        Binding(get: { "Hello" }, set: { _ in })
-    }
-
-    static var vm: ThreadViewModel {
-        let vm = ThreadViewModel(thread: Conversation())
-//        vm.searchedMessages = MockData.generateMessages(count: 15)
-        vm.objectWillChange.send()
-        return vm
-    }
-
-    static var previews: some View {
-        ThreadSearchList(threadVM: vm)
-            .previewDisplayName("ThreadSearchList")
-            .environmentObject(vm)
     }
 }

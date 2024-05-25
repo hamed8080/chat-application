@@ -38,10 +38,17 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     public var dismiss: Bool = false
     public var thread: Conversation { threadVM?.thread ?? .init() }
     @Published public var adminCounts: Int = 0
+    private var objectId = UUID().uuidString
+    private let EDIT_GROUP_KEY: String
+    private let CHANGE_TO_PUBLIC_KEY: String
+    private let EDIT_GROUP_ADMINS_KEY: String
 
     public init(threadVM: ThreadViewModel?) {
+        EDIT_GROUP_KEY = "EDIT-GROUP-\(objectId)"
+        CHANGE_TO_PUBLIC_KEY = "CHANGE-TO-PUBLIC-\(objectId)"
+        EDIT_GROUP_ADMINS_KEY = "EDIT-GROUP-ADMINS-\(objectId)"
         self.threadVM = threadVM
-        editTitle = thread.title ?? ""
+        editTitle = thread.title?.replacingOccurrences(of: NSRegularExpression.emojiRegEx, with: "\\\\u{$1}", options: .regularExpression) ?? ""
         threadDescription = thread.description ?? ""
         isPublic = thread.type?.isPrivate == false
         registerObservers()
@@ -111,18 +118,18 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
             switchPublicType()
         }
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
-        RequestsManager.shared.append(prepend: "EditGroup", value: req, autoCancel: false)
+        RequestsManager.shared.append(prepend: EDIT_GROUP_KEY, value: req, autoCancel: false)
         ChatManager.activeInstance?.conversation.updateInfo(req)
     }
 
     public func onEditGroup(_ response: ChatResponse<Conversation>) {
-        if response.contains(prepend: "EditGroup") {
+        if response.contains(prepend: EDIT_GROUP_KEY) {
             image = nil
             isLoading = false
             uploadProfileUniqueId = nil
             uploadProfileProgress = nil
             dismiss = true
-            threadVM?.animateObjectWillChange()
+//            threadVM?.animateObjectWillChange()
         }
     }
 
@@ -175,7 +182,7 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
         self.thread.type = response.result?.type
         isPublic = thread.type?.isPrivate == false
-        if let req = response.pop(prepend: "CHANGE-TO-PUBLIC") as? ChangeThreadTypeRequest {
+        if let req = response.pop(prepend: CHANGE_TO_PUBLIC_KEY) as? ChangeThreadTypeRequest {
             thread.uniqueName = req.uniqueName
         }
         animateObjectWillChange()
@@ -184,12 +191,12 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     public func getAdminsCount() {
         guard let threadId = thread.id else { return }
         let req = ThreadParticipantRequest(request: .init(threadId: threadId, count: 100), admin: true)
-        RequestsManager.shared.append(prepend: "Edit-Group-Admins", value: req)
+        RequestsManager.shared.append(prepend: EDIT_GROUP_ADMINS_KEY, value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
     private func onAdmins(_ response: ChatResponse<[Participant]>) {
-        if !response.cache, response.pop(prepend: "Edit-Group-Admins") != nil {
+        if !response.cache, response.pop(prepend: EDIT_GROUP_ADMINS_KEY) != nil {
             adminCounts = response.result?.count ?? 0
         }
     }

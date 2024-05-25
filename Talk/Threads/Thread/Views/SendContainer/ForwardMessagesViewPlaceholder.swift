@@ -99,7 +99,7 @@ public final class ForwardMessagePlaceholderView: UIStackView {
             isHidden = true
             AppState.shared.appStateNavigationModel = .init()
             viewModel.selectedMessagesViewModel.clearSelection()
-            viewModel.animateObjectWillChange()
+//            viewModel.animateObjectWillChange()
         }
     }
 }

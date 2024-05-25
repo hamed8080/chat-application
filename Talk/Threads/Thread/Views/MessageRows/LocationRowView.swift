@@ -77,8 +77,6 @@ final class LocationRowView: UIImageView {
         if viewModel.isInCache {
             viewModel.state = .completed
             viewModel.animateObjectWillChange()
-        } else {
-            viewModel.startDownload()
         }
     }
 }

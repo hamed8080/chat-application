@@ -38,7 +38,7 @@ struct SelectedContact: View {
                 Image(systemName: "xmark")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 14, height: 14)
+                    .frame(width: 16, height: 16)
                     .foregroundStyle(Color.App.white)
                     .contentShape(Rectangle())
             }
@@ -51,16 +51,16 @@ struct SelectedContact: View {
             ImageLoaderView(imageLoader: .init(config: config), textFont: .iransansBoldCaption2)
                 .id("\(contact.image ?? "")\(contact.id ?? 0)")
                 .foregroundColor(Color.App.textPrimary)
-                .frame(width: 18, height: 18)
+                .frame(width: 22, height: 22)
                 .background(Color.App.color1.opacity(0.4))
-                .clipShape(RoundedRectangle(cornerRadius:(12)))
+                .clipShape(RoundedRectangle(cornerRadius:(14)))
         }
     }
 
     var userName: some View {
         Text(verbatim: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
             .lineLimit(1)
-            .font(.iransansCaption2)
+            .font(.iransansSubheadline)
             .foregroundColor(isSelectedToDelete ? Color.App.white : Color.App.textPrimary)
     }
 }

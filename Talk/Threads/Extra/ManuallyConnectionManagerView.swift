@@ -10,6 +10,7 @@ import TalkUI
 import Chat
 import TalkViewModels
 import Logger
+import TalkModels
 
 struct ManuallyConnectionManagerView: View {
     @FocusState var isFocused
@@ -18,7 +19,7 @@ struct ManuallyConnectionManagerView: View {
 
     var body: some View {
         List {
-            TextField("token", text: $token)
+            TextField("token".bundleLocalized(), text: $token)
                 .focused($isFocused)
                 .keyboardType(.phonePad)
                 .font(.iransansBody)
@@ -29,16 +30,14 @@ struct ManuallyConnectionManagerView: View {
             Toggle(isOn: $recreate) {
                 Label("Recreate", systemImage: "repeat")
             }
-            .toggleStyle(MyToggleStyle())
+            .tint(Color.App.accent)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack {
                 SubmitBottomButton(text: "Refresh Token", color: Color.App.red) {
-                    Task {
-                        let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in ManuallyConnectionManagerView method", level: .error, type: .sent, userInfo: nil)
-                        NotificationCenter.logs.post(name: .logs, object: log)
-                        await TokenManager.shared.getNewTokenWithRefreshToken()
-                    }
+                    let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in ManuallyConnectionManagerView method", level: .error, type: .sent, userInfo: nil)
+                    NotificationCenter.logs.post(name: .logs, object: log)
+                    TokenManager.shared.getNewTokenWithRefreshToken()
                 }
 
                 SubmitBottomButton(text: "Destroy token", color: Color.App.red) {

@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct SettingNotificationSection: View {
     @EnvironmentObject var navModel: NavigationModel
@@ -15,7 +16,7 @@ struct SettingNotificationSection: View {
     var body: some View {
         ListSectionButton(imageName: "bell.fill", title: "Settings.notifictionSettings", color: .red, showDivider: false) {
             let value = NotificationSettingsNavigationValue()
-            navModel.append(type: .notificationSettings(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -29,21 +30,23 @@ struct NotificationSettings: View {
     var body: some View {
         List {
             Group {
-                Toggle("Notification.Sound", isOn: $model.notificationSettings.soundEnable)
+                Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.soundEnable)
+                    .tint(Color.App.accent)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
                 if EnvironmentValues.isTalkTest {
-                    Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
+                    Toggle("Notification.ShowDetails".bundleLocalized(), isOn: $model.notificationSettings.showDetails)
+                        .tint(Color.App.accent)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.dividerPrimary)
                 }
                 if EnvironmentValues.isTalkTest {
-                    Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
+                    Toggle("Notification.Vibration".bundleLocalized(), isOn: $model.notificationSettings.vibration)
+                        .tint(Color.App.accent)
                         .listRowBackground(Color.App.bgPrimary)
                         .listSectionSeparator(.hidden)
                 }
             }
-            .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)
 
             if EnvironmentValues.isTalkTest {
@@ -101,11 +104,11 @@ struct PrivateNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound", isOn: $model.notificationSettings.privateChat.sound)
+            Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.privateChat.sound)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -121,11 +124,11 @@ struct GroupNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound", isOn: $model.notificationSettings.group.sound)
+            Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.group.sound)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -141,11 +144,11 @@ struct ChannelNotificationSetting: View {
 
     var body: some View {
         List {
-            Toggle("Notification.Sound", isOn: $model.notificationSettings.channel.sound)
+            Toggle("Notification.Sound".bundleLocalized(), isOn: $model.notificationSettings.channel.sound)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)

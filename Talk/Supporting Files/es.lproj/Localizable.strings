@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Por favor, ingrese un número de teléfono válido";
 "Errors.failedTryAgain" = "¡Se produjo un error! Inténtalo de nuevo.";
 "Errors.Login.Verify.incorrectCode" = "Tu código de verificación es incorrecto.";
+"Errors.hasAlreadyJoinedError" = "Ya te has unido al grupo.";
 
 /* General */
 "General.next" = "Siguiente";
@@ -27,7 +28,6 @@
 "General.typeMessageHere" = "Escribe el mensaje aquí ...";
 "General.more" = "Más";
 "General.notSpecified" = "No especificado";
-"General.unknown" = "Desconocido";
 "General.block" = "Bloquear";
 "General.unblock" = "Desbloquear";
 "General.blocked" = "Bloqueado";
@@ -70,6 +70,11 @@
 "General.copied" = "Kopierat till urklipp.";
 "General.ban" = "The server has banned you for %@ seconds.";
 "General.addText" = "Añadir texto";
+"General.you" = "Tú";
+"Genral.mineSendVerb" = "Enviaste un %@";
+"General.thirdSentVerb" = "%@ enviado";
+"General.noDescription" = "¡Sin descripción!";
+"General.noResult" = "no hay resultado";
 
 /* Pestañas */
 "Tab.chats" = "Chats";
@@ -108,9 +113,14 @@
 "Contacts.createChannel" = "Crear un canal";
 "Contacts.addContact" = "Agregar un contacto";
 "Contacts.sortLabel" = "Ordenado por último tiempo visitado";
+"Contacts.lastSeen.lately" = "hace unos momentos";
+"Contacts.lastSeen.todayAt" = "hoy en %@";
+"Contacts.lastSeen.thisWeek" = "esta semana";
+"Contacts.lastSeen.unknown" = "desconocida";
 "Contacts.lastVisited" = "Última visita %@";
 "Contacts.selectContacts" = "Seleccionar contactos";
 "Contctas.notFound" = "No se ha encontrado el contacto.";
+"Contctas.list.notFound" = "Usuario no encontrado";
 "ConversationBuilder.enterGroupName" = "Ingresa el nombre del grupo";
 "ConversationBuilder.enterChannelName" = "Ingrese el nombre del canal";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Por favor ingresa el nombre de la conversación. (al menos dos caracteres)";
@@ -124,6 +134,14 @@
 "Call.started" = "Iniciada";
 "Call.ended" = "Finalizada";
 "Call.leave" = "Salir";
+"CallStatus.requested" = "Solicitado";
+"CallStatus.canceled" = "Cancelado";
+"CallStatus.miss" = "Perdida";
+"CallStatus.declined" = "Rechazada";
+"CallStatus.accepted" = "Aceptada";
+"CallStatus.started" = "Iniciada";
+"CallStatus.ended" = "Finalizada";
+"CallStatus.leave" = "Abandonada";
 
 /* Invitado */
 "Invitee.ssoId" = "ID de SSO";
@@ -220,7 +238,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.accessLocaitonPermission" = "Vaya a configuración> Hablar y luego active el acceso a la ubicación.";
 "Thread.Row.lastMessageSender" = "%@:";
-"Thread.createdAConversation" = "%@ creó una conversación.";
+"Thread.createdAGroup" = "%@ أنشأت مجموعة.";
+"Thread.createdAChannel" = "%@ أنشأت قناة.";
 "Thread.Toolbar.participants" = "Las participantes";
 "Thread.sendAttachments" = "Enviar %@ archivos";
 "Thread.typeString" = "%@ %@";
@@ -326,6 +345,7 @@
 "Settings.darkModeEnabled" = "Modo oscuro";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "Versión: %@";
 "Support.aboutUsText" = "Talk nació en 2016. Este mensajero fue producido y desarrollado con el objetivo de crear una comunicación profunda y constructiva y comprender las necesidades organizacionales y no organizacionales. Se espera que, de acuerdo con las condiciones actuales, Tak dé cada día un paso más fuerte en el camino del desarrollo sostenible y la creación de una plataforma segura y rápida.";
 "Support.number" = "021-91033000 interna 9";
@@ -358,6 +378,7 @@
 "Messages.ActionMenu.pinMessage" = "Anclar";
 "Messages.ActionMenu.unpinMessage" = "Desanclar";
 "Messages.ActionMenu.saveImage" = "Guardar en Fotos";
+"Messages.ActionMenu.messageDetail" = "Detalles del mensaje";
 "Messages.unreadMessages" = "Mensajes sin leer";
 "Messages.deleteForMe" = "eliminar por mi";
 "Messages.deleteForAll" = "Eliminar para todas";
@@ -411,3 +432,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "Sólo conversaciones no leídas";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "Enviar ubicación seleccionada";

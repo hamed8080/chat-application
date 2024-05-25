@@ -35,6 +35,11 @@ struct SettingsView: View {
                     .listRowInsets(.zero)
                     .listRowSeparator(.hidden)
                 SavedMessageSection()
+                SettingNotificationSection()
+                    .listRowSeparator(.hidden)
+                StickyHeaderSection(header: "", height: 10)
+                    .listRowInsets(.zero)
+                    .listRowSeparator(.hidden)
                 DarkModeSection()
                 SettingLanguageSection()
                 SettingLogSection()
@@ -48,8 +53,6 @@ struct SettingsView: View {
                     AutomaticDownloadSection()
                     SettingAssistantSection()
                 }
-                SettingNotificationSection()
-                    .listRowSeparator(.hidden)
                 LoadTestsSection()
             }
 
@@ -59,6 +62,8 @@ struct SettingsView: View {
                     .listRowSeparator(.hidden)
 
                 SupportSection()
+
+                VersionNumberView()
             }
             .listRowSeparator(.hidden)
         }
@@ -76,8 +81,10 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showLoginSheet) {
             LoginNavigationContainerView {
-                container.reset()
-                showLoginSheet.toggle()
+                Task {
+                    await container.reset()
+                    showLoginSheet.toggle()
+                }
             }
         }
     }
@@ -116,7 +123,7 @@ struct SettingSettingSection: View {
     var body: some View {
         ListSectionButton(imageName: "gearshape.fill", title: "Settings.title", color: .gray, showDivider: false) {
             let value = PreferenceNavigationValue()
-            navModel.append(type: .preference(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -135,12 +142,12 @@ struct UserInformationSection: View {
                 .listRowInsets(.zero)
         }
 
-        if !phone.isEmpty {
+        if !userName.isEmpty {
             VStack(alignment: .leading) {
-                Text("Settings.phoneNumber")
+                Text("Settings.userName")
                     .foregroundColor(Color.App.textSecondary)
                     .font(.iransansCaption)
-                TextField("", text: $phone)
+                TextField("", text: $userName)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
@@ -149,12 +156,12 @@ struct UserInformationSection: View {
             .listRowSeparatorTint(Color.App.dividerPrimary)
         }
 
-        if !userName.isEmpty {
+        if !phone.isEmpty {
             VStack(alignment: .leading) {
-                Text("Settings.userName")
+                Text("Settings.phoneNumber")
                     .foregroundColor(Color.App.textSecondary)
                     .font(.iransansCaption)
-                TextField("", text: $userName)
+                TextField("", text: $phone)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
@@ -190,6 +197,11 @@ struct UserInformationSection: View {
                 if case let .user(response) = event, response.result != nil {
                     updateUI(user: response.result)
                 }
+
+                if case .setProfile(let response) = event {
+                    AppState.shared.user?.chatProfileVO?.bio = response.result?.bio ?? ""
+                    updateUI(user: AppState.shared.user)
+                }
             }
             .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notif in
                 /// We use this to fetch the user profile image once the active instance is initialized.
@@ -214,7 +226,7 @@ struct PreferenceView: View {
         List {
             Section("Tab.contacts") {
                 VStack(alignment: .leading, spacing: 2) {
-                    Toggle("Contacts.Sync.sync", isOn: $model.isSyncOn)
+                    Toggle("Contacts.Sync.sync".bundleLocalized(), isOn: $model.isSyncOn)
                     Text("Contacts.Sync.subtitle")
                         .foregroundColor(.gray)
                         .font(.iransansCaption3)
@@ -265,7 +277,7 @@ struct SettingLogSection: View {
         if EnvironmentValues.isTalkTest {
             ListSectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown, showDivider: false) {
                 let value = LogNavigationValue()
-                navModel.append(type: .log(value), value: value)
+                navModel.append(value: value)
             }
             .listRowInsets(.zero)
             .listRowBackground(Color.App.bgPrimary)
@@ -280,7 +292,7 @@ struct SettingArchivesSection: View {
     var body: some View {
         ListSectionButton(imageName: "archivebox.fill", title: "Tab.archives", color: Color.App.color5, showDivider: false) {
             let value = ArchivesNavigationValue()
-            navModel.append(type: .archives(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -294,7 +306,7 @@ struct SettingLanguageSection: View {
     var body: some View {
         ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.red, showDivider: false, trailingView: selectedLanguage) {
             let value = LanguageNavigationValue()
-            navModel.append(type: .language(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -333,17 +345,22 @@ struct DarkModeSection: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
+                    .frame(width: 28, height: 28)
                     .foregroundColor(.white)
+                    .background(Color.App.color1)
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
+
+                Text("Settings.darkModeEnabled".bundleLocalized())
             }
-            .frame(width: 28, height: 28)
-            .background(Color.App.color1)
-            .clipShape(RoundedRectangle(cornerRadius:(8)))
-            Toggle("Settings.darkModeEnabled", isOn: $isDarkModeEnabled)
-            .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.dividerPrimary)
+
+            Spacer()
+            Toggle("", isOn: $isDarkModeEnabled)
+            .tint(Color.App.accent)
+            .scaleEffect(x: 0.8, y: 0.8, anchor: .center)
+            .offset(x: 8)
         }
-        .padding(.horizontal)
-        .toggleStyle(MyToggleStyle())
+        .padding(.top, 4)
+        .padding(.leading)
         .listSectionSeparator(.hidden)
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -366,7 +383,7 @@ struct BlockedMessageSection: View {
         ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: Color.App.red, showDivider: false) {
             withAnimation {
                 let value = BlockedContactsNavigationValue()
-                navModel.append(type: .blockedContacts(value), value: value)
+                navModel.append(value: value)
             }
         }
         .listRowInsets(.zero)
@@ -383,7 +400,7 @@ struct SupportSection: View {
     var body: some View {
         ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.about", color: Color.App.color2, showDivider: false) {
             let value = SupportNavigationValue()
-            navModel.append(type: .support(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -415,7 +432,7 @@ struct SettingAssistantSection: View {
     var body: some View {
         ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: Color.App.color1, showDivider: false) {
             let value = AssistantNavigationValue()
-            navModel.append(type: .assistant(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -448,7 +465,7 @@ struct UserProfileView: View {
 
             Button {
                 let value = EditProfileNavigationValue()
-                AppState.shared.objectsContainer.navVM.append(type: .editProfile(value), value: value)
+                AppState.shared.objectsContainer.navVM.append(value: value)
             } label: {
                 Rectangle()
                     .fill(.clear)
@@ -477,13 +494,39 @@ struct LoadTestsSection: View {
         if EnvironmentValues.isTalkTest {
             ListSectionButton(imageName: "testtube.2", title: "Load Tests", color: Color.App.color4, showDivider: false) {
                 let value = LoadTestsNavigationValue()
-                navModel.append(type: .loadTests(value), value: value)
+                navModel.append(value: value)
             }
             .listRowInsets(.zero)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.App.dividerPrimary)
         }
     }
+}
+
+struct VersionNumberView: View {
+
+    var body: some View {
+        HStack(spacing: 2) {
+            Spacer()
+            Text("Support.title")
+            Text(String(format: String(localized: "Support.version", bundle: Language.preferedBundle), localVersionNumber))
+            Spacer()
+        }
+        .foregroundStyle(Color.App.textSecondary)
+        .font(.iransansCaption2)
+        .listRowInsets(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .listRowBackground(Color.App.bgSecondary)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
+    }
+
+    private var localVersionNumber: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        let splited = version.split(separator: ".")
+        let numbers = splited.compactMap({Int($0)})
+        let localStr = numbers.compactMap{$0.localNumber(locale: Language.preferredLocale)}
+        return localStr.joined(separator: ".")
+    }
+
 }
 
 struct SettingsMenu_Previews: PreviewProvider {

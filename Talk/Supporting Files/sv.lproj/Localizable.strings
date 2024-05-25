@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Var god ange rätt telefonnummer";
 "Errors.failedTryAgain" = "Ett fel inträffade! Försök igen.";
 "Errors.Login.Verify.incorrectCode" = "Din verifieringskod är felaktig.";
+"Errors.hasAlreadyJoinedError" = "Du har redan gått med i gruppen.";
 
 /* General */
 "General.next" = "Nästa";
@@ -27,7 +28,6 @@
 "General.typeMessageHere" = "Skriv meddelande här...";
 "General.more" = "Mer";
 "General.notSpecified" = "Ej specificerad";
-"General.unknown" = "okänd";
 "General.block" = "Blockera";
 "General.unblock" = "Avblockera";
 "General.blocked" = "Blockerad";
@@ -68,6 +68,11 @@
 "General.imageSaved" = "Bild sparad.";
 "General.ban" = "Servern har blockerat dig i %@ sekunder.";
 "General.addText" = "Lägg till text";
+"General.you" = "Du";
+"Genral.mineSendVerb" = "Du skickade en %@";
+"General.thirdSentVerb" = "%@ har skickats";
+"General.noDescription" = "Ingen beskrivning!";
+"General.noResult" = "Det finns inget resultat";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
@@ -106,9 +111,14 @@
 "Contacts.createChannel" = "Skapa en kanal";
 "Contacts.addContact" = "Lägg till en kontakt";
 "Contacts.sortLabel" = "Sorterat efter senast besökt tid";
+"Contacts.lastSeen.lately" = "för några ögonblick sedan";
+"Contacts.lastSeen.todayAt" = "idag kl %@";
+"Contacts.lastSeen.thisWeek" = "Denna vecka";
+"Contacts.lastSeen.unknown" = "okänd";
 "Contacts.lastVisited" = "Senast besökt %@";
 "Contacts.selectContacts" = "Välj kontakter";
 "Contctas.notFound" = "Kontakten har inte hittats.";
+"Contctas.list.notFound" = "Användaren hittades inte";
 "ConversationBuilder.enterGroupName" = "Ange gruppnamnet";
 "ConversationBuilder.enterChannelName" = "Ange kanalnamnet";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Vänligen ange namnet på konversationen. (minst två tecken)";
@@ -122,6 +132,14 @@
 "Call.started" = "Startad";
 "Call.ended" = "Avslutad";
 "Call.leave" = "Lämnade";
+"CallStatus.requested" = "Begärd";
+"CallStatus.canceled" = "Avbruten";
+"CallStatus.miss" = "Missad";
+"CallStatus.declined" = "Avvisad";
+"CallStatus.accepted" = "Accepterad";
+"CallStatus.started" = "Startad";
+"CallStatus.ended" = "Avslutad";
+"CallStatus.leave" = "Lämnad";
 
 /* Invitee */
 "Invitee.ssoId" = "SSO ID";
@@ -218,7 +236,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.accessLocaitonPermission" = "Gå till inställningarna > Prata och aktivera sedan platsåtkomst.";
 "Thread.Row.lastMessageSender" = "%@:";
-"Thread.createdAConversation" = "%@ skapade en konversation.";
+"Thread.createdAGroup" = "%@ skapat en grupp.";
+"Thread.createdAChannel" = "%@ skapat en kanal.";
 "Thread.Toolbar.participants" = "Deltagare";
 "Thread.sendAttachments" = "Skicka %@ filer";
 "Thread.typeString" = "%@ %@";
@@ -324,6 +343,7 @@
 "Settings.darkModeEnabled" = "Mörkt läge";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk föddes 2016. Denna budbärare producerades och utvecklades med syftet att skapa djup och konstruktiv kommunikation och förstå organisatoriska och icke-organisatoriska behov. Förhoppningen är att Tak, enligt rådande förutsättningar, varje dag tar ett starkare steg på vägen mot hållbar utveckling och att skapa en säker och snabb plattform.";
 "Support.number" = "021-91033000 intern 9";
@@ -356,6 +376,7 @@
 "Messages.ActionMenu.pinMessage" = "Nåla";
 "Messages.ActionMenu.unpinMessage" = "Avnåla";
 "Messages.ActionMenu.saveImage" = "Spara i Bilder";
+"Messages.ActionMenu.messageDetail" = "Meddelandedetaljer";
 "Messages.unreadMessages" = "Olästa meddelanden";
 "Messages.deleteForMe" = "Ta bort åt mig";
 "Messages.deleteForAll" = "Ta bort för alla";
@@ -409,3 +430,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "Endast olästa konversationer";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "Skicka vald plats";

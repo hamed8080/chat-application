@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Please input correct phone number";
 "Errors.failedTryAgain" = "An error occured! try again.";
 "Errors.Login.Verify.incorrectCode" = "Your verification code is incorrect.";
+"Errors.hasAlreadyJoinedError" = "You have already joined the group.";
 
 /* General */
 "General.next" = "Next";
@@ -27,7 +28,6 @@
 "General.typeMessageHere" = "Type message here ...";
 "General.more" = "More";
 "General.notSpecified" = "Not specified";
-"General.unknown" = "unknown";
 "General.block" = "Block";
 "General.unblock" = "UNBlock";
 "General.blocked" = "Blocked";
@@ -58,6 +58,7 @@
 "General.optional" = "(Optional)";
 "General.share" = "share";
 "General.createAConversation" = "Start a conversation";
+"General.Byte" = "Byte";
 "General.KB" = "KB";
 "General.MB" = "MB";
 "General.GB" = "GB";
@@ -68,6 +69,11 @@
 "General.copied" = "Copied to clipboard.";
 "General.ban" = "The server has banned you for %@ seconds.";
 "General.addText" = "Add text";
+"General.you" = "You";
+"Genral.mineSendVerb" = "Sent a %@";
+"General.thirdSentVerb" = "sent a %@";
+"General.noDescription" = "No description!";
+"General.noResult" = "There is no result";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -106,9 +112,14 @@
 "Contacts.createChannel" = "Create a channel";
 "Contacts.addContact" = "Add a contact";
 "Contacts.sortLabel" = "Sorted by last visited time";
+"Contacts.lastSeen.lately" = "a few moments ago";
+"Contacts.lastSeen.todayAt" = "today at %@";
+"Contacts.lastSeen.thisWeek" = "this week";
+"Contacts.lastSeen.unknown" = "unknown";
 "Contacts.lastVisited" = "Last visited %@";
 "Contacts.selectContacts" = "Select contacts";
 "Contctas.notFound" = "The contact has not been found.";
+"Contctas.list.notFound" = "User not found";
 "ConversationBuilder.enterGroupName" = "Enter the group name";
 "ConversationBuilder.enterChannelName" = "Enter the channel name";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Please enter the name of the conversation. (at least two characters)";
@@ -122,6 +133,14 @@
 "Call.started" = "Started";
 "Call.ended" = "Ended";
 "Call.leave" = "Left";
+"CallStatus.requested" = "Reuqested";
+"CallStatus.canceled" = "Canceled";
+"CallStatus.miss" = "Missed";
+"CallStatus.declined" = "Declined";
+"CallStatus.accepted" = "Accepted";
+"CallStatus.started" = "Started";
+"CallStatus.ended" = "Ended";
+"CallStatus.leave" = "Left";
 
 /* Invitee */
 "Invitee.ssoId" = "SSO ID";
@@ -178,7 +197,7 @@
 "Thread.spam" = "Spam";
 "Thread.archive" = "Archive";
 "Thread.unarchive" = "UNArchive";
-"Thread.invite" = "Invite";
+"Thread.invite" = "Add memebers";
 "Thread.switchToPublic" = "Switch to public thread";
 "Thread.selectToStartConversation" = "Select to start a conversation";
 "Thread.newGroup" = "New Group";
@@ -211,14 +230,16 @@
 "Thread.Tabs.mutualgroup" = "Mutual Groups";
 "Thread.Tabs.photos" = "Photos";
 "Thread.Tabs.videos" = "Videos";
-"Thread.Tabs.file" = "File";
-"Thread.Tabs.music" = "Music";
-"Thread.Tabs.voice" = "Voice";
-"Thread.Tabs.link" = "Link";
+"Thread.Tabs.file" = "Files";
+"Thread.Tabs.music" = "Musics";
+"Thread.Tabs.voice" = "Voices";
+"Thread.Tabs.link" = "Links";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.accessLocaitonPermission" = "Please go to the settings>Talk and then turn on location access.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ created a conversation.";
+"Thread.createdAGroup" = "%@ created a group.";
+"Thread.createdAChannel" = "%@ created a channel.";
 "Thread.Toolbar.participants" = "Participants";
 "Thread.sendAttachments" = "Send %@ files";
 "Thread.typeString" = "%@ %@";
@@ -245,7 +266,7 @@
 
 /* Participant */
 "Participant" = "participant";
-"Participant.Search.Type.name" = "Name";
+"Participant.Search.Type.name" = "Name or Family";
 "Participant.Search.Type.username" = "User Name";
 "Participant.Search.Type.cellphoneNumber" = "Mobile";
 "Participant.Search.Type.admin" = "Admin";
@@ -326,6 +347,7 @@
 "Settings.darkModeEnabled" = "Dark Mode";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk was born in 2016. This messenger was produced and developed with the aim of creating deep and constructive communication and understanding organizational and non-organizational needs. It is hoped that according to the current conditions, Tak will take a stronger step every day on the path of sustainable development and creating a safe and fast platform.";
 "Support.number" = "021-91033000 internal 9";
@@ -358,6 +380,7 @@
 "Messages.ActionMenu.pinMessage" = "Pin";
 "Messages.ActionMenu.unpinMessage" = "UNPin";
 "Messages.ActionMenu.saveImage" = "Save in Photos";
+"Messages.ActionMenu.messageDetail" = "Message details";
 "Messages.unreadMessages" = "Unread Messages";
 "Messages.deleteForMe" = "Delete for me";
 "Messages.deleteForAll" = "Delete for all";
@@ -415,3 +438,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "المحادثات غير المقروءة فقط";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "Send selected location";

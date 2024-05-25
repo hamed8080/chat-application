@@ -16,17 +16,22 @@ import TalkModels
 public final class ThreadScrollingViewModel: ObservableObject {
     var task: Task<(), Never>?
     public var isProgramaticallyScroll: Bool = false
-    public weak var scrollDelegate: HistoryScrollDelegate? { threadVM?.historyVM.delegate }
+    public weak var scrollDelegate: HistoryScrollDelegate? { viewModel?.historyVM.delegate }
     public var scrollingUP = false
-    public weak var threadVM: ThreadViewModel? {
-        didSet {
-            isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
-        }
-    }
-    private var thread: Conversation { threadVM?.thread ?? .init(id: -1)}
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation { viewModel?.thread ?? .init(id: -1)}
     public var isAtBottomOfTheList: Bool = false
     public var lastContentOffsetY: CGFloat = 0
     init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
+        Task {
+            await MainActor.run {
+                isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
+            }
+        }
+    }
 
     @MainActor
     private func scrollTo(_ uniqueId: String, position: UITableView.ScrollPosition = .bottom, animate: Bool) async {
@@ -35,7 +40,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
 
     public func scrollToBottom() {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
-            threadVM?.historyVM.moveToTime(time, messageId, highlight: false)
+            viewModel?.historyVM.moveToTime(time, messageId, highlight: false, moveToBottom: true)
         }
     }
 
@@ -64,14 +69,14 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
-    public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom) async {
+    public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom, animate: Bool = false) async {
         if Task.isCancelled { return }
         await MainActor.run {
             if highlight {
                 NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
             }
         }
-        await scrollTo(uniqueId, position: position, animate: false)
+        await scrollTo(uniqueId, position: position, animate: animate)
     }
 
     public func disableExcessiveLoading() {

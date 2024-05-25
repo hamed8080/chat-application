@@ -14,12 +14,15 @@ import TalkViewModels
 
 struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
-    let contact: Contact
+    @EnvironmentObject var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
+    private var searchVM: ThreadsSearchViewModel { AppState.shared.objectsContainer.searchVM }
 
     var body: some View {
         VStack {
             HStack(spacing: 0) {
+                ContactRowRadioButton(contact: contact)
+                    .padding(.trailing, isInSelectionMode ? 8 : 0)
                 let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: String.splitedCharacter(contact.firstName ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config), textFont: .iransansBoldBody)
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
@@ -30,11 +33,21 @@ struct ContactRow: View {
                     .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
-                        .padding(.leading, 16)
-                        .lineLimit(1)
-                        .font(.iransansBoldBody)
-                        .foregroundColor(Color.App.textPrimary)
+                    if searchVM.isInSearchMode {
+                        Text(searchVM.attributdTitle(for: "\(contact.firstName ?? "") \(contact.lastName ?? "")"))
+                            .padding(.leading, 16)
+                            .foregroundColor(Color.App.textPrimary)
+                            .lineLimit(1)
+                            .font(.iransansSubheadline)
+                            .fontWeight(.semibold)
+                    } else {
+                        Text(verbatim: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
+                            .padding(.leading, 16)
+                            .foregroundColor(Color.App.textPrimary)
+                            .lineLimit(1)
+                            .font(.iransansSubheadline)
+                            .fontWeight(.semibold)
+                    }
 //                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
 //                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
 //                        let time = String(format: lastVisitedLabel, notSeenDuration)
@@ -43,6 +56,7 @@ struct ContactRow: View {
 //                            .font(.iransansBody)
 //                            .foregroundColor(Color.App.textSecondary)
 //                    }
+                    notFoundUserText
                 }
                 Spacer()
                 if contact.blocked == true {
@@ -51,7 +65,6 @@ struct ContactRow: View {
                         .foregroundColor(Color.App.red)
                         .padding(.trailing, 4)
                 }
-                ContactRowRadioButton(contact: contact)
             }
         }
         .contentShape(Rectangle())
@@ -61,6 +74,17 @@ struct ContactRow: View {
 
     var isOnline: Bool {
         contact.notSeenDuration ?? 16000 < 15000
+    }
+
+    @ViewBuilder
+    private var notFoundUserText: some View {
+        if contact.hasUser == false || contact.hasUser == nil {
+            Text("Contctas.list.notFound")
+                .foregroundStyle(Color.App.accent)
+                .font(.iransansCaption2)
+                .fontWeight(.medium)
+                .padding(.leading, 16)
+        }
     }
 }
 
@@ -81,7 +105,8 @@ struct ContactRow_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ContactRow(isInSelectionMode: $isInSelectionMode, contact: MockData.contact)
+            ContactRow(isInSelectionMode: $isInSelectionMode)
+                .environmentObject(MockData.contact)
                 .environmentObject(ContactsViewModel())
                 .preferredColorScheme(.dark)
         }

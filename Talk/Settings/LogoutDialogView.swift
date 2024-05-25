@@ -29,31 +29,39 @@ struct LogoutDialogView: View {
 
             HStack {
                 Button {
+                    Task {
+                        await onLogoutTapped()
+                    }
+                } label: {
+                    Text("Settings.logout")
+                        .foregroundStyle(Color.App.accent)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
+                }
+
+                Button {
                     container.appOverlayVM.dialogView = nil
                 } label: {
                     Text("General.cancel")
                         .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
-                }
-
-                Button {
-                    container.appOverlayVM.dialogView = nil
-                    ChatManager.activeInstance?.user.logOut()
-                    TokenManager.shared.clearToken()
-                    UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
-                    container.reset()
-                } label: {
-                    Text("Settings.logout")
-                        .foregroundStyle(Color.App.red)
-                        .font(.iransansBody)
-                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
                 }
             }
         }
         .frame(maxWidth: 320)
         .padding(EdgeInsets(top: 16, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
+    }
+
+    private func onLogoutTapped() async {
+        container.appOverlayVM.dialogView = nil
+        ChatManager.activeInstance?.user.logOut()
+        TokenManager.shared.clearToken()
+        UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
+        await container.reset()
     }
 }
 

@@ -9,7 +9,6 @@ import Chat
 import ChatModels
 import Combine
 import SwiftUI
-import Swipy
 import TalkModels
 import TalkUI
 import TalkViewModels
@@ -37,11 +36,11 @@ struct HomeContentView: View {
                 .environmentObject(container.userConfigsVM)
                 .environmentObject(container.logVM)
                 .environmentObject(container.audioPlayerVM)
-                .environmentObject(container.reactions)
                 .environmentObject(container.conversationBuilderVM)
                 .environmentObject(container.userProfileImageVM)
         }
         .modifier(ColorSchemeModifier())
+        .environment(\.layoutDirection, Language.isRTL ? .rightToLeft : .leftToRight)
         .contextMenuContainer()
     }
 }
@@ -70,10 +69,12 @@ struct SplitView: View {
         .animation(.easeInOut, value: isLoggedIn)
         .overlay(OpenURLView())
         .overlay {
+            let appOverlayVM = container.appOverlayVM
             AppOverlayView(onDismiss: onDismiss) {
                 AppOverlayFactory()
             }
-            .environmentObject(container.appOverlayVM)
+            .environmentObject(appOverlayVM)
+            .environmentObject(appOverlayVM.offsetVM)
         }
         .onReceive(TokenManager.shared.$isLoggedIn) { isLoggedIn in
             if self.isLoggedIn != isLoggedIn {

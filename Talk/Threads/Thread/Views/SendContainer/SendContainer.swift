@@ -22,7 +22,7 @@ struct SendContainer: View {
         ZStack(alignment: .bottom) {           
             VStack(spacing: 0) {
                 VStack(spacing: 0) {
-                    if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
+                    if viewModel.viewModel?.selectedMessagesViewModel.isInSelectMode == true {
 //                        SelectionView(threadVM: threadVM)
 //                            .environmentObject(threadVM.selectedMessagesViewModel)
                     } else if viewModel.canShowMute {
@@ -43,6 +43,7 @@ struct SendContainer: View {
                         AudioOrTextContainer()
                     }
                 }
+                .environmentObject(viewModel)
                 .opacity(viewModel.disableSend ? 0.3 : 1.0)
                 .disabled(viewModel.disableSend)
                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
@@ -68,22 +69,6 @@ struct AudioOrTextContainer: View {
 //                .scaleEffect(x: viewModel.showRecordingView ? 0.001 : 1.0, y: viewModel.showRecordingView ? 0.001 : 1.0, anchor: .center)
         }
         .animation(.easeInOut, value: viewModel.showRecordingView)
-    }
-}
-
-struct SendContainerOverButtons: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
-    @EnvironmentObject var audioRecordingVM: AudioRecordingViewModel
-
-    var body: some View {
-        if audioRecordingVM.isRecording || viewModel.thread.mentioned == true {
-            VStack(alignment: .trailing, spacing: 8) {
-//                UnreadMentionsButton()
-//                    .environmentObject(viewModel.unreadMentionsViewModel)
-                CloseRecordingButton()
-            }
-            .padding(EdgeInsets(top: 0, leading: viewModel.audioRecoderVM.isRecording ? 20 : 8, bottom: 8, trailing: 0))
-        }
     }
 }
 

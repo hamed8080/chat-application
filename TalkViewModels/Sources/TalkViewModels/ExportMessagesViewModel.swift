@@ -13,12 +13,16 @@ import ChatCore
 import ChatDTO
 
 public final class ExportMessagesViewModel: ObservableObject {
-    public weak var thread: Conversation?
+    private weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
     public var threadId: Int { thread?.id ?? 0 }
     public var filePath: URL?
     private var cancelable: Set<AnyCancellable> = []
 
-    public init() {
+    public init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] value in

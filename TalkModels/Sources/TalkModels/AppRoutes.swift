@@ -3,6 +3,7 @@ public final class AppRoutes {
     public static let sandbox = "https://talkotp-s.fanapsoft.ir/"
     public static let main = "https://talkback.pod.ir/"
     public static let joinLink = "https://talk.pod.ir/join?tn="
+    public static let pckeToken = "https://accounts.pod.ir/oauth2/token"
 
     public let base: String
     public let api: String

@@ -27,9 +27,9 @@ final class GroupParticipantNameView: UILabel {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        let name = viewModel.groupMessageParticipantName
-        textColor = viewModel.participantColor
-        textAlignment = viewModel.isMe ? .right : .left
+        let name = viewModel.calculatedMessage.groupMessageParticipantName
+        textColor = viewModel.calculatedMessage.participantColor
+        textAlignment = viewModel.calculatedMessage.isMe ? .right : .left
         text = name
         isHidden = name == nil
     }

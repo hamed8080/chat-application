@@ -40,9 +40,9 @@ public extension UploadFileWithTextMessage {
         id = -(dropModel.uploadFileIndex ?? 1)
     }
 
-    convenience init(urlItem: URL, isLastItem: Bool, urlModel: SendMessageModel) {
+    convenience init?(urlItem: URL, isLastItem: Bool, urlModel: SendMessageModel) {
         let textMessage = urlModel.textMessage
-        let uploadRequest = UploadFileRequest(url: urlItem, urlModel.userGroupHash)!
+        guard let uploadRequest = UploadFileRequest(url: urlItem, urlModel.userGroupHash) else { return nil }
         var textRequest: SendTextMessageRequest? = nil
         let isMusic = urlItem.isMusicMimetype
         let newMessageType = isMusic ? ChatModels.MessageType.podSpaceSound : .podSpaceFile

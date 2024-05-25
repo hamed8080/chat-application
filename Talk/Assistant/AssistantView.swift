@@ -13,6 +13,7 @@ import Logger
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct AssistantView: View {
     @StateObject var viewModel: AssistantViewModel = .init()
@@ -30,8 +31,8 @@ struct AssistantView: View {
         .animation(.easeInOut, value: viewModel.assistants.count)
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: AssistantNavigationValue.self)
+                NavigationBackButton(automaticDismiss: false) {
+                    AppState.shared.objectsContainer.navVM.remove()
                 }
             }
 
@@ -95,7 +96,7 @@ struct PickAssitstantListView: View {
         NavigationView {
             Form {
                 List {
-                    SectionTitleView(title: String(localized: .init("Assistant.selectAssistant")))
+                    SectionTitleView(title: "Assistant.selectAssistant")
                     SectionImageView(image: Image(systemName: "figure.stand.line.dotted.figure.stand"))
                     ForEach(contactsVM.contacts) { contact in
                         AddAssistantRow(contact: contact)
@@ -104,8 +105,10 @@ struct PickAssitstantListView: View {
                                 viewModel.showAddAssistantSheet = false
                             }
                             .onAppear {
-                                if contactsVM.contacts.last == contact {
-                                    contactsVM.loadMore()
+                                Task {
+                                    if contactsVM.contacts.last == contact {
+                                        await contactsVM.loadMore()
+                                    }
                                 }
                             }
                     }
@@ -133,7 +136,7 @@ struct AddAssistantRow: View {
                     .padding(.leading, 4)
                     .lineLimit(1)
                     .font(.iransansSubheadline)
-                Text(String(localized: .init(contact.notSeenDuration?.localFormattedTime ?? "General.notSpecified")))
+                Text(contact.notSeenDuration?.localFormattedTime ?? "General.notSpecified")
                     .padding(.leading, 4)
                     .font(.iransansCaption3)
                     .foregroundColor(Color.App.textSecondary)

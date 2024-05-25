@@ -10,6 +10,7 @@ import Combine
 import Foundation
 import SwiftUI
 import TalkUI
+import TalkModels
 
 struct JoinToPublicThreadView: View {
     @State private var publicThreadName: String = ""
@@ -23,7 +24,7 @@ struct JoinToPublicThreadView: View {
                 SectionImageView(image: Image("link"))
 
                 Section {
-                    TextField("Thread.Join.enterThreadNameHere", text: $publicThreadName)
+                    TextField("Thread.Join.enterThreadNameHere".bundleLocalized(), text: $publicThreadName)
                         .frame(minHeight: 36)
                         .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 12))
 

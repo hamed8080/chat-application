@@ -39,11 +39,22 @@ struct ThreadHistoryList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
+                .padding([.top, .bottom], viewModel.topLoading ? 8 : 0)
+                .animation(.easeInOut, value: viewModel.topLoading)
+                .onAppear {
+                    viewModel.isTopEndListAppeared = true
+                }
+                .onDisappear {
+                    viewModel.isTopEndListAppeared = false
+                }
 
-            ForEach(viewModel.sections) { section in
+            ForEach(viewModel.sections, id: \.id) { section in
                 SectionView(section: section)
                 MessageList(vms: section.vms, viewModel: viewModel)
             }
+
+//            UnsentMessagesLoop(historyVM: viewModel)
+//                .id(-4)
 
             SpaceForAttachment()
                 .id(-3)
@@ -56,12 +67,15 @@ struct ThreadHistoryList: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
-                .padding([.top, .bottom])
+                .padding([.top, .bottom], viewModel.bottomLoading ? 8 : 0)
+                .animation(.easeInOut, value: viewModel.bottomLoading)
 
-            //                UnsentMessagesLoop(historyVM: viewModel)
         }
+        .environment(\.defaultMinListRowHeight, 0)
         .listStyle(.plain)
-        KeyboardHeightView()
+//        .safeAreaInset(edge: .bottom) {
+//            ThreadEmptySpaceView()
+//        }
     }
 }
 
@@ -81,8 +95,13 @@ struct SectionView: View {
             Spacer()
         }
         .task {
-            if yearText == "" {
-                yearText = section.date.yearCondence ?? ""
+            Task.detached(priority: .background) {
+                if yearText == "" {
+                    let yearText = section.date.yearCondence ?? ""
+                    await MainActor.run {
+                        self.yearText = yearText
+                    }
+                }
             }
         }
     }
@@ -100,12 +119,12 @@ struct MessageList: View {
                 .listRowBackground(Color.clear)
                 .onAppear {
                     Task {
-                        await viewModel.onMessageAppear(vm.message)
+                        viewModel.onMessageAppear(vm.message)
                     }
                 }
                 .onDisappear {
                     Task {
-                        await viewModel.onMessegeDisappear(vm.message)
+                        viewModel.onMessegeDisappear(vm.message)
                     }
                 }
         }
@@ -118,13 +137,13 @@ struct UnsentMessagesLoop: View {
 
     var body: some View {
         /// We have to use \.uniqueId to force the ForLoop to use uniqueId instead of default \.id because id is nil when a message is unsent.
-        ForEach(viewModel.unsentMessages, id: \.uniqueId) { unsentMessage in
-            if let messageRowVM = historyVM.messageViewModel(for: unsentMessage) {
-                MessageRowFactory(viewModel: messageRowVM)
-                    .id(unsentMessage.uniqueId)
-            }
+        ForEach(viewModel.rowViewModels, id: \.uniqueId) { messageRowVM in
+            MessageRowFactory(viewModel: messageRowVM)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
         }
-        .animation(.easeInOut, value: viewModel.unsentMessages.count)
+        .animation(.easeInOut, value: viewModel.rowViewModels.count)
     }
 }
 
@@ -138,33 +157,5 @@ struct SpaceForAttachment: View {
                 .fill(Color.clear)
                 .frame(height: 72)
         }
-    }
-}
-
-struct ThreadMessagesList_Previews: PreviewProvider {
-    struct Preview: View {
-        @StateObject var viewModel: ThreadViewModel
-
-        init() {
-            let metadata = "{\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"file\": {\"hashCode\": \"UJMUIT4M194C5WLJ\",\"mimeType\": \"image/png\",\"fileHash\": \"UJMUIT4M194C5WLJ\",\"actualWidth\": 1290,\"actualHeight\": 2796,\"parentHash\": \"6MIPH7UM1P7OIZ2L\",\"size\": 1569454,\"link\": \"https://podspace.pod.ir/api/images/UJMUIT4M194C5WLJ?checkUserGroupAccess=true\",\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"originalName\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11.png\"},\"fileHash\": \"UJMUIT4M194C5WLJ\"}"
-            let message = Message(message: "Please download this file.",
-                                  messageType: .file,
-                                  metadata: metadata.string,
-                                  conversation: .init(id: 1))
-
-            let viewModel = ThreadViewModel(thread: Conversation(id: 1), threadsViewModel: .init())
-            viewModel.historyVM.sections.append(MessageSection(date: .init(), vms: [.init(message: message, viewModel: viewModel)]))
-            viewModel.animateObjectWillChange()
-            self._viewModel = StateObject(wrappedValue: viewModel)
-        }
-
-        var body: some View {
-          EmptyView()
-                .environmentObject(viewModel)
-        }
-    }
-
-    static var previews: some View {
-        Preview()
     }
 }

@@ -20,7 +20,7 @@ public final class AttachmentButtonsView: UIStackView {
     private let btnFile = AttchmentButton(title: "General.file", image: "doc.fill")
     private let btnLocation = AttchmentButton(title: "General.location", image: "location.fill")
     private let btnContact = AttchmentButton(title: "General.contact", image: "person.2.crop.square.stack.fill")
-    private var threadVM: ThreadViewModel? { viewModel.threadVM }
+    private var threadVM: ThreadViewModel? { viewModel.viewModel }
     private var vc: UIViewController? { threadVM?.delegate as? UIViewController }
 
     public init(viewModel: SendContainerViewModel) {
@@ -269,7 +269,7 @@ public final class AttchmentButton: UIStackView {
 struct AttachmentDialog_Previews: PreviewProvider {
 
     struct AttachmentButtonsViewWrapper: UIViewRepresentable {
-        func makeUIView(context: Context) -> some UIView { AttachmentButtonsView(viewModel: .init(thread: .init(id: 1))) }
+        func makeUIView(context: Context) -> some UIView { AttachmentButtonsView(viewModel: .init()) }
         func updateUIView(_ uiView: UIViewType, context: Context) {}
     }
 

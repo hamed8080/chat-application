@@ -9,10 +9,11 @@ import SwiftUI
 import TalkViewModels
 import ChatModels
 import TalkUI
+import TalkModels
 
 struct MessageParticipantsSeen: View {
-    @EnvironmentObject var threadVM: ThreadViewModel
     @StateObject var viewModel: MessageParticipantsSeenViewModel
+    
     init(message: Message) {
         self._viewModel = StateObject(wrappedValue: .init(message: message))
     }
@@ -42,6 +43,7 @@ struct MessageParticipantsSeen: View {
         .padding(.horizontal, viewModel.isEmpty ? 0 : 6)
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isLoading)
+                .id(UUID())
         }
         .normalToolbarView(title: "SeenParticipants.title", type: MessageParticipantsSeenNavigationValue.self)
         .onAppear {
@@ -74,7 +76,7 @@ struct MessageSeenParticipantRow: View {
                             .foregroundColor(.primary.opacity(0.5))
                     }
                     if  let notSeenDuration = participant.notSeenDuration?.localFormattedTime {
-                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"), bundle: Language.preferedBundle)
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)
                             .font(.iransansBody)

@@ -82,12 +82,12 @@ final class UploadMessageFileView: UIView {
         }
 
         let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-        let realServerFileSize = viewModel.fileMetaData?.file?.size
+        let realServerFileSize = viewModel.calculatedMessage.fileMetaData?.file?.size
         if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
             fileSizeLabel.text = fileSize
         }
 
-        if let fileName = message.uploadFileName ?? viewModel.fileMetaData?.file?.originalName {
+        if let fileName = message.uploadFileName ?? viewModel.calculatedMessage.fileMetaData?.file?.originalName {
             fileNameLabel.text = fileName
         }
 

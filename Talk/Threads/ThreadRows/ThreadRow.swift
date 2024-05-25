@@ -14,24 +14,25 @@ import TalkModels
 import ActionableContextMenu
 
 struct ThreadRow: View {
-    /// It is essential in the case of forwarding. We don't want to highlight the row in forwarding mode.
-    var forceSelected: Bool?
     @State private var isSelected: Bool = false
     @EnvironmentObject var viewModel: ThreadsViewModel
-    var thread: Conversation
+    var isInForwardMode: Bool?
+    let thread: Conversation
     let onTap: (() -> Void)?
+    private var searchVM: ThreadsSearchViewModel { AppState.shared.objectsContainer.searchVM }
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             SelectedThreadBar(thread: thread, isSelected: isSelected)
             ThreadImageView(thread: thread, threadsVM: viewModel)
+                .id(thread.image ?? thread.metadata)
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     if thread.type?.isChannelType == true {
-                        Image(systemName: "megaphone.fill")
+                        Image("ic_channel")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 12, height: 12)
+                            .frame(width: 16, height: 16)
                             .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
 
@@ -42,36 +43,47 @@ struct ThreadRow: View {
                             .frame(width: 16, height: 16)
                             .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
-                    Text(thread.computedTitle)
-                        .lineLimit(1)
-                        .font(.iransansSubheadline)
-                        .fontWeight(.semibold)
-                    if thread.mute == true {
-                        Image(systemName: "speaker.slash.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 12, height: 12)
-                            .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
+                    if searchVM.isInSearchMode {
+                        Text(searchVM.attributdTitle(for: thread.titleRTLString))
+                            .lineLimit(1)
+                            .font(.iransansSubheadline)
+                            .fontWeight(.semibold)
+                    } else {
+                        let title = thread.titleRTLString
+                        Text(title)
+                            .lineLimit(1)
+                            .font(.iransansSubheadline)
+                            .fontWeight(.semibold)
+                            .animation(.easeInOut, value: title)
                     }
-                    Spacer()
-                    if thread.pin == true {
-                        Image(systemName: "pin.fill")
+
+                    if thread.isTalk {
+                        Image("ic_approved")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
+                            .offset(x: -4)
                     }
 
+                    Spacer()
+                    MutableMessageStatusView(isSelected: isSelected)
+                        .environmentObject(thread)
                     ThreadTimeText(thread: thread, isSelected: isSelected)
+                        .id(thread.time)
                 }
                 HStack {
                     SecondaryMessageView(isSelected: isSelected, thread: thread)
+                        .id(thread.lastMessageVO?.id)
                         .environmentObject(viewModel.threadEventModels.first{$0.threadId == thread.id} ?? .init(threadId: thread.id ?? 0))
                     Spacer()
-                    ThreadUnreadCount(isSelected: isSelected)
-                        .environmentObject(thread)
-                    ThreadMentionSign()
-                        .environmentObject(thread)
+                    if isInForwardMode == nil {
+                        ThreadMentionSign()
+                            .id(thread.mentioned)
+                            .environmentObject(thread)
+                        ThreadUnreadCount(isSelected: isSelected)
+                            .id(thread.unreadCount)
+                            .environmentObject(thread)
+                    }
                 }
             }
             .contentShape(Rectangle())
@@ -93,7 +105,8 @@ struct ThreadRow: View {
         .customContextMenu(
             id: thread.id,
             self: ThreadRowSelfContextMenu(thread: thread, viewModel: viewModel),
-            addedX: 8
+            addedX: 8,
+            disable: isInForwardMode == true
         ) {
             onTap?()
         } menus: {
@@ -108,7 +121,7 @@ struct ThreadRow: View {
 
     private func setSelection() {
         if AppState.shared.objectsContainer.navVM.selectedId == thread.id {
-            isSelected = forceSelected ?? (AppState.shared.objectsContainer.navVM.selectedId == thread.id)
+            isSelected = isInForwardMode == true ? false : (AppState.shared.objectsContainer.navVM.selectedId == thread.id)
         } else if isSelected == true {
             isSelected = false
         }
@@ -225,6 +238,7 @@ struct ThreadTimeText: View {
                 Text(timeString)
                     .lineLimit(1)
                     .font(.iransansCaption2)
+                    .fontWeight(.medium)
                     .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
             }
         }

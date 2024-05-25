@@ -186,38 +186,56 @@ public extension Message {
         let effectedParticipantsName = addRemoveParticipant?.participnats?.compactMap{$0.name}.joined(separator: ", ") ?? ""
         switch requestType {
         case .leaveThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", comment: ""), participantName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", bundle: Language.preferedBundle, comment: ""), participantName)
         case .joinThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", bundle: Language.preferedBundle, comment: ""), participantName)
         case .removedFromThread:
             if isMe {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe" , comment: ""), effectedName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe", bundle: Language.preferedBundle, comment: ""), effectedName)
             } else {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", bundle: Language.preferedBundle, comment: ""), participantName, effectedName)
             }
         case .addParticipant:
             if isMe {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", comment: ""), effectedParticipantsName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", bundle: Language.preferedBundle, comment: ""), effectedParticipantsName)
             } else {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedParticipantsName)
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", bundle: Language.preferedBundle, comment: ""), participantName, effectedParticipantsName)
             }
         default:
             return nil
         }
     }
 
-    class func makeRequest(model: SendMessageModel) -> (message: Message,req: SendTextMessageRequest) {
+    class func makeRequest(model: SendMessageModel, checkLink: Bool = false) -> (message: Message, req: SendTextMessageRequest) {
+        let type = modelMessageType(model.textMessage, checkLink)
         let req = SendTextMessageRequest(threadId: model.threadId,
                                          textMessage: model.textMessage,
-                                         messageType: .text)
+                                         messageType: type)
         let message = Message(threadId: model.threadId,
                               message: model.textMessage,
-                              messageType: .text,
+                              messageType: type,
                               ownerId: model.meId,
                               time: UInt(Date().millisecondsSince1970),
                               uniqueId: req.uniqueId,
                               conversation: model.conversation)
         return (message, req)
+    }
+
+    class private func modelMessageType(_ textMessage: String, _ checkLink: Bool) ->  ChatModels.MessageType {
+        if checkLink {
+            return hasLink(textMessage) ? .link : .text
+        } else {
+            return .text
+        }
+    }
+
+    class private func hasLink(_ message: String) -> Bool {
+        if let linkRegex = NSRegularExpression.urlRegEx {
+            let allRange = NSRange(message.startIndex..., in: message)
+            return linkRegex.firstMatch(in: message, range: allRange) != nil
+        } else {
+            return false
+        }
     }
 }
 

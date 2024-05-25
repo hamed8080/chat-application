@@ -88,11 +88,11 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         currentTime = duration
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
             var transaction = Transaction(animation: .none)
-            transaction.disablesAnimations = true
+            transaction.disablesAnimations = false
             withTransaction(transaction) {
                 self?.isPlaying = false
                 self?.currentTime = self?.duration ?? 0
-                self?.stopTimer()
+                self?.close()
             }
         }
     }

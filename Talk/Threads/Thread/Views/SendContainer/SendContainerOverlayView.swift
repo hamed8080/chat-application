@@ -11,7 +11,6 @@ import TalkUI
 
 struct SendContainerOverlayView: View {
     @EnvironmentObject var viewModel: SendContainerViewModel
-    @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -29,20 +28,20 @@ struct SendContainerOverlayView: View {
 //                AttachmentFiles()
 //                    .environmentObject(threadVM.attachmentsViewModel)
 //                    .padding(.top, threadVM.attachmentsViewModel.attachments.count > 0 ? 8 : 0)
-                SendContainer(threadVM: threadVM)
+//                SendContainer(threadVM: threadVM)
             }
             .background(
                 MixMaterialBackground()
-                    .cornerRadius(viewModel.showActionButtons && threadVM.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
-                    .ignoresSafeArea()
-                    .background(
-                        GeometryReader { reader in
-                            Color.clear.ignoresSafeArea()
-                                .onAppear {
-                                    threadVM.sendContainerViewModel.height = reader.size.height + 24
-                                }
-                        }
-                    )
+//                    .cornerRadius(viewModel.showActionButtons && threadVM.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
+//                    .ignoresSafeArea()
+//                    .background(
+//                        GeometryReader { reader in
+//                            Color.clear.ignoresSafeArea()
+//                                .onAppear {
+//                                    threadVM.sendContainerViewModel.height = reader.size.height + 24
+//                                }
+//                        }
+//                    )
             )
         }
     }

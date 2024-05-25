@@ -10,6 +10,7 @@ import Foundation
 import TalkModels
 
 public extension Conversation {
+    private static let talkId = 49383566
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateValues(_ newThread: Conversation) {
         admin = newThread.admin ?? admin
@@ -79,8 +80,17 @@ public extension Conversation {
     }
 
     var computedTitle: String {
-        if type == .selfThread { return String(localized: .init("Thread.selfThread")) }
+        if type == .selfThread {
+            return String(localized: .init("Thread.selfThread"), bundle: Language.preferedBundle)            
+        }
         return title ?? ""
+    }
+
+
+    static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
+
+    var titleRTLString: String {
+        return Message.textDirectionMark + computedTitle
     }
 
     var disableSend: Bool {
@@ -93,4 +103,11 @@ public extension Conversation {
             return true
         }
     }
+    
+    var isTalk: Bool {
+        return inviter?.coreUserId == Conversation.talkId
+    }
 }
+
+/// It needs to be ObservableObject because when a message is seen deleted... the object needs to update not the whole Thread ViewModel.
+extension Conversation: ObservableObject {}

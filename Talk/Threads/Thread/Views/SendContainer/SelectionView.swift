@@ -89,7 +89,7 @@ public final class SelectionView: UIStackView {
     }
 
     @objc private func deleteSelectedMessageTapped(_ sender: UIButton) {
-        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: viewModel)))
+        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init()))
     }
 
     private func set() {

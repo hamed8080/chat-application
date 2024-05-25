@@ -24,22 +24,24 @@ struct LeaveThreadDialog: View {
 
             HStack {
                 Button {
+                    container.threadsVM.leave(conversation)
+                    container.appOverlayVM.dialogView = nil
+                } label: {
+                    Text("Thread.leaveButton")
+                        .foregroundStyle(Color.App.accent)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
+                }
+
+                Button {
                     container.appOverlayVM.dialogView = nil
                 } label: {
                     Text("General.cancel")
                         .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
-                }
-
-                Button {
-                    container.threadsVM.leave(conversation)
-                    container.appOverlayVM.dialogView = nil
-                } label: {
-                    Text("Thread.leaveButton")
-                        .foregroundStyle(Color.App.red)
-                        .font(.iransansBody)
-                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
                 }
             }
         }

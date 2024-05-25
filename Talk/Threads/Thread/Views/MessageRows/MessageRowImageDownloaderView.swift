@@ -77,7 +77,7 @@ final class MessageRowImageDownloaderView: UIImageView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        image = viewModel.image
+        image = viewModel.calculatedMessage.image
         stack.isHidden = viewModel.downloadFileVM == nil
         effectView.isHidden = viewModel.downloadFileVM == nil
         isHidden = !viewModel.rowType.isImage
@@ -111,7 +111,7 @@ final class MessageRowImageDownloaderView: UIImageView {
     private func computedFileSize(viewModel: MessageRowViewModel) -> String? {
         let message = viewModel.message
         let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-        let realServerFileSize = viewModel.fileMetaData?.file?.size
+        let realServerFileSize = viewModel.calculatedMessage.fileMetaData?.file?.size
         let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale)
         return fileSize
     }

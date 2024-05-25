@@ -11,6 +11,7 @@
 "Errors.Login.invalidPhoneNumber" = "Bitte geben Sie eine korrekte Telefonnummer ein";
 "Errors.failedTryAgain" = "Es ist ein Fehler aufgetreten! Versuchen Sie es erneut.";
 "Errors.Login.Verify.incorrectCode" = "Ihr Bestätigungscode ist inkorrekt.";
+"Errors.hasAlreadyJoinedError" = "Sie sind der Gruppe bereits beigetreten.";
 
 /* General */
 "General.next" = "Weiter";
@@ -27,7 +28,6 @@
 "General.typeMessageHere" = "Hier Nachricht eingeben...";
 "General.more" = "Mehr";
 "General.notSpecified" = "Nicht angegeben";
-"General.unknown" = "Unbekannt";
 "General.block" = "Blockieren";
 "General.unblock" = "Entsperren";
 "General.blocked" = "Blockiert";
@@ -69,6 +69,11 @@
 "General.copied" = "In die Zwischenablage kopiert.";
 "General.ban" = "Der Server hat Sie für %@ Sekunden gesperrt.";
 "General.addText" = "Text hinzufügen";
+"General.you" = "Du";
+"Genral.mineSendVerb" = "%@ abgeschickt";
+"General.thirdSentVerb" = "Sie haben eine %@ gesendet";
+"General.noDescription" = "Keine Beschreibung!";
+"General.noResult" = "Es gibt kein Ergebnis";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -107,9 +112,14 @@
 "Contacts.createChannel" = "Einen Kanal erstellen";
 "Contacts.addContact" = "Einen Kontakt hinzufügen";
 "Contacts.sortLabel" = "Nach zuletzt besuchter Zeit sortiert";
+"Contacts.lastSeen.lately" = "vor ein paar Augenblicken";
+"Contacts.lastSeen.todayAt" = "heute um %@";
+"Contacts.lastSeen.thisWeek" = "diese Woche";
+"Contacts.lastSeen.unknown" = "Unbekannt";
 "Contacts.lastVisited" = "Zuletzt besucht %@";
 "Contacts.selectContacts" = "Kontakte auswählen";
 "Contctas.notFound" = "Der Kontakt wurde nicht gefunden.";
+"Contctas.list.notFound" = "Benutzer nicht gefunden";
 "ConversationBuilder.enterGroupName" = "Gib den Gruppennamen ein";
 "ConversationBuilder.enterChannelName" = "Geben Sie den Kanalnamen ein";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Bitte geben Sie den Namen der Konversation ein. (mindestens zwei Zeichen)";
@@ -123,6 +133,14 @@
 "Call.started" = "Gestartet";
 "Call.ended" = "Beendet";
 "Call.leave" = "Verlassen";
+"CallStatus.requested" = "Angefordert";
+"CallStatus.canceled" = "Abgebrochen";
+"CallStatus.miss" = "Verpasst";
+"CallStatus.declined" = "Abgelehnt";
+"CallStatus.accepted" = "Akzeptiert";
+"CallStatus.started" = "Gestartet";
+"CallStatus.ended" = "Beendet";
+"CallStatus.leave" = "Verlassen";
 
 /* Invitee */
 "Invitee.ssoId" = "SSO-ID";
@@ -219,7 +237,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.accessLocaitonPermission" = "Gehen Sie bitte zu „Einstellungen“ > „Sprechen“ und aktivieren Sie dann den Standortzugriff.";
 "Thread.Row.lastMessageSender" = "%@:";
-"Thread.createdAConversation" = "%@ hat eine Unterhaltung erstellt.";
+"Thread.createdAGroup" = "%@ eine Gruppe erstellt.";
+"Thread.createdAChannel" = "%@ einen Kanal erstellt.";
 "Thread.Toolbar.participants" = "Teilnehmer";
 "Thread.sendAttachments" = "Senden Sie %@ Dateien";
 "Thread.public" = "%@ %@";
@@ -325,6 +344,7 @@
 "Settings.darkModeEnabled" = "Dunkler Modus";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk wurde 2016 geboren. Dieser Messenger wurde mit dem Ziel produziert und entwickelt, eine tiefe und konstruktive Kommunikation zu schaffen und organisatorische und nicht-organisatorische Bedürfnisse zu verstehen. Es besteht die Hoffnung, dass Tak unter den aktuellen Bedingungen jeden Tag einen größeren Schritt auf dem Weg der nachhaltigen Entwicklung und der Schaffung einer sicheren und schnellen Plattform machen wird.";
 "Support.number" = "021-91033000 intern 9";
@@ -357,6 +377,7 @@
 "Messages.ActionMenu.pinMessage" = "Anheften";
 "Messages.ActionMenu.unpinMessage" = "Lösen";
 "Messages.ActionMenu.saveImage" = "In Fotos speichern";
+"Messages.ActionMenu.messageDetail" = "Nachrichtendetails";
 "Messages.unreadMessages" = "Ungelesene Nachrichten";
 "Messages.deleteForMe" = "Für mich löschen";
 "Messages.deleteForAll" = "Für alle löschen";
@@ -410,3 +431,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "Nur ungelesene Gespräche";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "Ausgewählten Standort senden";

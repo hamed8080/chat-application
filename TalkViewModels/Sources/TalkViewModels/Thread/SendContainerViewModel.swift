@@ -14,11 +14,12 @@ import Combine
 import TalkModels
 
 public final class SendContainerViewModel: ObservableObject {
-    private let thread: Conversation
-    public weak var threadVM: ThreadViewModel?
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation { viewModel?.thread ?? .init() }
     public var threadId: Int { thread.id ?? -1 }
-    private var textMessage: String
+    private var textMessage: String = ""
     private var cancelable: Set<AnyCancellable> = []
+    public var isInEditMode: Bool = false
     public var canShowMute: Bool {
         (thread.type?.isChannelType == true) &&
         (thread.admin == false || thread.admin == nil) &&
@@ -27,34 +28,22 @@ public final class SendContainerViewModel: ObservableObject {
     public var disableSend: Bool { thread.disableSend && isInEditMode == false && !canShowMute }
     public var showSendButton: Bool {
         !isTextEmpty() ||
-        threadVM?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
+        viewModel?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
         AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
     }
     public var showCamera: Bool { isTextEmpty() && isVideoRecordingSelected }
     public var showAudio: Bool { isTextEmpty() && !isVideoRecordingSelected && isVoice }
-    public var isVoice: Bool { threadVM?.attachmentsViewModel.attachments.count == 0 }
-    public var showRecordingView: Bool { threadVM?.audioRecoderVM.isRecording == true || threadVM?.audioRecoderVM.recordingOutputPath != nil }
+    public var isVoice: Bool { viewModel?.attachmentsViewModel.attachments.count == 0 }
+    public var showRecordingView: Bool { viewModel?.audioRecoderVM.isRecording == true || viewModel?.audioRecoderVM.recordingOutputPath != nil }
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
     public private(set) var showActionButtons: Bool = false
     public private(set) var focusOnTextInput: Bool = false
     public private(set) var isVideoRecordingSelected = false
-    public var isInEditMode: Bool { editMessage != nil }
     private var editMessage: Message?
     public var height: CGFloat = 0
-    private var draft: String {
-        get {
-            UserDefaults.standard.string(forKey: "draft-\(threadId)") ?? ""
-        }
-        set {
-            if newValue.isEmpty {
-                UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
-            } else {
-                UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
-            }
-        }
-    }
+    private let draftManager = DraftManager.shared
 
-    private var isDraft: Bool { !draft.isEmpty }
+    public init() {}
 
     public static func == (lhs: SendContainerViewModel, rhs: SendContainerViewModel) -> Bool {
         rhs.thread.id == lhs.thread.id
@@ -64,29 +53,31 @@ public final class SendContainerViewModel: ObservableObject {
         hasher.combine(thread)
     }
 
-    public init(thread: Conversation) {
-        textMessage = UserDefaults.standard.string(forKey: "draft-\(thread.id ?? 0)") ?? ""
-        self.thread = thread
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
+        let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId ?? -1
+        textMessage = draftManager.get(threadId: threadId) ?? draftManager.get(contactId: contactId) ?? ""
+        editMessage = getDraftEditMessage()
     }
 
-    private func onTextMessageChanged() {
+    private func onTextMessageChanged(_ newValue: String) {
         if Language.isRTL && textMessage.first != "\u{200f}" {
             textMessage = "\u{200f}\(textMessage)"
         }
-        threadVM?.mentionListPickerViewModel.text = textMessage
-        threadVM?.sendStartTyping(textMessage)
+        viewModel?.mentionListPickerViewModel.text = textMessage
+        viewModel?.sendStartTyping(textMessage)
         let isRTLChar = textMessage.count == 1 && textMessage.first == "\u{200f}"
         if !isTextEmpty() && !isRTLChar {
-            draft = textMessage
+            setDraft(newText: newValue)
         } else {
-            draft = ""
+            setDraft(newText: "")
         }
     }
 
     public func clear() {
         textMessage = ""
         editMessage = nil
-        animateObjectWillChange()
+        isInEditMode = false
     }
 
     public func isTextEmpty() -> Bool {
@@ -109,7 +100,7 @@ public final class SendContainerViewModel: ObservableObject {
 
     public func setText(newValue: String) {
         textMessage = newValue
-        onTextMessageChanged()
+        onTextMessageChanged(newValue)
         animateObjectWillChange()
     }
 
@@ -142,4 +133,39 @@ public final class SendContainerViewModel: ObservableObject {
             cancelable.cancel()
         }
     }
+
+    public func setDraft(newText: String) {
+        if !isSimulated {
+            draftManager.set(draftValue: newText, threadId: threadId)
+        } else if let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId {
+            draftManager.set(draftValue: newText, contactId: contactId)
+        }
+    }
+
+    /// If we are in edit mode drafts will not be changed.
+    private func onEditMessageChanged(_ editMessage: Message?) {
+        if editMessage != nil {
+            let text = editMessage?.message ?? ""
+
+            /// set edit message draft for the thread
+            setEditMessageDraft(editMessage)
+
+            /// It will trigger onTextMessageChanged method
+            if draftManager.get(threadId: threadId) == nil {
+                textMessage = text
+            }
+        } else {
+            setEditMessageDraft(nil)
+        }
+    }
+
+    private func setEditMessageDraft(_ editMessage: Message?) {
+        draftManager.setEditMessageDraft(editMessage, threadId: threadId)
+    }
+
+    private func getDraftEditMessage() -> Message? {
+        draftManager.editMessageText(threadId: threadId)
+    }
+
+    private var isSimulated: Bool { threadId == -1 || threadId == LocalId.emptyThread.rawValue }
 }

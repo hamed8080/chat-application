@@ -10,6 +10,7 @@ import TalkViewModels
 
 public struct AppOverlayView<Content>: View where Content: View {
     @EnvironmentObject var viewModel: AppOverlayViewModel
+    @EnvironmentObject var galleryOffsetVM: GalleyOffsetViewModel
     let content: () -> Content
     let onDismiss: (() -> Void)?
 
@@ -34,12 +35,15 @@ public struct AppOverlayView<Content>: View where Content: View {
                     .clipShape(RoundedRectangle(cornerRadius:(viewModel.radius)))
             }
 
-            if viewModel.showCloseButton && viewModel.isPresented {
+            if viewModel.showCloseButton && viewModel.isPresented && !viewModel.isError {
                 DismissAppOverlayButton()
             }
         }
         .ignoresSafeArea(.all)
+        .offset(y: galleryOffsetVM.containerYOffset)
+        .animation(.easeInOut, value: galleryOffsetVM.containerYOffset)
         .animation(animtion, value: viewModel.isPresented)
+        .simultaneousGesture(dragGesture)
         .onChange(of: viewModel.isPresented) { newValue in
             if newValue == false {
                 onDismiss?()
@@ -54,19 +58,26 @@ public struct AppOverlayView<Content>: View where Content: View {
             return Animation.easeInOut
         }
     }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                galleryOffsetVM.onContainerDragChanged(value)
+            }
+            .onEnded { endValue in
+                galleryOffsetVM.onContainerDragEnded(endValue)
+            }
+    }
 }
 
 struct DismissAppOverlayButton: View {
-    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
+    @EnvironmentObject var galleryOffsetVM: GalleyOffsetViewModel
 
     var body: some View {
         GeometryReader { reader in
             VStack {
                 Button {
-                    withAnimation {
-                        appOverlayVM.isPresented = false
-                        appOverlayVM.clear()
-                    }
+                    galleryOffsetVM.dismiss()
                 } label: {
                     Image(systemName: "xmark")
                         .resizable()

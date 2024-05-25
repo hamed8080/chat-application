@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import TalkModels
 
 struct AddParticipantsToThreadView: View {
     @EnvironmentObject var contactsVM: ContactsViewModel
@@ -19,14 +20,18 @@ struct AddParticipantsToThreadView: View {
         List {
             if contactsVM.searchedContacts.count > 0 {
                 ForEach(contactsVM.searchedContacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: true)
+                    ContactRowContainer(isSearchRow: true)
+                        .environmentObject(contact)
                 }
             } else {
                 ForEach(contactsVM.contacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: false)
+                    ContactRowContainer(isSearchRow: false)
+                        .environmentObject(contact)
                         .onAppear {
-                            if contactsVM.contacts.last == contact {
-                                contactsVM.loadMore()
+                            Task {
+                                if contactsVM.contacts.last == contact {
+                                    await contactsVM.loadMore()
+                                }
                             }
                         }
                 }
@@ -43,7 +48,7 @@ struct AddParticipantsToThreadView: View {
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
-                TextField("General.searchHere", text: $contactsVM.searchContactString)
+                TextField("General.searchHere".bundleLocalized(), text: $contactsVM.searchContactString)
                     .frame(height: 48)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)

@@ -85,10 +85,12 @@ public final class VideoPlayerView: UIView {
     
     public func setValues(viewModel: MessageRowViewModel) {
         guard let fileURL = viewModel.downloadFileVM?.fileURL else { return }
+        let mtd = viewModel.calculatedMessage.fileMetaData
+        let file = mtd?.file
         let videoVM = VideoPlayerViewModel(fileURL: fileURL,
-                             ext: viewModel.fileMetaData?.file?.mimeType?.ext,
-                             title: viewModel.fileMetaData?.name,
-                             subtitle: viewModel.fileMetaData?.file?.originalName ?? "")
+                                           ext: file?.mimeType?.ext,
+                                           title: mtd?.name,
+                                           subtitle: file?.originalName ?? "")
         if let player = videoVM.player {
 
         }
@@ -171,14 +173,5 @@ public extension AVPlayerViewController {
     func exitFullScreen(animated: Bool) {
         logger.info("Exit full screen")
         perform(NSSelectorFromString("exitFullScreenAnimated:completionHandler:"), with: animated, with: nil)
-    }
-}
-
-
-struct VideoPlayerView_Previews: PreviewProvider {
-    static var previews: some View {
-        let viewModel = VideoPlayerViewModel(fileURL: URL(filePath: "/Users/hamed/Desktop/Workspace/ios/Fanap/Talk/Talk/Supporting Files/webrtc_user_a.mp4"), directLink: true)
-        VideoPlayerViewWapper(viewModel: .init(message: .init(), viewModel: .init(thread: .init())))
-            .frame(width: 480, height: 400)
     }
 }

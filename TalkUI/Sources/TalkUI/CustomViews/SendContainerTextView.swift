@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import TalkModels
 
 public final class SendContainerTextView: UITextView, UITextViewDelegate {
     public var mention: Bool = false
@@ -44,13 +45,14 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         placeholderLabel.text = "Thread.SendContainer.typeMessageHere".localized()
         placeholderLabel.textColor = Color.App.textPrimaryUIColor?.withAlphaComponent(0.7)
         placeholderLabel.font = UIFont.uiiransansBody
-        placeholderLabel.textAlignment = .left
+        placeholderLabel.textAlignment = Language.isRTL ? .right : .left
         placeholderLabel.isUserInteractionEnabled = false
         addSubview(placeholderLabel)
         heightConstraint = heightAnchor.constraint(equalToConstant: initSize)
 
         NSLayoutConstraint.activate([
             heightConstraint,
+            placeholderLabel.widthAnchor.constraint(equalTo: widthAnchor),
             placeholderLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
             placeholderLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             placeholderLabel.centerYAnchor.constraint(equalTo: centerYAnchor),

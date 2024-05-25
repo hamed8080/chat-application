@@ -40,7 +40,7 @@ public struct SubmitBottomButton: View {
             } label: {
                 HStack(spacing: 8) {
                     Spacer()
-                    Text(String(localized: .init(text)))
+                    Text(text)
                         .font(.iransansBody)
                         .contentShape(Rectangle())
                         .foregroundStyle(Color.App.textPrimary)
@@ -159,7 +159,7 @@ public struct SubmitBottomLabel: View {
         HStack {
             HStack(spacing: 8) {
                 Spacer()
-                Text(String(localized: .init(text)))
+                Text(text)
                     .font(.iransansBody)
                     .contentShape(Rectangle())
                     .foregroundStyle(Color.App.textPrimary)

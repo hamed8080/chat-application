@@ -18,41 +18,54 @@ import TalkExtensions
 import ChatTransceiver
 
 public class ContactsViewModel: ObservableObject {
-    private var count = 15
-    private var offset = 0
-    private var hasNext: Bool = true
     public var selectedContacts: ContiguousArray<Contact> = []
     public var canceableSet: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
-    private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var maxContactsCountInServer = 0
     public var contacts: ContiguousArray<Contact> = []
     @Published public var searchType: SearchParticipantType = .name
     @Published public var searchedContacts: ContiguousArray<Contact> = []
-    @Published public var isLoading = false
     @Published public var searchContactString: String = ""
     public var blockedContacts: ContiguousArray<BlockedContactResponse> = []
-    @Published public var addContact: Contact?
-    @Published public var editContact: Contact?
+    public var addContact: Contact?
+    public var editContact: Contact?
     @Published public var showAddOrEditContactSheet = false
     public var isBuilder: Bool = false
-    @Published public var isInSelectionMode = false
-    @Published public var successAdded: Bool = false
-    @Published public var userNotFound: Bool = false
+    public var isInSelectionMode = false
+    public var successAdded: Bool = false
+    public var userNotFound: Bool = false
+    @MainActor public var lazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let GET_CONTACTS_KEY: String
+    private let SEARCH_CONTACTS_KEY: String
+    public var builderScrollProxy: ScrollViewProxy?
 
-    public init(isBuilder: Bool = false) {
+    nonisolated public init(isBuilder: Bool = false) {
         self.isBuilder = isBuilder
-        setupPublishers()
+        GET_CONTACTS_KEY = "GET-CONTACTS\(isBuilder ? "-BUILDER" : "")-\(objectId)"
+        SEARCH_CONTACTS_KEY = "SEARCH-CONTACTS\(isBuilder ? "-BUILDER" : "")-\(objectId)"
+        Task { @MainActor in
+            setupPublishers()
+        }
     }
 
     public func setupPublishers() {
-        AppState.shared.$connectionStatus
-            .sink { [weak self] status in
-            if self?.firstSuccessResponse == false, status == .connected {
-                self?.getContacts()
-                ChatManager.activeInstance?.contact.getBlockedList()
-                self?.sync()
+        Task { @MainActor in
+            lazyList.objectWillChange.sink { [weak self] _ in
+                self?.animateObjectWillChange()
             }
+            .store(in: &canceableSet)
+        }
+        AppState.shared.$connectionStatus
+            .sink { status in
+                Task { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    if firstSuccessResponse == false, status == .connected {
+                        await getContacts()
+                        ChatManager.activeInstance?.contact.getBlockedList()
+                        sync()
+                    }
+                }
         }
         .store(in: &canceableSet)
         $searchContactString
@@ -66,64 +79,94 @@ public class ContactsViewModel: ObservableObject {
         $searchContactString
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .filter { $0.count > 1 }
-            .removeDuplicates()
-            .sink { [weak self] searchText in
-                self?.searchContacts(searchText)
+            .sink { searchText in
+                Task { [weak self] in
+                    await self?.searchContacts(searchText)
+                }
             }
             .store(in: &canceableSet)
         NotificationCenter.contact.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
-            .sink{ [weak self] event in
-                self?.onContactEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onContactEvent(event)
+                }
+            }
+            .store(in: &canceableSet)
+
+        NotificationCenter.thread.publisher(for: .thread)
+            .map{$0.object as? ThreadEventTypes}
+            .sink { [weak self] event in
+                self?.onThreadEvent(event)
+            }
+            .store(in: &canceableSet)
+
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
+            .sink { [weak self] notif in
+                self?.onCancelTimer(notif.object as? String ?? "")
             }
             .store(in: &canceableSet)
     }
 
-    public func onContactEvent(_ event: ContactEventTypes?) {
+    private func onContactEvent(_ event: ContactEventTypes?) async {
         switch event {
         case let .contacts(response):
-            onSearchContacts(response)
-            onContacts(response)
+            await onSearchContacts(response)
+            await onContacts(response)
         case let .add(response):
-            onAddContacts(response)
+            await onAddContacts(response)
         case let .delete(response, deleted):
-            onDeleteContacts(response, deleted)
+            await onDeleteContacts(response, deleted)
         case let .blocked(response):
-            onBlockResponse(response)
+            await onBlockResponse(response)
         case let .unblocked(response):
-            onUNBlockResponse(response)
+            await onUNBlockResponse(response)
         case let .blockedList(response):
-            onBlockedList(response)
+            await onBlockedList(response)
         default:
             break
         }
     }
 
-    public func onContacts(_ response: ChatResponse<[Contact]>) {
-        if !response.cache, response.pop(prepend: "GET-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
+    private func onThreadEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .updatedInfo(let response):
+            onUpdatePartnerContact(response)
+        default:
+            break
+        }
+    }
+
+    @MainActor
+    public func onContacts(_ response: ChatResponse<[Contact]>) async {
+        if !response.cache, response.pop(prepend: GET_CONTACTS_KEY) != nil {
             if let contacts = response.result {
                 firstSuccessResponse = !response.cache
                 appendOrUpdateContact(contacts)
                 setMaxContactsCountInServer(count: response.contentCount ?? 0)
             }
-            hasNext = response.hasNext
-            isLoading = false
+            lazyList.setHasNext(response.hasNext)
+            lazyList.setLoading(false)
+            lazyList.setThreasholdIds(ids: self.contacts.suffix(5).compactMap{$0.id})
         }
     }
 
-    func onBlockedList(_ response: ChatResponse<[BlockedContactResponse]>) {
+    @MainActor
+    func onBlockedList(_ response: ChatResponse<[BlockedContactResponse]>) async {
         blockedContacts = .init(response.result ?? [])
     }
 
-    public func getContacts() {
-        isLoading = true
-        let req = ContactsRequest(count: count, offset: offset)
-        RequestsManager.shared.append(prepend: "GET-CONTACTS\(isBuilder ? "-Builder" : "")", value: req)
+    @MainActor
+    public func getContacts() async {
+        lazyList.setLoading(true)
+        let req = ContactsRequest(count: lazyList.count, offset: lazyList.offset)
+        RequestsManager.shared.append(prepend: GET_CONTACTS_KEY, value: req)
         ChatManager.activeInstance?.contact.get(req)
     }
 
-    public func searchContacts(_ searchText: String) {
-        isLoading = true
+    @MainActor
+    public func searchContacts(_ searchText: String) async {
+        lazyList.setLoading(true)
         let req: ContactsRequest
         if searchType == .username {
             req = ContactsRequest(userName: searchText)
@@ -132,11 +175,12 @@ public class ContactsViewModel: ObservableObject {
         } else {
             req = ContactsRequest(query: searchText)
         }
-        RequestsManager.shared.append(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")", value: req)
+        RequestsManager.shared.append(prepend: SEARCH_CONTACTS_KEY, value: req)
         ChatManager.activeInstance?.contact.search(req)
     }
 
-    public func onDeleteContacts(_ response: ChatResponse<[Contact]>, _ deleted: Bool) {
+    @MainActor
+    public func onDeleteContacts(_ response: ChatResponse<[Contact]>, _ deleted: Bool) async {
         if deleted {
             response.result?.forEach{ contact in
                 searchedContacts.removeAll(where: {$0.id == contact.id})
@@ -146,27 +190,29 @@ public class ContactsViewModel: ObservableObject {
         }
     }
 
-    public func loadMore() {
-        if !canLoadNextPage { return }
-        preparePaginiation()
-        getContacts()
+    @MainActor
+    public func loadMore() async {
+        if await !lazyList.canLoadMore() { return }
+        lazyList.prepareForLoadMore()
+        await getContacts()
     }
 
-    public func preparePaginiation() {
-        offset = count + offset
+    @MainActor
+    public func loadMore(id: Int?) async {
+        if await !lazyList.canLoadMore(id: id) { return }
+        await loadMore()
     }
 
-    public func refresh() {
-        clear()
-        getContacts()
+    public func refresh() async {
+        await clear()
+        await getContacts()
     }
 
-    public func clear() {
+    @MainActor
+    public func clear() async {
         searchContactString = ""
         firstSuccessResponse = false
-        hasNext = true
-        offset = 0
-        count = 15
+        lazyList.reset()
         showAddOrEditContactSheet = false
         isInSelectionMode = false
         addContact = nil
@@ -219,8 +265,9 @@ public class ContactsViewModel: ObservableObject {
         animateObjectWillChange()
     }
 
-    public func onAddContacts(_ response: ChatResponse<[Contact]>) {
-        if !response.cache, response.pop(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")") == nil { return }
+    @MainActor
+    public func onAddContacts(_ response: ChatResponse<[Contact]>) async {
+        if response.cache { return }
         if response.error == nil, let contacts = response.result {
             contacts.forEach { newContact in
                 if let index = self.contacts.firstIndex(where: {$0.id == newContact.id }) {
@@ -228,6 +275,7 @@ public class ContactsViewModel: ObservableObject {
                 } else {
                     self.contacts.insert(newContact, at: 0)
                 }
+                updateActiveThreadsContactName(contact: newContact)
             }
             editContact = nil
             showAddOrEditContactSheet = false
@@ -236,7 +284,7 @@ public class ContactsViewModel: ObservableObject {
         } else if let error = response.error, error.code == 78 {
             userNotFound = true
         }
-        isLoading = false
+        lazyList.setLoading(false)
         animateObjectWillChange()
     }
 
@@ -259,25 +307,30 @@ public class ContactsViewModel: ObservableObject {
         selectedContacts.remove(at: index)
     }
 
-    public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
-        if !response.cache, response.pop(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
-            isLoading = false
+    @MainActor
+    public func onSearchContacts(_ response: ChatResponse<[Contact]>) async {
+        if !response.cache, response.pop(prepend: SEARCH_CONTACTS_KEY) != nil {
+            lazyList.setLoading(false)
             searchedContacts = .init(response.result ?? [])
+            try? await Task.sleep(for: .milliseconds(200)) /// To scroll properly
+            withAnimation {
+                builderScrollProxy?.scrollTo("SearchRow-\(searchedContacts.first?.id ?? 0)", anchor: .top)
+            }
         }
     }
 
-    public func addContact(contactValue: String, firstName: String?, lastName: String?) {
-        isLoading = true
+    @MainActor
+    public func addContact(contactValue: String, firstName: String?, lastName: String?) async {
+        lazyList.setLoading(true)
         let isNumber = ContactsViewModel.isNumber(value: contactValue)
         if isNumber && contactValue.count < 10 {
             userNotFound = true
-            isLoading = false
+            lazyList.setLoading(false)
             return
         }
         let req: AddContactRequest = isNumber ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
-        RequestsManager.shared.append(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")", value: req)
         ChatManager.activeInstance?.contact.add(req)
     }
 
@@ -307,7 +360,8 @@ public class ContactsViewModel: ObservableObject {
         ChatManager.activeInstance?.contact.unBlock(req)
     }
 
-    public func onBlockResponse(_ response: ChatResponse<BlockedContactResponse>) {
+    @MainActor
+    public func onBlockResponse(_ response: ChatResponse<BlockedContactResponse>) async {
         if let result = response.result {
             contacts.first(where: { $0.id == result.contact?.id })?.blocked = true
             blockedContacts.append(result)
@@ -315,7 +369,8 @@ public class ContactsViewModel: ObservableObject {
         }
     }
 
-    public func onUNBlockResponse(_ response: ChatResponse<BlockedContactResponse>) {
+    @MainActor
+    public func onUNBlockResponse(_ response: ChatResponse<BlockedContactResponse>) async {
         if let result = response.result {
             contacts.first(where: { $0.id == result.contact?.id })?.blocked = false
             blockedContacts.removeAll(where: {$0.coreUserId == response.result?.coreUserId})
@@ -341,6 +396,44 @@ public class ContactsViewModel: ObservableObject {
     public func sync() {
         if UserDefaults.standard.bool(forKey: "sync_contacts") == true {
             ChatManager.activeInstance?.contact.sync()
+        }
+    }
+
+    public func updateActiveThreadsContactName(contact: Contact) {
+        AppState.shared.objectsContainer.navVM.pathsTracking
+            .compactMap{$0 as? ConversationNavigationValue}
+            .compactMap{$0.viewModel}
+            .compactMap{$0.historyVM}
+            .compactMap{$0.sections}
+            .flatMap{$0}
+            .compactMap{$0.vms}
+            .flatMap{$0}
+            .filter{$0.message.participant?.id == contact.id}
+            .forEach { viewModel in
+                viewModel.message.participant?.contactName = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
+                viewModel.message.participant?.name = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
+                viewModel.animateObjectWillChange()
+            }
+    }
+
+    private func onUpdatePartnerContact(_ response: ChatResponse<Conversation>) {
+        if let index = contacts.firstIndex(where: {$0.userId == response.result?.partner }) {
+            let split = response.result?.title?.split(separator: " ")
+            if let firstName = split?.first {
+                contacts[index].firstName = String(firstName)
+            }
+            if let lastName = split?.dropFirst().joined(separator: " ") {
+                contacts[index].lastName = String(lastName)
+            }
+            animateObjectWillChange()
+        }
+    }
+
+    private func onCancelTimer(_ key: String) {
+        Task { @MainActor in
+            if key.contains("Add-Contact-ContactsViewModel") {
+                lazyList.setLoading(false)
+            }
         }
     }
 }

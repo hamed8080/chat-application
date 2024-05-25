@@ -13,12 +13,14 @@ import Chat
 import Combine
 import SwiftUI
 import ChatCore
+import TalkModels
 
 public protocol ThreadPinMessageViewModelDelegate: AnyObject {
     func onUpdate()
 }
 
 public final class ThreadPinMessageViewModel: ObservableObject {
+    private weak var viewModel: ThreadViewModel?
     public private(set) var text: String? = nil
     public private(set) var image: UIImage? = nil
     public private(set) var message: PinMessage?
@@ -28,14 +30,16 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     public private(set) var title: String = ""
     public private(set) var hasPinMessage: Bool = false
     public private(set) var canUnpinMessage: Bool = false
-    private let thread: Conversation
+    private var thread: Conversation { viewModel?.thread ?? .init() }
     private var cancelable: Set<AnyCancellable> = []
     var threadId: Int {thread.id ?? -1}
     public weak var historyVM: ThreadHistoryViewModel?
     public weak var delegate: ThreadPinMessageViewModelDelegate?
 
-    public init(thread: Conversation) {
-        self.thread = thread
+    public init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         message = thread.pinMessage
         setupObservers()
     }
@@ -103,8 +107,9 @@ public final class ThreadPinMessageViewModel: ObservableObject {
 
     public func calculate() async {
         let hasPinMessage = message != nil
+        let isFileType = fileMetadata != nil
         let icon = fileMetadata?.file?.mimeType?.systemImageNameForFileExtension
-        let isEnglish = message?.text?.naturalTextAlignment == .leading
+        let isEnglish = isFileType && Language.isRTL ? false : message?.text?.naturalTextAlignment == .leading
         let title = messageText
         let canUnpinMessage = thread.admin == true
         await MainActor.run {

@@ -9,9 +9,8 @@ import Foundation
 import ChatModels
 
 public enum NavigationType: Hashable {
-    case threadViewModel(ThreadViewModel)
-    case contact(Contact)
-    case threadDetil(ThreadDetailViewModel)
+    case threadViewModel(ConversationNavigationValue)
+    case threadDetail(ConversationDetailNavigationValue)
     case preference(PreferenceNavigationValue)
     case assistant(AssistantNavigationValue)
     case log(LogNavigationValue)

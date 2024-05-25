@@ -24,12 +24,15 @@ let package = Package(
         .target(
             name: "TalkModels",
             dependencies: [
-                "Chat",
+                .product(name: "Chat", package: "Chat"),
             ]
         ),
         .testTarget(
             name: "TalkModelsTests",
-            dependencies: ["TalkModels"],
+            dependencies: [
+                "TalkModels",
+                .product(name: "Chat", package: "Chat"),
+            ],
             resources: [
                 .copy("Resources/icon.png")
             ]

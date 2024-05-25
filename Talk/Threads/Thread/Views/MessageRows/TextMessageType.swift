@@ -132,18 +132,19 @@ final class TextMessageContainer: UIStackView {
         uploadFile.set(viewModel)
         fotterView.set(viewModel)
         isUserInteractionEnabled = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
-        backgroundColor = viewModel.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
-        if viewModel.isLastMessageOfTheUser && !viewModel.isMe {
+        backgroundColor = viewModel.calculatedMessage.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        if viewModel.calculatedMessage.isLastMessageOfTheUser && !viewModel.calculatedMessage.isMe {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
             tailImageView.isHidden = false
         } else {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
             tailImageView.isHidden = true
         }
+        tailImageView.tintColor = viewModel.calculatedMessage.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
 
         if viewModel.rowType.isImage {
-            imageViewWidthConstraint.constant = viewModel.imageWidth ?? 128
-            imageViewHeightConstraint.constant = viewModel.imageHeight ?? 128
+            imageViewWidthConstraint.constant = viewModel.sizes.imageWidth ?? 128
+            imageViewHeightConstraint.constant = viewModel.sizes.imageHeight ?? 128
         } else {
             imageViewWidthConstraint.constant = 0
             imageViewHeightConstraint.constant = 0
@@ -201,7 +202,7 @@ extension TextMessageContainer {
         }
         menus.append(replyAction)
 
-        if threadVM?.thread.group == true, !viewModel.isMe {
+        if threadVM?.thread.group == true, !viewModel.calculatedMessage.isMe {
             let replyPrivatelyAction = UIAction(title: "Messages.ActionMenu.replyPrivately".localized(), image: UIImage(systemName: "arrowshape.turn.up.left")) { [weak self] _ in
                 self?.onReplyPrivatelyAction(model)
             }
@@ -213,7 +214,7 @@ extension TextMessageContainer {
         }
         menus.append(forwardAction)
 
-        if viewModel.canEdit {
+        if viewModel.calculatedMessage.canEdit {
             let emptyText = message.message == nil || message.message == ""
             let title = emptyText ? "General.addText".localized() : "General.edit".localized()
             let editAction = UIAction(title: title, image: UIImage(systemName: "pencil.circle")) { [weak self] _ in
@@ -264,7 +265,7 @@ extension TextMessageContainer {
         }
         menus.append(selectAction)
 
-        let isDeletable = DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.isMe, message: viewModel.message, thread: threadVM?.thread)
+        let isDeletable = DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.calculatedMessage.isMe, message: viewModel.message, thread: threadVM?.thread)
         if isDeletable {
             let deleteAction = UIAction(title: "General.delete".localized(), image: UIImage(systemName: "trash"), attributes: [.destructive]) { [weak self] _ in
                 self?.onDeleteAction(model)
@@ -298,7 +299,7 @@ extension TextMessageContainer {
 
     private func onSeenListAction(_ model: ActionModel) {
         let value = MessageParticipantsSeenNavigationValue(message: model.viewModel.message, threadVM: model.threadVM!)
-        AppState.shared.objectsContainer.navVM.append(type: .messageParticipantsSeen(value), value: value)
+//        AppState.shared.objectsContainer.navVM.append(type: .messageParticipantsSeen(value), value: value)
     }
 
     private func onSaveAction(_ model: ActionModel) {
@@ -317,27 +318,27 @@ extension TextMessageContainer {
 
     private func onDeleteCacheAction(_ model: ActionModel) {
         model.threadVM?.clearCacheFile(message: model.message)
-        model.threadVM?.animateObjectWillChange()
+//        model.threadVM?.animateObjectWillChange()
     }
 
     private func onDeleteAction(_ model: ActionModel) {
         if let threadVM = model.threadVM {
-            model.viewModel.isSelected = true
-            let deleteVM = DeleteMessagesViewModelModel(threadVM: threadVM)
-            let dialog = DeleteMessageDialog(viewModel: deleteVM)
-            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
+            model.viewModel.state.isSelected = true
+//            let deleteVM = DeleteMessagesViewModelModel(threadVM: threadVM)
+//            let dialog = DeleteMessageDialog(viewModel: deleteVM)
+//            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
         }
     }
 
     private func onPinAction(_ model: ActionModel) {
-        let isPinned = model.message.id == model.threadVM?.thread.pinMessage?.id && model.threadVM?.thread.pinMessage != nil
-        if !isPinned, let threadVM = model.threadVM {
-            let dialog = PinMessageDialog(message: model.viewModel.message)
-                .environmentObject(threadVM)
-            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
-        } else {
-            model.threadVM?.threadPinMessageViewModel.unpinMessage(model.message.id ?? -1)
-        }
+//        let isPinned = model.message.id == model.threadVM?.thread.pinMessage?.id && model.threadVM?.thread.pinMessage != nil
+//        if !isPinned, let threadVM = model.threadVM {
+//            let dialog = PinMessageDialog(message: model.viewModel.message)
+//                .environmentObject(threadVM)
+//            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
+//        } else {
+//            model.threadVM?.threadPinMessageViewModel.unpinMessage(model.message.id ?? -1)
+//        }
     }
 
     private func onSelectAction(_ model: ActionModel) {
@@ -401,19 +402,19 @@ public class TextMessageBaseCellType: UITableViewCell {
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        hStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
-        messageContainer.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        hStack.semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        messageContainer.semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         avatar?.set(viewModel)
         messageContainer.set(viewModel)
         radio.isHidden = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
-        radio.set(selected: viewModel.isSelected)
+        radio.set(selected: viewModel.state.isSelected)
         setSelectedBackground()
     }
 
     func deselect() {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            viewModel.isSelected = false
+            viewModel.state.isSelected = false
             radio.set(selected: false)
             setSelectedBackground()
             viewModel.threadVM?.delegate?.updateCount()
@@ -423,7 +424,7 @@ public class TextMessageBaseCellType: UITableViewCell {
     func select() {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            viewModel.isSelected = true
+            viewModel.state.isSelected = true
             radio.set(selected: true)
             setSelectedBackground()
             viewModel.threadVM?.delegate?.updateCount()
@@ -442,7 +443,7 @@ public class TextMessageBaseCellType: UITableViewCell {
     }
 
     private func setSelectedBackground() {
-        if viewModel.isSelected {
+        if viewModel.state.isSelected {
             contentView.backgroundColor = Color.App.bgChatSelectedUIColor?.withAlphaComponent(0.8)
         } else {
             contentView.backgroundColor = nil
@@ -453,7 +454,12 @@ public class TextMessageBaseCellType: UITableViewCell {
 public final class TextMessagePartnerCellType: TextMessageBaseCellType {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+        let isRTL = Language.isRTL
+        if isRTL {
+            hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+        } else {
+            hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -465,7 +471,12 @@ public final class TextMessageMeCellType: TextMessageBaseCellType {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+        let isRTL = Language.isRTL
+        if isRTL {
+            hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+        } else {
+            hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+        }
     }
 
     required init?(coder: NSCoder) {

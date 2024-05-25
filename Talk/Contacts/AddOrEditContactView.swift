@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import TalkModels
 
 enum ContactType: String, Identifiable, CaseIterable {
     var id: Self { self }
@@ -45,21 +46,21 @@ struct AddOrEditContactView: View {
                         .padding()
                         .offset(y: 24)
                 }
-                TextField("General.firstName", text: $firstName)
+                TextField("General.firstName".bundleLocalized(), text: $firstName)
                     .focused($focusState, equals: .firstName)
                     .textContentType(.name)
                     .padding()
                     .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
                         focusState = .firstName
                     }
-                TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
+                TextField(optioanlAPpend(text: "General.lastName".bundleLocalized()), text: $lastName)
                     .focused($focusState, equals: .lastName)
                     .textContentType(.familyName)
                     .padding()
                     .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
                         focusState = .lastName
                     }
-                TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
+                TextField("Contacts.Add.phoneOrUserName".bundleLocalized(), text: $contactValue)
                     .focused($focusState, equals: .contactValue)
                     .keyboardType(.default)
                     .padding()
@@ -80,8 +81,10 @@ struct AddOrEditContactView: View {
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             let title = isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title"
-            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.isLoading) {
-                submit()
+            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.lazyList.isLoading) {
+                Task {
+                    await submit()
+                }
             }
         }
         .presentationDetents([.fraction((isLargeSize ? 100 : 70) / 100)])
@@ -91,7 +94,7 @@ struct AddOrEditContactView: View {
         .animation(.easeInOut, value: focusState)
         .animation(.easeInOut, value: viewModel.userNotFound)
         .font(.iransansBody)
-        .onReceive(viewModel.$successAdded) { newValue in
+        .onChange(of: viewModel.successAdded) { newValue in
             if newValue == true {
                 withAnimation {
                     dismiss()
@@ -133,16 +136,16 @@ struct AddOrEditContactView: View {
     }
 
     private var enableButton: Bool {
-        !firstName.isEmpty && !contactValue.isEmpty && !viewModel.isLoading
+        !firstName.isEmpty && !contactValue.isEmpty && !viewModel.lazyList.isLoading
     }
 
-    func submit() {
+    func submit() async {
         /// Add or edit use same method.
-        viewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
+        await viewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
     }
 
     func optioanlAPpend(text: String) -> String {
-        "\(String(localized: .init(text))) \(String(localized: "General.optional"))"
+        "\(String(localized: .init(text), bundle: Language.preferedBundle)) \(String(localized: "General.optional", bundle: Language.preferedBundle))"
     }
 
     var toolbarView: some View {
@@ -156,9 +159,7 @@ struct AddOrEditContactView: View {
     }
 
     var leadingTralingView: some View {
-        NavigationBackButton {
-            dismiss()
-        }
+        NavigationBackButton(automaticDismiss: true) {}
     }
 }
 

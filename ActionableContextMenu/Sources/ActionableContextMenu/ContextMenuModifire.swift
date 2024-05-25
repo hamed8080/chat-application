@@ -14,6 +14,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     @EnvironmentObject var viewModel: ContextMenuModel
     @State var scale: CGFloat = 1.0
     let addedX: CGFloat
+    let disable: Bool
     @GestureState var isTouched: Bool = false
     @GestureState var isTouchedLocalPosition: Bool = false
     let menus: () -> V
@@ -23,12 +24,13 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     @State var globalFrame: CGRect = .zero
     let onTap: (() -> Void)?
 
-    init(id: Int?, root: any View, addedX: CGFloat = 48, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) {
+    init(id: Int?, root: any View, addedX: CGFloat = 48, disable: Bool = false, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) {
         self.id = id
         self.onTap = onTap
         self.root = root
         self.menus = menus
         self.addedX = addedX
+        self.disable = disable
     }
 
     func body(content: Content) -> some View {
@@ -73,6 +75,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 state = true
             }
             .onChanged { value in
+                if disable { return }
                 if !viewModel.isPresented, value.translation.width > -2 && value.translation.width < 2 {
                     viewModel.globalPosition = value.location
                     log("global touched value location x: \(value.location.x) y: \(value.location.y)")
@@ -86,7 +89,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 state = true
             }
             .onChanged { value in
-
+                if disable { return }
                 /// We check this to prevent rapidally update the UI.
                 let beofreX = viewModel.localPosition?.x ?? 0
                 let beofreY = viewModel.localPosition?.y ?? 0
@@ -146,7 +149,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
 }
 
 public extension View {
-    func customContextMenu<V: View>(id: Int?, self: any View, addedX: CGFloat = 48, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) -> some View {
-        modifier(ContextMenuModifire(id: id, root: self, addedX: addedX, onTap: onTap, menus: menus))
+    func customContextMenu<V: View>(id: Int?, self: any View, addedX: CGFloat = 48, disable: Bool = false, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) -> some View {
+        modifier(ContextMenuModifire(id: id, root: self, addedX: addedX, disable: disable, onTap: onTap, menus: menus))
     }
 }

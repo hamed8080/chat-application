@@ -12,6 +12,7 @@ import SwiftUI
 import TalkExtensions
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct CreateDirectThreadView: View {
     @State private var type: InviteeTypes = .cellphoneNumber
@@ -29,17 +30,17 @@ struct CreateDirectThreadView: View {
                 Section {
                     Picker("Contact type", selection: $type) {
                         ForEach(types) { value in
-                            Text(.init(localized: .init(value.title)))
+                            Text(value.title)
                                 .foregroundColor(.primary)
                         }
                     }
                     .pickerStyle(.navigationLink)
-                    let typeString = String(localized: .init(type.title))
-                    let fastMessge = String(localized: .init("Thread.enterFastMessageType"))
-                    TextField(String(format: fastMessge, typeString), text: $id)
+                    let typeString = String(localized: .init(type.title), bundle: Language.preferedBundle)
+                    let fastMessge = String(localized: .init("Thread.enterFastMessageType"), bundle: Language.preferedBundle)
+                    TextField(String(format: fastMessge, typeString).bundleLocalized(), text: $id)
                         .keyboardType(type == .cellphoneNumber ? .phonePad : .default)
 
-                    TextField("Thread.SendContainer.typeMessageHere", text: $message)
+                    TextField("Thread.SendContainer.typeMessageHere".bundleLocalized(), text: $message)
                 } footer: {
                     Text("Thread.fastMessageFooter")
                 }

@@ -14,9 +14,10 @@ import ActionableContextMenu
 import TalkUI
 
 struct ReactionMenuView: View {
+    @EnvironmentObject var reactionVM: ThreadReactionViewModel
     @EnvironmentObject var contextMenuVM: ContextMenuModel
-    @EnvironmentObject var viewModel: MessageReactionsViewModel
-    var currentSelectedReaction: Reaction? { viewModel.currentUserReaction }
+    @EnvironmentObject var viewModel: MessageRowViewModel
+    var selectedSticker: Sticker? { viewModel.reactionsModel.myReactionSticker }
     @State var show = false
 
     var body: some View {
@@ -24,8 +25,8 @@ struct ReactionMenuView: View {
             HStack(spacing: 4) {
                 ForEach(Sticker.allCases.filter({$0 != .unknown})) { sticker in
                     Button {
-                        if let messageId = viewModel.message?.id, let conversationId = viewModel.viewModel?.threadVM?.threadId {
-                            ReactionViewModel.shared.reaction(sticker, messageId: messageId, conversationId: conversationId)
+                        if let messageId = viewModel.message.id {
+                            reactionVM.reaction(sticker, messageId: messageId)
                             contextMenuVM.hide()
                         }
                     } label: {
@@ -33,8 +34,8 @@ struct ReactionMenuView: View {
                             .frame(width: 38, height: 38)
                             .font(.system(size: 32))
                             .padding(4)
-                            .background(currentSelectedReaction?.reaction == sticker ? Color.App.accent.opacity(0.2) : Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius:(currentSelectedReaction?.reaction == sticker ? 22 : 0)))
+                            .background(selectedSticker == sticker ? Color.App.accent.opacity(0.2) : Color.clear)
+                            .clipShape(RoundedRectangle(cornerRadius:(selectedSticker == sticker ? 22 : 0)))
                     }
                     .buttonStyle(.plain)
                     .scaleEffect(x: show ? 1.0 : 0.001, y: show ? 1.0 : 0.001, anchor: .center)
@@ -64,7 +65,7 @@ struct ReactionMenuView_Previews: PreviewProvider {
             ReactionMenuView()
                 .onAppear {
                     Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
-                        viewModel.showReactionsOverlay = true
+//                        viewModel.showReactionsOverlay = true
                     }
                 }
         }

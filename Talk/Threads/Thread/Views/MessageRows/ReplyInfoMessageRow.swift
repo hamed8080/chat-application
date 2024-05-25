@@ -105,18 +105,18 @@ final class ReplyInfoMessageRow: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
-        vStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        vStack.semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         let replyInfo = viewModel.message.replyInfo
         participantLabel.text = viewModel.message.replyInfo?.participant?.name
         participantLabel.isHidden = viewModel.message.replyInfo?.participant?.name == nil
         replyLabel.text = replyInfo?.message
         replyLabel.isHidden = replyInfo?.message?.isEmpty == true
-        replyLabel.textAlignment = viewModel.isEnglish || viewModel.isMe ? .right : .left
+        replyLabel.textAlignment = viewModel.calculatedMessage.isEnglish || viewModel.calculatedMessage.isMe ? .right : .left
         deletedLabel.isHidden = replyInfo?.deleted == nil || replyInfo?.deleted == false
-        let hasImage = viewModel.isReplyImage
+        let hasImage = viewModel.calculatedMessage.isReplyImage
         imageIconView.isHidden = !hasImage
-        if viewModel.isReplyImage, let url = viewModel.replyLink {
+        if viewModel.calculatedMessage.isReplyImage, let url = viewModel.calculatedMessage.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: viewModel.message.replyInfo?.metadata))
         }
         let canShow = viewModel.message.replyInfo != nil

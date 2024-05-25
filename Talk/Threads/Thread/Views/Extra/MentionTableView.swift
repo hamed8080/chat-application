@@ -109,7 +109,7 @@ extension MentionTableView: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let participant = viewModel.mentionListPickerViewModel.mentionList[indexPath.row]
         viewModel.sendContainerViewModel.addMention(participant)
-        viewModel.animateObjectWillChange()
+//        viewModel.animateObjectWillChange()
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

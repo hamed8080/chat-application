@@ -35,11 +35,11 @@ final class AvatarView: UIImageView {
         label.textColor = Color.App.whiteUIColor
         label.textAlignment = .center
         label.backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
-        label.layer.cornerRadius = MessageRowViewModel.avatarSize / 2
+        label.layer.cornerRadius = MessageRowSizes.avatarSize / 2
         label.layer.masksToBounds = true
 
         backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
-        layer.cornerRadius = MessageRowViewModel.avatarSize / 2
+        layer.cornerRadius = MessageRowSizes.avatarSize / 2
         layer.masksToBounds = true
         contentMode = .scaleAspectFill
 
@@ -49,14 +49,14 @@ final class AvatarView: UIImageView {
         isUserInteractionEnabled = true
         addGestureRecognizer(tapGesture)
 
-        widthConstraint = widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize)
-        heightConstraint = heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize)
+        widthConstraint = widthAnchor.constraint(equalToConstant: MessageRowSizes.avatarSize)
+        heightConstraint = heightAnchor.constraint(equalToConstant: MessageRowSizes.avatarSize)
 
         NSLayoutConstraint.activate([
             widthConstraint!,
             heightConstraint!,
-            label.widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
-            label.heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
+            label.widthAnchor.constraint(equalToConstant: MessageRowSizes.avatarSize),
+            label.heightAnchor.constraint(equalToConstant: MessageRowSizes.avatarSize),
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
@@ -65,7 +65,7 @@ final class AvatarView: UIImageView {
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         let avatarVM = viewModel.avatarImageLoader
-        backgroundColor = viewModel.avatarColor
+        backgroundColor = viewModel.calculatedMessage.avatarColor
         avatarVM?.onImage = { [weak self] image in
             self?.image = image
             self?.label.isHidden = true
@@ -80,9 +80,9 @@ final class AvatarView: UIImageView {
             isHidden = true
         } else if showAvatarOrUserName(viewModel) {
             isHidden = false
-            widthConstraint?.constant = MessageRowViewModel.avatarSize
-            heightConstraint?.constant = MessageRowViewModel.avatarSize
-            label.text = viewModel.avatarSplitedCharaters
+            widthConstraint?.constant = MessageRowSizes.avatarSize
+            heightConstraint?.constant = MessageRowSizes.avatarSize
+            label.text = viewModel.calculatedMessage.avatarSplitedCharaters
             if let image = avatarVM?.image {
                 self.image = image
                 label.isHidden = true
@@ -90,13 +90,13 @@ final class AvatarView: UIImageView {
                 image = nil
                 label.isHidden = false
             }
-        } else if !viewModel.isLastMessageOfTheUser {
+        } else if !viewModel.calculatedMessage.isLastMessageOfTheUser {
             backgroundColor = nil
             image = nil
             isHidden = false
             label.isHidden = true
-            widthConstraint?.constant = MessageRowViewModel.avatarSize
-            heightConstraint?.constant = MessageRowViewModel.avatarSize
+            widthConstraint?.constant = MessageRowSizes.avatarSize
+            heightConstraint?.constant = MessageRowSizes.avatarSize
         }
     }
 
@@ -106,7 +106,7 @@ final class AvatarView: UIImageView {
     }
 
     private func showAvatarOrUserName(_ viewModel: MessageRowViewModel) -> Bool {
-        viewModel.isLastMessageOfTheUser && viewModel.isCalculated
+        viewModel.calculatedMessage.isLastMessageOfTheUser && viewModel.calculatedMessage.isCalculated
     }
 
     @objc func onTap(_ sender: UIGestureRecognizer) {

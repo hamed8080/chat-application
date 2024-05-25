@@ -31,6 +31,9 @@ struct LoginNavigationContainerView: View {
             }
         }
         .animation(.easeOut, value: viewModel.state)
+//        .onAppear {
+//            viewModel.startNewPKCESession()
+//        }
     }
 }
 

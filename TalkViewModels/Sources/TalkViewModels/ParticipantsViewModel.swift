@@ -15,20 +15,30 @@ import ChatDTO
 import ChatCore
 
 public final class ParticipantsViewModel: ObservableObject {
-    public weak var thread: Conversation?
-    private var hasNext = true
-    private var count = 15
-    private var offset = 0
+    private weak var viewModel: ThreadViewModel?
+    public var thread: Conversation? { viewModel?.thread }
     private(set) var firstSuccessResponse = false
-    @Published public var isLoading = false
     @Published public private(set) var participants: [Participant] = []
     @Published public private(set) var searchedParticipants: [Participant] = []
     @Published public var searchText: String = ""
     @Published public var searchType: SearchParticipantType = .name
     private var cancelable: Set<AnyCancellable> = []
+    private var timerRequestQueue: Timer?
+    private var lastRequestTime = Date()
+    @MainActor public private(set) var lazyList = LazyListViewModel()
+    private var objectId = UUID().uuidString
+    private let LOAD_KEY: String
+    private let SEARCH_KEY: String
+    private let ADMIN_KEY: String
 
-    public init(thread: Conversation? = nil) {
-        self.thread = thread
+    public init() {
+        LOAD_KEY = "LOAD-PARTICIPANTS-\(objectId)"
+        SEARCH_KEY = "SEARCH-PARTICIPANTS-\(objectId)"
+        ADMIN_KEY = "REQUEST-TO-ADMIN-PARTICIPANT-\(objectId)"
+    }
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] event in
@@ -52,11 +62,13 @@ public final class ParticipantsViewModel: ObservableObject {
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
-            .sink { [weak self] searchText in
-                if searchText.count >= 2 {
-                    self?.searchParticipants(searchText.lowercased())
-                } else {
-                    self?.searchedParticipants.removeAll()
+            .sink { searchText in
+                Task { @MainActor [weak self] in
+                    if searchText.count >= 2 {
+                        await self?.searchParticipants(searchText.lowercased())
+                    } else {
+                        self?.searchedParticipants.removeAll()
+                    }
                 }
             }
             .store(in: &cancelable)
@@ -66,8 +78,10 @@ public final class ParticipantsViewModel: ObservableObject {
     private func onParticipantEvent(_ event: ParticipantEventTypes) {
         switch event {
         case .participants(let chatResponse):
-            onParticipants(chatResponse)
-            onSearchedParticipants(chatResponse)
+            Task {
+                await onParticipants(chatResponse)
+                await onSearchedParticipants(chatResponse)
+            }
         case .deleted(let chatResponse):
             onDelete(chatResponse)
         case .setAdminRoleToUser(let response):
@@ -108,15 +122,33 @@ public final class ParticipantsViewModel: ObservableObject {
         }
     }
 
-    public func getParticipants() {
-        isLoading = true
-        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: offset, count: count)
-        RequestsManager.shared.append(prepend: "Load-Participants", value: req)
+    public func getParticipants() async {
+        if lastRequestTime + 0.5 > .now {
+            timerRequestQueue?.invalidate()
+            timerRequestQueue = nil
+            timerRequestQueue = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                Task { [weak self] in
+                    await self?.loadByTimerQueue()
+                }
+            }
+            return
+        }
+        lastRequestTime = Date()
+        await lazyList.setLoading(true)
+        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: await lazyList.offset, count: await lazyList.count)
+        RequestsManager.shared.append(prepend: LOAD_KEY, value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
-    public func searchParticipants(_ searchText: String) {
-        isLoading = true
+    private func loadByTimerQueue() async {
+        await lazyList.setLoading(true)        
+        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: await lazyList.offset, count: await lazyList.count)
+        RequestsManager.shared.append(prepend: LOAD_KEY, value: req)
+        ChatManager.activeInstance?.conversation.participant.get(req)
+    }
+
+    private func searchParticipants(_ searchText: String) async {
+        await lazyList.setLoading(true)
         var req = ThreadParticipantRequest(threadId: thread?.id ?? -1)
         switch searchType {
         case .name:
@@ -129,7 +161,7 @@ public final class ParticipantsViewModel: ObservableObject {
             req.admin = true
             req.name = searchText
         }
-        RequestsManager.shared.append(prepend: "SearchParticipants", value: req)
+        RequestsManager.shared.append(prepend: SEARCH_KEY, value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
@@ -137,40 +169,41 @@ public final class ParticipantsViewModel: ObservableObject {
         participants.sorted(by: { ($0.auditor ?? false && !($1.auditor ?? false)) || (($0.admin ?? false) && !($1.admin ?? false)) })
     }
 
-    public func loadMore() {
-        if !hasNext { return }
-        preparePaginiation()
-        getParticipants()
+    public func loadMore() async {
+        if await !lazyList.canLoadMore() { return }
+        await lazyList.prepareForLoadMore()
+        await getParticipants()
     }
 
-    public func onParticipants(_ response: ChatResponse<[Participant]>) {
+    @MainActor
+    public func onParticipants(_ response: ChatResponse<[Participant]>) async {
         // FIXME: This bug should be fixed in the caching system as described in the text below.
         /// If we remove this line due to a bug in the Cache, we will get an incorrect participants list.
         /// For example, after a user leaves a thread, if the user updates their getHistory, the left participant will be shown in the list, which is incorrect.
-        if !response.cache, response.pop(prepend: "Load-Participants") != nil, let participants = response.result, response.subjectId == thread?.id {
+        if !response.cache, response.pop(prepend: LOAD_KEY) != nil, let participants = response.result, response.subjectId == thread?.id {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
-            hasNext = response.hasNext
+            lazyList.setHasNext(response.hasNext)
         }
-        isLoading = false
+        lazyList.setLoading(false)
     }
 
-    public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) {
-        if !response.cache, response.pop(prepend: "SearchParticipants") != nil, let participants = response.result {
+    @MainActor
+    public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) async {
+        if !response.cache, response.pop(prepend: SEARCH_KEY) != nil, let participants = response.result {
             searchedParticipants.removeAll()
             searchedParticipants.append(contentsOf: participants)
         }
-        isLoading = false
+        lazyList.setLoading(false)
     }
 
-    public func refresh() {
-        clear()
-        getParticipants()
+    public func refresh() async {
+        await clear()
+        await getParticipants()
     }
 
-    public func clear() {
-        offset = 0
-        count = 15
+    public func clear() async {
+        await lazyList.reset()
         participants = []
     }
 
@@ -182,7 +215,7 @@ public final class ParticipantsViewModel: ObservableObject {
     public func makeAdmin(_ participant: Participant) {
         guard let id = participant.id, let threadId = thread?.id else { return }
         let req = RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId)
-        RequestsManager.shared.append(prepend: "REQUEST-TO-ADMIN-PARTICIPANT", value: req)
+        RequestsManager.shared.append(prepend: ADMIN_KEY, value: req)
         ChatManager.activeInstance?.user.set(req)
 //        ChatManager.activeInstance?.conversation.participant.addAdminRole(.init(participants: [.init(id: "\(participant.coreUserId ?? 0)", idType: .coreUserId)], conversationId: threadId))
     }
@@ -193,11 +226,7 @@ public final class ParticipantsViewModel: ObservableObject {
 //        ChatManager.activeInstance?.conversation.participant.removeAdminRole(.init(participants: [.init(id: "\(participant.coreUserId ?? 0)", idType: .coreUserId)], conversationId: threadId))
     }
 
-    public func preparePaginiation() {
-        offset = participants.count
-    }
-
-    public func appendParticipants(participants: [Participant]) {
+    private func appendParticipants(participants: [Participant]) {
         // remove older data to prevent duplicate on view
         self.participants.removeAll(where: { participant in participants.contains(where: { participant.id == $0.id }) })
         self.participants.append(contentsOf: participants)
@@ -229,7 +258,7 @@ public final class ParticipantsViewModel: ObservableObject {
         }
 
 //        /// If an admin makes another participant admin the setter will not get a list of roles in the response.
-        if response.pop(prepend: "REQUEST-TO-ADMIN-PARTICIPANT") != nil, response.error == nil {
+        if response.pop(prepend: ADMIN_KEY) != nil, response.error == nil {
             response.result?.forEach{ userRole in
                 if let index = participants.firstIndex(where: {$0.id == userRole.id}) {
                     participants[index].admin = true
@@ -262,7 +291,7 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onError(_ response: ChatResponse<Any>) {
-        if response.error != nil, response.pop(prepend: "SearchParticipants") != nil {
+        if response.error != nil, response.pop(prepend: SEARCH_KEY) != nil {
             searchedParticipants.removeAll()
         }
     }
@@ -271,5 +300,9 @@ public final class ParticipantsViewModel: ObservableObject {
         cancelable.forEach { cancelable in
             cancelable.cancel()
         }
+    }
+
+    deinit {
+        print("deinit called for ParticipantsViewModel thread:\(thread?.title ?? "")")
     }
 }

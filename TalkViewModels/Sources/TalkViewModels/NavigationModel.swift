@@ -10,8 +10,8 @@ public final class NavigationModel: ObservableObject {
     var pathsTracking: [Any] = []
     public init() {}
 
-    public func append<T: NavigaitonValueProtocol>(type: NavigationType, value: T) {
-        paths.append(type)
+    public func append<T: NavigaitonValueProtocol>(value: T) {
+        paths.append(value.navType)
         pathsTracking.append(value)
     }
 
@@ -36,7 +36,7 @@ public final class NavigationModel: ObservableObject {
         paths.removeLast()
     }
 
-    public func remove<T>(type: T.Type) {
+    public func remove() {
         if pathsTracking.count > 0 {
             popLastPathTracking()
             if pathsTracking.count == 0, paths.count > 0 {
@@ -92,7 +92,7 @@ public extension NavigationModel {
         let viewModel = viewModel(for: thread.id ?? 0) ?? createViewModel(conversation: thread)
         viewModel.historyVM.created = created
         let value = ConversationNavigationValue(viewModel: viewModel)
-        append(type: .threadViewModel(viewModel), value: value)
+        append(value: value)
         selectedId = thread.id
     }
 
@@ -116,9 +116,11 @@ public extension NavigationModel {
         if threadId != nil {
             presentedThreadViewModel?.viewModel.cancelAllObservers()
         }
-        remove(type: ThreadViewModel.self)
+        remove()
         if let threadId = threadId, (pathsTracking.last as? ThreadViewModel)?.threadId == threadId {
             popLastPathTracking()
+            popLastPath()
+        } else if paths.count > 0 {
             popLastPath()
         }
         setSelectedThreadId()
@@ -127,15 +129,24 @@ public extension NavigationModel {
 
 // ThreadDetailViewModel
 public extension NavigationModel {
-    func appendThreadDetail(threadViewModel: ThreadViewModel? = nil, paricipant: Participant? = nil) {
+    func appendThreadDetail(threadViewModel: ThreadViewModel) {
         let detailViewModel = AppState.shared.objectsContainer.threadDetailVM
-        if let participant = paricipant {
-            detailViewModel.setup(participant: participant)
-        } else {
-            detailViewModel.setup(thread: threadViewModel?.thread, threadVM: threadViewModel)
+        detailViewModel.setup(thread: threadViewModel.thread, threadVM: threadViewModel)
+        let value = ConversationDetailNavigationValue(viewModel: detailViewModel)
+        append(value: value)
+        selectedId = threadViewModel.threadId
+    }
+
+    func removeDetail() {
+        popLastPath()
+        popLastPathTracking()
+    }
+}
+
+public extension NavigationModel {
+    func updateConversationInViewModel(_ conversation: Conversation) {
+        if let vm = threadStack.first(where: {$0.viewModel.threadId == conversation.id})?.viewModel {
+            vm.updateConversation(conversation)
         }
-        paths.append(NavigationType.threadDetil(detailViewModel))
-        pathsTracking.append(detailViewModel)
-        selectedId = threadViewModel?.threadId
     }
 }

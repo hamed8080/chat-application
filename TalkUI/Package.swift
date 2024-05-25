@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "TalkUI",
             dependencies: [
-                "AdditiveUI",
+                .product(name: "AdditiveUI", package: "AdditiveUI"),
                 "TalkModels",
                 "TalkExtensions",
                 "TalkViewModels"
@@ -35,7 +35,10 @@ let package = Package(
         ),
         .testTarget(
             name: "TalkUITests",
-            dependencies: ["TalkUI"],
+            dependencies: [
+                "TalkUI",
+                .product(name: "AdditiveUI", package: "AdditiveUI"),
+            ],
             resources: [
                 .copy("Resources/icon.png")
             ]

@@ -129,7 +129,20 @@ struct ThreadPinMessageViewWrapper: UIViewRepresentable {
 
 
     func makeUIView(context: Context) -> some UIView {
-        let viewModel = ThreadPinMessageViewModel(thread: .init(id: 1, pinMessage: .init(messageId: 1, text: "Hello", time: 2313244564, timeNanos: nil, sender: nil, metaData: nil, systemMetadata: nil, notifyAll: nil)))
+        let thread = Conversation(
+            id: 1,
+            pinMessage: .init(messageId: 1,
+                              text: "Hello",
+                              time: 2313244564,
+                              timeNanos: nil,
+                              sender: nil,
+                              metaData: nil,
+                              systemMetadata: nil,
+                              notifyAll: nil)
+        )
+        let threadVM = ThreadViewModel(thread: thread)
+        let viewModel = ThreadPinMessageViewModel()
+        viewModel.setup(viewModel: threadVM)
         let view = ThreadPinMessageView(viewModel: viewModel)
         return view
     }

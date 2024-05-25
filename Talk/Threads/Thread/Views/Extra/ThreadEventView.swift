@@ -18,7 +18,7 @@ struct ThreadEventView: View {
     var body: some View {
         let event = smt.titleAndIcon
         HStack {
-            Text(.init(localized: .init(event?.title ?? "")))
+            Text(event?.title ?? "")
                 .lineLimit(1)
                 .font(.iransansCaption2)
                 .foregroundColor(Color.App.accent)

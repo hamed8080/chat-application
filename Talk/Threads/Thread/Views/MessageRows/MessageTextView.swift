@@ -38,9 +38,9 @@ final class MessageTextView: UITextView {
         self.viewModel = viewModel
         let message = viewModel.message
         if !message.messageTitle.isEmpty {
-            attributedText = viewModel.nsMarkdownTitle
+            attributedText = viewModel.calculatedMessage.markdownTitle
         }
-        textAlignment = viewModel.isMe || !viewModel.isEnglish ? .right : .left
+        textAlignment = viewModel.calculatedMessage.isMe || !viewModel.calculatedMessage.isEnglish ? .right : .left
         textColor = Color.App.textPrimaryUIColor
         backgroundColor = .clear
         font = UIFont.uiiransansBody

@@ -74,9 +74,9 @@ final class ForwardMessageRow: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        backgroundColor = viewModel.isMe ? Color.App.bgChatMeUIColor : Color.App.bgChatUserDarkUIColor
-        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
-        vStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        backgroundColor = viewModel.calculatedMessage.isMe ? Color.App.bgChatMeUIColor : Color.App.bgChatUserDarkUIColor
+        semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        vStack.semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         let canShow = viewModel.message.forwardInfo != nil
         forwardStaticLebel.isHidden = !canShow
         bar.isHidden = !canShow

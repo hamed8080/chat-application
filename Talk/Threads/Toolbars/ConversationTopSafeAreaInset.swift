@@ -12,8 +12,8 @@ import TalkModels
 
 struct ConversationTopSafeAreaInset: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
-    let container: ObjectsContainer
-    @State var isInSearchMode: Bool = false
+    private var container: ObjectsContainer { AppState.shared.objectsContainer }
+    @State private var isInSearchMode: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -47,19 +47,25 @@ struct ConversationTopSafeAreaInset: View {
     @ViewBuilder var searchButton: some View {
         if isInSearchMode {
             Button {
-                AppState.shared.objectsContainer.contactsVM.searchContactString = ""
-                AppState.shared.objectsContainer.searchVM.searchText = ""
-                isInSearchMode.toggle()
+                Task {
+                    await container.searchVM.closedSearchUI()
+                    await MainActor.run {
+                        withAnimation {
+                            isInSearchMode.toggle()
+                        }
+                    }
+                }
             } label: {
-                Text("General.cancel")
-                    .padding(.leading)
+                Image(systemName: "xmark")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(12)
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.toolbarButton)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
             .clipped()
-            .padding(.horizontal, 8)
         } else {
             ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search", padding: 10) {
                 withAnimation {
@@ -75,6 +81,6 @@ struct ConversationTopSafeAreaInset: View {
 
 struct ConversationTopSafeAreaInset_Previews: PreviewProvider {
     static var previews: some View {
-        ConversationTopSafeAreaInset(container: ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance))
+        ConversationTopSafeAreaInset()
     }
 }

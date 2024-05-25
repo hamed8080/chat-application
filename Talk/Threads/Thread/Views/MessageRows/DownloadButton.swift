@@ -15,12 +15,11 @@ struct DownloadButton: View {
     var messageRowVM: MessageRowViewModel
     @EnvironmentObject var audioVM: AVAudioPlayerViewModel
     private var isSameFile: Bool { viewModel.fileURL != nil && audioVM.fileURL?.absoluteString == viewModel.fileURL?.absoluteString }
-    @Environment(\.colorScheme) var scheme
     private var message: Message? { viewModel.message }
     private var percent: Int64 { viewModel.downloadPercent }
     let action: () -> Void
     private var stateIcon: String {
-        if message?.isAudio == true, viewModel.state == .completed {
+        if message?.isAudio == true, viewModel.state == .completed, isSameFile {
             if audioVM.isPlaying {
                 return "pause.fill"
             } else {
@@ -46,19 +45,19 @@ struct DownloadButton: View {
                 progress
             }
             .frame(width: 46, height: 46)
-            .background(scheme == .light ? Color.App.accent : Color.App.white)
-            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
-            .transition(.scale)
+            .background(Color.App.accent)
+            .clipShape(RoundedRectangle(cornerRadius:(23)))
         }
         .buttonStyle(.borderless)
     }
 
     @ViewBuilder private var iconView: some View {
         Image(systemName: stateIcon.replacingOccurrences(of: ".circle", with: ""))
+            .interpolation(.none)
             .resizable()
             .scaledToFit()
             .frame(width: 16, height: 16)
-            .foregroundStyle(Color.black)
+            .foregroundStyle(Color.App.white)
             .fontWeight(.medium)
     }
 
@@ -67,7 +66,7 @@ struct DownloadButton: View {
             Circle()
                 .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                 .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                .foregroundStyle(scheme == .light ? Color.App.textPrimary : Color.App.accent)
+                .foregroundStyle(Color.App.white)
                 .rotationEffect(Angle(degrees: 270))
                 .frame(width: 42, height: 42)
                 .environment(\.layoutDirection, .leftToRight)

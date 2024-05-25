@@ -14,20 +14,6 @@ import ChatCore
 import Combine
 import ChatDTO
 
-struct ForwardCreateConversationRequest: ChatDTO.UniqueIdProtocol {
-    let uniqueId: String
-    let from: Int
-    let messageIds: [Int]
-    let request: CreateThreadRequest
-
-    init(uniqueId: String, from: Int, messageIds: [Int], request: CreateThreadRequest) {
-        self.uniqueId = uniqueId
-        self.from = from
-        self.messageIds = messageIds
-        self.request = request
-    }
-}
-
 /// Properties that can transfer between each navigation page and stay alive unless manually destroyed.
 public struct AppStateNavigationModel {
     public var userToCreateThread: Participant?
@@ -55,6 +41,9 @@ public final class AppState: ObservableObject {
     public var lifeCycleState: AppLifeCycleState?
     public var objectsContainer: ObjectsContainer!
     public var appStateNavigationModel: AppStateNavigationModel = .init()
+    public var selfThreadBuilder: SelfThreadBuilder?
+    public var searchP2PThread: SearchP2PConversation?
+    public var searchThreadById: SearchConversationById?
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
             setConnectionStatus(connectionStatus)
@@ -122,9 +111,6 @@ private extension AppState {
         switch event {
         case .threads(let response):
             onGetThreads(response)
-        case .created(let response):
-            onForwardCreateConversation(response)
-            onCreated(response)
         case .deleted(let response):
             onDeleted(response)
         case .left(let response):
@@ -148,21 +134,7 @@ private extension AppState {
 public extension AppState {
     private func onGetThreads(_ response: ChatResponse<[Conversation]>) {
         if RequestsManager.shared.contains(key: response.uniqueId ?? ""), let thraed = response.result?.first {
-            showThread(thread: thraed)
-        }
-
-        if !response.cache, (response.pop(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil {
-            onSearchP2PThreads(thread: response.result?.first)
-        }
-
-        if !response.cache, (response.pop(prepend: "SEARCH-GROUP-THREAD") as? ThreadsRequest) != nil {
-            onSearchGroupThreads(thread: response.result?.first)
-        }
-    }
-
-    private func onCreated(_ response: ChatResponse<Conversation>) {
-        if !response.cache, response.pop(prepend: "CREATE-SELF-THREAD") != nil, let conversation = response.result, conversation.type == .selfThread {
-            objectsContainer.navVM.append(thread: conversation)
+            showThread(thraed)
         }
     }
 
@@ -185,17 +157,15 @@ public extension AppState {
                 threadsVM.removeThread(conversation)
             }
 
-            /// Remove the ThreadViewModel for cleaning the memory.
-            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
-                objectsContainer.navVM.popPathTrackingAt(at: index)
+            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
+            if objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ConversationDetailNavigationValue)?.viewModel.thread?.id == response.subjectId }) != nil {
+                objectsContainer.navVM.popLastPath()
             }
 
-            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
-            /// That is the reason why we call paths.removeLast() twice.
-            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ThreadDetailViewModel)?.thread?.id == response.subjectId }) {
+            /// Remove Thread View model and pop ThreadView
+            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ConversationNavigationValue)?.viewModel.threadId == response.subjectId }) {
+                objectsContainer.navVM.popLastPath()
                 objectsContainer.navVM.popPathTrackingAt(at: index)
-                objectsContainer.navVM.popLastPath()
-                objectsContainer.navVM.popLastPath()
             }
         } else {
             if let participant = participant {
@@ -203,24 +173,19 @@ public extension AppState {
             }
             conversation?.participantCount = (conversation?.participantCount ?? 0) - 1
             threadVM?.thread.participantCount = conversation?.participantCount
-            threadVM?.animateObjectWillChange()
+//            threadVM?.animateObjectWillChange()
         }
     }
 
-    func showThread(thread: Conversation, created: Bool = false) {
-        withAnimation {
-            isLoading = false
-            objectsContainer.navVM.append(thread: thread, created: created)
-        }
+    func showThread(_ conversation: Conversation, created: Bool = false) {
+        isLoading = false
+        objectsContainer.navVM.append(thread: conversation, created: created)
     }
 
     func openThread(contact: Contact) {
-        let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
-        appStateNavigationModel.userToCreateThread = .init(contactId: contact.id,
-                                                           id: userId,
-                                                           image: contact.image ?? contact.user?.image,
-                                                           name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
-        searchForP2PThread(coreUserId: userId)
+        let coreUserId = contact.user?.coreUserId ?? contact.user?.id ?? -1
+        appStateNavigationModel.userToCreateThread = contact.toParticipant
+        searchForP2PThread(coreUserId: coreUserId)
     }
 
     func openThread(participant: Participant) {
@@ -234,79 +199,83 @@ public extension AppState {
     }
 
     func openSelfThread() {
-        let req = CreateThreadRequest(title: String(localized: .init("Thread.selfThread")), type: .selfThread)
-        RequestsManager.shared.append(prepend: "CREATE-SELF-THREAD", value: req)
-        ChatManager.activeInstance?.conversation.create(req)
+        selfThreadBuilder = SelfThreadBuilder()
+        selfThreadBuilder?.create { [weak self] conversation in
+            self?.showThread(conversation)
+            self?.selfThreadBuilder = nil
+        }
     }
 
     /// Forward messages form a thread to a destination thread.
     /// If the conversation is nil it try to use contact. Firstly it opens a conversation using the given contact core user id then send messages to the conversation.
-    func openThread(from: Int, conversation: Conversation?, contact: Contact?, messages: [Message]) {
+    func openForwardThread(from: Int, conversation: Conversation, messages: [Message]) {
+        let dstId = conversation.id ?? -1
+        setupForwardRequest(from: from, to: dstId, messages: messages)
+        showThread(conversation)
+    }
+
+    func openForwardThread(from: Int, contact: Contact, messages: [Message]) {
+        if let conv = localConversationWith(contact) {
+            setupForwardRequest(from: from, to: conv.id ?? -1, messages: messages)
+            showThread(conv)
+        } else {
+            openEmptyForwardThread(from: from, contact: contact, messages: messages)
+        }
+    }
+
+    private func openEmptyForwardThread(from: Int, contact: Contact, messages: [Message]) {
+        let dstId = LocalId.emptyThread.rawValue
+        setupForwardRequest(from: from, to: dstId, messages: messages)
+        openThread(contact: contact)
+    }
+
+    func setupForwardRequest(from: Int, to: Int, messages: [Message]) {
         self.appStateNavigationModel.forwardMessages = messages
         let messageIds = messages.sorted{$0.time ?? 0 < $1.time ?? 0}.compactMap{$0.id}
-        if let conversation = conversation , let destinationConversationId = conversation.id {
-            objectsContainer.navVM.append(thread: conversation)
-            appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
-        } else if let coreUserId = contact?.user?.coreUserId, let conversation = checkForP2POffline(coreUserId: coreUserId), let destinationConversationId = conversation.id {
-            objectsContainer.navVM.append(thread: conversation)
-            appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
-        } else if let coreUserId = contact?.user?.coreUserId {
-            openForwardConversation(coreUserId: coreUserId, fromThread: from, messageIds: messageIds)
-        }
+        let req = ForwardMessageRequest(fromThreadId: from, threadId: to, messageIds: messageIds)
+        appStateNavigationModel.forwardMessageRequest = req
     }
 
-    private func openForwardConversation(coreUserId: Int, fromThread: Int, messageIds: [Int]) {
-        let invitees = [Invitee(id: "\(coreUserId)", idType: .coreUserId)]
-        let req = CreateThreadRequest(invitees: invitees, title: "")
-        let request = ForwardCreateConversationRequest(uniqueId: req.uniqueId, from: fromThread, messageIds: messageIds, request: req)
-        RequestsManager.shared.append(prepend: "FORWARD-CREATE-CONVERSATION", value: request)
-        ChatManager.activeInstance?.conversation.create(req)
-    }
-
-    private func onForwardCreateConversation(_ response: ChatResponse<Conversation>) {
-        guard !response.cache,
-              let request = (response.pop(prepend: "FORWARD-CREATE-CONVERSATION") as? ForwardCreateConversationRequest),
-              let conversation = response.result,
-              let destinationConversationId = conversation.id
-        else { return }
-        objectsContainer.navVM.append(thread: conversation)
-        /// We call send forward messages with a little bit of delay because it will get history in the above code and there should not be anything in the queue to forward messages.
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-            self?.appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
-        }
+    private func localConversationWith(_ contact: Contact) -> Conversation? {
+        guard let coreUserId = contact.user?.coreUserId,
+        let conversation = checkForP2POffline(coreUserId: coreUserId)
+        else { return nil }
+        return conversation
     }
 
     func searchForP2PThread(coreUserId: Int?, userName: String? = nil) {
         if let thread = checkForP2POffline(coreUserId: coreUserId ?? -1) {
-            onSearchP2PThreads(thread: thread)
+            onSearchP2PThreads(thread)
             return
         }
-        let req = ThreadsRequest(type: .normal, partnerCoreUserId: coreUserId, userName: userName)
-        RequestsManager.shared.append(prepend: "SEARCH-P2P", value: req)
-        ChatManager.activeInstance?.conversation.get(req)
+        searchP2PThread = SearchP2PConversation()
+        searchP2PThread?.searchForP2PThread(coreUserId: coreUserId, userName: userName) { [weak self] conversation in
+            self?.onSearchP2PThreads(conversation, userName: userName)
+            self?.searchP2PThread = nil
+        }
     }
 
     func searchForGroupThread(threadId: Int, moveToMessageId: Int, moveToMessageTime: UInt) {
         if let thread = checkForGroupOffline(tharedId: threadId) {
-            onSearchGroupThreads(thread: thread)
+            showThread(thread)
             return
         }
-        let req = ThreadsRequest(threadIds: [threadId])
-        RequestsManager.shared.append(prepend: "SEARCH-GROUP-THREAD", value: req)
-        ChatManager.activeInstance?.conversation.get(req)
-    }
-
-    private func onSearchGroupThreads(thread: Conversation?) {
-        if let thread = thread {
-            objectsContainer.navVM.append(thread: thread)
+        searchThreadById = SearchConversationById()
+        searchThreadById?.search(id: threadId) { [weak self] conversations in
+            if let thread = conversations?.first {
+                self?.showThread(thread)
+            }
+            self?.searchThreadById = nil
         }
     }
 
-    private func onSearchP2PThreads(thread: Conversation?) {
+    private func onSearchP2PThreads(_ thread: Conversation?, userName: String? = nil) {
+        let thread = getRefrenceObject(thread) ?? thread
+        updateThreadIdIfIsInForwarding(thread)
         if let thread = thread {
-            objectsContainer.navVM.append(thread: thread)
+            showThread(thread)
         } else {
-            showEmptyThread()
+            showEmptyThread(userName: userName)
         }
     }
 
@@ -318,22 +287,32 @@ public extension AppState {
             )
     }
 
+    private func updateThreadIdIfIsInForwarding(_ thread: Conversation?) {
+        if let req = appStateNavigationModel.forwardMessageRequest {
+            let forwardReq = ForwardMessageRequest(fromThreadId: req.fromThreadId, threadId: thread?.id ?? LocalId.emptyThread.rawValue, messageIds: req.messageIds)
+            appStateNavigationModel.forwardMessageRequest = forwardReq
+        }
+    }
+
+    /// It will search through the Conversation array to prevent creation of new refrence.
+    /// If we don't use object refrence in places that needs to open the thread there will be a inconsistensy in data such as reply privately.
+    private func getRefrenceObject(_ conversation: Conversation?) -> Conversation? {
+        objectsContainer.threadsVM.threads.first{ $0.id == conversation?.id}
+    }
+
     func checkForGroupOffline(tharedId: Int) -> Conversation? {
         objectsContainer.threadsVM.threads
             .first(where: { $0.group == true && $0.id == tharedId })
     }
 
-    func showEmptyThread() {
+    func showEmptyThread(userName: String? = nil) {
         guard let participant = appStateNavigationModel.userToCreateThread else { return }
-        withAnimation {
-            let particpants = [participant]
-            let conversation = Conversation(id: LocalId.emptyThread.rawValue,
-                                            image: participant.image,
-                                            title: participant.name,
-                                            participants: particpants)
-            objectsContainer.navVM.append(thread: conversation)
-            isLoading = false
-        }
+        let particpants = [participant]
+        let conversation = Conversation(id: LocalId.emptyThread.rawValue,
+                                        image: participant.image,
+                                        title: participant.name ?? userName,
+                                        participants: particpants)
+        showThread(conversation)
     }
 
     func openThreadAndMoveToMessage(conversationId: Int, messageId: Int, messageTime: UInt) {
@@ -352,7 +331,7 @@ public extension AppState {
         let threadVM = objectsContainer.navVM.viewModel(for: conversation?.id ?? -1)
         conversation?.participantCount = response.result?.participantCount ?? (conversation?.participantCount ?? 0) + addedParticipants.count
         threadVM?.participantsViewModel.onAdded(addedParticipants)
-        threadVM?.animateObjectWillChange()
+//        threadVM?.animateObjectWillChange()
     }
 }
 
@@ -371,4 +350,9 @@ public extension AppState {
         error = nil
         isLoading = false
     }
+}
+
+// Lifesycle
+public extension AppState {
+    var isInForeground: Bool { lifeCycleState == .active || lifeCycleState == .foreground }
 }

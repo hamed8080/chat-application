@@ -41,6 +41,8 @@ final class MessageFooterView: UIStackView {
         editedLabel.font = UIFont.uiiransansCaption2
         editedLabel.textColor = Color.App.textSecondaryUIColor
         pinImage.tintColor = Color.App.textPrimaryUIColor
+        statusImage.contentMode = .scaleAspectFit
+        pinImage.contentMode = .scaleAspectFit
 
         addArrangedSubview(timelabel)
         addArrangedSubview(editedLabel)
@@ -61,15 +63,15 @@ final class MessageFooterView: UIStackView {
         let isPin = message.id != nil && message.id == thread?.pinMessage?.id
         statusImage.image = message.footerStatus.image
         statusImage.tintColor = message.uiFooterStatus.fgColor
-        statusImage.isHidden = !viewModel.isMe
-        timelabel.text = viewModel.timeString
-        editedLabel.isHidden = !viewModel.isMe
+        statusImage.isHidden = !viewModel.calculatedMessage.isMe
+        timelabel.text = viewModel.calculatedMessage.timeString
+        editedLabel.isHidden = !viewModel.calculatedMessage.isMe
         pinImage.isHidden = !isPin
         let isSelfThread = thread?.type == .selfThread
         let isDelivered = message.id != nil
         if isDelivered, isSelfThread {
             statusImage.isHidden = false
-        } else if viewModel.isMe, !isSelfThread {
+        } else if viewModel.calculatedMessage.isMe, !isSelfThread {
             statusImage.isHidden = false
         }
     }

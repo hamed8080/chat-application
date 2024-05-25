@@ -25,7 +25,7 @@ struct ThreadView: View, DropDelegate {
                 .overlay(alignment: .bottom) {
                     VStack {
 //                        MoveToBottomButton()
-                        SendContainerOverButtons()
+//                        SendContainerOverButtons()
                     }
                 }
                 .task {
@@ -39,15 +39,19 @@ struct ThreadView: View, DropDelegate {
                     UITableViewHeaderFooterView.appearance().backgroundView = UIView()
                 }
         }
+        .environmentObject(viewModel.reactionViewModel)
         .simultaneousGesture(tap.simultaneously(with: drag))
         .navigationBarBackButtonHidden(true)
         .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))
         .onDrop(of: [.image], delegate: self)
-        .safeAreaInset(edge: .bottom) {
-            ThreadEmptySpaceView()
-        }
         .overlay(alignment: .bottom) {
             SendContainerOverlayView()
+        }
+        .overlay(alignment: .top) {
+            VStack(spacing: 0) {
+//                ThreadPinMessage(threadVM: viewModel)
+                AudioPlayerView(threadVM: viewModel)
+            }
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(spacing: 0) {
@@ -100,29 +104,6 @@ struct ThreadView: View, DropDelegate {
     }
 
     private func hideKeyboardOnTapOrDrag() {
-        if viewModel.searchedMessagesViewModel.searchText.isEmpty {
-            NotificationCenter.cancelSearch.post(name: .cancelSearch, object: true)
-        }
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
-
-struct ThreadView_Previews: PreviewProvider {
-    static var vm: ThreadViewModel {
-        let vm = ThreadViewModel(thread: MockData.thread)
-//        vm.searchedMessages = MockData.generateMessages(count: 15)
-        vm.objectWillChange.send()
-        return vm
-    }
-
-    static var previews: some View {
-        ThreadView(viewModel: .init(thread: .init(id: 1)))
-            .environmentObject(ThreadViewModel(thread: MockData.thread))
-            .environmentObject(AppState.shared)
-            .onAppear {
-                //                vm.toggleRecording()
-                //                vm.setReplyMessage(MockData.message)
-                //                vm.setForwardMessage(MockData.message)
-            }
     }
 }

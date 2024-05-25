@@ -34,6 +34,7 @@ public struct ImageLoaderView: View {
                     .font(textFont)
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
+                    .interpolation(.none)
                     .resizable()
                     .aspectRatio(contentMode: contentMode)
             }
@@ -42,9 +43,7 @@ public struct ImageLoaderView: View {
         .animation(.easeInOut, value: imageLoader.isImageReady)
         .onAppear {
             if !imageLoader.isImageReady {
-                Task {
-                    await imageLoader.fetch()
-                }
+                imageLoader.fetch()
             }
         }
     }

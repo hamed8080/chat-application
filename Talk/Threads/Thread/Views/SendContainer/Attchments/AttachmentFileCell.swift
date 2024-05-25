@@ -97,6 +97,6 @@ public final class AttachmentFileCell: UITableViewCell {
 
     @objc private func removeTapped(_ sender: UIButton) {
         viewModel.attachmentsViewModel.remove(attachment)
-        viewModel.animateObjectWillChange() /// Send button to appear
+//        viewModel.animateObjectWillChange() /// Send button to appear
     }
 }

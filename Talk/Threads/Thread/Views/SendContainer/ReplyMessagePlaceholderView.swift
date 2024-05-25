@@ -86,7 +86,7 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         viewModel.replyMessage = nil
         viewModel.sendContainerViewModel.setFocusOnTextView(focus: false)
         viewModel.selectedMessagesViewModel.clearSelection()
-        viewModel.animateObjectWillChange()
+//        viewModel.animateObjectWillChange()
     }
 }
 

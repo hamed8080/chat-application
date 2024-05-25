@@ -60,11 +60,17 @@ extension ThreadViewController {
         configureEmptyThreadView()
         configureSendContainer()
         configureTopToolbarVStack()
+        let moveToBottomHorizontalConstraint: NSLayoutConstraint
+        if Language.isRTL {
+            moveToBottomHorizontalConstraint = moveToBottom.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+        } else {
+            moveToBottomHorizontalConstraint = moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        }
         NSLayoutConstraint.activate([
             moveToBottom.widthAnchor.constraint(equalToConstant: 40),
             moveToBottom.heightAnchor.constraint(equalToConstant: 40),
-            moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             moveToBottom.bottomAnchor.constraint(equalTo: sendContainer.topAnchor, constant: -16),
+            moveToBottomHorizontalConstraint,
             topThreadToolbar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             topThreadToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topThreadToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -264,18 +270,18 @@ extension ThreadViewController: ThreadViewDelegate {
     }
 
     func openForwardPicker() {
-        let view = SelectConversationOrContactList { [weak self] (conversation, contact) in
-            self?.viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)
-        }
-        .environmentObject(AppState.shared.objectsContainer.threadsVM)
-        .contextMenuContainer()
-        .environmentObject(viewModel)
-        .onDisappear {
-            //closeSheet()
-        }
-        let hostVC = UIHostingController(rootView: view)
-        hostVC.modalPresentationStyle = .formSheet
-        present(hostVC, animated: true)
+//        let view = SelectConversationOrContactList { [weak self] (conversation, contact) in
+//            self?.viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)
+//        }
+//        .environmentObject(AppState.shared.objectsContainer.threadsVM)
+//        .contextMenuContainer()
+//        .environmentObject(viewModel)
+//        .onDisappear {
+//            //closeSheet()
+//        }
+//        let hostVC = UIHostingController(rootView: view)
+//        hostVC.modalPresentationStyle = .formSheet
+//        present(hostVC, animated: true)
     }
 
     func startTopAnimation(_ animate: Bool) {
@@ -308,12 +314,8 @@ extension ThreadViewController: HistoryScrollDelegate {
     }
 
     func scrollTo(uniqueId: String, position: UITableView.ScrollPosition, animate: Bool = true) {
-        let indexPath = viewModel.historyVM.indicesByMessageUniqueId(uniqueId)
-        if let indexPath = indexPath {
-            DispatchQueue.main.async { [weak self] in
-                let indexPath = IndexPath(item: indexPath.row, section: indexPath.section)
-                self?.tableView.scrollToRow(at: indexPath, at: position, animated: animate)
-            }
+        if let indexPath = viewModel.historyVM.indicesByMessageUniqueId(uniqueId) {
+            scrollTo(index: indexPath, position: position, animate: animate)
         }
     }
 

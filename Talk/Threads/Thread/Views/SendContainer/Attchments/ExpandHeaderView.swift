@@ -68,7 +68,7 @@ public final class ExpandHeaderView: UIStackView {
     private func clearTapped(_ sender: UIButton) {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2)) {
             viewModel.attachmentsViewModel.clear()
-            viewModel.animateObjectWillChange()
+//            viewModel.animateObjectWillChange()
         }
     }
 }

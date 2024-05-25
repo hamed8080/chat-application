@@ -11,6 +11,7 @@ import Combine
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct StartThreadContactPickerView: View {
     @Environment(\.dismiss) var dismiss
@@ -24,7 +25,9 @@ struct StartThreadContactPickerView: View {
                         ConversationBuilder()
                             .navigationBarBackButtonHidden(true)
                             .onAppear {
-                                viewModel.show(type: .normal)
+                                Task {
+                                    await viewModel.show(type: .privateGroup)
+                                }
                             }
 
                     } label: {
@@ -38,7 +41,9 @@ struct StartThreadContactPickerView: View {
                         ConversationBuilder()
                             .navigationBarBackButtonHidden(true)
                             .onAppear {
-                                viewModel.show(type: .channel)
+                                Task {
+                                    await viewModel.show(type: .privateChannel)
+                                }
                             }
                     } label: {
                         Label("Contacts.createChannel", systemImage: "megaphone")
@@ -65,7 +70,7 @@ struct StartThreadContactPickerView: View {
             .listStyle(.plain)
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    TextField("General.searchHere", text: $viewModel.searchContactString)
+                    TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchContactString)
                         .frame(height: 48)
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
@@ -74,23 +79,26 @@ struct StartThreadContactPickerView: View {
                 .background(.ultraThinMaterial)
             }
             .overlay(alignment: .bottom) {
-                ListLoadingView(isLoading: $viewModel.isLoading)
+                ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+                    .id(UUID())
             }
         }
         .environmentObject(viewModel)
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .onChange(of: viewModel.dismiss) { newValue in
             if newValue == true {
                 dismiss()
             }
         }
         .onAppear {
-            viewModel.dismiss = false
-            if viewModel.contacts.isEmpty {
-                viewModel.getContacts()
+            Task {
+                viewModel.dismiss = false
+                if viewModel.contacts.isEmpty {
+                    await viewModel.getContacts()
+                }
             }
         }
     }

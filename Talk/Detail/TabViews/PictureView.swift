@@ -13,6 +13,7 @@ import TalkUI
 import TalkViewModels
 import TalkExtensions
 import ActionableContextMenu
+import TalkModels
 
 struct PictureView: View {
     @EnvironmentObject var detailViewModel: ThreadDetailViewModel
@@ -34,8 +35,18 @@ struct PictureView: View {
         .padding(padding)
         .environmentObject(viewModel)
         .background(frameReader)
+        .overlay(alignment: .top) {
+            if !viewModel.isLoading && viewModel.messages.count == 0 && (!viewModel.hasNext || detailViewModel.threadVM?.isSimulatedThared == true) {
+                HStack {
+                    Spacer()
+                    EmptyResultViewInTabs()
+                        .padding(.top, 9)
+                    Spacer()
+                }
+            }
+        }
         .onAppear {
-            onLoad()
+            onLoad() //it is essential to kick of onload
         }
     }
 
@@ -98,21 +109,23 @@ struct MessageListPictureView: View {
 struct PictureRowView: View {
     let message: Message
     @EnvironmentObject var downloadVM: DownloadFileViewModel
-    @EnvironmentObject var appOverlayViewModel: AppOverlayViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: ThreadDetailViewModel
     let itemWidth: CGFloat
+    @EnvironmentObject var contextVM: ContextMenuModel
 
     var body: some View {
         DownloadPictureButtonView(itemWidth: itemWidth)
             .frame(width: itemWidth, height: itemWidth)
             .clipped()
             .onTapGesture {
-                appOverlayViewModel.galleryMessage = message
+                if !contextVM.isPresented {
+                    AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
+                }
             }
             .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
                 VStack {
-                    ContextMenuButton(title: "General.showMessage", image: "message.fill") {
+                    ContextMenuButton(title: "General.showMessage".bundleLocalized(), image: "message.fill") {
                         threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
                         viewModel.dismiss = true
                     }

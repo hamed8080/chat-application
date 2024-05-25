@@ -29,7 +29,9 @@ struct LoginContentView: View {
                     .padding(.bottom, 40)
                     .frame(maxWidth: 420)
 
-                TextField(viewModel.selectedServerType == .integration ? "Login.staticToken" : "Login.phoneNumber", text: $viewModel.text)
+                let key = viewModel.selectedServerType == .integration ? "Login.staticToken" : "Login.phoneNumber"
+                let placeholder = String(localized: .init(key), bundle: Language.preferedBundle)
+                TextField(placeholder, text: $viewModel.text)
                     .focused($isFocused)
                     .keyboardType(.phonePad)
                     .font(.iransansBody)
@@ -74,9 +76,7 @@ struct LoginContentView: View {
                                maxInnerWidth: 420
             ) {
                 if viewModel.isPhoneNumberValid() {
-                    Task {
-                        await viewModel.login()
-                    }
+                    viewModel.login()
                 }
             }
             .disabled(viewModel.isLoading)

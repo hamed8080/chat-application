@@ -26,8 +26,11 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     public var itemCount = 3
     private var downloadVMS: [DownloadFileViewModel] = []
     private let tabName: String
+    private var objectId = UUID().uuidString
+    private let DETAIL_HISTORY_KEY: String
 
     public init(conversation: Conversation, messageType: MessageType, tabName: String) {
+        DETAIL_HISTORY_KEY = "DETAIL-HISTORY-\(tabName)-KEY-\(objectId)"
         self.tabName = tabName
         self.conversation = conversation
         self.messageType = messageType
@@ -44,7 +47,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
         case let .history(response):
             if !response.cache,
                response.subjectId == conversation.id,
-               response.pop(prepend: "DetailViewHistory-\(tabName)") != nil,
+               response.pop(prepend: DETAIL_HISTORY_KEY) != nil,
                let messages = response.result {
                 messages.forEach { message in
                     if !self.messages.contains(where: { $0.id == message.id }) {
@@ -73,7 +76,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     public func loadMore() {
         guard let conversationId = conversation.id, conversationId != LocalId.emptyThread.rawValue, !isLoading, hasNext else { return }
         let req: GetHistoryRequest = .init(threadId: conversationId, count: count, messageType: messageType.rawValue, offset: offset)
-        RequestsManager.shared.append(prepend: "DetailViewHistory-\(tabName)", value: req)
+        RequestsManager.shared.append(prepend: DETAIL_HISTORY_KEY, value: req)
         offset += count
         isLoading = true
         animateObjectWillChange()

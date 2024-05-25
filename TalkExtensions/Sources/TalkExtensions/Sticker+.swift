@@ -38,4 +38,19 @@ public extension Sticker {
             return ""
         }
     }
+
+    init?(emoji: Character) {
+        switch emoji {
+        case "🙏":
+            self = .hifive
+        case "👍":
+            self = .like
+        case "😂":
+            self = .happy
+        case "😭":
+            self = .cry
+        default:
+            return nil
+        }
+    }
 }

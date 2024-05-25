@@ -19,8 +19,9 @@ struct JoinPublicLink: View {
         Button {
             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
         } label: {
-            Text(message.message ?? "")
-                .foregroundStyle(Color.App.color1)
+            Text(verbatim: message.message ?? "")
+                .foregroundStyle(Color.App.textSecondary)
+                .disabled(true)
             //                HStack {
             //                    Text("Thread.join")
             //                        .foregroundStyle(Color.App.textPrimary)
@@ -59,24 +60,26 @@ struct JoinToPublicConversationDialog: View {
 
             HStack(spacing: 16) {
                 Button {
-                    appOverlayVM.dialogView = nil
-                } label: {
-                    Text("General.cancel")
-                        .foregroundStyle(Color.App.textPlaceholder)
-                        .font(.iransansBoldBody)
-                        .frame(minWidth: 48, minHeight: 48)
-                }
-
-                Button {
                     if let publicName = message.message?.replacingOccurrences(of: AppRoutes.joinLink, with: "").replacingOccurrences(of: "\u{200f}", with: "")  {
                         AppState.shared.objectsContainer.threadsVM.joinPublicGroup(publicName)
                     }
                     appOverlayVM.dialogView = nil
                 } label: {
                     Text("Thread.join")
-                        .foregroundStyle(Color.App.color3)
-                        .font(.iransansBoldBody)
+                        .foregroundStyle(Color.App.accent)
+                        .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
+                }
+
+                Button {
+                    appOverlayVM.dialogView = nil
+                } label: {
+                    Text("General.cancel")
+                        .foregroundStyle(Color.App.textPlaceholder)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
                 }
             }
         }

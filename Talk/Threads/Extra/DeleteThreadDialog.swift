@@ -22,6 +22,18 @@ struct DeleteThreadDialog: View {
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
             HStack {
+
+                Button {
+                    container.threadsVM.delete(threadId)
+                    container.appOverlayVM.dialogView = nil
+                } label: {
+                    Text("General.delete")
+                        .foregroundStyle(Color.App.accent)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
+                }
+
                 Button {
                     container.appOverlayVM.dialogView = nil
                 } label: {
@@ -29,16 +41,7 @@ struct DeleteThreadDialog: View {
                         .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
-                }
-
-                Button {
-                    container.threadsVM.delete(threadId)
-                    container.appOverlayVM.dialogView = nil
-                } label: {
-                    Text("General.delete")
-                        .foregroundStyle(Color.App.red)
-                        .font(.iransansBody)
-                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
                 }
             }
         }

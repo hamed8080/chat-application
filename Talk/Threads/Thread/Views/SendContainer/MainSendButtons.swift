@@ -38,6 +38,7 @@ public final class MainSendButtons: UIStackView {
     }
 
     private func configureView() {
+        semanticContentAttribute = .forceLeftToRight
         translatesAutoresizingMaskIntoConstraints = false
         btnToggleAttachmentButtons.translatesAutoresizingMaskIntoConstraints = false
         btnSend.translatesAutoresizingMaskIntoConstraints = false
@@ -142,10 +143,12 @@ public final class MainSendButtons: UIStackView {
 
     @objc private func onBtnSendTapped() {
         if viewModel.showSendButton {
-            threadVM.sendMessageViewModel.sendTextMessage()
+            Task {
+                await threadVM.sendMessageViewModel.sendTextMessage()
+            }
         }
         threadVM.mentionListPickerViewModel.text = ""
-        threadVM.animateObjectWillChange()
+//        threadVM.animateObjectWillChange()
     }
 
     @objc private func onBtnToggleAttachmentButtonsTapped(_ sender: UIButton) {

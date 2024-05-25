@@ -29,6 +29,7 @@ public final class MoveToBottomButton: UIButton {
 
     private func configureView() {
         layer.backgroundColor = Color.App.bgPrimaryUIColor?.cgColor
+        backgroundColor = Color.App.bgPrimaryUIColor
         layer.cornerRadius = 20
         layer.shadowRadius = 5
         layer.shadowColor = Color.App.accentUIColor?.cgColor
@@ -57,8 +58,8 @@ public final class MoveToBottomButton: UIButton {
         NSLayoutConstraint.activate([
             imgCenter.centerXAnchor.constraint(equalTo: centerXAnchor),
             imgCenter.centerYAnchor.constraint(equalTo: centerYAnchor),
-            imgCenter.widthAnchor.constraint(equalToConstant: 16),
-            imgCenter.heightAnchor.constraint(equalToConstant: 16),
+            imgCenter.widthAnchor.constraint(equalToConstant: 20),
+            imgCenter.heightAnchor.constraint(equalToConstant: 20),
             lblUnreadCount.widthAnchor.constraint(greaterThanOrEqualToConstant: 24),
             lblUnreadCount.heightAnchor.constraint(equalToConstant: 24),
             lblUnreadCount.topAnchor.constraint(equalTo: topAnchor, constant: -16),

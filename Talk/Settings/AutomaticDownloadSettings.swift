@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import TalkModels
 
 struct AutomaticDownloadSection: View {
     @EnvironmentObject var navModel: NavigationModel
@@ -15,7 +16,7 @@ struct AutomaticDownloadSection: View {
     var body: some View {
         ListSectionButton(imageName: "arrow.down.square.fill", title: "Settings.download", color: Color.App.color5, showDivider: false) {
             let value = AutomaticDownloadsNavigationValue()
-            navModel.append(type: .automaticDownloadsSettings(value), value: value)
+            navModel.append(value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -29,14 +30,15 @@ struct AutomaticDownloadSettings: View {
     var body: some View {
         List {
             Group {
-                Toggle("Download.images", isOn: $model.automaticDownloadSettings.downloadImages)
+                Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.downloadImages)
+                    .tint(Color.App.accent)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
-                Toggle("Download.files", isOn: $model.automaticDownloadSettings.downloadFiles)
+                Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.downloadFiles)
+                    .tint(Color.App.accent)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
             }
-            .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)
 
             Group {
@@ -92,15 +94,16 @@ struct PrivateDownloadSetting: View {
 
     var body: some View {
         List {
-            Toggle("Download.images", isOn: $model.automaticDownloadSettings.privateChat.downloadImages)
+            Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.privateChat.downloadImages)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
 
-            Toggle("Download.files", isOn: $model.automaticDownloadSettings.downloadFiles)
+            Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.downloadFiles)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -115,15 +118,16 @@ struct GroupDownloadSetting: View {
 
     var body: some View {
         List {
-            Toggle("Download.images", isOn: $model.automaticDownloadSettings.group.downloadImages)
+            Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.group.downloadImages)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
 
-            Toggle("Download.files", isOn: $model.automaticDownloadSettings.group.downloadFiles)
+            Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.group.downloadFiles)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -138,15 +142,16 @@ struct ChannelDownloadSetting: View {
 
     var body: some View {
         List {
-            Toggle("Download.images", isOn: $model.automaticDownloadSettings.channel.downloadImages)
+            Toggle("Download.images".bundleLocalized(), isOn: $model.automaticDownloadSettings.channel.downloadImages)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
 
-            Toggle("Download.files", isOn: $model.automaticDownloadSettings.channel.downloadFiles)
+            Toggle("Download.files".bundleLocalized(), isOn: $model.automaticDownloadSettings.channel.downloadFiles)
+                .tint(Color.App.accent)
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
-        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)

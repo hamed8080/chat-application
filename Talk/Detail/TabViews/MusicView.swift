@@ -28,9 +28,13 @@ struct MusicView: View {
                         viewModel.loadMore()
                     }
                 }
-            MessageListMusicView()
-                .padding(.top, 8)
-                .environmentObject(viewModel)
+            if viewModel.isLoading || viewModel.messages.count > 0 {
+                MessageListMusicView()
+                    .padding(.top, 8)
+                    .environmentObject(viewModel)
+            } else {
+                EmptyResultViewInTabs()
+            }
         }
     }
 }
@@ -110,7 +114,7 @@ struct MusicRowView: View {
         }
         .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
             VStack {
-                ContextMenuButton(title: "General.showMessage", image: "message.fill") {
+                ContextMenuButton(title: "General.showMessage".bundleLocalized(), image: "message.fill") {
                     threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
                     viewModel.dismiss = true
                 }

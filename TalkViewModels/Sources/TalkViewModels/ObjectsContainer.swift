@@ -20,7 +20,6 @@ public final class ObjectsContainer: ObservableObject {
     @Published public var appOverlayVM = AppOverlayViewModel()
     @Published public var searchVM = ThreadsSearchViewModel()
     @Published public var archivesVM = ArchiveThreadsViewModel()
-    @Published public var reactions = ReactionViewModel.shared
     @Published public var errorVM = ErrorHandlerViewModel()
     @Published public var userProfileImageVM: ImageLoaderViewModel!
 
@@ -48,29 +47,33 @@ public final class ObjectsContainer: ObservableObject {
         fetchUserProfile(user: user)
     }
 
-    public func reset() {
+    @MainActor
+    public func reset() async {
         AppState.shared.clear()
-        threadsVM.clear()
-        contactsVM.clear()
+        await threadsVM.clear()
+        await contactsVM.clear()
         tagsVM.clear()
         tagsVM.getTagList()
         navVM.clear()
-        threadsVM.getThreads()
-        contactsVM.getContacts()
+        await threadsVM.getThreads()
+        await contactsVM.getContacts()
         logVM.clearLogs()
         appOverlayVM.clear()
-        reactions.clear()
-        conversationBuilderVM.clear()
+        await conversationBuilderVM.clear()
         userProfileImageVM.clear()
     }
 
     private func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case .new(let chatResponse):
-            onNewMessage(chatResponse)
+            if !audioPlayerVM.isPlaying {
+                onNewMessage(chatResponse)
+            }
             break
         case .sent(_):
-            playMessageSound(sent: true)
+            if !audioPlayerVM.isPlaying {
+                playMessageSound(sent: true)
+            }
             break
         default:
             break
@@ -126,11 +129,13 @@ public final class ObjectsContainer: ObservableObject {
         } else {
             userProfileImageVM.config = config
         }
-        Task {
-            // We wait for the cache to fill its properties, due to forceToDownloadFromServer having set to false,
-            // we have to wait for init and then the cache is not nil and can find the file
-            try? await Task.sleep(for: .seconds(1))
-            await userProfileImageVM.fetch()
+
+        // We wait for the cache to fill its properties, due to forceToDownloadFromServer having set to false,
+        // we have to wait for init and then the cache is not nil and can find the file
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
+            if user != nil {
+                self?.userProfileImageVM.fetch()
+            }
         }
     }
 }

@@ -82,8 +82,8 @@ final class MessageRowFileDownloaderView: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
-        let metaData = viewModel.fileMetaData
+        semanticContentAttribute = viewModel.calculatedMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        let metaData = viewModel.calculatedMessage.fileMetaData
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressButton.animate(to: progress, systemIconName: stateIcon())
         if progress >= 1 {

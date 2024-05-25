@@ -11,100 +11,40 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import ChatModels
+import TalkModels
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-    @State private var type: ThreadTypes = .normal
+    @State private var type: StrictThreadTypeCreation = .p2p
     @State private var showBuilder = false
     @EnvironmentObject var builderVM: ConversationBuilderViewModel
 
     var body: some View {
         List {
-            if viewModel.maxContactsCountInServer > 0, EnvironmentValues.isTalkTest {
-                HStack(spacing: 4) {
-                    Spacer()
-                    Text("Contacts.total")
-                        .font(.iransansBody)
-                        .foregroundColor(.gray)
-                    Text("\(viewModel.maxContactsCountInServer)")
-                        .font(.iransansBoldBody)
-                    Spacer()
-                }
-                .listRowBackground(Color.clear)
-                .noSeparators()
-            }
-
-            if EnvironmentValues.isTalkTest {
-                SyncView()
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-            }
-
-            Button {
-                type = .normal
-                showBuilder.toggle()
-            } label: {
-                Label("Contacts.createGroup", systemImage: "person.2")
-                    .foregroundStyle(Color.App.accent)
-            }
-            .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.dividerPrimary)
-
-            Button {
-                type = .channel
-                showBuilder.toggle()
-            } label: {
-                Label("Contacts.createChannel", systemImage: "megaphone")
-                    .foregroundStyle(Color.App.accent)
-            }
-            .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.dividerPrimary)
-
-            Button {
-                viewModel.showAddOrEditContactSheet.toggle()
-            } label: {
-                Label("Contacts.addContact", systemImage: "person.badge.plus")
-                    .foregroundStyle(Color.App.accent)
-            }
-            .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparator(.hidden)
-
+            totalContactCountView
+            syncView
+            creationButtons
             if viewModel.searchedContacts.count > 0 || !viewModel.searchContactString.isEmpty {
-                StickyHeaderSection(header: "Contacts.searched")
-                    .listRowInsets(.zero)
-                ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: true)
-                }
-                .padding()
+                searcViews
             } else {
-                ForEach(viewModel.contacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: false)
-                }
-                .padding()
-                .listRowInsets(.zero)
+                normalStateContacts
             }
         }
         .listEmptyBackgroundColor(show: viewModel.contacts.isEmpty)
-        .environment(\.defaultMinListRowHeight, 24)
+        .environment(\.defaultMinListRowHeight, 0)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.lazyList.isLoading)
         .listStyle(.plain)
+        .gesture(dragToHideKeyboardGesture)
         .safeAreaInset(edge: .top, spacing: 0) {
            ContactListToolbar()
         }
-        .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.isLoading)
-        }
-        .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
+        .sheet(isPresented: $viewModel.showAddOrEditContactSheet, onDismiss: onAddOrEditDisappeared) {
             AddOrEditContactView()
                 .environmentObject(viewModel)
                 .onDisappear {
-                    /// Clearing the view for when the user cancels the sheet by dropping it down.
-                    viewModel.successAdded = false
-                    viewModel.showAddOrEditContactSheet = false
-                    viewModel.addContact = nil
-                    viewModel.editContact = nil
+                    onAddOrEditDisappeared()
                 }
         }
         .onReceive(builderVM.$dismiss) { newValue in
@@ -116,19 +56,128 @@ struct ContactContentList: View {
             ConversationBuilder()
                 .environmentObject(builderVM)
                 .onAppear {
-                    builderVM.show(type: type)
+                    Task {
+                        await builderVM.show(type: type)
+                    }
                 }
         }
     }
 
     private func onDismissBuilder() {
-        builderVM.clear()
+        Task {
+            await builderVM.clear()
+        }
+    }
+
+    private var dragToHideKeyboardGesture: some Gesture {
+        DragGesture()
+            .onChanged{ _ in
+                hideKeyboard()
+            }
+    }
+
+    @ViewBuilder
+    private var searcViews: some View {
+        StickyHeaderSection(header: "Contacts.searched")
+            .listRowInsets(.zero)
+        ForEach(viewModel.searchedContacts) { contact in
+            ContactRowContainer(isSearchRow: true)
+                .environmentObject(contact)
+        }
+        .padding()
+        ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+            .id(UUID())
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            .listRowInsets(.zero)
+    }
+
+    @ViewBuilder
+    private var normalStateContacts: some View {
+        ForEach(viewModel.contacts) { contact in
+            ContactRowContainer(isSearchRow: false)
+                .environmentObject(contact)
+        }
+        .padding()
+        .listRowInsets(.zero)
+        ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
+            .id(UUID())
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            .listRowInsets(.zero)
+    }
+
+    @ViewBuilder
+    private var creationButtons: some View {
+        Button {
+            type = .privateGroup
+            showBuilder.toggle()
+        } label: {
+            Label("Contacts.createGroup".bundleLocalized(), systemImage: "person.2")
+                .foregroundStyle(Color.App.accent)
+        }
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
+
+        Button {
+            type = .privateChannel
+            showBuilder.toggle()
+        } label: {
+            Label("Contacts.createChannel".bundleLocalized(), systemImage: "megaphone")
+                .foregroundStyle(Color.App.accent)
+        }
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
+
+        Button {
+            viewModel.showAddOrEditContactSheet.toggle()
+            viewModel.animateObjectWillChange()
+        } label: {
+            Label("Contacts.addContact".bundleLocalized(), systemImage: "person.badge.plus")
+                .foregroundStyle(Color.App.accent)
+        }
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparator(.hidden)
+    }
+
+    @ViewBuilder
+    private var syncView: some View {
+        if EnvironmentValues.isTalkTest {
+            SyncView()
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+        }
+    }
+
+    @ViewBuilder
+    private var totalContactCountView: some View {
+        if viewModel.maxContactsCountInServer > 0, EnvironmentValues.isTalkTest {
+            HStack(spacing: 4) {
+                Spacer()
+                Text("Contacts.total")
+                    .font(.iransansBody)
+                    .foregroundColor(.gray)
+                Text("\(viewModel.maxContactsCountInServer)")
+                    .font(.iransansBoldBody)
+                Spacer()
+            }
+            .listRowBackground(Color.clear)
+            .noSeparators()
+        }
+    }
+
+    private func onAddOrEditDisappeared() {
+        /// Clearing the view for when the user cancels the sheet by dropping it down.
+        viewModel.successAdded = false
+        viewModel.showAddOrEditContactSheet = false
+        viewModel.addContact = nil
+        viewModel.editContact = nil
     }
 }
 
 struct ContactRowContainer: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-    let contact: Contact
+    @EnvironmentObject var contact: Contact
     let isSearchRow: Bool
     var separatorColor: Color {
         if !isSearchRow {
@@ -139,8 +188,7 @@ struct ContactRowContainer: View {
     }
 
     var body: some View {
-        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
-            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)\(contact.blocked == true ? "Blocked" : "UnBlocked")")
+        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode)
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
@@ -149,6 +197,7 @@ struct ContactRowContainer: View {
                     Button {
                         viewModel.editContact = contact
                         viewModel.showAddOrEditContactSheet.toggle()
+                        viewModel.animateObjectWillChange()
                     } label: {
                         Label("General.edit", systemImage: "pencil")
                     }
@@ -182,14 +231,14 @@ struct ContactRowContainer: View {
                 }
             }
             .onAppear {
-                if viewModel.contacts.last == contact {
-                    viewModel.loadMore()
+                Task {
+                    await viewModel.loadMore(id: contact.id)
                 }
             }
             .onTapGesture {
                 if viewModel.isInSelectionMode {
                     viewModel.toggleSelectedContact(contact: contact)
-                } else {
+                } else if contact.hasUser == true {
                     AppState.shared.openThread(contact: contact)
                 }
             }

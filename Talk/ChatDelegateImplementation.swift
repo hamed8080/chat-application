@@ -7,15 +7,13 @@
 
 import Chat
 import ChatCore
-import ChatDTO
 import ChatModels
 import Foundation
 import Logger
-import TalkExtensions
 import TalkModels
 import TalkViewModels
-import UIKit
 import OSLog
+import SwiftUI
 
 final class ChatDelegateImplementation: ChatDelegate {
     let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "Talk-App")
@@ -48,6 +46,8 @@ final class ChatDelegateImplementation: ChatDelegate {
                     self.log("🟡 Async ready")
                 case .chatReady:
                     self.log("🟢 chat ready Called\(String(describing: currentUser))")
+                    /// Clear old requests in queue when reconnect again
+                    RequestsManager.shared.clear()
                     AppState.shared.connectionStatus = .connected
                 case .uninitialized:
                     self.log("Chat object is not initialized.")
@@ -65,8 +65,6 @@ final class ChatDelegateImplementation: ChatDelegate {
                     self.onSystemEvent(systemEventTypes)
                 case let .user(userEventTypes):
                     self.onUserEvent(userEventTypes)
-                case let .message(response):
-                    self.onMessageEvent(response)
                 default:
                     break
                 }
@@ -77,12 +75,8 @@ final class ChatDelegateImplementation: ChatDelegate {
     private func onUserEvent(_ event: UserEventTypes) {
         switch event {
         case let .user(response):
-            Task {
-                await MainActor.run {
-                    if let user = response.result {
-                        UserConfigManagerVM.instance.onUser(user)
-                    }
-                }
+            if let user = response.result {
+                UserConfigManagerVM.instance.onUser(user)
             }
         default:
             break
@@ -106,22 +100,14 @@ final class ChatDelegateImplementation: ChatDelegate {
         }
         guard let error = response.error else { return }
         if error.code == 21 {
-            Task {
-                let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in onError with error 21", level: .error, type: .sent, userInfo: nil)
-                NotificationCenter.logs.post(name: .logs, object: log)
-                await TokenManager.shared.getNewTokenWithRefreshToken()
-            }
-            AppState.shared.connectionStatus = .unauthorized
+            let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in onError with error 21", level: .error, type: .sent, userInfo: nil)
+            onLog(log: log)
+            TokenManager.shared.getNewTokenWithRefreshToken()            
+            AppState.shared.connectionStatus = EnvironmentValues.isTalkTest ? .unauthorized : .connecting
         } else {
             if response.isPresentable {
                 AppState.shared.animateAndShowError(error)
             }
-        }
-    }
-
-    private func onMessageEvent(_ event: MessageEventTypes) {
-        if case .new(let response) = event, let message = response.result, canNotify(response) {
-            UNUserNotificationCenter.localNewMessageNotif(message, showName: AppSettingsModel.restore().notificationSettings.showDetails)
         }
     }
 
@@ -130,8 +116,8 @@ final class ChatDelegateImplementation: ChatDelegate {
     }
 
     func onLog(log: Log) {
-        NotificationCenter.logs.post(name: .logs, object: log)
 #if DEBUG
+        NotificationCenter.logs.post(name: .logs, object: log)
         logger.debug("\(log.message ?? "")")
 #endif
     }

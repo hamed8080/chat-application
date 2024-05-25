@@ -7,5 +7,5 @@
 
 import Foundation
 public final class AppGroup {
-    public static let group = "group.ir.pod.talk-test"
+    public static let group = "group.\(Bundle.main.bundleIdentifier!)"
 }

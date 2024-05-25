@@ -52,7 +52,7 @@ final class ParticipantsEventUITableViewCell: UITableViewCell {
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
-        label.attributedText = viewModel.participantEvenMarkdown
+        label.attributedText = viewModel.calculatedMessage.addOrRemoveParticipantsAttr
     }
 }
 

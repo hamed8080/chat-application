@@ -8,6 +8,8 @@
 import ChatModels
 import Foundation
 
+extension Contact: ObservableObject {}
+
 public extension Contact {
     func update(_ newContact: Contact) {
         blocked = newContact.blocked
@@ -37,5 +39,15 @@ public extension Contact {
             id = userName
         }
         return id
+    }
+
+    var toParticipant: Participant {
+        return Participant(
+            contactId: id,
+            coreUserId: user?.coreUserId,
+            id: user?.id ?? user?.coreUserId ?? -1,
+            image: image ?? user?.image,
+            name: "\(firstName ?? "") \(lastName ?? "")"
+        )
     }
 }

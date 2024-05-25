@@ -9,7 +9,10 @@ public struct SSOTokenResponse: Codable {
     /// Only when saving for the first time, we should manullay save keyId in the UserDefault Storage.
     public var keyId: String?
 
-    public init(accessToken: String? = nil, expiresIn: Int, idToken: String? = nil, refreshToken: String? = nil, scope: String? = nil, tokenType: String? = nil, deviceUID: String? = nil) {
+    // Create by the application to refresh token later
+    public var codeVerifier: String?
+
+    public init(accessToken: String? = nil, expiresIn: Int, idToken: String? = nil, refreshToken: String? = nil, scope: String? = nil, tokenType: String? = nil, deviceUID: String? = nil, codeVerifier: String? = nil) {
         self.accessToken = accessToken
         self.expiresIn = expiresIn
         self.idToken = idToken
@@ -17,6 +20,7 @@ public struct SSOTokenResponse: Codable {
         self.scope = scope
         self.tokenType = tokenType
         self.deviceUID = deviceUID
+        self.codeVerifier = codeVerifier
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -30,5 +34,7 @@ public struct SSOTokenResponse: Codable {
 
         /// Only when saving for the first time, we should manullay save keyId in the UserDefault Storage.
         case keyId = "keyId"
+        /// Create By the app
+        case codeVerifier = "codeVerifier"
     }
 }

@@ -8,8 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import Combine
-import Photos
+import TalkModels
 
 enum EditProfileFocusFileds: Hashable {
     case firstName
@@ -18,39 +17,16 @@ enum EditProfileFocusFileds: Hashable {
     case bio
 }
 
-final class EditProfileViewModel: ObservableObject {
-    @Published public var isLoading: Bool = false
-    @Published public var firstName: String = ""
-    @Published public var lastName: String = ""
-    @Published public var userName: String = ""
-    @Published public var bio: String = ""
-    @Published var showImagePicker: Bool = false
-    public var image: UIImage?
-    public var assetResources: [PHAssetResource] = []
-    public var temporaryDisable: Bool = true
-
-    init() {
-        let user = AppState.shared.user
-        firstName = user?.name ?? ""
-        lastName = user?.lastName ?? ""
-        userName = user?.username ?? ""
-        bio = user?.chatProfileVO?.bio ?? ""
-    }
-
-    public func submit() {
-
-    }
-}
-
 struct EditProfileView: View {
     @StateObject var viewModel: EditProfileViewModel = .init()
     @FocusState var focusedField: EditProfileFocusFileds?
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .center, spacing: 16) {
                 Button {
-                    viewModel.showImagePicker = true
+//                    viewModel.showImagePicker = true
                 } label: {
                     ZStack(alignment: .leading) {
                         let config = ImageLoaderConfig(url: AppState.shared.user?.image ?? "", userName: String.splitedCharacter(AppState.shared.user?.name ?? ""))
@@ -95,40 +71,43 @@ struct EditProfileView: View {
                     .opacity(0.9)
                 }
 
-                TextField("Setting.EditProfile.firstNameHint", text: $viewModel.firstName)
+                TextField("Setting.EditProfile.firstNameHint".bundleLocalized(), text: $viewModel.firstName)
                     .focused($focusedField, equals: .firstName)
                     .font(.iransansBody)
                     .padding()
                     .frame(maxWidth: 420)
                     .disabled(viewModel.temporaryDisable)
+                    .foregroundStyle(Color.App.textSecondary.opacity(0.6))
                     .applyAppTextfieldStyle(topPlaceholder: "Setting.EditProfile.firstName", isFocused: focusedField == .firstName) {
                         focusedField = .firstName
                     }
-                TextField("Setting.EditProfile.lastNameHint", text: $viewModel.lastName)
+                TextField("Setting.EditProfile.lastNameHint".bundleLocalized(), text: $viewModel.lastName)
                     .focused($focusedField, equals: .lastName)
                     .font(.iransansBody)
                     .padding()
                     .frame(maxWidth: 420)
                     .disabled(viewModel.temporaryDisable)
+                    .foregroundStyle(Color.App.textSecondary.opacity(0.6))
                     .applyAppTextfieldStyle(topPlaceholder: "Setting.EditProfile.lastName" , isFocused: focusedField == .lastName) {
                         focusedField = .lastName
                     }
 
-                TextField("Setting.EditProfile.userNameHint", text: $viewModel.userName)
+                TextField("Setting.EditProfile.userNameHint".bundleLocalized(), text: $viewModel.userName)
                     .focused($focusedField, equals: .userName)
                     .font(.iransansBody)
                     .padding()
                     .frame(maxWidth: 420)
                     .disabled(viewModel.temporaryDisable)
+                    .foregroundStyle(Color.App.textSecondary.opacity(0.6))
                     .applyAppTextfieldStyle(topPlaceholder: "Setting.EditProfile.userName", isFocused: focusedField == .userName) {
                         focusedField = .userName
                     }
-                TextField("Setting.EditProfile.bioHint", text: $viewModel.bio, axis: .vertical)
+                TextField("Setting.EditProfile.bioHint".bundleLocalized(), text: $viewModel.bio, axis: .vertical)
                     .focused($focusedField, equals: .bio)
                     .font(.iransansBody)
                     .padding()
                     .frame(maxWidth: 420)
-                    .disabled(viewModel.temporaryDisable)
+//                    .disabled(viewModel.temporaryDisable)
                     .applyAppTextfieldStyle(topPlaceholder: "Setting.EditProfile.bio", minHeight: 128, isFocused: focusedField == .bio) {
                         focusedField = .bio
                     }
@@ -169,7 +148,7 @@ struct EditProfileView: View {
         .font(.iransansSubheadline)
         .safeAreaInset(edge: .bottom) {
             SubmitBottomButton(text: "General.submit",
-                               enableButton: Binding(get: {!viewModel.temporaryDisable}, set: {_ in}),
+                               enableButton: .constant(true),
                                isLoading: $viewModel.isLoading,
                                maxInnerWidth: 420
             ) {
@@ -188,6 +167,11 @@ struct EditProfileView: View {
             }
         }
         .normalToolbarView(title: "Settings.EditProfile.title", type: EditProfileNavigationValue.self)
+        .onReceive(viewModel.$dismiss) { newValue in
+            if newValue {
+                dismiss()
+            }
+        }
     }
 }
 

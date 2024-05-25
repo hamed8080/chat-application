@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkUI
 import TalkExtensions
+import TalkModels
 
 struct LoadTestsView: View {
     @State private var threadId = ""
@@ -18,15 +19,15 @@ struct LoadTestsView: View {
         List {
             Section {
                 VStack(spacing: 16) {
-                    TextField("ThreadId", text: $threadId)
+                    TextField("ThreadId".bundleLocalized(), text: $threadId)
                         .keyboardType(.numberPad)
                         .padding()
                         .applyAppTextfieldStyle(topPlaceholder: "ThreadId")
-                    TextField("Start", text: $start)
+                    TextField("Start".bundleLocalized(), text: $start)
                         .keyboardType(.numberPad)
                         .padding()
                         .applyAppTextfieldStyle(topPlaceholder: "Start")
-                    TextField("End", text: $end)
+                    TextField("End".bundleLocalized(), text: $end)
                         .keyboardType(.numberPad)
                         .padding()
                         .applyAppTextfieldStyle(topPlaceholder: "End")

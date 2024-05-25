@@ -93,7 +93,7 @@ struct EditGroup: View {
                 .listRowInsets(.zero)
                 .noSeparators()
             
-            TextField("EditGroup.groupName", text: $viewModel.editTitle)
+            TextField("EditGroup.groupName".bundleLocalized(), text: $viewModel.editTitle)
                 .focused($focusState, equals: .name)
                 .keyboardType(.default)
                 .padding()
@@ -103,7 +103,7 @@ struct EditGroup: View {
                 .noSeparators()
                 .listRowBackground(Color.App.bgSecondary)
             
-            TextField("EditGroup.groupDescription", text: $viewModel.threadDescription)
+            TextField("EditGroup.groupDescription".bundleLocalized(), text: $viewModel.threadDescription)
                 .focused($focusState, equals: .description)
                 .keyboardType(.default)
                 .padding()
@@ -115,10 +115,10 @@ struct EditGroup: View {
 
             let isChannel = viewModel.thread.type?.isChannelType == true
             let isPublic = viewModel.thread.type?.isPrivate == false
-            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
-            let localizedPublic = String(localized: isPublic ? .init("Thread.public") : "Thread.private")
-            let localizedDelete = String(localized: .init("Thread.delete"))
-            let localizedMainString = String(localized: .init("Thread.typeString"))
+            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"), bundle: Language.preferedBundle)
+            let localizedPublic = String(localized: isPublic ? .init("Thread.public") : "Thread.private", bundle: Language.preferedBundle)
+            let localizedDelete = String(localized: .init("Thread.delete"), bundle: Language.preferedBundle)
+            let localizedMainString = String(localized: .init("Thread.typeString"), bundle: Language.preferedBundle)
 
             Group {
                 StickyHeaderSection(header: "", height: 2)
@@ -126,13 +126,18 @@ struct EditGroup: View {
                     .listRowInsets(.zero)
                     .noSeparators()
 
-                item(title: String(format: localizedMainString, typeName, localizedPublic), image: isChannel ? "megaphone" : "person.2")
+                if isChannel {
+                    item(title: String(format: localizedMainString, typeName, localizedPublic), image: "", assetImage: "ic_channel")
+                } else {
+                    item(title: String(format: localizedMainString, typeName, localizedPublic), image: "person.2")
+                }
+
 
                 let adminsCount = viewModel.adminCounts.localNumber(locale: Language.preferredLocale) ?? ""
-                item(title: String(localized: .init("EditGroup.admins")), image: "person.badge.shield.checkmark", rightLabelText: adminsCount)
+                item(title: String(localized: .init("EditGroup.admins"), bundle: Language.preferedBundle), image: "person.badge.shield.checkmark", rightLabelText: adminsCount)
 
                 let participantsCount = viewModel.thread.participantCount?.localNumber(locale: Language.preferredLocale) ?? ""
-                item(title: String(localized: .init("Thread.Tabs.members")), image: "person.2", rightLabelText: participantsCount)
+                item(title: String(localized: .init("Thread.Tabs.members"), bundle: Language.preferedBundle), image: "person.2", rightLabelText: participantsCount)
                 
 //                if EnvironmentValues.isTalkTest {
 //                    Toggle(isOn: $viewModel.isPublic) {
@@ -168,7 +173,7 @@ struct EditGroup: View {
         .listStyle(.plain)
         .background(Color.App.bgSecondary)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            SubmitBottomButton(text: "General.edit", enableButton: Binding(get: {!viewModel.isLoading}, set: {_ in}), isLoading: $viewModel.isLoading) {
+            SubmitBottomButton(text: "General.done", enableButton: Binding(get: {!viewModel.isLoading}, set: {_ in}), isLoading: $viewModel.isLoading) {
                 viewModel.submitEditGroup()
             }
         }
@@ -208,13 +213,12 @@ struct EditGroup: View {
     }
 
     var leadingTralingView: some View {
-        NavigationBackButton {
-            dismiss()
-        }
+        NavigationBackButton(automaticDismiss: true) {}
     }
 
     @ViewBuilder private func item(title: String,
                                    image: String,
+                                   assetImage: String? = nil,
                                    rightLabelText: String = "",
                                    textColor: Color = Color.App.textPrimary,
                                    iconColor: Color = Color.App.textSecondary,
@@ -224,13 +228,23 @@ struct EditGroup: View {
             action?()
         } label: {
             HStack {
-                Image(systemName: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .clipped()
-                    .font(.iransansBody)
-                    .foregroundStyle(iconColor)
+                if let assetImage = assetImage {
+                    Image(assetImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .clipped()
+                        .font(.iransansBody)
+                        .foregroundStyle(iconColor)
+                } else {
+                    Image(systemName: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .clipped()
+                        .font(.iransansBody)
+                        .foregroundStyle(iconColor)
+                }
                 Text(title)
                     .foregroundStyle(textColor)
                 Spacer()
