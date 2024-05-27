@@ -1,12 +1,120 @@
 {
   "pins" : [
     {
+      "identity" : "additive",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/additive",
+      "state" : {
+        "revision" : "04df7590997b00829cf825715e81e5b9cb9a92d3",
+        "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "additive-ui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/additive-ui",
+      "state" : {
+        "revision" : "f5ed1d4f82316c71b5ecafdabb085e04073761a3",
+        "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "async",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/async",
+      "state" : {
+        "revision" : "56fdbd35ef50905204e26e86a99cf4f2daa84fa0",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "chat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/chat.git",
+      "state" : {
+        "revision" : "eb2aa6a9144a9998a07d590fbec67650603f1b58",
+        "version" : "2.0.2"
+      }
+    },
+    {
+      "identity" : "chat-cache",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/chat-cache",
+      "state" : {
+        "revision" : "38e08bcc70bdc15108c8e16fa473687bb0169a34",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "chat-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/chat-core",
+      "state" : {
+        "revision" : "57bf86abda8776214efccdde9240cce8830ec50b",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "chat-dto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/chat-dto",
+      "state" : {
+        "revision" : "f333d1b823e11b89b47b1506714aab7762684af2",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "chat-extensions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/chat-extensions",
+      "state" : {
+        "revision" : "b296195fd954b5b446d1e6992b02f5e223c1eb38",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "chat-models",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/chat-models",
+      "state" : {
+        "revision" : "d46073d3884259a33f86904d56305d5df7cc6329",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "chat-transceiver",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/chat-transceiver",
+      "state" : {
+        "revision" : "4d3ffec26ec13dcd583b2fbb92852b7944fe8529",
+        "version" : "2.0.1"
+      }
+    },
+    {
       "identity" : "dswaveformimage",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/dmrschmidt/DSWaveformImage",
       "state" : {
         "revision" : "89300494dab28d7c9718148ec0b5936b9dfd8c81",
         "version" : "14.2.1"
+      }
+    },
+    {
+      "identity" : "logger",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/logger",
+      "state" : {
+        "revision" : "07e0b32e7c54acc017156955ed0bcbff528c1524",
+        "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "mocks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.sandpod.ir/chat/ios/mocks",
+      "state" : {
+        "revision" : "723121790e3646283713bde625dfddd5e3065ede",
+        "version" : "1.2.1"
       }
     },
     {
