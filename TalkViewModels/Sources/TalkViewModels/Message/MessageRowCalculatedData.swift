@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import ChatModels
 import SwiftUI
 import TalkModels
+import Chat
 
 public struct MessageRowCalculatedData {
     public static var formatter: DateFormatter = {
@@ -36,7 +36,7 @@ public struct MessageRowCalculatedData {
     public var avatarSplitedCharaters = ""
     public var isInTwoWeekPeriod: Bool = false
     public var localizedReplyFileName: String? = nil
-    public var markdownTitle = AttributedString()
+    public var markdownTitle: AttributedString?
     public var isFirstMessageOfTheUser: Bool = false
     public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false

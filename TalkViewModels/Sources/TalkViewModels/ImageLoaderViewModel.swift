@@ -8,13 +8,9 @@
 import Chat
 import Foundation
 import UIKit
-import ChatModels
 import TalkModels
-import ChatDTO
-import ChatCore
 import TalkExtensions
 import Combine
-import ChatTransceiver
 
 private var token: String? {
     guard let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey),

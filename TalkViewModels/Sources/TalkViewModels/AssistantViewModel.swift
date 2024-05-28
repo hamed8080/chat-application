@@ -8,10 +8,7 @@
 import Chat
 import Combine
 import Foundation
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 
 public final class AssistantViewModel: ObservableObject {
     private var count = 15
@@ -86,7 +83,8 @@ public final class AssistantViewModel: ObservableObject {
     public func appendOrUpdateAssistant(_ assistants: [Assistant]) {
         // Remove all assistants that were cached, to prevent duplication.
         assistants.forEach { assistant in
-            if let oldAssistant = self.assistants.first(where: { $0.participant?.id == assistant.participant?.id }) {
+            var assistant = assistant
+            if var oldAssistant = self.assistants.first(where: { $0.participant?.id == assistant.participant?.id }) {
                 oldAssistant.update(assistant)
                 oldAssistant.id = assistant.participant?.id
             } else {
@@ -99,6 +97,7 @@ public final class AssistantViewModel: ObservableObject {
     public func deactiveSelectedAssistants() {
         isLoading = true
         selectedAssistant.forEach { assistant in
+            var assistant = assistant
             if assistant.assistant == nil {
                 assistant.assistant = .init(id: "\(assistant.participant?.coreUserId ?? 0)", idType: .coreUserId)
             }
@@ -131,8 +130,8 @@ public final class AssistantViewModel: ObservableObject {
     }
 
     public func onBlockAssistant(_ response: ChatResponse<[Assistant]>) {
-        if response.pop() != nil {
-            assistants.first(where: {$0.participant?.id == response.result?.first?.participant?.id})?.block = true
+        if response.pop() != nil, let index = assistants.firstIndex(where: {$0.participant?.id == response.result?.first?.participant?.id}) {
+            assistants[index].block = true
         }
     }
 
@@ -143,8 +142,8 @@ public final class AssistantViewModel: ObservableObject {
     }
 
     public func onUnBlockAssistant(_ response: ChatResponse<[Assistant]>) {
-        if response.pop() != nil {
-            assistants.first(where: {$0.participant?.id == response.result?.first?.participant?.id})?.block = false
+        if response.pop() != nil, let index = assistants.firstIndex(where: {$0.participant?.id == response.result?.first?.participant?.id}) {
+            assistants[index].block = false
         }
     }
 

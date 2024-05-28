@@ -7,7 +7,6 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -20,7 +19,7 @@ struct PictureView: View {
     @StateObject var viewModel: DetailTabDownloaderViewModel
     @State var viewWidth: CGFloat = 0
 
-    init(conversation: Conversation, messageType: MessageType) {
+    init(conversation: Conversation, messageType: ChatModels.MessageType) {
         let vm = DetailTabDownloaderViewModel(conversation: conversation, messageType: messageType, tabName: "Picture")
         _viewModel = StateObject(wrappedValue: vm)
     }
@@ -126,8 +125,10 @@ struct PictureRowView: View {
             .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
                 VStack {
                     ContextMenuButton(title: "General.showMessage".bundleLocalized(), image: "message.fill") {
-                        threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-                        viewModel.dismiss = true
+                        Task {
+                            await threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                            viewModel.dismiss = true
+                        }
                     }
                 }
                 .foregroundColor(.primary)

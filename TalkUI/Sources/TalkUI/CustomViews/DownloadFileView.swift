@@ -10,7 +10,6 @@ import Chat
 import Combine
 import SwiftUI
 import TalkViewModels
-import ChatModels
 import AVKit
 import TalkModels
 
@@ -60,7 +59,7 @@ struct MutableDownloadViews: View {
 struct DownloadFileButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     let message: Message?
-    var percent: Int64 { viewModel.downloadPercent }
+    var percent: Int64 { viewModel.downloadPercentValue() }
     var stateIcon: String {
         if viewModel.state == .downloading {
             return "pause.fill"

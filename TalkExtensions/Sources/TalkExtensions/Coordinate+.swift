@@ -5,8 +5,8 @@
 //  Created by hamed on 3/14/23.
 //
 
-import ChatDTO
 import MapKit
+import Chat
 
 public extension Coordinate {
     var location: CLLocationCoordinate2D {

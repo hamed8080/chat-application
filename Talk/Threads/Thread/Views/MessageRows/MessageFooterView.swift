@@ -7,13 +7,13 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct MessageFooterView: View {
-    var message: Message { viewModel.message }
+    var message: any HistoryMessageProtocol { viewModel.message }
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     private var thread: Conversation? { threadVM?.thread }

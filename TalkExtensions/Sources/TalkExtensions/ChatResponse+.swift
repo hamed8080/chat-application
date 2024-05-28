@@ -5,10 +5,9 @@
 //  Created by hamed on 12/4/22.
 //
 
-import ChatCore
-import Additive
 import Foundation
 import TalkModels
+import Chat
 
 extension ChatError {
     public static var presentableErrors: [ServerErrorType] = ServerErrorType.allCases.filter{ !customPresentable.contains($0) }

@@ -7,10 +7,7 @@
 
 import Chat
 import Foundation
-import ChatModels
 import Combine
-import ChatCore
-import ChatDTO
 
 public final class ExportMessagesViewModel: ObservableObject {
     private weak var viewModel: ThreadViewModel?

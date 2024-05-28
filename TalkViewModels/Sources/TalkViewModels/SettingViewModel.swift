@@ -8,9 +8,7 @@
 import Chat
 import Combine
 import SwiftUI
-import ChatModels
 import TalkModels
-import Additive
 
 public final class SettingViewModel: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []

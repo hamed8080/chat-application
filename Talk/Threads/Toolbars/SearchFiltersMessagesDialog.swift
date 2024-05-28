@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import ChatModels
 import TalkViewModels
 import SwiftUI
 import TalkUI

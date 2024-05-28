@@ -7,7 +7,6 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
 
 struct ContainerSplitView<SidebarView: View>: View {
     let sidebarView: SidebarView

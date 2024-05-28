@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 import TalkViewModels
-import ChatModels
+import Chat
 
 public struct InlineAudioPlayerView: View {
     public let message: Message?

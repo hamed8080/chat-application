@@ -11,7 +11,6 @@ import SwiftUI
 import TalkModels
 import TalkUI
 import TalkViewModels
-import ChatCore
 
 struct MapPickerView: View {
     @Environment(\.dismiss) var dismiss
@@ -20,12 +19,14 @@ struct MapPickerView: View {
 
     var body: some View {
         ZStack {
-            Map(coordinateRegion: $locationManager.region,
-                interactionModes: .all,
-                showsUserLocation: true,
-                annotationItems: [locationManager.currentLocation].compactMap { $0 }) { item in
+            if let region = locationManager.region {
+                Map(coordinateRegion: .constant(region),
+                    interactionModes: .all,
+                    showsUserLocation: true,
+                    annotationItems: [locationManager.currentLocation].compactMap { $0 }) { item in
                     MapMarker(coordinate: item.location)
                 }
+            }
             VStack {
                 Spacer()
                 SubmitBottomButton(text: "MapPicker.sendSelectedLocation") {
@@ -88,13 +89,14 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     @Published var error: AppErrorTypes?
     @Published var currentLocation: LocationItem?
     let manager = CLLocationManager()
-    @Published var region: MKCoordinateRegion = .init(center: CLLocationCoordinate2D(latitude: 51.507222,
-                                                                                     longitude: -0.1275),
-                                                      span: MKCoordinateSpan(latitudeDelta: 0.005,
-                                                                             longitudeDelta: 0.005))
+    @Published var region: MKCoordinateRegion?
 
     override init() {
         super.init()
+        region = .init(center: CLLocationCoordinate2D(latitude: 51.507222,
+                                                      longitude: -0.1275),
+                       span: MKCoordinateSpan(latitudeDelta: 0.005,
+                                              longitudeDelta: 0.005))
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         manager.requestAlwaysAuthorization()
@@ -105,7 +107,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
         DispatchQueue.main.async { [weak self] in
             if let currentLocation = locations.first, MKMapPoint(currentLocation.coordinate).distance(to: MKMapPoint(self?.currentLocation?.location ?? CLLocationCoordinate2D())) > 100 {
                 self?.currentLocation = .init(name: String(localized: .init("Map.mayLocation"), bundle: Language.preferedBundle), description: String(localized: .init("Map.hereIAm"), bundle: Language.preferedBundle), location: currentLocation.coordinate)
-                self?.region.center = currentLocation.coordinate
+                self?.region?.center = currentLocation.coordinate
             }
         }
     }

@@ -6,11 +6,10 @@
 //
 
 import Foundation
-import ChatDTO
 import TalkModels
-import ChatModels
+import Chat
 
-public extension UploadFileWithTextMessage {
+public extension UploadFileMessage {
 
     convenience init(videoItem: ImageItem, videoModel: SendMessageModel) {
         let uploadRequest = UploadFileRequest(videoItem: videoItem, videoModel.userGroupHash)
@@ -28,6 +27,8 @@ public extension UploadFileWithTextMessage {
                                                  messageType: .podSpacePicture)
         self.init(imageFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: imageModel.conversation)
         id = -(imageModel.uploadFileIndex ?? 1)
+        ownerId = imageModel.meId
+        conversation = imageModel.conversation
     }
 
     convenience init(dropItem: DropItem, dropModel: SendMessageModel) {
@@ -38,6 +39,8 @@ public extension UploadFileWithTextMessage {
                                                                                      messageType: .podSpaceFile)
         self.init(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: dropModel.conversation)
         id = -(dropModel.uploadFileIndex ?? 1)
+        ownerId = dropModel.meId
+        conversation = dropModel.conversation
     }
 
     convenience init?(urlItem: URL, isLastItem: Bool, urlModel: SendMessageModel) {
@@ -47,17 +50,23 @@ public extension UploadFileWithTextMessage {
         let isMusic = urlItem.isMusicMimetype
         let newMessageType = isMusic ? ChatModels.MessageType.podSpaceSound : .podSpaceFile
         if isLastItem {
-            textRequest = SendTextMessageRequest(threadId: urlModel.threadId,
-                                                 textMessage: textMessage,
-                                                 messageType: newMessageType)
+            textRequest = SendTextMessageRequest(threadId: urlModel.threadId, textMessage: textMessage, messageType: newMessageType)
         }
         self.init(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: urlModel.conversation)
         id = -(urlModel.uploadFileIndex ?? 1)
+        messageType = newMessageType
+        ownerId = urlModel.meId
+        conversation = urlModel.conversation
     }
 
     convenience init?(audioFileURL: URL?, model: SendMessageModel) {
         guard let audioFileURL = audioFileURL, let uploadRequest = UploadFileRequest(audioFileURL: audioFileURL, model.userGroupHash) else { return nil }
-        let textRequest = SendTextMessageRequest(threadId: model.threadId, textMessage: "", messageType: .podSpaceVoice)
+        let textRequest = SendTextMessageRequest(threadId: model.threadId,
+                                                 textMessage: "",
+                                                 messageType: .podSpaceVoice)
         self.init(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: model.conversation)
+        messageType = .podSpaceVoice
+        ownerId = model.meId
+        conversation = model.conversation
     }
 }

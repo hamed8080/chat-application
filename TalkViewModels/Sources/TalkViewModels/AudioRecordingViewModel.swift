@@ -10,7 +10,6 @@ import Chat
 import Foundation
 import OSLog
 import TalkModels
-import ChatCore
 
 protocol AudioRecordingViewModelprotocol: ObservableObject {
     var audioRecorder: AVAudioRecorder { get set }

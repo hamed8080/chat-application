@@ -12,6 +12,7 @@ import TalkUI
 struct EmptyThreadView: View {
     @EnvironmentObject private var viewModel: ThreadHistoryViewModel
     @Environment(\.colorScheme) private var colorScheme
+    @State private var isEmptyThread = false
 
     var body: some View {
         VStack {
@@ -37,10 +38,15 @@ struct EmptyThreadView: View {
             }
             Spacer()
         }
-        .frame(height: viewModel.isEmptyThread ? nil : 0)
-        .opacity(viewModel.isEmptyThread ? 1.0 : 0.0)
+        .frame(height: isEmptyThread ? nil : 0)
+        .opacity(isEmptyThread ? 1.0 : 0.0)
         .contentShape(Rectangle())
         .clipped()
+        .onReceive(viewModel.objectWillChange) { _ in
+            Task {
+                isEmptyThread = await viewModel.isEmptyThread
+            }
+        }
     }
 }
 

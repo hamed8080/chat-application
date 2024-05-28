@@ -7,13 +7,10 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
-import Additive
-import ChatCore
 
 struct SettingsView: View {
     let container: ObjectsContainer
@@ -198,8 +195,7 @@ struct UserInformationSection: View {
                     updateUI(user: response.result)
                 }
 
-                if case .setProfile(let response) = event {
-                    AppState.shared.user?.chatProfileVO?.bio = response.result?.bio ?? ""
+                if case .setProfile(_) = event {
                     updateUI(user: AppState.shared.user)
                 }
             }

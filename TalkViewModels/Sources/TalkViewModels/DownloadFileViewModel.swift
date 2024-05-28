@@ -1,11 +1,7 @@
 import Chat
-import ChatModels
-import ChatDTO
 import TalkModels
 import Combine
 import Foundation
-import ChatCore
-import ChatTransceiver
 import SwiftUI
 
 public protocol DownloadFileViewModelProtocol {
@@ -13,7 +9,6 @@ public protocol DownloadFileViewModelProtocol {
     var fileHashCode: String { get }
     var data: Data? { get }
     var state: DownloadFileState { get }
-    var downloadPercent: Int64 { get }
     var url: URL? { get }
     var fileURL: URL? { get }
     func setObservers()
@@ -23,14 +18,14 @@ public protocol DownloadFileViewModelProtocol {
 }
 
 public final class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
-    public var downloadPercent: Int64 = 0
+    private var downloadPercent: Int64 = 0
     public var state: DownloadFileState = .undefined
     public var thumbnailData: Data?
     public var data: Data?
     public var fileHashCode: String { message?.fileHashCode ?? "" }
     var chat: Chat? { ChatManager.activeInstance }
     var uniqueId: String = ""
-    public weak var message: Message?
+    public var message: Message?
     private var cancellableSet: Set<AnyCancellable> = .init()
     public var fileURL: URL? { message?.fileURL }
     public var url: URL? { message?.url }
@@ -234,6 +229,11 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     
     private func isSameUnqiueId(_ uniqueId: String) -> Bool {
         RequestsManager.shared.contains(key: self.uniqueId) && uniqueId == self.uniqueId
+    }
+
+    @MainActor
+    public func downloadPercentValue() -> Int64 {
+        return downloadPercent
     }
 
     deinit {

@@ -10,8 +10,6 @@ import SwiftUI
 import TalkModels
 import TalkUI
 import TalkViewModels
-import ChatModels
-import ChatDTO
 import ActionableContextMenu
 
 struct MemberView: View {

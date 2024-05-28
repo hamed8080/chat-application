@@ -5,9 +5,9 @@
 //  Created by hamed on 12/4/22.
 //
 
-import ChatModels
 import Foundation
 import SwiftUI
+import Chat
 
 public extension CallParticipant {
     var title: String? {

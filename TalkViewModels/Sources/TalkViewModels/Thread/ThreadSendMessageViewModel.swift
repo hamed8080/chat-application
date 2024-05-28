@@ -8,10 +8,8 @@
 import Chat
 import Foundation
 import UIKit
-import ChatModels
 import TalkExtensions
 import TalkModels
-import ChatDTO
 import OSLog
 
 public final class ThreadSendMessageViewModel: ObservableObject {
@@ -31,8 +29,6 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             AppState.shared.appStateNavigationModel = newValue
         }
     }
-    private var historyVM: ThreadHistoryViewModel? { viewModel?.historyVM }
-    private var seenVM: HistorySeenViewModel? { historyVM?.seenVM }
     private var recorderVM: AudioRecordingViewModel { viewModel?.audioRecoderVM ?? .init() }
 
     public init() {}
@@ -61,7 +57,9 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             sendNormalMessage()
         }
 
-        seenVM?.sendSeenForAllUnreadMessages()
+        Task { @HistoryActor [weak self] in
+            self?.viewModel?.historyVM.seenVM?.sendSeenForAllUnreadMessages()
+        }
         viewModel?.mentionListPickerViewModel.text = ""
         viewModel?.sheetType = nil
         viewModel?.animateObjectWillChange()
@@ -162,15 +160,15 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     private func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile) {
-        if let imageItem = attachmentFile.request as? ImageItem, let message = UploadFileWithReplyPrivatelyMessage(imageItem: imageItem, model: makeModel()) {
+        if let imageItem = attachmentFile.request as? ImageItem, let message = UploadFileWithReplyPrivatelyMessage.make(imageItem: imageItem, model: makeModel()) {
             uplVM.append(contentsOf: [message])
-        } else if let message = UploadFileWithReplyPrivatelyMessage(attachmentFile: attachmentFile, model: makeModel()) {
+        } else if let message = UploadFileWithReplyPrivatelyMessage.make(attachmentFile: attachmentFile, model: makeModel()) {
             uplVM.append(contentsOf: [message])
         }
     }
 
     private func sendReplyPrivatelyWithVoice() {
-        if let message = UploadFileWithReplyPrivatelyMessage(voiceURL: recorderVM.recordingOutputPath, model: makeModel()) {
+        if let message = UploadFileWithReplyPrivatelyMessage.make(voiceURL: recorderVM.recordingOutputPath, model: makeModel()) {
             uplVM.append(contentsOf: [message])
             recorderVM.cancel()
         }
@@ -179,7 +177,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     private func sendAudiorecording() {
         send { [weak self] in
             guard let self = self,
-                  let request = UploadFileWithTextMessage(audioFileURL: recorderVM.recordingOutputPath, model: makeModel())
+                  let request = UploadFileMessage(audioFileURL: recorderVM.recordingOutputPath, model: makeModel())
             else { return }
             uplVM.append(contentsOf: [request])
             recorderVM.cancel()
@@ -196,17 +194,22 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
         sendVM.clear() /// Close edit mode in ui
-        seenVM?.animateObjectWillChange()
-        viewModel?.sheetType = nil
-        viewModel?.animateObjectWillChange()
-        animateObjectWillChange()
-        let messages = selectVM.selectedMessages.compactMap{$0.message}
-        if let contact = contact {
-            AppState.shared.openForwardThread(from: threadId, contact: contact, messages: messages)
-        } else if let destinationConversation = destinationConversation {
-            AppState.shared.openForwardThread(from: threadId, conversation: destinationConversation, messages: messages)
+        Task { @HistoryActor [weak self] in
+            self?.viewModel?.historyVM.seenVM?.animateObjectWillChange()
         }
-        selectVM.clearSelection()
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            viewModel?.sheetType = nil
+            viewModel?.animateObjectWillChange()
+            animateObjectWillChange()
+            let messages = await selectVM.getSelectedMessages().compactMap{$0.message as? Message}
+            if let contact = contact {
+                AppState.shared.openForwardThread(from: threadId, contact: contact, messages: messages)
+            } else if let destinationConversation = destinationConversation {
+                AppState.shared.openForwardThread(from: threadId, conversation: destinationConversation, messages: messages)
+            }
+            selectVM.clearSelection()
+        }
     }
 
     private func sendForwardMessages() {
@@ -245,7 +248,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
         send { [weak self] in
             guard let self = self else {return}
             for(index, imageItem) in imageItems.filter({!$0.isVideo}).enumerated() {
-                let imageMessage = UploadFileWithTextMessage(imageItem: imageItem, imageModel: makeModel(index))
+                let imageMessage = UploadFileMessage(imageItem: imageItem, imageModel: makeModel(index))
                 uplVM.append(contentsOf: ([imageMessage]))
             }
             sendVideos(imageItems.filter({$0.isVideo}))
@@ -255,7 +258,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func sendVideos(_ imageItems: [ImageItem]) {
         for (index, item) in imageItems.enumerated() {
-            let videoMessage = UploadFileWithTextMessage(videoItem: item, videoModel: makeModel(index))
+            let videoMessage = UploadFileMessage(videoItem: item, videoModel: makeModel(index))
             self.uplVM.append(contentsOf: ([videoMessage]))
         }
     }
@@ -266,7 +269,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             guard let self = self else {return}
             for (index, url) in urls.enumerated() {
                 let isLastItem = url == urls.last || urls.count == 1
-                if let fileMessage = UploadFileWithTextMessage(urlItem: url, isLastItem: isLastItem, urlModel: makeModel(index)) {
+                if let fileMessage = UploadFileMessage(urlItem: url, isLastItem: isLastItem, urlModel: makeModel(index)) {
                     self.uplVM.append(contentsOf: [fileMessage])
                 }
             }
@@ -278,7 +281,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
         send { [weak self] in
             guard let self = self else {return}
             for (index, item) in items.enumerated() {
-                let fileMessage = UploadFileWithTextMessage(dropItem: item, dropModel: makeModel(index))
+                let fileMessage = UploadFileMessage(dropItem: item, dropModel: makeModel(index))
                 self.uplVM.append(contentsOf: ([fileMessage]))
             }
             attVM.clear()
@@ -294,7 +297,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     public func sendLocation(_ location: LocationItem) {
         send { [weak self] in
             guard let self = self else {return}
-            let message = UploadFileWithLocationMessage(location: location, model: makeModel())
+            let message = UploadFileWithLocationMessage(message: Message(), location: location, model: makeModel())
             uplVM.append(request: message)
             attVM.clear()
         }

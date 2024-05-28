@@ -7,11 +7,8 @@
 
 import Chat
 import Combine
-import ChatModels
-import ChatCore
 import SwiftUI
 import TalkModels
-import ChatDTO
 
 public final class TagsViewModel: ObservableObject {
     public var tags: [Tag] = []
@@ -177,7 +174,7 @@ public final class TagsViewModel: ObservableObject {
     }
 
     public func removeParticipants(_ tagId: Int, _ tagParticipants: [TagParticipant]) {
-        if let tag = tags.first(where: { $0.id == tagId }) {
+        if var tag = tags.first(where: { $0.id == tagId }) {
             tag.tagParticipants?.removeAll(where: { cached in tagParticipants.contains(where: { cached.id == $0.id }) })
             let tagParticipants = tag.tagParticipants
             let tag = Tag(id: tagId, name: tag.name, active: tag.active, tagParticipants: tagParticipants)

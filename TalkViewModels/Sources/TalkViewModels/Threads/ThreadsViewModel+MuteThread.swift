@@ -7,8 +7,6 @@
 
 import Chat
 import Foundation
-import ChatCore
-import ChatModels
 
 protocol MuteThreadProtocol {
     func toggleMute(_ thread: Conversation)

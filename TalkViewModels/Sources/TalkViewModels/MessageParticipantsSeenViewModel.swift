@@ -7,10 +7,7 @@
 
 import Foundation
 import Combine
-import ChatModels
-import ChatDTO
 import Chat
-import ChatCore
 
 public class MessageParticipantsSeenViewModel: ObservableObject {
     @Published public var participants: [Participant] = []

@@ -5,9 +5,9 @@
 //  Created by hamed on 12/10/22.
 //
 
-import ChatModels
 import Foundation
 import SwiftUI
+import Chat
 
 public extension CallSticker {
     var systemImage: SwiftUI.Image {

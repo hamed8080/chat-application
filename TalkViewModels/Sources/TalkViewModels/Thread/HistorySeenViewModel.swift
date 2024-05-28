@@ -7,7 +7,6 @@
 
 import Foundation
 import Combine
-import ChatModels
 import Logger
 import OSLog
 import Chat
@@ -40,19 +39,19 @@ public final class HistorySeenViewModel: ObservableObject {
         setupOnSceneBecomeActiveObserver()
     }
 
-    internal func onAppear(_ message: Message) {
+    internal func onAppear(_ message: any HistoryMessageProtocol) {
         queue.sync {
             if !canReduce(for: message) { return }
             logMessageApperance(message, appeard: true, isUp: false)
             reduceUnreadCountLocaly(message)
-            if message.id ?? 0 >= lastInQueue {
+            if message.id ?? 0 >= lastInQueue, let message = message as? Message {
                 lastInQueue = message.id ?? 0
                 seenPublisher.send(message)
             }
         }
     }
 
-    private func canReduce(for message: Message) -> Bool {
+    private func canReduce(for message: any HistoryMessageProtocol) -> Bool {
         if isScrollingUp { return false }
         if message.id == LocalId.unreadMessageBanner.rawValue { return false }
         return message.id ?? 0 > thread.lastSeenMessageId ?? 1
@@ -60,9 +59,9 @@ public final class HistorySeenViewModel: ObservableObject {
 
     /// We reduce it locally to keep the UI Sync and user feels it really read the message.
     /// However, we only send seen request with debouncing
-    private func reduceUnreadCountLocaly(_ message: Message) {
+    private func reduceUnreadCountLocaly(_ message: any HistoryMessageProtocol) {
         if let newUnreadCount = newLocalUnreadCount(for: message) {
-            thread.unreadCount = newUnreadCount
+            threadVM?.thread.unreadCount = newUnreadCount
             reduceThreadListLocally(to: newUnreadCount)
         }
         threadVM?.animateObjectWillChange()
@@ -76,7 +75,7 @@ public final class HistorySeenViewModel: ObservableObject {
         animateObjectWillChange()
     }
 
-    private func newLocalUnreadCount(for message: Message) -> Int? {
+    private func newLocalUnreadCount(for message: any HistoryMessageProtocol) -> Int? {
         let messageId = message.id ?? -1
         let currentUnreadCount = thread.unreadCount ?? -1
         if currentUnreadCount > 0, messageId >= thread.lastSeenMessageId ?? 0 {
@@ -89,7 +88,10 @@ public final class HistorySeenViewModel: ObservableObject {
     private func sendSeen(for message: Message) {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         if let messageId = message.id, !isMe, AppState.shared.lifeCycleState == .active || AppState.shared.lifeCycleState == .foreground {
-            thread.lastSeenMessageId = messageId
+            threadVM?.thread.lastSeenMessageId = messageId
+            if let index = threadsVM.firstIndex(threadId) {
+                threadsVM.threads[index].lastSeenMessageId = messageId
+            }
             log("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
         }
@@ -101,7 +103,7 @@ public final class HistorySeenViewModel: ObservableObject {
            message.participant?.id != AppState.shared.user?.id,
            thread.unreadCount ?? 0 > 0
         {
-            sendSeen(for: message)
+            sendSeen(for: message.toMessage)
         }
     }
 
@@ -118,12 +120,12 @@ public final class HistorySeenViewModel: ObservableObject {
         Task { [weak self] in
             let isAtEndOfTleList = await self?.threadVM?.scrollVM.isAtBottomOfTheList == true
             if isAtEndOfTleList, hasLastMeesageSeen, let lastMessage = lastMessage {
-                self?.sendSeen(for: lastMessage)
+                self?.sendSeen(for: lastMessage.toMessage)
             }
         }
     }
 
-    private func logMessageApperance(_ message: Message, appeard: Bool, isUp: Bool? = nil) {
+    private func logMessageApperance(_ message: any HistoryMessageProtocol, appeard: Bool, isUp: Bool? = nil) {
 #if DEBUG
         let dir = isUp == true ? "UP" : (isUp == false ? "DOWN" : "")
         let messageId = message.id ?? 0

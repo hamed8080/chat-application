@@ -7,9 +7,9 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
 import TalkUI
 import TalkModels
+import Chat
 
 struct MessageParticipantsSeen: View {
     @EnvironmentObject var threadVM: ThreadViewModel

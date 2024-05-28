@@ -7,9 +7,9 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
 import ActionableContextMenu
 import TalkModels
+import Chat
 
 struct UserActionMenu: View {
     @Binding var showPopover: Bool

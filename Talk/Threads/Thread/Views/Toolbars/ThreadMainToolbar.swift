@@ -19,10 +19,11 @@ struct ThreadMainToolbar: View {
             showSearchButton: false,
             searchPlaceholder: "General.searchHere",
             leadingViews: ThreadLeadingToolbar(viewModel: viewModel),
-            centerViews:  ThreadViewCenterToolbar(viewModel: viewModel),
-            trailingViews: ThreadViewTrailingToolbar(viewModel: viewModel)
+            centerViews:  ThreadViewCenterToolbar(threadId: viewModel.threadId),
+            trailingViews: ThreadViewTrailingToolbar()
         ) { searchValue in
             viewModel.searchedMessagesViewModel.searchText = searchValue
         }
+        .environmentObject(viewModel)
     }
 }

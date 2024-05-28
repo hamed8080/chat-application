@@ -6,11 +6,11 @@
 //
 
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
+import TalkExtensions
 
 struct ThreadLastMessageView: View {
     let isSelected: Bool
@@ -157,7 +157,7 @@ struct NormalLastMessageContainer: View {
         }
     }
 
-    private var lastMsgVO: Message? { thread.lastMessageVO }
+    private var lastMsgVO: Message? { thread.lastMessageVO?.toMessage }
     private var isCallType: Bool { lastMsgVO?.callHistory != nil }
     private var isMe: Bool { lastMsgVO?.isMe(currentUserId: AppState.shared.user?.id ?? -1) == true }
     private var isFileType: Bool { lastMsgVO?.isFileType == true }
@@ -189,7 +189,7 @@ struct NormalLastMessageContainer: View {
             let localized = String(localized: .init("Thread.Row.lastMessageSender"), bundle: Language.preferedBundle)
             let participantName = String(format: localized, participantName)
             let name = isMe ? "\(meVerb):" : participantName
-            return Message.textDirectionMark + name
+            return MessageHistoryStatics.textDirectionMark + name
         } else {
             return nil
         }
@@ -212,7 +212,7 @@ struct NormalLastMessageContainer: View {
             let fileStringName = lastMsgVO?.fileStringName ?? "MessageType.file"
             let sentVerb = String(localized: .init(isMe ? "Genral.mineSendVerb" : "General.thirdSentVerb"), bundle: Language.preferedBundle)
             let formatted = String(format: sentVerb, fileStringName.bundleLocalized())
-            return Message.textDirectionMark + "\(formatted)"
+            return MessageHistoryStatics.textDirectionMark + "\(formatted)"
         } else {
             return nil
         }

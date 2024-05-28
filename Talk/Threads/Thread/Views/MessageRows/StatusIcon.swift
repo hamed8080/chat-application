@@ -8,11 +8,12 @@
 import Foundation
 import SwiftUI
 import TalkViewModels
-import ChatModels
+import Chat
+import TalkModels
 
 public struct StatusIcon: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
-    var message: Message { viewModel.message }
+    var message: any HistoryMessageProtocol { viewModel.message }
     @State private var rotateDegree: CGFloat = 0.0
 
     public var body: some View {

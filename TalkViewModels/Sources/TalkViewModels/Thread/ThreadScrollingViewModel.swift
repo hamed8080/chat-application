@@ -7,11 +7,9 @@
 
 import Chat
 import Foundation
-import ChatModels
-import ChatDTO
-import ChatCore
 import SwiftUI
 import Combine
+import TalkModels
 
 public protocol ScrollToPositionProtocol {
     func scrollToBottom(animation: Animation?)
@@ -43,7 +41,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
 
     @MainActor
     private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.3), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
-        guard let uniqueId = viewModel?.historyVM.messageViewModel(for: uniqueId)?.uniqueId else { return }
+        guard let uniqueId = await viewModel?.historyVM.messageViewModel(for: uniqueId)?.uniqueId else { return }
         try? await Task.sleep(for: .milliseconds(delay))
         if Task.isCancelled == true { return }
         withAnimation(animation) {
@@ -61,15 +59,15 @@ public final class ThreadScrollingViewModel: ObservableObject {
         scrollProxy?.scrollTo(uniqueId, anchor: anchor)
     }
 
-    public func scrollToBottom(animation: Animation? = .easeInOut) {
+    public func scrollToBottom(animation: Animation? = .easeInOut) async {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
-            viewModel?.historyVM.moveToTime(time, messageId, highlight: false, moveToBottom: true)
+            await viewModel?.historyVM.moveToTime(time, messageId, highlight: false, moveToBottom: true)
         }
     }
 
     public func scrollToBottomIfIsAtBottom() async {
         if await isAtBottomOfTheList {
-            scrollToBottom()
+            await scrollToBottom()
         }
     }
 
@@ -83,7 +81,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
-    public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) async {
+    public func scrollToLastMessageIfLastMessageIsVisible(_ message: any HistoryMessageProtocol) async {
         guard let uniqueId = message.uniqueId else { return }
         if await canScrollToBottom(message: message) {
             await disableExcessiveLoading()
@@ -91,7 +89,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
-    private func canScrollToBottom(message: Message) async -> Bool {
+    private func canScrollToBottom(message: any HistoryMessageProtocol) async -> Bool {
         if !AppState.shared.isInForeground { return false }
         return await isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id)
     }
@@ -139,10 +137,11 @@ public final class ThreadScrollingViewModel: ObservableObject {
         // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
         Task.detached(priority: .background){
             try? await Task.sleep(for: .seconds(0.5))
+            let isEmptyThread = await self.viewModel?.historyVM.isEmptyThread
             await MainActor.run {
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    if self.isAtBottomOfTheList {
-                        self.scrollToBottom()
+                if self.isAtBottomOfTheList && isEmptyThread == false {
+                    Task {
+                        await self.scrollToBottom()
                     }
                 }
             }

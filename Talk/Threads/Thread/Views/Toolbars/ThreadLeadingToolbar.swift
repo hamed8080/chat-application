@@ -7,7 +7,7 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
+import Chat
 
 struct ThreadLeadingToolbar: View {
     private var thread: Conversation { viewModel.thread }

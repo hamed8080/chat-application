@@ -6,31 +6,33 @@
 //
 
 import Foundation
-import ChatModels
+import Chat
+import TalkModels
 
+@MainActor
 public final class DeleteMessagesViewModelModel: ObservableObject {
+    public typealias MessageType = any HistoryMessageProtocol
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation { viewModel?.thread ?? .init() }
     public var deleteForMe: Bool = true
     public var deleteForOthers: Bool = false
     public var deleteForOthserIfPossible: Bool = false
-    public var hasPinnedMessage: Bool { messages.contains(where: {$0.id == viewModel?.thread.pinMessage?.id }) }
-    public var isSingle: Bool { messages.count == 1 }
+    public var hasPinnedMessage: Bool = false
+    public var isSingle: Bool = false
     public var isVstackLayout: Bool = false
     public var isSelfThread: Bool { viewModel?.thread.type == .selfThread }
     /// 86_400_000 is equal to the number of milliseconds in a day
-    public var pastDeleteTimeForOthers: [Message] { messages.filter({ Int64($0.time ?? 0) + (86_400_000) < Date().millisecondsSince1970 }) }
-    public var notPastDeleteTime: [Message] { messages.filter({!pastDeleteTimeForOthers.contains($0)}) }
+    public var pastDeleteTimeForOthers: [MessageType] = []
+    public var notPastDeleteTime: [MessageType] = []
 
     private var isGroup: Bool { thread.group == true }
     private var isAdmin: Bool { thread.admin == true }
     private var meUserId: Int { AppState.shared.user?.id ?? -1 }
-    private var messages: [Message] { viewModel?.selectedMessagesViewModel.selectedMessages.compactMap({$0.message}) ?? [] }
-    private var containsMe: Bool { messages.contains(where: { $0.isMe(currentUserId: meUserId) }) }
-    private var containsNotMe: Bool { messages.contains(where: { !$0.isMe(currentUserId: meUserId) }) }
+    private var containsMe: Bool = false
+    private var containsNotMe: Bool = false
     private var onlyMyMessages: Bool { !containsNotMe }
     private var onlyOthersMessages: Bool { !containsMe }
-    private var isOnlyContainsPastMessages: Bool { pastDeleteTimeForOthers.count == messages.count }
+    private var isOnlyContainsPastMessages: Bool = false
 
     public init() {}
 
@@ -39,6 +41,9 @@ public final class DeleteMessagesViewModelModel: ObservableObject {
         deleteForOthers = isDeletableForOthers()
         deleteForOthserIfPossible = isDeletableForOthersIfPossible()
         isVstackLayout = deleteForOthserIfPossible && !deleteForOthers
+        Task { [weak self] in
+            await self?.calculate()
+        }
     }
 
     public static func isDeletable(isMe: Bool, message: Message, thread: Conversation?) -> Bool {
@@ -78,30 +83,37 @@ public final class DeleteMessagesViewModelModel: ObservableObject {
     }
 
     public func deleteMessagesForMe() {
-        viewModel?.historyVM.deleteMessages(viewModel?.selectedMessagesViewModel.selectedMessages.compactMap({$0.message}) ?? [])
-        viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-        viewModel?.selectedMessagesViewModel.animateObjectWillChange()
+        Task {
+            let selectedMessages = await getSelectedMessages()
+            await viewModel?.historyVM.deleteMessages(selectedMessages)
+            viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
+            viewModel?.selectedMessagesViewModel.animateObjectWillChange()
+        }
     }
 
     public func deleteForAll() {
-        viewModel?.historyVM.deleteMessages(viewModel?.selectedMessagesViewModel.selectedMessages.compactMap({$0.message}) ?? [], forAll: true)
-        viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-        viewModel?.selectedMessagesViewModel.animateObjectWillChange()
+        Task {
+            let selectedMessages = await getSelectedMessages()
+            await viewModel?.historyVM.deleteMessages(selectedMessages, forAll: true)
+            viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
+            viewModel?.selectedMessagesViewModel.animateObjectWillChange()
+        }
     }
 
     public func deleteForMeAndAllOthersPossible() {
-
-        if pastDeleteTimeForOthers.count > 0 {
-            viewModel?.historyVM.deleteMessages(pastDeleteTimeForOthers, forAll: false)
+        Task {
+            if pastDeleteTimeForOthers.count > 0 {
+                await viewModel?.historyVM.deleteMessages(pastDeleteTimeForOthers, forAll: false)
+            }
+            if notPastDeleteTime.count > 0 {
+                await viewModel?.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
+            }
+            viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
+            viewModel?.selectedMessagesViewModel.animateObjectWillChange()
         }
-        if notPastDeleteTime.count > 0 {
-            viewModel?.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
-        }
-        viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-        viewModel?.selectedMessagesViewModel.animateObjectWillChange()
     }
 
     public func cleanup() {
@@ -109,5 +121,24 @@ public final class DeleteMessagesViewModelModel: ObservableObject {
         viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
         viewModel?.selectedMessagesViewModel.animateObjectWillChange()
+    }
+
+    @MainActor
+    private func getSelectedMessages() async -> [MessageType] {
+        await viewModel?.selectedMessagesViewModel.getSelectedMessages().compactMap({$0.message}) ?? []
+    }
+
+    @MainActor
+    private func calculate() async {
+        let selectedMessages = await getSelectedMessages()
+        isSingle = selectedMessages.count == 1
+        hasPinnedMessage = selectedMessages.contains(where: {$0.id == viewModel?.thread.pinMessage?.id })
+        pastDeleteTimeForOthers = selectedMessages.filter({ Int64($0.time ?? 0) + (86_400_000) < Date().millisecondsSince1970 })
+        containsMe = selectedMessages.contains(where: { $0.isMe(currentUserId: meUserId) })
+        containsNotMe = selectedMessages.contains(where: { !$0.isMe(currentUserId: meUserId) })
+        notPastDeleteTime = selectedMessages.filter { message in
+            !pastDeleteTimeForOthers.contains(where: { $0.uniqueId == message.uniqueId} )
+        }
+        isOnlyContainsPastMessages = pastDeleteTimeForOthers.count == selectedMessages.count
     }
 }

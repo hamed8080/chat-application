@@ -7,13 +7,13 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
 import TalkModels
 import TalkUI
+import Chat
 
 struct JoinPublicLink: View {
     let viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
         Button {
@@ -47,7 +47,7 @@ struct JoinPublicLink: View {
 
 
 struct JoinToPublicConversationDialog: View {
-    let message: Message
+    let message: any HistoryMessageProtocol
     var appOverlayVM: AppOverlayViewModel {AppState.shared.objectsContainer.appOverlayVM}
 
     var body: some View {
@@ -91,6 +91,6 @@ struct JoinToPublicConversationDialog: View {
 
 struct JoinPublicLink_Previews: PreviewProvider {
     static var previews: some View {
-        JoinPublicLink(viewModel: .init(message: .init(message: "\(AppRoutes.joinLink)FAKEUNIQUENAME") , viewModel: .init(thread: .init(id: 1))))
+        JoinPublicLink(viewModel: .init(message: Message(message: "\(AppRoutes.joinLink)FAKEUNIQUENAME") , viewModel: .init(thread: .init(id: 1))))
     }
 }

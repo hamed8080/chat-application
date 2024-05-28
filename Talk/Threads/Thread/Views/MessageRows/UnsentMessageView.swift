@@ -8,11 +8,12 @@
 import SwiftUI
 import TalkUI
 import TalkViewModels
-import ChatModels
+import Chat
+import TalkModels
 
 struct UnsentMessageView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
 
     var body: some View {

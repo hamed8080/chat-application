@@ -1,23 +1,18 @@
 import Chat
-import ChatModels
 import Combine
 import TalkModels
-import ChatDTO
-import ChatCore
 import Foundation
-import ChatTransceiver
 
 public final class UploadFileViewModel: ObservableObject {
     @Published public private(set) var uploadPercent: Int64 = 0
     @Published public var state: UploadFileState = .paused
-    public var message: Message
-    var locationThreadId: Int? { (message as? UploadFileWithLocationMessage)?.threadId }
-    var threadId: Int? { (message.uploadFile as? UploadFileMessage)?.conversation?.id ?? locationThreadId }
-    public var uploadFileWithTextMessage: UploadWithTextMessageProtocol? { message as? UploadWithTextMessageProtocol }
+    public var message: any HistoryMessageProtocol
+    var locationThreadId: Int? { message.threadId }
+    var threadId: Int? { message.conversation?.id ?? locationThreadId }
     public var uploadUniqueId: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
 
-    public init(message: Message) {
+    public init(message: any HistoryMessageProtocol) {
         self.message = message
         NotificationCenter.upload.publisher(for: .upload)
             .compactMap { $0.object as? UploadEventTypes }
@@ -49,7 +44,9 @@ public final class UploadFileViewModel: ObservableObject {
         let isImage: Bool = message.isImage
         let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : message.messageType ?? .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
-        if let fileRequest = uploadFileWithTextMessage?.uploadFileRequest {
+        if let fileRequest = (self.message as? UploadFileMessage)?.uploadFileRequest {
+            uploadFile(message, fileRequest)
+        } else if let fileRequest = (self.message as? UploadFileWithReplyPrivatelyMessage)?.uploadFileRequest {
             uploadFile(message, fileRequest)
         }
     }
@@ -61,12 +58,14 @@ public final class UploadFileViewModel: ObservableObject {
         let isImage: Bool = message.isImage
         let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
-        if let imageRequest = uploadFileWithTextMessage?.uploadImageRequest {
+        if let imageRequest = (self.message as? UploadFileMessage)?.uploadImageRequest {
             uploadImage(message, imageRequest)
         } else if let uploadLoaction = self.message as? UploadFileWithLocationMessage {
             let req = uploadLoaction
             uploadUniqueId = req.uniqueId
             ChatManager.activeInstance?.message.send(req.locationRequest)
+        } else if let imageRequest = (self.message as? UploadFileWithReplyPrivatelyMessage)?.uploadImageRequest {
+            uploadImage(message, imageRequest)
         }
     }
 

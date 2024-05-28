@@ -9,7 +9,7 @@ import SwiftUI
 import TalkViewModels
 import TalkExtensions
 import TalkUI
-import ChatModels
+import Chat
 
 struct EditMessagePlaceholderView: View {
     @EnvironmentObject var threadVM: ThreadViewModel
@@ -67,7 +67,9 @@ struct EditMessagePlaceholderView: View {
 
     private func onTapMoveToOriginalMessage() {
         if let editMessage = viewModel.editMessage, let time = editMessage.time, let id = editMessage.id {
-            threadVM.historyVM.moveToTime(time, id)
+            Task {
+                await threadVM.historyVM.moveToTime(time, id)
+            }
         }
     }
 
@@ -93,14 +95,20 @@ struct EditMessagePlaceholderView: View {
 struct EditMessageImage: View {
     let editMessage: Message
     @EnvironmentObject var viewModel: ThreadHistoryViewModel
+    @State private var editViewModel: MessageRowViewModel?
 
     var body: some View {
-        if let viewModel = viewModel.messageViewModel(for: editMessage.id ?? -1) {
-            if viewModel.message.isImage {
-                image(viewModel: viewModel)
-            } else if viewModel.message.isFileType {
-                iconImage(viewModel: viewModel)
+        if let editViewModel = editViewModel {
+            if editViewModel.message.isImage {
+                image(viewModel: editViewModel)
+            } else if editViewModel.message.isFileType {
+                iconImage(viewModel: editViewModel)
             }
+        } else {
+            EmptyView()
+                .task {
+                    editViewModel = await viewModel.messageViewModel(for: editMessage.id ?? -1)
+                }
         }
     }
 

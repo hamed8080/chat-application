@@ -5,7 +5,7 @@
 //  Created by hamed on 2/4/23.
 //
 
-import ChatModels
+import Chat
 
 public extension SMT {
     typealias EventResult = (title: String, image: String)?

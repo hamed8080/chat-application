@@ -7,10 +7,11 @@
 
 import Foundation
 import NotificationCenter
-import ChatModels
+import Chat
+import TalkModels
 
 public extension UNUserNotificationCenter {
-    class func localNewMessageNotif(_ message: Message, showName: Bool = true) {
+    class func localNewMessageNotif(_ message: any HistoryMessageProtocol, showName: Bool = true) {
         let content = UNMutableNotificationContent()
         content.badge = NSNumber(value: message.conversation?.unreadCount ?? 0)
         if showName {

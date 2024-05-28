@@ -5,11 +5,11 @@
 //  Created by hamed on 11/26/22.
 //
 
-import ChatModels
 import Foundation
+import Chat
 
 public extension Assistant {
-    func update(_ newAssistant: Assistant) {
+    mutating func update(_ newAssistant: Assistant) {
         id = newAssistant.id
         contactType = newAssistant.contactType
         assistant = newAssistant.assistant

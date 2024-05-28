@@ -27,6 +27,7 @@ struct DetailSectionContainer: View {
                 .padding([.top, .bottom])
             StickyHeaderSection(header: "", height: 10)
         }
+        .environmentObject(viewModel.threadVM ?? .init(thread: .init()))
     }
 }
 

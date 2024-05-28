@@ -6,10 +6,7 @@
 //
 
 import Foundation
-import ChatModels
 import Chat
-import ChatCore
-import ChatDTO
 import TalkModels
 import Combine
 

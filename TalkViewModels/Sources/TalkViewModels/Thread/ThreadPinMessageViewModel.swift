@@ -6,13 +6,10 @@
 //
 
 import Foundation
-import ChatModels
 import UIKit
-import ChatDTO
 import Chat
 import Combine
 import SwiftUI
-import ChatCore
 import TalkModels
 
 public final class ThreadPinMessageViewModel: ObservableObject {
@@ -73,7 +70,7 @@ public final class ThreadPinMessageViewModel: ObservableObject {
         switch event {
         case let .pin(response):
             if threadId == response.subjectId {
-                thread.pinMessage = response.result
+                viewModel?.thread.pinMessage = response.result
                 message = response.result
                 downloadImageThumbnail()
                 Task { [weak self] in
@@ -83,7 +80,7 @@ public final class ThreadPinMessageViewModel: ObservableObject {
             }
         case let .unpin(response):
             if threadId == response.subjectId {
-                thread.pinMessage = nil
+                viewModel?.thread.pinMessage = nil
                 message = nil
                 Task { [weak self] in
                     guard let self = self else { return }

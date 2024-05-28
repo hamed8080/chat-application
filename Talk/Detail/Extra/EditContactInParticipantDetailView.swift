@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-import ChatModels
 import TalkViewModels
 import TalkUI
 import TalkModels
+import Chat
 
 struct EditContactInParticipantDetailView: View {
     @EnvironmentObject var viewModel: ParticipantDetailViewModel
@@ -30,7 +30,7 @@ struct EditContactInParticipantDetailView: View {
                     .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
                         focusState = .firstName
                     }
-                TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
+                TextField(optioanlAppend(text: "General.lastName"), text: $lastName)
                     .focused($focusState, equals: .lastName)
                     .textContentType(.familyName)
                     .padding()
@@ -100,7 +100,7 @@ struct EditContactInParticipantDetailView: View {
         viewModel.editContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
     }
 
-    func optioanlAPpend(text: String) -> String {
+    func optioanlAppend(text: String) -> String {
         "\(String(localized: .init(text), bundle: Language.preferedBundle)) \(String(localized: "General.optional", bundle: Language.preferedBundle))"
     }
 

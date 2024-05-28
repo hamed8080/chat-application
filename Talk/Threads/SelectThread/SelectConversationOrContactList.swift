@@ -7,7 +7,6 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -106,8 +105,7 @@ struct SelectContactTab: View {
     var body: some View {
         List {
             ForEach(viewModel.contacts) { contact in
-                ContactRow(isInSelectionMode: .constant(false))
-                    .environmentObject(contact)
+                ContactRow(contact: contact, isInSelectionMode: .constant(false))                    
                     .onTapGesture {
                         onSelect(nil, contact)
                         dismiss()

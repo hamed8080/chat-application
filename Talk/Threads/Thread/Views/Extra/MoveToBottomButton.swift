@@ -8,23 +8,18 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
 
 struct MoveToBottomButton: View {
     @EnvironmentObject var viewModel: ThreadScrollingViewModel
     @EnvironmentObject var historyVM: ThreadHistoryViewModel
+    @State private var isEmpty = true
 
     var body: some View {
         if viewModel.isAtBottomOfTheList == false {
             HStack {
                 Spacer()
                 Button {
-                    withAnimation {
-                        viewModel.viewModel?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge
-                        viewModel.scrollToBottom()
-                        viewModel.isAtBottomOfTheList = true
-                        viewModel.animateObjectWillChange()
-                    }
+                    onTap()
                 } label: {
                     Image(systemName: "chevron.down")
                         .resizable()
@@ -35,7 +30,7 @@ struct MoveToBottomButton: View {
                         .aspectRatio(contentMode: .fit)
                         .contentShape(Rectangle())
                 }
-                .frame(width: historyVM.isEmptyThread ? 0 : 40, height: historyVM.isEmptyThread ? 0 : 40)
+                .frame(width: isEmpty ? 0 : 40, height: isEmpty ? 0 : 40)
                 .background(.regularMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(20)))
                 .shadow(color: .gray.opacity(0.4), radius: 2)
@@ -46,6 +41,27 @@ struct MoveToBottomButton: View {
             }
             .environment(\.layoutDirection, .leftToRight)
             .padding(EdgeInsets(top: 0, leading: 8, bottom: 8, trailing: 8))
+            .task {
+                await setIsEmpty()
+            }
+            .onReceive(historyVM.objectWillChange) { _ in
+                Task {
+                    await setIsEmpty()
+                }
+            }
+        }
+    }
+
+    private func setIsEmpty() async {
+        isEmpty = await historyVM.isEmptyThread
+    }
+
+    private func onTap() {
+        Task {
+            viewModel.viewModel?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge
+            await viewModel.scrollToBottom()
+            viewModel.isAtBottomOfTheList = true
+            viewModel.animateObjectWillChange()
         }
     }
 }
@@ -66,9 +82,6 @@ struct UnreadCountOverMoveToButtonView: View {
             .clipShape(RoundedRectangle(cornerRadius:(hide ? 0 : 24)))
             .offset(x: 0, y: -16)
             .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCountString)
-            .onReceive(viewModel.thread.objectWillChange) { _ in
-                setUnreadCount()
-            }
             .onReceive(viewModel.objectWillChange) { _ in
                 setUnreadCount()
             }

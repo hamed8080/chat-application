@@ -5,7 +5,6 @@
 //  Created by hamed on 7/9/23.
 //
 
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -13,7 +12,7 @@ import Chat
 
 struct ThreadViewTrailingToolbar: View {
     private var thread: Conversation { viewModel.thread }
-    let viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadViewModel
     @State var imageLoader: ImageLoaderViewModel?
 
     var body: some View {
@@ -37,12 +36,10 @@ struct ThreadViewTrailingToolbar: View {
             .clipShape(RoundedRectangle(cornerRadius:(15)))
             .padding(.trailing, 8)
         }
-        .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in
-            if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(let resposne) = threadEvent, resposne.result?.id == thread.id {
-                setImageLoader()
-            }
-        }
         .task {
+            setImageLoader()
+        }
+        .onReceive(viewModel.objectWillChange) { _ in
             setImageLoader()
         }
     }
@@ -56,7 +53,8 @@ struct ThreadViewTrailingToolbar: View {
 
 struct ThreadViewTrailingToolbar_Previews: PreviewProvider {
     static var previews: some View {
-        ThreadViewTrailingToolbar(viewModel: ThreadViewModel(thread: Conversation()))
+        ThreadViewTrailingToolbar()
+            .environmentObject(ThreadViewModel(thread: Conversation()))
             .environmentObject(NavigationModel())
     }
 }

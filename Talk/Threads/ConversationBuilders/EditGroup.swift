@@ -10,10 +10,10 @@ import TalkUI
 import TalkViewModels
 import AdditiveUI
 import TalkModels
-import Additive
 
 struct EditGroup: View {
     @EnvironmentObject var viewModel: EditConversationViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
     @Environment(\.dismiss) var dismiss
 
     enum EditGroupFocusFields: Hashable {
@@ -136,7 +136,7 @@ struct EditGroup: View {
                 let adminsCount = viewModel.adminCounts.localNumber(locale: Language.preferredLocale) ?? ""
                 item(title: String(localized: .init("EditGroup.admins"), bundle: Language.preferedBundle), image: "person.badge.shield.checkmark", rightLabelText: adminsCount)
 
-                let participantsCount = viewModel.thread.participantCount?.localNumber(locale: Language.preferredLocale) ?? ""
+                let participantsCount = threadVM.thread.participantCount?.localNumber(locale: Language.preferredLocale) ?? ""
                 item(title: String(localized: .init("Thread.Tabs.members"), bundle: Language.preferedBundle), image: "person.2", rightLabelText: participantsCount)
                 
 //                if EnvironmentValues.isTalkTest {

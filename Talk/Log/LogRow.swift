@@ -11,6 +11,7 @@ import SwiftUI
 import TalkUI
 
 struct LogRow: View {
+    @State private var logDate = ""
     var log: Log
     var color: Color {
         let type = log.type
@@ -38,21 +39,28 @@ struct LogRow: View {
             VStack (alignment: .leading){
                 HStack {
                     Text(verbatim: "\(log.time?.millisecondsSince1970 ?? 0)")
-                        .font(.iransansCaption)
-                    Text(verbatim: "\(LogRow.formatter.string(from: log.time ?? .now))")
-                        .font(.iransansCaption)
+                    Text(verbatim: logDate)
                 }
-                Text("\(log.message ?? "")")
-                    .font(.iransansCaption)
+                TextEditor(text: .constant(log.message ?? ""))
+                    .frame(maxHeight: UIDevice.current.userInterfaceIdiom == .pad ? 420 : 320)
             }
             .padding()
         }
+        .font( UIDevice.current.userInterfaceIdiom == .pad ? .iransansBody : .iransansCaption)
         .environment(\.layoutDirection, .leftToRight)
         .overlay(alignment: .bottom) {
             Color.App.textSecondary.opacity(0.5)
                 .frame(height: 1)
         }
         .textSelection(.enabled)
+        .task {
+            Task.detached(priority: .userInitiated) {
+                let logDate = "\(LogRow.formatter.string(from: log.time ?? .now))"
+                await MainActor.run {
+                    self.logDate = logDate
+                }
+            }
+        }
     }
 }
 

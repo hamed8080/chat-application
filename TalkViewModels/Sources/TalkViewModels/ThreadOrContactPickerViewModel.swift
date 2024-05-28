@@ -6,10 +6,7 @@
 //
 
 import Foundation
-import ChatModels
 import Combine
-import ChatDTO
-import ChatCore
 import Chat
 
 public class ThreadOrContactPickerViewModel: ObservableObject {

@@ -10,7 +10,8 @@ import TalkViewModels
 import TalkUI
 
 struct ThreadHistoryShimmerView: View {
-    @EnvironmentObject var viewModel: ShimmerViewModel
+    @State private var viewModel: ShimmerViewModel = .init()
+    @EnvironmentObject var historyVM: ThreadHistoryViewModel
 
     var body: some View {
         if viewModel.isShowing {
@@ -35,6 +36,21 @@ struct ThreadHistoryShimmerView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         reader.scrollTo(10, anchor: .bottom)
                     }
+                }
+            }
+            .onReceive(historyVM.objectWillChange) { _ in
+                Task {
+                    viewModel = await historyVM.shimmerViewModel
+                }
+            }
+            .task {
+                viewModel = await historyVM.shimmerViewModel
+            }
+        } else {
+            EmptyView()
+                .onReceive(historyVM.objectWillChange) { _ in
+                Task {
+                    viewModel = await historyVM.shimmerViewModel
                 }
             }
         }

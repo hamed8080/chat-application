@@ -8,7 +8,7 @@
 import SwiftUI
 import TalkUI
 import TalkViewModels
-import ChatModels
+import Chat
 
 struct LeaveThreadDialog: View {
     let conversation: Conversation

@@ -7,10 +7,10 @@
 
 import Foundation
 import Combine
-import ChatModels
 import Chat
 import TalkModels
 import UIKit
+import TalkExtensions
 
 public final class UploadFileManager: ObservableObject {
     private weak var viewModel: ThreadViewModel?
@@ -29,25 +29,26 @@ public final class UploadFileManager: ObservableObject {
         }
     }
 
-    public func register(message: Message, viewModelUniqueId: String) {
-        let isInQueue = uploadVMS.contains(where: {$0.key == viewModelUniqueId})
-        let isFileOrMap = message.uploadFile != nil || message is UploadFileWithLocationMessage
-        let canUpload = isFileOrMap && !isInQueue
-        if canUpload {
-            let uploadFileVM = UploadFileViewModel(message: message)
-            queue.sync {
+    public func register(message: any HistoryMessageProtocol, viewModelUniqueId: String) {
+        queue.sync {
+            let isInQueue = uploadVMS.contains(where: {$0.key == viewModelUniqueId})
+            let isFileOrMap = message is UploadProtocol
+            let canUpload = isFileOrMap && !isInQueue
+            if canUpload {
+                let uploadFileVM = UploadFileViewModel(message: message)
+
                 uploadVMS[viewModelUniqueId] = uploadFileVM
-            }
-            uploadFileVM.objectWillChange.sink {
-                Task { [weak self] in
-                    await self?.onUploadChanged(uploadFileVM, message, viewModelUniqueId: viewModelUniqueId)
+                uploadFileVM.objectWillChange.sink {
+                    Task { [weak self] in
+                        await self?.onUploadChanged(uploadFileVM, message, viewModelUniqueId: viewModelUniqueId)
+                    }
                 }
-            }
-            .store(in: &cancelableSet)
-            if message.isImage || message is UploadFileWithLocationMessage {
-                uploadFileVM.startUploadImage()
-            } else {
-                uploadFileVM.startUploadFile()
+                .store(in: &cancelableSet)
+                if message.isImage || message is UploadFileWithLocationMessage {
+                    uploadFileVM.startUploadImage()
+                } else {
+                    uploadFileVM.startUploadFile()
+                }
             }
         }
     }
@@ -80,14 +81,14 @@ public final class UploadFileManager: ObservableObject {
         }
     }
 
-    private func onUploadChanged(_ vm: UploadFileViewModel, _ message: Message, viewModelUniqueId: String) async {
+    private func onUploadChanged(_ vm: UploadFileViewModel, _ message: any HistoryMessageProtocol, viewModelUniqueId: String) async {
         let isCompleted = vm.state == .completed
         let isUploading = vm.state == .uploading
         let progress = min(CGFloat(vm.uploadPercent) / 100, 1.0)
         let iconState = getIconState(vm: vm)
         var image: UIImage?
         var blurRadius: CGFloat = 0
-        if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let uiimage = UIImage(data: data) {
+        if let data = (message as? UploadFileMessage)?.uploadImageRequest?.dataToSend, let uiimage = UIImage(data: data) {
             image = uiimage
         }
 
@@ -104,6 +105,7 @@ public final class UploadFileManager: ObservableObject {
         await changeStateTo(state: fileState, viewModelUniqueId: viewModelUniqueId)
     }
 
+    @HistoryActor
     private func changeStateTo(state: MessageFileState, viewModelUniqueId: String) async {
         let vm = viewModel?.historyVM.messageViewModel(viewModelUniqueId: viewModelUniqueId)
         await MainActor.run {

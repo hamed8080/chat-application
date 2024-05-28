@@ -6,7 +6,6 @@
 //
 
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -46,14 +45,14 @@ struct ThreadImageView: View {
             /// We do this beacuse computedImageURL use metadata decoder and it should not be on the main thread.
             await calculate()
         }
-        .onReceive(thread.objectWillChange) { _ in /// update an image of a thread by another device
-            if computedImageURL != self.thread.computedImageURL {
-                self.computedImageURL = thread.computedImageURL
-            }
-            Task {
-                await calculate()
-            }
-        }
+//        .onReceive(thread.objectWillChange) { _ in /// update an image of a thread by another device
+//            if computedImageURL != self.thread.computedImageURL {
+//                self.computedImageURL = thread.computedImageURL
+//            }
+//            Task {
+//                await calculate()
+//            }
+//        }
     }
 
     private func calculate() async {

@@ -7,7 +7,6 @@
 
 import Chat
 import SwiftUI
-import ChatModels
 import TalkModels
 import OSLog
 
@@ -22,11 +21,11 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public let uniqueId: String = UUID().uuidString
     public var id: Int { message.id ?? -1 }
-    public var message: Message
+    public var message: any HistoryMessageProtocol
     public var isInvalid = false
 
-    public var reactionsModel: ReactionRowsCalculated = .init(rows: [], topPadding: 0)
-    public var avatarImageLoader: ImageLoaderViewModel?
+    @MainActor public var reactionsModel: ReactionRowsCalculated = .init(rows: [], topPadding: 0)
+    @MainActor public var avatarImageLoader: ImageLoaderViewModel?
     public weak var threadVM: ThreadViewModel?
 
     private var highlightTimer: Timer?
@@ -34,7 +33,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public private(set) var fileState: MessageFileState = .init()
     public var shareDownloadedFile: Bool = false
 
-    public init(message: Message, viewModel: ThreadViewModel) {
+    public init(message: any HistoryMessageProtocol, viewModel: ThreadViewModel) {
         self.message = message
         self.threadVM = viewModel
     }
@@ -44,13 +43,14 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         self.animateObjectWillChange()
     }
 
+    @HistoryActor
     public func performaCalculation() async {
-        if !fileState.isUploadCompleted {
+        if !fileState.isUploadCompleted && message is UploadProtocol {
             threadVM?.uploadFileManager.register(message: message, viewModelUniqueId: uniqueId)
         }
         threadVM?.downloadFileManager.register(message: message)
         calMessage = await MessageRowCalculators.calculate(message: message, threadVM: threadVM, oldData: calMessage)
-        setAvatarViewModel()
+        await setAvatarViewModel()
     }
 
     public func toggleSelection() {
@@ -61,9 +61,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    private func setAvatarViewModel() {
+    @HistoryActor
+    private func setAvatarViewModel() async {
         if let image = message.participant?.image, !calMessage.isMe {
-            avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: calMessage.avatarSplitedCharaters)
+            let avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: calMessage.avatarSplitedCharaters)
+            await MainActor.run { [weak self] in
+                self?.avatarImageLoader = avatarImageLoader
+            }
         }
     }
 
@@ -97,11 +101,13 @@ public extension MessageRowViewModel {
     }
 }
 
-// MARK: Upload
+// MARK: Upload Completion
 public extension MessageRowViewModel {
-    func swapUploadMessageWith(_ message: Message) {
+    func swapUploadMessageWith(_ message: any HistoryMessageProtocol) {
         self.message = message
-        threadVM?.historyVM.appendToNeedUpdate(self)
+        Task { @HistoryActor in
+            threadVM?.historyVM.appendToNeedUpdate(self)
+        }
     }
 }
 
@@ -152,7 +158,7 @@ public extension MessageRowViewModel {
     }
 
     private func openImageViewer() {
-        AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
+        AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message as? Message
     }
 
     func cancelUpload() {
@@ -189,7 +195,7 @@ public extension MessageRowViewModel {
     private func togglePlaying() {
         if let fileURL = fileState.url {
             let mtd = calMessage.fileMetaData
-            try? audioVM.setup(message: message,
+            try? audioVM.setup(message: message as? Message,
                                fileURL: fileURL,
                                ext: mtd?.file?.mimeType?.ext,
                                title: mtd?.file?.originalName ?? mtd?.name ?? "",
@@ -201,14 +207,22 @@ public extension MessageRowViewModel {
 
 // MARK: Reaction
 public extension MessageRowViewModel {
-    func clearReactions() {
+
+    @HistoryActor
+    func clearReactions() async {
         isInvalid = false
-        reactionsModel = .init()
+        await MainActor.run {
+            reactionsModel = .init()
+        }
     }
 
+    @HistoryActor
     func setReaction(reactions: ReactionInMemoryCopy) async {
         isInvalid = false
-        reactionsModel = await MessageRowCalculators.calulateReactions(reactions: reactions)
+        let reactionsModel = await MessageRowCalculators.calulateReactions(reactions: reactions)
+        await MainActor.run {
+            self.reactionsModel = reactionsModel
+        }
     }
 }
 
@@ -254,9 +268,11 @@ public extension MessageRowViewModel {
 public extension MessageRowViewModel {
 
     func setHighlight() {
-        calMessage.state.isHighlited = true
-        animateObjectWillChange()
-        startHighlightTimer()
+        Task { @MainActor in
+            calMessage.state.isHighlited = true
+            animateObjectWillChange()
+            startHighlightTimer()
+        }
     }
 
     private func startHighlightTimer() {
@@ -272,8 +288,8 @@ public extension MessageRowViewModel {
 public extension MessageRowViewModel {
     func setEdited(_ edited: Message) {
         Task {
-            message.message = message.message
-            message.time = message.time
+            message.message = edited.message
+            message.time = edited.time
             message.edited = true
             await recalculateWithAnimation()
         }

@@ -7,13 +7,9 @@
 
 import Foundation
 import UIKit
-import ChatModels
-import ChatCore
 import Combine
 import Photos
-import ChatTransceiver
 import TalkModels
-import ChatDTO
 import Chat
 
 public final class EditConversationViewModel: ObservableObject, Hashable {
@@ -139,10 +135,6 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
             onEditGroup(response)
         case .changedType(let chatResponse):
             onChangeThreadType(chatResponse)
-        case .left(let response):
-            onLeft(response)
-        case .joined(let response):
-            onJoined(response)
         case .deleted(let response):
             onDeletedConversation(response)
         default:
@@ -154,10 +146,6 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
         switch event {
         case .participants(let response):
             onAdmins(response)
-        case .deleted(let response):
-            onDeleted(response)
-        case .add(let response):
-            onAdded(response)
         default:
             break
         }
@@ -180,10 +168,10 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     }
 
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
-        self.thread.type = response.result?.type
+        self.threadVM?.thread.type = response.result?.type
         isPublic = thread.type?.isPrivate == false
         if let req = response.pop(prepend: CHANGE_TO_PUBLIC_KEY) as? ChangeThreadTypeRequest {
-            thread.uniqueName = req.uniqueName
+            threadVM?.thread.uniqueName = req.uniqueName
         }
         animateObjectWillChange()
     }
@@ -198,30 +186,6 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     private func onAdmins(_ response: ChatResponse<[Participant]>) {
         if !response.cache, response.pop(prepend: EDIT_GROUP_ADMINS_KEY) != nil {
             adminCounts = response.result?.count ?? 0
-        }
-    }
-
-    private func onDeleted(_ response: ChatResponse<[Participant]>) {
-        if response.subjectId == threadVM?.threadId {
-            animateObjectWillChange()
-        }
-    }
-
-    private func onAdded(_ response: ChatResponse<Conversation>) {
-        if response.result?.id == threadVM?.threadId {
-            animateObjectWillChange()
-        }
-    }
-
-    private func onLeft(_ response: ChatResponse<User>) {
-        if response.subjectId == threadVM?.threadId {
-            animateObjectWillChange()
-        }
-    }
-
-    private func onJoined(_ response: ChatResponse<Conversation>) {
-        if response.result?.id == threadVM?.threadId {
-            animateObjectWillChange()
         }
     }
 

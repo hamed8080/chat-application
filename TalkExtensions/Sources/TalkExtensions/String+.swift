@@ -5,11 +5,11 @@
 //  Created by Hamed Hosseini on 11/10/21.
 //
 
-import ChatModels
 import UniformTypeIdentifiers
 import SwiftUI
 import NaturalLanguage
 import TalkModels
+import Chat
 
 public extension String {
 

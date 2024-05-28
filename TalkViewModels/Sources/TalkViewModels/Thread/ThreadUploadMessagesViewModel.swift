@@ -6,10 +6,7 @@
 //
 
 import Foundation
-import ChatModels
 import Chat
-import ChatCore
-import ChatDTO
 import TalkModels
 import Combine
 import SwiftUI
@@ -35,9 +32,9 @@ public final class ThreadUploadMessagesViewModel {
             .store(in: &cancelable)
     }
 
-    internal func append(contentsOf requests: [Message]) {
+    internal func append(contentsOf requests: [any HistoryMessageProtocol]) {
         Task { @MainActor in
-            await viewModel?.historyVM.appendMessagesAndSort(requests)
+            await viewModel?.historyVM.injectMessagesAndSort(requests)
             await viewModel?.historyVM.asyncAnimateObjectWillChange()
             if let last = requests.last {
                 await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
@@ -45,9 +42,9 @@ public final class ThreadUploadMessagesViewModel {
         }
     }
 
-    internal func append(request: Message) {
+    internal func append(request: any HistoryMessageProtocol) {
         Task {
-            await viewModel?.historyVM.appendMessagesAndSort([request])
+            await viewModel?.historyVM.injectMessagesAndSort([request])
             await viewModel?.historyVM.asyncAnimateObjectWillChange()
             await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(request)
         }
@@ -55,14 +52,16 @@ public final class ThreadUploadMessagesViewModel {
 
     public func cancel(_ uniqueId: String?) {
         ChatManager.activeInstance?.message.cancel(uniqueId: uniqueId ?? "")
-        viewModel?.historyVM.removeByUniqueId(uniqueId)
+        Task { @HistoryActor [weak self] in
+            self?.viewModel?.historyVM.removeByUniqueId(uniqueId)
+        }
     }
 
     private func onUploadEvent(_ event: UploadEventTypes) {
         switch event {
         case .canceled(uniqueId: let uniqueId):
-            withAnimation {
-                viewModel?.historyVM.removeByUniqueId(uniqueId)
+            Task { @HistoryActor [weak self] in
+                self?.viewModel?.historyVM.removeByUniqueId(uniqueId)
             }
         default:
             break

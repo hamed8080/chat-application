@@ -6,15 +6,13 @@
 //
 
 import Foundation
-import ChatModels
 import Chat
-import ChatCore
-import ChatDTO
 import TalkModels
 import Combine
 import OSLog
 
 public final class ThreadUnsentMessagesViewModel: ObservableObject {
+    public typealias MessageType = any HistoryMessageProtocol
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation? { viewModel?.thread }
     private var cancelable: Set<AnyCancellable> = []
@@ -65,9 +63,11 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
     }
 
     func onQueueFileMessages(_ response: ChatResponse<[(UploadFileRequest, SendTextMessageRequest)]>) async {
-        let array = response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: thread) } ?? []
-        await append(rows: array)
-        await asyncAnimateObjectWillChange()
+//        let array = response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0,
+//                                                                                  sendTextMessageRequest: $0.1,
+//                                                                                  thread: thread) } ?? []
+//        await append(rows: array)
+//        await asyncAnimateObjectWillChange()
     }
 
     public func cancel(_ uniqueId: String?) {
@@ -76,7 +76,7 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
         animateObjectWillChange()
     }
 
-    public func append<M>(rows: [M]) async where M: Message {
+    public func append<M>(rows: [M]) async where M: HistoryMessageProtocol {
         guard let viewModel = viewModel else { return }
         for row in rows {
             if !self.rowViewModels.contains(where: {$0.uniqueId == row.uniqueId}) {
@@ -112,7 +112,7 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
         }
     }
 
-    public func resendUnsetMessage(_ message: Message) {
+    public func resendUnsetMessage(_ message: MessageType) {
         switch message {
         case let req as SendTextMessage:
             ChatManager.activeInstance?.message.send(req.sendTextMessageRequest)
@@ -122,13 +122,15 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
             ChatManager.activeInstance?.message.send(req.forwardMessageRequest)
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
-            viewModel?.historyVM.removeByUniqueId(req.uniqueId)
+            Task { @HistoryActor in
+                viewModel?.historyVM.removeByUniqueId(req.uniqueId)
+            }
             if message.isImage, let imageRequest = req.uploadImageRequest {
-                let imageMessage = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+                let imageMessage = UploadFileMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
                 viewModel?.uploadMessagesViewModel.append(contentsOf: ([imageMessage]))
                 self.animateObjectWillChange()
             } else if let fileRequest = req.uploadFileRequest {
-                let fileMessage = UploadFileWithTextMessage(uploadFileRequest: fileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+                let fileMessage = UploadFileMessage(uploadFileRequest: fileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
                 viewModel?.uploadMessagesViewModel.append(contentsOf: ([fileMessage]))
                 self.animateObjectWillChange()
             }
@@ -141,8 +143,8 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
         if let message = response.result, thread?.id == message.conversation?.id {
             Task { [weak self] in
                 guard let self = self else { return }
-                viewModel?.historyVM.onDeleteMessage(response)
-                await viewModel?.historyVM.appendMessagesAndSort([message])
+                await viewModel?.historyVM.onDeleteMessage(response)
+                await viewModel?.historyVM.injectMessagesAndSort([message])
             }
         }
     }

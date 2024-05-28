@@ -17,6 +17,7 @@ struct DetailEditConversationButton: View {
             NavigationLink {
                 if viewModel.canShowEditConversationButton, let viewModel = viewModel.editConversationViewModel {
                     EditGroup()
+                        .environmentObject(viewModel.threadVM ?? .init(thread: .init()))
                         .environmentObject(viewModel)
                         .navigationBarBackButtonHidden(true)
                 }

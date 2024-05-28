@@ -8,8 +8,8 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
 import TalkModels
+import ChatModels
 
 struct MessageRowAudioView: View {
     /// We have to use EnvironmentObject due to we need to update ui after the audio has been uploaded so downloadVM now is not a nil value.
@@ -169,6 +169,6 @@ fileprivate struct PlayingButton: View {
 struct MessageRowAudioDownloader_Previews: PreviewProvider {
     static var previews: some View {
         MessageRowAudioView()
-            .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+            .environmentObject(MessageRowViewModel(message: Message(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

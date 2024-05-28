@@ -5,10 +5,10 @@
 //  Created by hamed on 3/13/23.
 //
 
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Chat
 
 struct ThreadSearchList: View {
     let threadVM: ThreadViewModel

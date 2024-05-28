@@ -6,7 +6,6 @@
 //
 
 import Chat
-import ChatModels
 import Combine
 import SwiftUI
 import TalkModels
@@ -23,7 +22,7 @@ struct ThreadView: View, DropDelegate {
             ThreadHistoryVStack()
                 .background(ThreadbackgroundView(threadId: viewModel.threadId))
                 .task {
-                    viewModel.historyVM.start()
+                    await viewModel.historyVM.start()
                     viewModel.scrollVM.scrollProxy = scrollProxy
                     /// It will lead to a memory leak and so many other crashes like:
                     /// 1- In context menus almost every place we will see crashes.
@@ -98,10 +97,12 @@ struct ThreadView: View, DropDelegate {
     }
 
     private func hideKeyboardOnTapOrDrag() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.calMessage.state.showReactionsOverlay == true }.forEach { rowViewModel in
-            rowViewModel.calMessage.state.showReactionsOverlay = false
-            rowViewModel.animateObjectWillChange()
+        Task {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            await viewModel.historyVM.getSections().flatMap{$0.vms}.filter{ $0.calMessage.state.showReactionsOverlay == true }.forEach { rowViewModel in
+                rowViewModel.calMessage.state.showReactionsOverlay = false
+                rowViewModel.animateObjectWillChange()
+            }
         }
     }
 }

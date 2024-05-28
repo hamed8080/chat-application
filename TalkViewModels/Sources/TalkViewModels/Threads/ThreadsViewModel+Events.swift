@@ -6,9 +6,7 @@
 //
 
 import Foundation
-import ChatCore
 import Chat
-import ChatModels
 
 extension ThreadsViewModel {
 
@@ -93,8 +91,6 @@ extension ThreadsViewModel {
         switch event {
         case .add(let chatResponse):
             await onAddPrticipant(chatResponse)
-        case .deleted(let chatResponse):
-            await onDeletePrticipant(chatResponse)
         default:
             break
         }
@@ -151,6 +147,8 @@ extension ThreadsViewModel {
             onLastSeenMessageUpdated(response)
         case .joined(let response):
             onJoinedToPublicConversatin(response)
+        case .left(let response):
+            onLeftThread(response)
         default:
             break
         }

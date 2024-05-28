@@ -5,12 +5,13 @@
 //  Created by hamed on 6/27/23.
 //
 
-import ChatModels
 import SwiftUI
 import TalkUI
+import Chat
+import TalkModels
 
 struct UnknownMessageType: View {
-    let message: Message
+    let message: any HistoryMessageProtocol
 
     var body: some View {
         if EnvironmentValues.isTalkTest {

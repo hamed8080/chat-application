@@ -8,10 +8,7 @@
 import Chat
 import Combine
 import Foundation
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 
 public final class AssistantHistoryViewModel: ObservableObject {
     private var count = 15

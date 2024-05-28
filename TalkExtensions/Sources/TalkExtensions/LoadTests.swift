@@ -7,7 +7,6 @@
 
 import Foundation
 import Chat
-import ChatDTO
 
 public class LoadTests {
     public class func rapidSend(threadId: Int,

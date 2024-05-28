@@ -1,8 +1,6 @@
 import Chat
 import SwiftUI
 import TalkModels
-import ChatModels
-import ChatCore
 
 public final class NavigationModel: ObservableObject {
     @Published public var selectedId: Int?
@@ -89,11 +87,15 @@ public extension NavigationModel {
     }
 
     func append(thread: Conversation, created: Bool = false) {
-        let viewModel = viewModel(for: thread.id ?? 0) ?? createViewModel(conversation: thread)
-        viewModel.historyVM.created = created
-        let value = ConversationNavigationValue(viewModel: viewModel)
-        append(value: value)
-        selectedId = thread.id
+        Task { @MainActor in
+            let viewModel = viewModel(for: thread.id ?? 0) ?? createViewModel(conversation: thread)
+            Task { @HistoryActor in
+                viewModel.historyVM.created = created
+            }
+            let value = ConversationNavigationValue(viewModel: viewModel)
+            append(value: value)
+            selectedId = thread.id
+        }
     }
 
     private func createViewModel(conversation: Conversation) -> ThreadViewModel {

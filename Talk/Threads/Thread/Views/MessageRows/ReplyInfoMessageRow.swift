@@ -7,14 +7,13 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
 
 struct ReplyInfoMessageRow: View {
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
 
@@ -99,7 +98,7 @@ struct ReplyInfoMessageRow: View {
         Task {
             await threadVM?.scrollVM.disableExcessiveLoading()
             if !isReplyPrivately, let tuple = replayTimeId {
-                threadVM?.historyVM.moveToTime(tuple.time, tuple.id)
+                await threadVM?.historyVM.moveToTime(tuple.time, tuple.id)
             } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
                 AppState.shared.openThreadAndMoveToMessage(conversationId: replyPrivatelyInfo.threadId ?? -1,
                                                            messageId: message.replyInfo?.repliedToMessageId ?? -1,
@@ -155,7 +154,7 @@ struct ReplyImageIcon: View {
 }
 
 struct ReplyFileIcon: View {
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {

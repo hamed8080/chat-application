@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 import TalkExtensions
 import OSLog
 
@@ -98,7 +95,7 @@ public final class ArchiveThreadsViewModel: ObservableObject {
 
     public func onArchive(_ response: ChatResponse<Int>) {
         if response.result != nil, response.error == nil, let index = threadsVM.threads.firstIndex(where: {$0.id == response.result}) {
-            let conversation = threadsVM.threads[index]
+            var conversation = threadsVM.threads[index]
             conversation.isArchive = true
             archives.append(conversation)
             threadsVM.threads.removeAll(where: {$0.id == response.result}) /// Do not remove this line and do not use remove(at:) it will cause 'Precondition failed Orderedset'
@@ -110,7 +107,7 @@ public final class ArchiveThreadsViewModel: ObservableObject {
 
     public func onUNArchive(_ response: ChatResponse<Int>) {
         if response.result != nil, response.error == nil, let index = archives.firstIndex(where: {$0.id == response.result}) {
-            let conversation = archives[index]
+            var conversation = archives[index]
             conversation.isArchive = false
             archives.remove(at: index)
             threadsVM.threads.append(conversation)

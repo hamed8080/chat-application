@@ -6,8 +6,6 @@
 //
 
 import Chat
-import ChatDTO
-import ChatModels
 import Combine
 import SwiftUI
 import TalkUI
@@ -18,7 +16,7 @@ import ActionableContextMenu
 struct VideoView: View {
     @StateObject var viewModel: DetailTabDownloaderViewModel
 
-    init(conversation: Conversation, messageType: MessageType) {
+    init(conversation: Conversation, messageType: ChatModels.MessageType) {
         let vm = DetailTabDownloaderViewModel(conversation: conversation, messageType: messageType, tabName: "Video")
         _viewModel = StateObject(wrappedValue: vm)
     }
@@ -123,8 +121,10 @@ struct VideoRowView: View {
         .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
             VStack {
                 ContextMenuButton(title: "General.showMessage".bundleLocalized(), image: "message.fill") {
-                    threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-                    viewModel.dismiss = true
+                    Task {
+                        await threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                        viewModel.dismiss = true
+                    }
                 }
             }
             .foregroundColor(.primary)

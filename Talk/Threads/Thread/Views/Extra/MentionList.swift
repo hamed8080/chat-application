@@ -9,7 +9,7 @@ import SwiftUI
 import TalkViewModels
 import TalkUI
 import TalkExtensions
-import ChatModels
+import Chat
 
 @MainActor
 struct MentionList: View {

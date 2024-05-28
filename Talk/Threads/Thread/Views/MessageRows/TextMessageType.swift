@@ -7,7 +7,6 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -16,7 +15,7 @@ import TalkModels
 import TalkExtensions
 
 struct TextMessageType: View {
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     let viewModel: MessageRowViewModel
 
@@ -72,7 +71,7 @@ struct SelectMessageRadio: View {
 
 struct MutableMessageView: View {
     let viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
 
     var body: some View {
@@ -86,7 +85,7 @@ struct MutableMessageView: View {
 
 struct InnerMessage: View {
     let viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
         VStack(alignment: viewModel.calMessage.isMe ? .trailing : .leading, spacing: 0) {
@@ -193,7 +192,7 @@ struct SelfContextMenu: View {
 struct TextMessageType_Previews: PreviewProvider {
     struct Preview: View {
         @StateObject var viewModel: MessageRowViewModel = .init(
-            message: .init(
+            message: Message(
                 id: 1,
                 message: "TEST",
                 messageType: .text,

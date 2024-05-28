@@ -8,10 +8,7 @@
 import Chat
 import Combine
 import Foundation
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 import SwiftUI
 import OSLog
 
@@ -25,7 +22,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     // MARK: Stored Properties
-    public private(set) var thread: Conversation
+    public var thread: Conversation
     public var replyMessage: Message?
     @Published public var dismiss = false
     public var sheetType: ThreadSheetType?
@@ -52,7 +49,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
-    public weak var forwardMessage: Message?
+    public var forwardMessage: Message?
     var model: AppSettingsModel = .init()
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false
@@ -88,7 +85,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         searchedMessagesViewModel.setup(viewModel: self)
         threadPinMessageViewModel.setup(viewModel: self)
         participantsViewModel.setup(viewModel: self)
-        historyVM.setup(viewModel: self)
+        Task { @HistoryActor [weak self] in
+            guard let self = self else { return }
+            historyVM.setup(viewModel: self)
+        }
         sendMessageViewModel.setup(viewModel: self)
         scrollVM.setup(viewModel: self)
         unsentMessagesViewModel.setup(viewModel: self)
@@ -105,7 +105,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func updateConversation(_ conversation: Conversation) {
         self.thread.updateValues(conversation)
-        self.thread.animateObjectWillChange()
+//        self.thread.animateObjectWillChange()
     }
 
     // MARK: Actions
@@ -171,13 +171,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    public func moveToFirstUnreadMessage() {
+    public func moveToFirstUnreadMessage() async {
         if let unreadMessage = unreadMentionsViewModel.unreadMentions.first, let time = unreadMessage.time {
-            historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true, moveToBottom: true)
+            await historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true, moveToBottom: true)
             unreadMentionsViewModel.setAsRead(id: unreadMessage.id)
             if unreadMentionsViewModel.unreadMentions.count == 0 {
                 thread.mentioned = false
-                thread.animateObjectWillChange()
+//                thread.animateObjectWillChange()
                 animateObjectWillChange()
             }
         }
@@ -208,7 +208,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     private func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
         case .edited(let response):
-            onEditedMessage(response)
+            Task {
+                await onEditedMessage(response)
+            }
         default:
             break
         }
@@ -217,15 +219,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     private func onDeleteThread(_ response: ChatResponse<Participant>) {
         if response.subjectId == threadId {
             dismiss = true
-        }
-    }
-
-    private func onLeftThread(_ response: ChatResponse<User>) {
-        if response.subjectId == threadId, response.result?.id == AppState.shared.user?.id {
-            dismiss = true
-        } else {
-            thread.participantCount = (thread.participantCount ?? 0) - 1
-            animateObjectWillChange()
         }
     }
 
@@ -257,13 +250,16 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    private func onEditedMessage(_ response: ChatResponse<Message>) {
+    @HistoryActor
+    private func onEditedMessage(_ response: ChatResponse<Message>) async {
         guard
             let editedMessage = response.result,
-            let oldMessage = historyVM.message(for: response.result?.id)?.message
+            var oldMessage = historyVM.message(for: response.result?.id)?.message
         else { return }
         oldMessage.updateMessage(message: editedMessage)
-        updateIfIsPinMessage(editedMessage: editedMessage)
+        await MainActor.run {
+            updateIfIsPinMessage(editedMessage: editedMessage)
+        }
     }
 
     // MARK: Logs
@@ -286,7 +282,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         participantsViewModel.cancelAllObservers()
         mentionListPickerViewModel.cancelAllObservers()
         sendContainerViewModel.cancelAllObservers()
-        historyVM.cancel()
+        Task { @HistoryActor [weak self] in
+            self?.historyVM.cancel()
+        }
         threadPinMessageViewModel.cancelAllObservers()
         scrollVM.cancelAllObservers()
     }

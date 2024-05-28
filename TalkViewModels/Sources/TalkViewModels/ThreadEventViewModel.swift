@@ -7,8 +7,6 @@
 
 import Chat
 import Foundation
-import ChatModels
-import ChatDTO
 
 public final class ThreadEventViewModel: ObservableObject {
     @Published public var isShowingEvent: Bool = false

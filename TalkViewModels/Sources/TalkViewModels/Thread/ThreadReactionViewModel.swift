@@ -7,10 +7,7 @@
 
 import Chat
 import Foundation
-import ChatModels
 import Combine
-import ChatCore
-import ChatDTO
 
 public final class ThreadReactionViewModel: ObservableObject {
     private var cancelable: Set<AnyCancellable> = []
@@ -113,6 +110,7 @@ public final class ThreadReactionViewModel: ObservableObject {
         clearReactionsOnReconnect()
     }
 
+    @HistoryActor
     internal func fetchReactions(messages: [Message]) {
         if threadVM?.searchedMessagesViewModel.isInSearchMode == false {
             let messageIds = messages.filter({$0.id ?? -1 > 0}).filter({$0.reactionableType}).compactMap({$0.id})
@@ -121,6 +119,7 @@ public final class ThreadReactionViewModel: ObservableObject {
         }
     }
 
+    @HistoryActor
     internal func updateReactions(reactions: [ReactionInMemoryCopy]) async {
         // We have to check if the response count is greater than zero because there is a chance to get reactions of zero count.
         // And we need to remove older reactions if any of them were removed.
@@ -136,7 +135,7 @@ public final class ThreadReactionViewModel: ObservableObject {
         /// All things inisde the qeueu are old data and there will be a chance the reaction row has been removed.
         for id in inQueueToGetReactions {
             if let vm = historyVM.messageViewModel(for: id) {
-                vm.clearReactions()
+                await vm.clearReactions()
                 vm.animateObjectWillChange()
             }
         }
@@ -144,17 +143,18 @@ public final class ThreadReactionViewModel: ObservableObject {
     }
 
     internal func clearReactionsOnReconnect() {
-        threadVM?.historyVM.sections.forEach { section in
-            section.vms.forEach { vm in
-                vm.invalid()
+        Task { [weak self] in
+            await self?.threadVM?.historyVM.getSections().forEach { section in
+                section.vms.forEach { vm in
+                    vm.invalid()
+                }
             }
+            await self?.fetchVisibleReactionsOnReconnect()
         }
-        fetchVisibleReactionsOnReconnect()
     }
 
-    internal func fetchVisibleReactionsOnReconnect() {
-        let visibleMessages = threadVM?.historyVM.getInvalidVisibleMessages() ?? []
-        fetchReactions(messages: visibleMessages)
+    internal func fetchVisibleReactionsOnReconnect() async {
+        let visibleMessages = await (threadVM?.historyVM.getInvalidVisibleMessages() ?? []).compactMap({$0 as? Message})
+        await fetchReactions(messages: visibleMessages)
     }
-
 }

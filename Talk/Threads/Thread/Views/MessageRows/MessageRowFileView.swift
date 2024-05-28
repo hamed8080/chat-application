@@ -8,13 +8,13 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
 import TalkModels
+import Chat
 
 struct MessageRowFileView: View {
     /// We have to use EnvironmentObject due to we need to update ui after the file has been uploaded so downloadVM now is not a nil value.
     @EnvironmentObject var viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
@@ -100,6 +100,6 @@ private extension MessageRowFileView {
 struct MessageRowFileDownloader_Previews: PreviewProvider {
     static var previews: some View {
         MessageRowFileView()
-            .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+            .environmentObject(MessageRowViewModel(message: Message(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

@@ -6,7 +6,6 @@
 //
 
 import AdditiveUI
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -21,32 +20,40 @@ struct ThreadHistoryVStack: View {
             .overlay {
                 EmptyThreadView()
             }
-            .overlay(ThreadHistoryShimmerView().environmentObject(viewModel.shimmerViewModel))
+            .overlay(ThreadHistoryShimmerView())
             .environment(\.layoutDirection, .leftToRight)
     }
 }
 
 struct ThreadHistoryList: View {
     @EnvironmentObject var viewModel: ThreadHistoryViewModel
+    @State private var isTopEndListAppeared: Bool = false
+    @State private var sections: ContiguousArray<MessageSection> = []
+    @State private var topLoading: Bool = false
+    @State private var bottomLoading: Bool = false
 
     var body: some View {
         List {
-            ListLoadingView(isLoading: .constant(viewModel.topLoading))
+            ListLoadingView(isLoading: .constant(topLoading))
                 .id(-1)
                 .listRowSeparator(.hidden)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
-                .padding([.top, .bottom], viewModel.topLoading ? 8 : 0)
-                .animation(.easeInOut, value: viewModel.topLoading)
+                .padding([.top, .bottom], topLoading ? 8 : 0)
+                .animation(.easeInOut, value: topLoading)
                 .onAppear {
-                    viewModel.isTopEndListAppeared = true
+                    Task { @HistoryActor [viewModel] in
+                        viewModel.isTopEndListAppeared = true
+                    }
                 }
                 .onDisappear {
-                    viewModel.isTopEndListAppeared = false
+                    Task { @HistoryActor [viewModel] in
+                        viewModel.isTopEndListAppeared = false
+                    }
                 }
 
-            ForEach(viewModel.sections, id: \.id) { section in
+            ForEach(sections, id: \.id) { section in
                 SectionView(section: section)
                 MessageList(vms: section.vms, viewModel: viewModel)
             }
@@ -60,20 +67,40 @@ struct ThreadHistoryList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
             
-            ListLoadingView(isLoading: .constant(viewModel.bottomLoading))
+            ListLoadingView(isLoading: .constant(bottomLoading))
                 .id(-2)
                 .listRowSeparator(.hidden)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
-                .padding([.top, .bottom], viewModel.bottomLoading ? 8 : 0)
-                .animation(.easeInOut, value: viewModel.bottomLoading)
+                .padding([.top, .bottom], bottomLoading ? 8 : 0)
+                .animation(.easeInOut, value: bottomLoading)
 
         }
         .environment(\.defaultMinListRowHeight, 0)
         .listStyle(.plain)
+        .animation(.easeInOut, value: sections)
         .safeAreaInset(edge: .bottom) {
             ThreadEmptySpaceView()
         }
+        .task {
+            await setValues()
+        }
+        .onReceive(viewModel.objectWillChange) { _ in
+            Task {
+                await setValues()
+            }
+        }
+    }
+
+    @MainActor
+    private func setValues() async {
+        let sections = await viewModel.getSections()
+        let topLoading = await viewModel.topLoading
+        let bottomLoading = await viewModel.bottomLoading
+
+        self.sections = sections
+        self.topLoading = topLoading
+        self.bottomLoading = bottomLoading
     }
 }
 
@@ -160,24 +187,29 @@ struct SpaceForAttachment: View {
 
 struct ThreadMessagesList_Previews: PreviewProvider {
     struct Preview: View {
-        @StateObject var viewModel: ThreadViewModel
+        @State var viewModel: ThreadViewModel = .init(thread: .init())
 
-        init() {
+        init() {}
+
+        var body: some View {
+            EmptyView()
+                .environmentObject(viewModel)
+                .task {
+                    await setup()
+                }
+        }
+
+        private func setup() async {
             let metadata = "{\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"file\": {\"hashCode\": \"UJMUIT4M194C5WLJ\",\"mimeType\": \"image/png\",\"fileHash\": \"UJMUIT4M194C5WLJ\",\"actualWidth\": 1290,\"actualHeight\": 2796,\"parentHash\": \"6MIPH7UM1P7OIZ2L\",\"size\": 1569454,\"link\": \"https://podspace.pod.ir/api/images/UJMUIT4M194C5WLJ?checkUserGroupAccess=true\",\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"originalName\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11.png\"},\"fileHash\": \"UJMUIT4M194C5WLJ\"}"
             let message = Message(message: "Please download this file.",
                                   messageType: .file,
                                   metadata: metadata.string,
                                   conversation: .init(id: 1))
-
             let viewModel = ThreadViewModel(thread: Conversation(id: 1), threadsViewModel: .init())
-            viewModel.historyVM.sections.append(MessageSection(date: .init(), vms: [.init(message: message, viewModel: viewModel)]))
+            var sections = await viewModel.historyVM.getSections()
+            sections.append(MessageSection(date: .init(), vms: [.init(message: message, viewModel: viewModel)]))
             viewModel.animateObjectWillChange()
-            self._viewModel = StateObject(wrappedValue: viewModel)
-        }
-
-        var body: some View {
-          EmptyView()
-                .environmentObject(viewModel)
+            self.viewModel = viewModel
         }
     }
 

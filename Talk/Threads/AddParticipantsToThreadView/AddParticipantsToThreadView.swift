@@ -6,7 +6,6 @@
 //
 
 import Chat
-import ChatModels
 import SwiftUI
 import TalkViewModels
 import TalkUI
@@ -20,13 +19,11 @@ struct AddParticipantsToThreadView: View {
         List {
             if contactsVM.searchedContacts.count > 0 {
                 ForEach(contactsVM.searchedContacts) { contact in
-                    ContactRowContainer(isSearchRow: true)
-                        .environmentObject(contact)
+                    ContactRowContainer(contact: .constant(contact), isSearchRow: true)
                 }
             } else {
                 ForEach(contactsVM.contacts) { contact in
-                    ContactRowContainer(isSearchRow: false)
-                        .environmentObject(contact)
+                    ContactRowContainer(contact: .constant(contact), isSearchRow: false)
                         .onAppear {
                             Task {
                                 if contactsVM.contacts.last == contact {

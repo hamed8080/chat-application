@@ -1,5 +1,5 @@
 import Foundation
-import ChatModels
+import Chat
 
 public enum StrictThreadTypeCreation: Int {
     case p2p = 0

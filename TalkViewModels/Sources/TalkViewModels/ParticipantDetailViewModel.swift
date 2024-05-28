@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatDTO
 import TalkModels
-import ChatCore
-import ChatModels
 import TalkExtensions
 
 public final class ParticipantDetailViewModel: ObservableObject, Hashable {

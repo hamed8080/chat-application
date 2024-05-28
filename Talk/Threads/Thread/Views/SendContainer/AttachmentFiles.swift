@@ -9,7 +9,6 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
-import Additive
 
 struct AttachmentFiles: View {
     @EnvironmentObject var viewModel: AttachmentsViewModel

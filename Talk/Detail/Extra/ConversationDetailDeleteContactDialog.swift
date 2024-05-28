@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-import ChatModels
 import TalkViewModels
 import TalkUI
 import TalkModels
+import Chat
 
 struct ConversationDetailDeleteContactDialog: View {
     let participant: Participant

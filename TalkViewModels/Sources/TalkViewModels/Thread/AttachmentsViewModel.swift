@@ -6,9 +6,10 @@
 //
 
 import Foundation
-import TalkModels
+import Chat
 import UniformTypeIdentifiers
 import UIKit
+import TalkModels
 
 public final class FilePickerViewModel: ObservableObject {
     @Published public var selectedFileUrls: [URL] = []

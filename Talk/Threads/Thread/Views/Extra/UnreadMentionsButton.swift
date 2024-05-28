@@ -16,8 +16,8 @@ struct UnreadMentionsButton: View {
             HStack {
                 Spacer()
                 Button {
-                    withAnimation {
-                        viewModel.scrollToMentionedMessage()
+                    Task {
+                        await viewModel.scrollToMentionedMessage()
                     }
                 } label: {
                     Text("@")

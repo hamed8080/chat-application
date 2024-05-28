@@ -1,8 +1,6 @@
 import Combine
 import SwiftUI
 import Chat
-import ChatCore
-import ChatModels
 
 public final class ObjectsContainer: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []

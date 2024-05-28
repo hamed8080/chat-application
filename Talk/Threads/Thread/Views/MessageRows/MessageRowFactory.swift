@@ -7,14 +7,13 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkModels
 import TalkUI
 import TalkViewModels
 
 struct MessageRowFactory: View {
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     let viewModel: MessageRowViewModel
 
     var body: some View {
@@ -28,7 +27,7 @@ struct MessageRowFactory: View {
                     ParticipantMessageType()
                         .environmentObject(viewModel)
                 default:
-                    if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
+                    if message.isTextMessageType || message.isUnsentMessage {
                         TextMessageType(viewModel: viewModel)
                     } else if message is UnreadMessageProtocol {
                         UnreadMessagesBubble()

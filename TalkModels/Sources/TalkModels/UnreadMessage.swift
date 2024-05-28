@@ -6,10 +6,14 @@
 //
 
 import Foundation
-import ChatModels
+import Chat
 
 public protocol UnreadMessageProtocol {}
 
-public class UnreadMessage: Message, UnreadMessageProtocol {
+public class UnreadMessage: HistoryMessageBaseCalss, UnreadMessageProtocol {
 
+    public init(id: Int, time: UInt, uniqueId: String) {
+        let message = Message(id: id, time: time, uniqueId: uniqueId)
+        super.init(message: message)
+    }
 }

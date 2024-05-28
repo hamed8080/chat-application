@@ -7,12 +7,9 @@
 
 import Foundation
 import Chat
-import ChatCore
-import ChatModels
 import UIKit
 import Photos
 import Combine
-import ChatDTO
 
 public final class EditProfileViewModel: ObservableObject {
     @Published public var isLoading: Bool = false

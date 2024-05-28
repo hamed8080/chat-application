@@ -15,7 +15,7 @@ struct SelectionView: View {
     @EnvironmentObject var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
     let threadVM: ThreadViewModel
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    private var selectedCount: Int { selectedMessagesViewModel.selectedMessages.count }
+    @State private var selectedCount: Int = 0
 
     var body: some View {
         HStack(spacing: 0) {
@@ -64,6 +64,14 @@ struct SelectionView: View {
             CloseButton {
                 selectedMessagesViewModel.clearSelection()
                 selectedMessagesViewModel.animateObjectWillChange()
+            }
+        }
+        .task {
+           selectedCount = await selectedMessagesViewModel.getSelectedMessages().count
+        }
+        .onReceive(selectedMessagesViewModel.objectWillChange) { _ in
+            Task {
+                selectedCount = await selectedMessagesViewModel.getSelectedMessages().count
             }
         }
     }

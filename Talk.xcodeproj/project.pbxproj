@@ -70,6 +70,10 @@
 		052557312BE9513500DFCE54 /* DetailSectionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525572F2BE9513500DFCE54 /* DetailSectionContainer.swift */; };
 		052557332BE9536D00DFCE54 /* DetailTabContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052557322BE9536D00DFCE54 /* DetailTabContainer.swift */; };
 		052557342BE9536D00DFCE54 /* DetailTabContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052557322BE9536D00DFCE54 /* DetailTabContainer.swift */; };
+		0537E6F72C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537E6F62C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift */; };
+		0537E6F82C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537E6F62C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift */; };
+		0537E6FA2C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537E6F92C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift */; };
+		0537E6FB2C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537E6F92C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift */; };
 		053803D02B11F879005C8FAB /* DeleteThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */; };
 		053803D12B11F879005C8FAB /* DeleteThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */; };
 		05466B0A2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
@@ -283,6 +287,8 @@
 		057A18DF2B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */; };
 		057A18E02B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */; };
 		058022042AE05DFA002816C7 /* MyPHPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058022032AE05DFA002816C7 /* MyPHPicker.swift */; };
+		05840A742C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05840A732C0843E0003CE45B /* MutableMessageStatusView.swift */; };
+		05840A752C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05840A732C0843E0003CE45B /* MutableMessageStatusView.swift */; };
 		0594FE572B0347B50031AADF /* AutomaticDownloadSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE562B0347B50031AADF /* AutomaticDownloadSettings.swift */; };
 		0594FE592B034B050031AADF /* SettingNotificationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE582B034B050031AADF /* SettingNotificationSection.swift */; };
 		0594FE5A2B034B050031AADF /* SettingNotificationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE582B034B050031AADF /* SettingNotificationSection.swift */; };
@@ -430,6 +436,8 @@
 		0525572F2BE9513500DFCE54 /* DetailSectionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSectionContainer.swift; sourceTree = "<group>"; };
 		052557322BE9536D00DFCE54 /* DetailTabContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTabContainer.swift; sourceTree = "<group>"; };
 		052F46652B21F5B400085C26 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
+		0537E6F62C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewNumberOfParticipants.swift; sourceTree = "<group>"; };
+		0537E6F92C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadCenterToolbarNumberOfParticipants.swift; sourceTree = "<group>"; };
 		053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadDialog.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
 		054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPublicLink.swift; sourceTree = "<group>"; };
@@ -547,6 +555,7 @@
 		05745AF22AF2B1B100102193 /* SettingProfileButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingProfileButton.swift; sourceTree = "<group>"; };
 		057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageParticipantsSeen.swift; sourceTree = "<group>"; };
 		058022032AE05DFA002816C7 /* MyPHPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPHPicker.swift; sourceTree = "<group>"; };
+		05840A732C0843E0003CE45B /* MutableMessageStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutableMessageStatusView.swift; sourceTree = "<group>"; };
 		0594FE562B0347B50031AADF /* AutomaticDownloadSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticDownloadSettings.swift; sourceTree = "<group>"; };
 		0594FE582B034B050031AADF /* SettingNotificationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingNotificationSection.swift; sourceTree = "<group>"; };
 		0594FE5F2B0386580031AADF /* GroupParticipantNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupParticipantNameView.swift; sourceTree = "<group>"; };
@@ -795,6 +804,7 @@
 				0570CB712AAEE98C001832E9 /* DraftView.swift */,
 				0570CB722AAEE98C001832E9 /* ThreadRow.swift */,
 				05E9C08C2B1EFBCE00E782BD /* ThreadListRowBackground.swift */,
+				05840A732C0843E0003CE45B /* MutableMessageStatusView.swift */,
 			);
 			path = ThreadRows;
 			sourceTree = "<group>";
@@ -1038,6 +1048,7 @@
 				05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */,
 				05745AEF2AF2626B00102193 /* UserActionMenu.swift */,
 				05A218422BEA31AA002CE1C8 /* DetailAddOrEditContactSheetView.swift */,
+				0537E6F62C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift */,
 			);
 			path = Extra;
 			sourceTree = "<group>";
@@ -1139,6 +1150,7 @@
 				05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */,
 				05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */,
 				052557032BE93AD600DFCE54 /* P2PThreadLastSeenView.swift */,
+				0537E6F92C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift */,
 			);
 			path = Toolbars;
 			sourceTree = "<group>";
@@ -1301,6 +1313,7 @@
 				052557042BE93AD600DFCE54 /* P2PThreadLastSeenView.swift in Sources */,
 				0570CC512AAEE98F001832E9 /* VideoView.swift in Sources */,
 				05EA77A02BBC025E00FFB9C2 /* CameraViewController.swift in Sources */,
+				0537E6F72C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift in Sources */,
 				0516ACF82AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,
 				05DAA42F2B29BE74007427DC /* ThreadListSearchBarFilterView.swift in Sources */,
 				0570CC6D2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
@@ -1368,6 +1381,7 @@
 				050B51B22AE7848100B8DD49 /* VerifyContentView.swift in Sources */,
 				0570CBFD2AAEE98F001832E9 /* AddParticipantsToThreadView.swift in Sources */,
 				0570CC052AAEE98F001832E9 /* MapPickerView.swift in Sources */,
+				05840A742C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */,
 				05593BA52AFF560A00316E39 /* ThreadSearchView.swift in Sources */,
 				0570CC532AAEE98F001832E9 /* PictureView.swift in Sources */,
 				0570CC192AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
@@ -1419,6 +1433,7 @@
 				050DE2092AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
 				0570CBE72AAEE98F001832E9 /* ParticipantRow.swift in Sources */,
 				0570CC692AAEE98F001832E9 /* AddOrEditContactView.swift in Sources */,
+				0537E6FA2C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift in Sources */,
 				0570CBEB2AAEE98F001832E9 /* ConversationCallMessageType.swift in Sources */,
 				0525572D2BE9500100DFCE54 /* DetailInfoViewSection.swift in Sources */,
 				052557072BE9487700DFCE54 /* EditContactInParticipantDetailView.swift in Sources */,
@@ -1483,6 +1498,7 @@
 				052557052BE93AD600DFCE54 /* P2PThreadLastSeenView.swift in Sources */,
 				0570CC522AAEE98F001832E9 /* VideoView.swift in Sources */,
 				05EA77A12BBC025E00FFB9C2 /* CameraViewController.swift in Sources */,
+				0537E6F82C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift in Sources */,
 				0516ACF92AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,
 				05DAA4302B29BE74007427DC /* ThreadListSearchBarFilterView.swift in Sources */,
 				0570CC6E2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
@@ -1550,6 +1566,7 @@
 				050B51B32AE7848100B8DD49 /* VerifyContentView.swift in Sources */,
 				0570CBFE2AAEE98F001832E9 /* AddParticipantsToThreadView.swift in Sources */,
 				0570CC062AAEE98F001832E9 /* MapPickerView.swift in Sources */,
+				05840A752C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */,
 				05593BA62AFF560A00316E39 /* ThreadSearchView.swift in Sources */,
 				0570CC542AAEE98F001832E9 /* PictureView.swift in Sources */,
 				0570CC1A2AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
@@ -1601,6 +1618,7 @@
 				050DE20A2AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
 				0570CBE82AAEE98F001832E9 /* ParticipantRow.swift in Sources */,
 				0570CC6A2AAEE98F001832E9 /* AddOrEditContactView.swift in Sources */,
+				0537E6FB2C07B85900EA2BF6 /* ThreadCenterToolbarNumberOfParticipants.swift in Sources */,
 				0570CBEC2AAEE98F001832E9 /* ConversationCallMessageType.swift in Sources */,
 				0525572E2BE9500100DFCE54 /* DetailInfoViewSection.swift in Sources */,
 				052557082BE9487700DFCE54 /* EditContactInParticipantDetailView.swift in Sources */,

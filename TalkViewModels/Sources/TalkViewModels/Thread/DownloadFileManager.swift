@@ -7,7 +7,6 @@
 
 import Foundation
 import Combine
-import ChatModels
 import Logger
 import OSLog
 import Chat
@@ -65,9 +64,9 @@ public final class DownloadFileManager: ObservableObject {
         }
     }
 
-    public func register(message: Message) {
-        if message.isFileType && (message is UploadFileWithLocationMessage) == false {
-            let copy = message.copy
+    public func register(message: any HistoryMessageProtocol) {
+        if message.isFileType && (message is UploadFileWithLocationMessage) == false, let message = message as? Message {
+            let copy = message
             let downloadFileVM = DownloadFileViewModel(message: copy)
             queue.sync {
                 downloadVMS.append(downloadFileVM)
@@ -110,7 +109,7 @@ public final class DownloadFileManager: ObservableObject {
 
     private func onVideoChanged(message: Message) async {
         guard let messageId = message.id, let vm = viewModel(for: messageId) else { return }
-        let progress: CGFloat = CGFloat(vm.downloadPercent)
+        let progress: CGFloat = CGFloat(await vm.downloadPercentValue())
         let state = MessageFileState(
             url: vm.fileURL,
             progress: min(CGFloat(progress) / 100, 1.0),
@@ -128,7 +127,7 @@ public final class DownloadFileManager: ObservableObject {
         var showDownload = true
         var blurRadius: CGFloat = 16
         var image: UIImage? = nil
-        let progress: CGFloat = CGFloat(vm.downloadPercent)
+        let progress: CGFloat = CGFloat(await vm.downloadPercentValue())
         let iconState = getIconState(vm: vm)
         if vm.state == .completed, let realImage = realImage(vm: vm) {
             image = realImage
@@ -165,7 +164,7 @@ public final class DownloadFileManager: ObservableObject {
     private func onFileChanged(message: Message) async {
         guard let messageId = message.id, !message.isImage else { return }
         guard let vm = viewModel(for: messageId) else { return }
-        let progress = vm.downloadPercent
+        let progress = await vm.downloadPercentValue()
         let state = MessageFileState(
             url: message.fileURL,
             progress: min(CGFloat(progress) / 100, 1.0),
@@ -190,7 +189,7 @@ public final class DownloadFileManager: ObservableObject {
     }
 
     private func changeStateTo(state: MessageFileState, messageId: Int) async {
-        let vm = viewModel?.historyVM.messageViewModel(for: messageId)
+        let vm = await viewModel?.historyVM.messageViewModel(for: messageId)
         await MainActor.run {
             guard let vm = vm else { return }
             vm.setFileState(state)

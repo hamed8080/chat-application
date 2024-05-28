@@ -5,11 +5,11 @@
 //  Created by hamed on 6/27/23.
 //
 
-import ChatModels
 import Combine
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Chat
 
 struct SecondaryMessageView: View {
     let isSelected: Bool
@@ -43,24 +43,6 @@ struct SecondaryMessageView: View {
         let threadId = thread.id ?? 0
         if id == threadId {
             draft = DraftManager.shared.get(threadId: threadId) ?? ""
-        }
-    }
-}
-
-
-struct MutableMessageStatusView: View {
-    let isSelected: Bool
-    @EnvironmentObject var thread: Conversation
-
-    var body: some View {
-        if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
-            Image(uiImage: lastMessageSentStatus.icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 22, height: 22)
-                .foregroundColor(isSelected ? Color.App.white : lastMessageSentStatus.fgColor)
-                .font(.subheadline)
-                .offset(y: -2)
         }
     }
 }

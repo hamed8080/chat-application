@@ -6,9 +6,8 @@
 //
 
 import Combine
-import ChatModels
 import SwiftUI
-import ChatCore
+import Chat
 
 public enum ToastDuration {
     case fast

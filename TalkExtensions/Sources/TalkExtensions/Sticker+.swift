@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import ChatModels
+import Chat
 
 public extension Sticker {
     var string: String {

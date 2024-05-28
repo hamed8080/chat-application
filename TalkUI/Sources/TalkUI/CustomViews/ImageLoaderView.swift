@@ -10,7 +10,6 @@ import Foundation
 import SwiftUI
 import TalkModels
 import TalkViewModels
-import ChatDTO
 
 public struct ImageLoaderView: View {
     @StateObject var imageLoader: ImageLoaderViewModel

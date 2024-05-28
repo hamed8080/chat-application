@@ -6,8 +6,6 @@
 //
 
 import Chat
-import ChatCore
-import ChatModels
 import Foundation
 import Logger
 import TalkModels

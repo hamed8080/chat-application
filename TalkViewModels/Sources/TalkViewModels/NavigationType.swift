@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import ChatModels
 
 public enum NavigationType: Hashable {
     case threadViewModel(ConversationNavigationValue)

@@ -7,9 +7,6 @@
 
 import Foundation
 import Chat
-import ChatCore
-import ChatModels
-import ChatDTO
 import Combine
 
 public final class ThreadUnreadMentionsViewModel: ObservableObject {
@@ -40,13 +37,14 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
             .store(in: &cancelable)
     }
 
-    public func scrollToMentionedMessage() {
+    public func scrollToMentionedMessage() async {
         viewModel?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge where we have mentiond
-        viewModel?.moveToFirstUnreadMessage()
+        await viewModel?.moveToFirstUnreadMessage()
     }
 
     public func fetchAllUnreadMentions() {
-        let req = GetHistoryRequest(threadId: thread?.id ?? -1, count: 25, offset: 0, order: "desc", unreadMentioned: true)
+        guard let threadId = thread?.id else { return }
+        let req = GetHistoryRequest(threadId: threadId, count: 25, offset: 0, order: "desc", unreadMentioned: true)
         RequestsManager.shared.append(prepend: UNREAD_MENTIONS_KEY, value: req)
         ChatManager.activeInstance?.message.history(req)
     }

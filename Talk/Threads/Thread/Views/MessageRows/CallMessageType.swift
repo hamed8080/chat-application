@@ -7,14 +7,14 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct CallMessageType: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
-    var message: Message { viewModel.message }
+    var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
         HStack(alignment: .center) {

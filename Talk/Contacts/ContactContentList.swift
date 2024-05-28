@@ -10,7 +10,6 @@ import Chat
 import SwiftUI
 import TalkUI
 import TalkViewModels
-import ChatModels
 import TalkModels
 
 struct ContactContentList: View {
@@ -81,8 +80,7 @@ struct ContactContentList: View {
         StickyHeaderSection(header: "Contacts.searched")
             .listRowInsets(.zero)
         ForEach(viewModel.searchedContacts) { contact in
-            ContactRowContainer(isSearchRow: true)
-                .environmentObject(contact)
+            ContactRowContainer(contact: .constant(contact), isSearchRow: true)
         }
         .padding()
         ListLoadingView(isLoading: $viewModel.lazyList.isLoading)
@@ -95,8 +93,7 @@ struct ContactContentList: View {
     @ViewBuilder
     private var normalStateContacts: some View {
         ForEach(viewModel.contacts) { contact in
-            ContactRowContainer(isSearchRow: false)
-                .environmentObject(contact)
+            ContactRowContainer(contact: .constant(contact), isSearchRow: false)
         }
         .padding()
         .listRowInsets(.zero)
@@ -176,8 +173,8 @@ struct ContactContentList: View {
 }
 
 struct ContactRowContainer: View {
+    @Binding var contact: Contact
     @EnvironmentObject var viewModel: ContactsViewModel
-    @EnvironmentObject var contact: Contact
     let isSearchRow: Bool
     var separatorColor: Color {
         if !isSearchRow {
@@ -188,7 +185,7 @@ struct ContactRowContainer: View {
     }
 
     var body: some View {
-        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode)
+        ContactRow(contact: contact, isInSelectionMode: $viewModel.isInSelectionMode)
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)

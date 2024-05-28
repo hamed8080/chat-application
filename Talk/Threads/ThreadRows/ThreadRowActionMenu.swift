@@ -5,12 +5,12 @@
 //  Created by hamed on 6/27/23.
 //
 
-import ChatModels
 import Foundation
 import SwiftUI
 import TalkViewModels
 import ActionableContextMenu
 import TalkModels
+import Chat
 
 struct ThreadRowActionMenu: View {
     @Binding var showPopover: Bool

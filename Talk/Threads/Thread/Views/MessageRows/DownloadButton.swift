@@ -8,7 +8,6 @@
 import SwiftUI
 import TalkViewModels
 import TalkModels
-import ChatModels
 
 struct DownloadButton: View {
     @EnvironmentObject var viewModel: MessageRowViewModel

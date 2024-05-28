@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 import TalkExtensions
 import OSLog
 

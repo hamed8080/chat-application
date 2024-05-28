@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatModels
 import TalkModels
-import ChatDTO
-import ChatCore
 
 public final class ParticipantsViewModel: ObservableObject {
     private weak var viewModel: ThreadViewModel?

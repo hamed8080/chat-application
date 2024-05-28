@@ -5,7 +5,7 @@
 //  Created by hamed on 12/4/22.
 //
 
-import ChatModels
+import Chat
 
 public extension CallStatus {
     var key: String? {

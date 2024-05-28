@@ -7,7 +7,6 @@
 
 import SwiftUI
 import TalkUI
-import ChatModels
 import TalkViewModels
 
 struct MessageTextView: View {
@@ -15,9 +14,9 @@ struct MessageTextView: View {
 
     // We have to check hasText here, due to there is a chance the user add to a peice of text to a file message.
     var body: some View {
-        if viewModel.calMessage.rowType.hasText {
+        if viewModel.calMessage.rowType.hasText, let markdownTitle = viewModel.calMessage.markdownTitle {
             // TODO: TEXT must be alignment and image must be fit
-            Text(viewModel.calMessage.markdownTitle)
+            Text(markdownTitle)
                 .multilineTextAlignment(viewModel.calMessage.isEnglish ? .leading : .trailing)
                 .lineSpacing(8)
                 .padding(viewModel.calMessage.sizes.paddings.textViewPadding)

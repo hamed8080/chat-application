@@ -7,7 +7,6 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
 
 struct UploadButton: View {
     @EnvironmentObject var viewModel: MessageRowViewModel

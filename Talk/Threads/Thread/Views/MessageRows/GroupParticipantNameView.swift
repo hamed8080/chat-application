@@ -8,10 +8,11 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
+import Chat
+import TalkModels
 
 struct GroupParticipantNameView: View {
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {

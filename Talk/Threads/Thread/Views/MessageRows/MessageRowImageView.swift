@@ -8,13 +8,12 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
 import TalkModels
 import Chat
 
 struct MessageRowImageView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
         ZStack {
@@ -188,6 +187,6 @@ fileprivate struct OverlayUploadImageButton: View {
 struct MessageRowImageDownloader_Previews: PreviewProvider {
     static var previews: some View {
         MessageRowImageView()
-            .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+            .environmentObject(MessageRowViewModel(message: Message(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }
