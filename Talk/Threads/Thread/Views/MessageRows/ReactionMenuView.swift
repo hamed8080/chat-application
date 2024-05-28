@@ -54,6 +54,7 @@ struct ReactionMenuView: View {
         .onTapGesture {} /// It's essential to disable the click of the context menu blur view.
         .background(MixMaterialBackground())
         .clipShape(RoundedRectangle(cornerRadius:(21)))
+        .frame(maxWidth: 240)
     }
 }
 
