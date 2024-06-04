@@ -8,18 +8,17 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
 import TalkModels
+import Chat
 
 struct MessageRowFileView: View {
     /// We have to use EnvironmentObject due to we need to update ui after the file has been uploaded so downloadVM now is not a nil value.
     @EnvironmentObject var viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
-    @State var shareDownloadedFile: Bool = false
+    private var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            if !viewModel.calculatedMessage.isMe {
+            if !viewModel.calMessage.isMe {
                 button
             }
             
@@ -30,22 +29,19 @@ struct MessageRowFileView: View {
                     fileSizeView
                 }
             }
-            if viewModel.calculatedMessage.isMe {
+            if viewModel.calMessage.isMe {
                 button
             }
         }
         .padding(4)
-        .padding(.top, viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-        .task {
-            viewModel.uploadViewModel?.startUploadFile()
-        }
-        .sheet(isPresented: $shareDownloadedFile) {
-            ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.calculatedMessage.fileMetaData?.file?.originalName)
+        .padding(.top, viewModel.calMessage.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .sheet(isPresented: $viewModel.shareDownloadedFile) {
+            ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.calMessage.fileMetaData?.file?.originalName)
         }
     }
 
     @ViewBuilder private var fileNameView: some View {
-        if let fileName = viewModel.calculatedMessage.fileName {
+        if let fileName = viewModel.calMessage.fileName {
             Text(fileName)
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
@@ -55,7 +51,7 @@ struct MessageRowFileView: View {
     }
 
     @ViewBuilder private var fileTypeView: some View {
-        if let extName = viewModel.calculatedMessage.extName {
+        if let extName = viewModel.calMessage.extName {
             Text(extName)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
@@ -64,7 +60,7 @@ struct MessageRowFileView: View {
     }
 
     @ViewBuilder private var fileSizeView: some View {
-        if let fileZize = viewModel.calculatedMessage.computedFileSize {
+        if let fileZize = viewModel.calMessage.computedFileSize {
             Text(fileZize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
@@ -74,55 +70,36 @@ struct MessageRowFileView: View {
 
     @ViewBuilder private var button: some View {
         ZStack {
-            if let downloadVM = viewModel.downloadFileVM {
+            if showDownloadButton {
                 DownloadButton() {
-                    onTapGesture()
+                    viewModel.onTap()
                 }
-                .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
-                .environmentObject(downloadVM)
-            }
-            if let uploadVM = viewModel.uploadViewModel {
+            } else if isUploading {
                 UploadButton()
-                    .environmentObject(uploadVM)
             }
         }
         .frame(width: 46, height: 46) /// prevent the button lead to huge resize afetr upload completed.
-        .animation(.easeInOut, value: viewModel.isUploadCompleted)
+        .animation(.easeInOut, value: viewModel.fileState.isUploading)
+    }
+}
+
+private extension MessageRowFileView {
+    var isUploading: Bool {
+        viewModel.fileState.isUploading && !viewModel.fileState.isUploadCompleted
     }
 
-    private func onTapGesture() {
-        guard let downloadVM = viewModel.downloadFileVM else { return }
-        if downloadVM.state == .completed {
-            shareFile()
-        } else {
-            manageDownload()
-        }
+    var isCompleted: Bool {
+        viewModel.fileState.state == .completed && viewModel.fileState.state != .undefined
     }
 
-    private func shareFile() {
-        Task {
-            _ = await message.makeTempURL()
-            await MainActor.run {
-                shareDownloadedFile.toggle()
-            }
-        }
-    }
-
-    private func manageDownload() {
-        guard let downloadVM = viewModel.downloadFileVM else { return }
-        if downloadVM.state == .paused {
-            downloadVM.resumeDownload()
-        } else if downloadVM.state == .downloading {
-            downloadVM.pauseDownload()
-        } else {
-            downloadVM.startDownload()
-        }
+    var showDownloadButton: Bool {
+        !isUploading
     }
 }
 
 struct MessageRowFileDownloader_Previews: PreviewProvider {
     static var previews: some View {
         MessageRowFileView()
-            .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+            .environmentObject(MessageRowViewModel(message: Message(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

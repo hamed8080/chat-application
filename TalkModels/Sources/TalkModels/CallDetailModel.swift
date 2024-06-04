@@ -5,8 +5,8 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import ChatModels
 import Foundation
+import Chat
 
 public struct CallDetailModel {
     public private(set) var count = 15

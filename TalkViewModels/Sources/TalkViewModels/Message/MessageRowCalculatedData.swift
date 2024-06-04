@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import ChatModels
 import SwiftUI
 import TalkModels
+import Chat
 
 public struct MessageRowCalculatedData {
     public static var formatter: DateFormatter = {
@@ -24,7 +24,7 @@ public struct MessageRowCalculatedData {
     public var fileMetaData: FileMetaData?
     public var isEnglish = true
     public var isReplyImage: Bool = false
-    public var callDateText: String = ""
+    public var callDateText: String?
     public var callTypeKey = ""
     public var replyLink: String?
     public var participantColor: UIColor? = nil
@@ -36,12 +36,17 @@ public struct MessageRowCalculatedData {
     public var avatarSplitedCharaters = ""
     public var isInTwoWeekPeriod: Bool = false
     public var localizedReplyFileName: String? = nil
-    public var markdownTitle = NSAttributedString()
+    public var markdownTitle: NSAttributedString?
     public var isFirstMessageOfTheUser: Bool = false
     public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
     public var groupMessageParticipantName: String?
-    public var image: UIImage = MessageRowViewModel.emptyImage
+    public var image: UIImage?
     public var canEdit: Bool = false
+
+    public var sizes = MessageRowSizes()
+    public var state = MessageRowState()
+    public var rowType = MessageViewRowType()
+    
     public init() {}
 }

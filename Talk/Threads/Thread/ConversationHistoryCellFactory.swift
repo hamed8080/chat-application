@@ -12,29 +12,31 @@ import TalkModels
 import ChatModels
 
 public final class ConversationHistoryCellFactory {
-    class func reuse(_ tableView: UITableView, _ indexPath: IndexPath, _ viewModel: ThreadViewModel) -> UITableViewCell {
-        guard let viewModel = viewModel.historyVM.viewModelWith(indexPath) else { return UITableViewCell() }
-        let identifier = viewModel.rowType.cellType
+    class func reuse(_ tableView: UITableView, _ indexPath: IndexPath, _ viewModel: ThreadViewModel?) -> UITableViewCell {
+        guard let viewModel = viewModel?.historyVM.sections.viewModelWith(indexPath) else {
+            return UITableViewCell()
+        }
+        let identifier = viewModel.calMessage.rowType.cellType
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier.rawValue, for: indexPath)
         switch identifier {
         case .call:
-            let cell = (cell as? CallEventUITableViewCell) ?? CallEventUITableViewCell()
+            let cell = (cell as? CallEventCell) ?? CallEventCell()
             cell.setValues(viewModel: viewModel)
             return cell
         case .partnerMessage:
-            let cell = cell as? TextMessagePartnerCellType ?? .init()
+            let cell = cell as? PartnerMessageCell ?? .init()
             cell.setValues(viewModel: viewModel)
             return cell
         case .meMessage:
-            let cell = cell as? TextMessageMeCellType ?? .init()
+            let cell = cell as? MyselfMessageCell ?? .init()
             cell.setValues(viewModel: viewModel)
             return cell
         case .participants:
-            let cell = (cell as? ParticipantsEventUITableViewCell) ?? ParticipantsEventUITableViewCell()
+            let cell = (cell as? ParticipantsEventCell) ?? ParticipantsEventCell()
             cell.setValues(viewModel: viewModel)
             return cell
         case .unreadBanner:
-            return UnreadMessageBubbleUITableViewCell()
+            return UnreadBubbleCell()
         case .unknown:
             return UITableViewCell()
         }
@@ -42,10 +44,10 @@ public final class ConversationHistoryCellFactory {
 
     public class func registerCells(_ tableView: UITableView) {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellTypes.unknown.rawValue)
-        tableView.register(TextMessagePartnerCellType.self, forCellReuseIdentifier: CellTypes.partnerMessage.rawValue)
-        tableView.register(TextMessageMeCellType.self, forCellReuseIdentifier: CellTypes.meMessage.rawValue)
-        tableView.register(CallEventUITableViewCell.self, forCellReuseIdentifier: CellTypes.call.rawValue)
-        tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: CellTypes.participants.rawValue)
-        tableView.register(UnreadMessageBubbleUITableViewCell.self, forCellReuseIdentifier: CellTypes.unreadBanner.rawValue)
+        tableView.register(PartnerMessageCell.self, forCellReuseIdentifier: CellTypes.partnerMessage.rawValue)
+        tableView.register(MyselfMessageCell.self, forCellReuseIdentifier: CellTypes.meMessage.rawValue)
+        tableView.register(CallEventCell.self, forCellReuseIdentifier: CellTypes.call.rawValue)
+        tableView.register(ParticipantsEventCell.self, forCellReuseIdentifier: CellTypes.participants.rawValue)
+        tableView.register(UnreadBubbleCell.self, forCellReuseIdentifier: CellTypes.unreadBanner.rawValue)
     }
 }

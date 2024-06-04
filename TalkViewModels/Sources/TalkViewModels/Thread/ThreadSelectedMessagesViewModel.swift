@@ -6,16 +6,12 @@
 //
 
 import Foundation
-import ChatModels
 import Chat
-import ChatCore
-import ChatDTO
 import TalkModels
 
-public final class ThreadSelectedMessagesViewModel: ObservableObject {
+public final class ThreadSelectedMessagesViewModel {
     public private(set) var isInSelectMode: Bool = false
     public weak var viewModel: ThreadViewModel?
-    public var selectedMessages: [MessageRowViewModel] { viewModel?.historyVM.sections.flatMap{$0.vms}.filter({$0.state.isSelected}) ?? []}
     public init() {}
 
     public func setup(viewModel: ThreadViewModel? = nil) {
@@ -23,14 +19,26 @@ public final class ThreadSelectedMessagesViewModel: ObservableObject {
     }
 
     public func clearSelection() {
-        selectedMessages.forEach { viewModel in
-            viewModel.state.isSelected = false
+        Task { @MainActor in
+            getSelectedMessages().forEach { viewModel in
+                viewModel.calMessage.state.isSelected = false
+            }
+            setInSelectionMode(false)
         }
-        setInSelectionMode(false)
     }
 
     public func setInSelectionMode(_ value: Bool) {
         isInSelectMode = value
-        animateObjectWillChange()
+        putAllInSeclectionMode(value)
+    }
+
+    public func getSelectedMessages() -> [MessageRowViewModel] {
+        viewModel?.historyVM.sections.flatMap{$0.vms}.filter({$0.calMessage.state.isSelected}) ?? []
+    }
+
+    public func putAllInSeclectionMode(_ isInSelectionMode: Bool) {
+        viewModel?.historyVM.sections.flatMap({$0.vms}).forEach({ vm in
+            vm.calMessage.state.isInSelectMode = isInSelectionMode
+        })
     }
 }

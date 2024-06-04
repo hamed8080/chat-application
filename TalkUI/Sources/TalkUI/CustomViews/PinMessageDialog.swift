@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
-import ChatModels
 import TalkViewModels
 import TalkModels
+import Chat
 
 public struct PinMessageDialog: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel

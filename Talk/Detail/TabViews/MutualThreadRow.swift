@@ -8,8 +8,8 @@
 import SwiftUI
 import TalkModels
 import TalkViewModels
-import ChatModels
 import TalkUI
+import Chat
 
 struct MutualThreadRow: View {
     var thread: Conversation

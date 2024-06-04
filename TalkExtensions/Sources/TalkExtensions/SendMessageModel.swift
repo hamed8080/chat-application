@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import ChatModels
+import Chat
 
 public struct SendMessageModel {
     public var textMessage: String

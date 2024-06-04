@@ -1,6 +1,6 @@
 import Foundation
-import ChatModels
 import SwiftUI
+import Chat
 
 public struct ReactionRowsCalculated {
     public var rows: [Row]

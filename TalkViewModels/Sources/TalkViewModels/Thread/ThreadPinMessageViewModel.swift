@@ -6,21 +6,20 @@
 //
 
 import Foundation
-import ChatModels
 import UIKit
-import ChatDTO
 import Chat
 import Combine
 import SwiftUI
-import ChatCore
 import TalkModels
 
 public protocol ThreadPinMessageViewModelDelegate: AnyObject {
     func onUpdate()
 }
 
-public final class ThreadPinMessageViewModel: ObservableObject {
+public final class ThreadPinMessageViewModel {
     private weak var viewModel: ThreadViewModel?
+    public weak var historyVM: ThreadHistoryViewModel?
+    public weak var delegate: ThreadPinMessageViewModelDelegate?
     public private(set) var text: String? = nil
     public private(set) var image: UIImage? = nil
     public private(set) var message: PinMessage?
@@ -33,13 +32,12 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     private var thread: Conversation { viewModel?.thread ?? .init() }
     private var cancelable: Set<AnyCancellable> = []
     var threadId: Int {thread.id ?? -1}
-    public weak var historyVM: ThreadHistoryViewModel?
-    public weak var delegate: ThreadPinMessageViewModelDelegate?
 
     public init() {}
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
+        self.historyVM = viewModel.historyVM
         message = thread.pinMessage
         setupObservers()
     }
@@ -75,7 +73,7 @@ public final class ThreadPinMessageViewModel: ObservableObject {
         switch event {
         case let .pin(response):
             if threadId == response.subjectId {
-                thread.pinMessage = response.result
+                viewModel?.thread.pinMessage = response.result
                 message = response.result
                 downloadImageThumbnail()
                 Task { [weak self] in
@@ -85,7 +83,7 @@ public final class ThreadPinMessageViewModel: ObservableObject {
             }
         case let .unpin(response):
             if threadId == response.subjectId {
-                thread.pinMessage = nil
+                viewModel?.thread.pinMessage = nil
                 message = nil
                 Task { [weak self] in
                     guard let self = self else { return }
@@ -176,7 +174,9 @@ public final class ThreadPinMessageViewModel: ObservableObject {
 
     public func moveToPinnedMessage() {
         if let time = message?.time, let messageId = message?.messageId {
-            historyVM?.moveToTime(time, messageId)
+            Task {
+                await historyVM?.moveToTime(time, messageId, highlight: true)
+            }
         }
     }
 

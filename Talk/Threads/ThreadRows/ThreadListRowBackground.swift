@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import ChatModels
 import TalkViewModels
+import Chat
 
 struct ThreadListRowBackground: View {
     let thread: Conversation

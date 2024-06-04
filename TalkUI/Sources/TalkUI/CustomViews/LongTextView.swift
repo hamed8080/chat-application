@@ -36,7 +36,7 @@ public struct LongTextView: View {
                     .background(
                         GeometryReader { geometry in
                             Color.clear.onAppear {
-                                self.determineTruncation(geometry)
+                                self.determineTruncation(geometry.size)
                             }
                         }
                     )
@@ -48,19 +48,18 @@ public struct LongTextView: View {
         .contentShape(Rectangle())
     }
 
-    private func determineTruncation(_ geometry: GeometryProxy) {
+    private func determineTruncation(_ size: CGSize) {
         Task {
             let total = self.text.boundingRect(
                 with: CGSize(
-                    width: geometry.size.width,
+                    width: size.width,
                     height: .greatestFiniteMagnitude
                 ),
                 options: .usesLineFragmentOrigin,
                 attributes: [.font: UIFont.systemFont(ofSize: 16)],
                 context: nil
             )
-
-            if total.size.height > geometry.size.height {
+            if total.height > size.height {
                 self.truncated = true
             }
         }

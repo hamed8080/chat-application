@@ -14,7 +14,7 @@ import TalkModels
 
 public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLoaderDelegate {
     @Published public var player: AVPlayer?
-    let fileURL: URL
+    public let fileURL: URL
     let ext: String?
     var title: String?
     var subtitle: String?

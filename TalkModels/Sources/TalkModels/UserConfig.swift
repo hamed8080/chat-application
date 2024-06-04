@@ -1,7 +1,4 @@
 import Chat
-import ChatDTO
-import ChatModels
-import ChatCore
 
 public struct UserConfig: Codable, Identifiable {
     public var id: Int? { user.id }

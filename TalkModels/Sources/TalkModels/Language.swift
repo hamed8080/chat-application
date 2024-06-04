@@ -22,8 +22,14 @@ public struct Language: Identifiable {
     ]
 
     public static var preferredLocale: Locale {
-        let localIdentifier = Language.languages.first(where: {$0.language == Locale.preferredLanguages[0] })?.identifier
-        return Locale(identifier: localIdentifier ?? "en_US")
+        if let cachedPreferedLocale = cachedPreferedLocale {
+            return cachedPreferedLocale
+        } else {
+            let localIdentifier = Language.languages.first(where: {$0.language == Locale.preferredLanguages[0] })?.identifier
+            let preferedLocale =  Locale(identifier: localIdentifier ?? "en_US")
+            cachedPreferedLocale = preferedLocale
+            return preferedLocale
+        }
     }
 
     public static var preferredLocaleLanguageCode: String {
@@ -34,9 +40,7 @@ public struct Language: Identifiable {
         languages.filter{ $0.identifier == "ar_SA" || $0.identifier == "fa_IR" }
     }
 
-    private static var cachedIsRTL: Bool?
-
-    public static var isRTL: Bool = {
+    public static var isRTL: Bool {
         if let cachedIsRTL = cachedIsRTL {
             return cachedIsRTL
         } else {
@@ -44,13 +48,21 @@ public struct Language: Identifiable {
             cachedIsRTL = isRTL
             return isRTL
         }
-    }()
+    }
 
     public static var preferedBundle: Bundle {
+        if let cachedbundel = cachedbundel {
+            return cachedbundel
+        }
         guard
             let path = Bundle.main.path(forResource: preferredLocaleLanguageCode, ofType: "lproj"),
             let bundle = Bundle(path: path)
         else { return .main }
+        cachedbundel = bundle
         return bundle
     }
+
+    private static var cachedbundel: Bundle?
+    private static var cachedIsRTL: Bool?
+    private static var cachedPreferedLocale: Locale?
 }

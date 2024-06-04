@@ -10,23 +10,17 @@ import TalkViewModels
 import TalkExtensions
 import TalkUI
 import TalkModels
-import Combine
 
 public final class SelectionView: UIStackView {
-    private let btnForward = UIButton(type: .system)
     private let btnDelete = UIButton(type: .system)
     private let lblCount = UILabel()
     private let lblStatic = UILabel()
-    private let lblStaticForwardTO = UILabel()
-    private let closeButton = CloseButtonView()
-    private let viewModel: ThreadViewModel
-    private var cancellable = Set<AnyCancellable>()
+    private weak var viewModel: ThreadViewModel?
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
-        registerObserver()
     }
 
     public required init(coder: NSCoder) {
@@ -34,7 +28,6 @@ public final class SelectionView: UIStackView {
     }
 
     private func configureViews() {
-        btnForward.translatesAutoresizingMaskIntoConstraints = false
         btnDelete.translatesAutoresizingMaskIntoConstraints = false
 
         axis = .horizontal
@@ -46,10 +39,12 @@ public final class SelectionView: UIStackView {
         btnDelete.tintColor = Color.App.iconSecondaryUIColor
         btnDelete.addTarget(self, action: #selector(deleteSelectedMessageTapped), for: .touchUpInside)
 
+        let btnForward = UIButton(type: .system)
         let image = UIImage(systemName: "arrow.turn.up.right")
         btnForward.setImage(image, for: .normal)
         btnForward.tintColor = Color.App.accentUIColor
         btnForward.addTarget(self, action: #selector(forwardSelectedMessageTapped), for: .touchUpInside)
+        btnForward.translatesAutoresizingMaskIntoConstraints = false
 
         lblCount.font = UIFont.uiiransansBoldBody
         lblCount.textColor = Color.App.accentUIColor
@@ -58,10 +53,7 @@ public final class SelectionView: UIStackView {
         lblStatic.font = UIFont.uiiransansBody
         lblStatic.textColor = Color.App.textSecondaryUIColor
 
-        lblStaticForwardTO.text = "Thread.SendContainer.toForward".localized()
-        lblStaticForwardTO.font = UIFont.uiiransansBody
-        lblStaticForwardTO.textColor = Color.App.textSecondaryUIColor
-
+        let closeButton = CloseButtonView()
         closeButton.action = { [weak self] in
             self?.onClose()
         }
@@ -71,7 +63,6 @@ public final class SelectionView: UIStackView {
         addArrangedSubview(btnForward)
         addArrangedSubview(lblCount)
         addArrangedSubview(lblStatic)
-        addArrangedSubview(lblStaticForwardTO)
         addArrangedSubview(spacer)
         addArrangedSubview(btnDelete)
         addArrangedSubview(closeButton)
@@ -85,57 +76,50 @@ public final class SelectionView: UIStackView {
     }
 
     @objc private func forwardSelectedMessageTapped(_ sender: UIButton) {
-        viewModel.delegate?.openForwardPicker()
+        viewModel?.delegate?.openForwardPicker()
     }
 
     @objc private func deleteSelectedMessageTapped(_ sender: UIButton) {
-        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init()))
-    }
-
-    private func set() {
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            guard let self = self else { return }
-            isHidden = !viewModel.selectedMessagesViewModel.isInSelectMode
-            lblStaticForwardTO.isHidden = viewModel.forwardMessage != nil
-            btnDelete.isHidden = viewModel.thread.disableSend
+        guard let viewModel = viewModel else { return }
+        Task {
+            let deleteVM = DeleteMessagesViewModelModel()
+            await deleteVM.setup(viewModel: viewModel)
+            let dialog = DeleteMessageDialog(viewModel: deleteVM)
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
         }
     }
 
-    public func updateCount() {
+    private func set() {
+        guard let viewModel = viewModel else { return }
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            let count = viewModel.selectedMessagesViewModel.selectedMessages.count
+            let show = viewModel.selectedMessagesViewModel.isInSelectMode
+            isHidden = false
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = show ? 1.0 : 0.0
+                self.isHidden = !show
+            }
+            btnDelete.isHidden = viewModel.thread.disableSend
+            updateCount()
+        }
+    }
+
+    private func updateCount() {
+        guard let viewModel = viewModel else { return }
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            let count = viewModel.selectedMessagesViewModel.getSelectedMessages().count
             lblCount.text = count.localNumber(locale: Language.preferredLocale) ?? ""
         }
     }
 
-    private func deleteMessagesTapped(_ sender: UIButton) {
-//        appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: threadVM)))
-    }
-
     private func onClose() {
         lblCount.text = ""
-        viewModel.delegate?.setSelection(false)
-        viewModel.selectedMessagesViewModel.clearSelection()
+        viewModel?.delegate?.setSelection(false)
+        viewModel?.selectedMessagesViewModel.clearSelection()
     }
 
-    private func registerObserver() {
-        viewModel.selectedMessagesViewModel.objectWillChange.sink { [weak self] _ in
-            self?.set()
-        }
-        .store(in: &cancellable)
-    }
-}
-
-struct SelectionView_Previews: PreviewProvider {
-
-    struct SelectionViewWrapper: UIViewRepresentable {
-        let viewModel: ThreadViewModel
-        func makeUIView(context: Context) -> some UIView { SelectionView(viewModel: viewModel) }
-        func updateUIView(_ uiView: UIViewType, context: Context) {}
-    }
-
-    static var previews: some View {
-        SelectionViewWrapper(viewModel: .init(thread: .init(id: 1)))
+    public func update() {
+        set()
     }
 }

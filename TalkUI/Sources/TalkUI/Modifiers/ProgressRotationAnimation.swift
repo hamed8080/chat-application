@@ -46,11 +46,7 @@ public struct ProgressRotationAnimation: ViewModifier {
     func reverseAnimation() {
         DispatchQueue.main.async {
             withAnimation(.easeInOut(duration: 2)) {
-                if degree == 360 {
-                    degree = 0
-                } else {
-                    degree = 360
-                }
+                degree += 360
             }
         }
     }

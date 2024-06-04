@@ -1,5 +1,4 @@
 import Chat
-import ChatModels
 
 public struct AttachmentModel {
     public private(set) var count = 50

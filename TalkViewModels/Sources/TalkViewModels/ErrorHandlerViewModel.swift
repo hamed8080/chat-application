@@ -6,11 +6,9 @@
 //
 
 import Foundation
-import ChatModels
-import ChatCore
 import Combine
-import ChatDTO
 import SwiftUI
+import Chat
 
 public final class ErrorHandlerViewModel: ObservableObject {
     public private(set) var cancellable: Set<AnyCancellable> = []

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import ChatDTO
+import Chat
 
 struct OnMoveTime: ChatDTO.UniqueIdProtocol {
     let uniqueId: String

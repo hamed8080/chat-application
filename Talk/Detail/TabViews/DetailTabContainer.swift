@@ -8,7 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
+import Chat
 
 struct DetailTabContainer: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel

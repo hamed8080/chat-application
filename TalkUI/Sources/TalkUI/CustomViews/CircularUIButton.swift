@@ -22,7 +22,6 @@ public final class CircularUIButton: UIImageView {
     }
 
     private func configureView() {
-        layer.cornerRadius = bounds.height / 2.0
         layer.masksToBounds = true
         contentMode = .scaleAspectFit
     }
@@ -46,5 +45,10 @@ public final class CircularUIButton: UIImageView {
             layer.backgroundColor = sender.state == .began ? bgColor?.withAlphaComponent(0.5).cgColor : bgColor.cgColor
         }
         action?()
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.cornerRadius = bounds.height / 2.0
     }
 }

@@ -1,11 +1,7 @@
 import Foundation
-import ChatModels
 import Chat
 import Combine
-import ChatDTO
-import ChatCore
 import TalkModels
-import ChatTransceiver
 import SwiftUI
 
 public final class GalleryViewModel: ObservableObject {

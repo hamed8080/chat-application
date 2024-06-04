@@ -7,18 +7,26 @@
 
 import Foundation
 import UIKit
+import TalkModels
 
-public protocol HistoryScrollDelegate: AnyObject {
+public protocol HistoryScrollDelegate: AnyObject, HistoryEmptyDelegate {
     func scrollTo(index: IndexPath, position: UITableView.ScrollPosition, animate: Bool)
     func scrollTo(uniqueId: String, position: UITableView.ScrollPosition, animate: Bool)
     func reload()
     func relaod(at: IndexPath)
     func reconfig(at: IndexPath)
-    func insertd(at: IndexPath)
-    func insertd(at: [IndexPath])
+    func inserted(at: IndexPath)
+    func inserted(at: [IndexPath])
     func inserted(_ sections: IndexSet, _ rows: [IndexPath])
-    func remove(at: IndexPath)
-    func remove(at: [IndexPath])
+    func removed(at: IndexPath)
+    func removed(at: [IndexPath])
+    func edited(_ indexPath: IndexPath)
+    func pinChanged(_ indexPath: IndexPath)
+    func seen(_ indexPath: IndexPath)
+}
+
+public protocol HistoryEmptyDelegate {
+    func emptyStateChanged(isEmpty: Bool)
 }
 
 public protocol UnreadCountDelegate {
@@ -31,7 +39,7 @@ public protocol ChangeUnreadMentionsDelegate {
 
 public protocol ChangeSelectionDelegate {
     func setSelection(_ value: Bool)
-    func updateCount()
+    func updateSelectionView()
 }
 
 public protocol LastMessageAppearedDelegate {
@@ -40,6 +48,13 @@ public protocol LastMessageAppearedDelegate {
 
 public protocol SheetsDelegate {
     func openForwardPicker()
+    func openShareFiles(urls: [URL], title: String?)
+}
+
+public protocol BottomToolbarDelegate {
+    func openEditMode(_ message: (any HistoryMessageProtocol)?)
+    func openReplyMode(_ message: (any HistoryMessageProtocol)?)
+    func showRecording(_ show: Bool)
 }
 
 public protocol LoadingDelegate {
@@ -48,6 +63,23 @@ public protocol LoadingDelegate {
     func startBottomAnimation(_ animate: Bool)
 }
 
-public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate {
+public protocol AttachmentsDelegate {
+    func onAttchmentButtonsMenu(show: Bool)
+}
 
+public protocol MentionList {
+    func onMentionListUpdated()
+}
+
+public protocol AvatarDelegate {
+    func updateAvatar(image: UIImage, participantId: Int)
+}
+
+public protocol TopToolbarDelegate {
+    func updateTitleTo(_ title: String?)
+    func updateSubtitleTo(_ subtitle: String?)
+    func updateImageTo(_ image: UIImage?)
+}
+
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate, AttachmentsDelegate, MentionList, AvatarDelegate, BottomToolbarDelegate, TopToolbarDelegate {
 }

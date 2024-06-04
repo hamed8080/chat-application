@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import ChatModels
+import Chat
 
 public protocol NavigationTitle {
     var title: String { get }

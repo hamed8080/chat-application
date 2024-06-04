@@ -15,10 +15,10 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     private let vStack = UIStackView()
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
-    private let viewModel: ThreadViewModel
+    private weak var viewModel: ThreadViewModel?
     private let closeButton = CloseButtonView()
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
@@ -69,7 +69,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     }
 
     public func set() {
-        isHidden = viewModel.replyMessage == nil
+        isHidden = viewModel?.replyMessage == nil
         let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately
         nameLabel.text = replyMessage?.participant?.name
         nameLabel.isHidden = replyMessage?.participant?.name == nil
@@ -82,7 +82,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     }
 
     private func close() {
-        viewModel.scrollVM.disableExcessiveLoading()
+        viewModel?.scrollVM.disableExcessiveLoading()
         AppState.shared.appStateNavigationModel = .init()
 //        viewModel.animateObjectWillChange()
     }

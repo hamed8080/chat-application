@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 import TalkExtensions
 import OSLog
 import Logger
@@ -33,6 +30,7 @@ public final class ThreadsViewModel: ObservableObject {
     var isInCacheMode = false
     private var isSilentClear = false
     @MainActor public private(set) var lazyList = LazyListViewModel()
+    private let participantsCountManager = ParticipantsCountManager()
 
     internal var objectId = UUID().uuidString
     internal let GET_THREADS_KEY: String
@@ -61,7 +59,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if let message = response.result, let index = firstIndex(message.conversation?.id) {
-            let thread = threads[index]
+            var thread = threads[index]
             let isMe = response.result?.participant?.id == AppState.shared.user?.id
             if !isMe {
                 thread.unreadCount = (threads[index].unreadCount ?? 0) + 1
@@ -69,7 +67,7 @@ public final class ThreadsViewModel: ObservableObject {
                 thread.unreadCount = 0
             }
             thread.time = message.time
-            thread.lastMessageVO = message
+            thread.lastMessageVO = message.toLastMessageVO
 
             /*
              We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
@@ -89,10 +87,10 @@ public final class ThreadsViewModel: ObservableObject {
             if response.result?.mentioned == true {
                 thread.mentioned = true
             }
+            threads[index] = thread
             if thread.pin == false {
                 sort()
             }
-            thread.animateObjectWillChange()
             animateObjectWillChange()
         }
         getNotActiveThreads(response.result?.conversation)
@@ -234,15 +232,17 @@ public final class ThreadsViewModel: ObservableObject {
             /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
             await appendThreads(threads: [newConversation])
         }
+        await insertIntoParticipantViewModel(response)
         await lazyList.setLoading(false)
     }
 
-    func onDeletePrticipant(_ response: ChatResponse<[Participant]>) async {
-        if let index = firstIndex(response.subjectId) {
-            threads[index].participantCount = max(0, (threads[index].participantCount ?? 0) - 1)
-            animateObjectWillChange()
+    @MainActor
+    private func insertIntoParticipantViewModel(_ response: ChatResponse<Conversation>) async {
+        if let threadVM = AppState.shared.objectsContainer.navVM.viewModel(for: response.result?.id ?? -1) {
+            let addedParticipants = response.result?.participants ?? []
+            threadVM.participantsViewModel.onAdded(addedParticipants)
+//            threadVM.animateObjectWillChange()
         }
-        await lazyList.setLoading(false)
     }
 
     public func showAddThreadToTag(_ thread: Conversation) {
@@ -250,11 +250,11 @@ public final class ThreadsViewModel: ObservableObject {
         sheetType = .tagManagement
     }
 
+    @MainActor
     public func appendThreads(threads: [Conversation]) async {
         threads.forEach { thread in
-            if let oldThread = self.threads.first(where: { $0.id == thread.id }) {
+            if var oldThread = self.threads.first(where: { $0.id == thread.id }) {
                 oldThread.updateValues(thread)
-                oldThread.animateObjectWillChange() // To update properties such as unread count when we get threads again after disconnect.
             } else {
                 self.threads.append(thread)
             }
@@ -377,12 +377,19 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func updateThreadInfo(_ thread: Conversation) {
-        if let index = firstIndex(thread.id) {
+        if let threadId = thread.id, let index = firstIndex(threadId) {
             let title = thread.title ?? ""
             let replacedEmoji = title.replacingOccurrences(of: NSRegularExpression.emojiRegEx, with: "\\\\u{$1}", options: .regularExpression)
+            /// In the update thread info, the image property is nil and the metadata link is been filled by the server.
+            /// So to update the UI properly we have to set it to link.
+            if let metadatImagelink = thread.metaData?.file?.link {
+                threads[index].image = metadatImagelink
+            }
             threads[index].title = replacedEmoji
             threads[index].updateValues(thread)
-            threads[index].animateObjectWillChange()
+            let activeThread = AppState.shared.objectsContainer.navVM.viewModel(for: threadId)
+            activeThread?.thread = threads[index]
+            activeThread?.delegate?.updateTitleTo(replacedEmoji)
             animateObjectWillChange()
         }
     }
@@ -405,7 +412,7 @@ public final class ThreadsViewModel: ObservableObject {
     /// This method will be called whenver we send seen for an unseen message by ourself.
     public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
         if let index = firstIndex(response.subjectId) {
-            let thread = threads[index]
+            var thread = threads[index]
             if response.result?.unreadCount == 0, thread.mentioned == true {
                 thread.mentioned = false
             }
@@ -415,7 +422,7 @@ public final class ThreadsViewModel: ObservableObject {
                 thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
                 setUnreadCount(response.result?.unreadCount ?? response.contentCount, threadId: response.subjectId)
             }
-            thread.animateObjectWillChange()
+            threads[index] = thread
             animateObjectWillChange()
         }
     }
@@ -439,7 +446,8 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func clearAvatarsOnSelectAnotherThread() {
+    @MainActor
+    public func clearAvatarsOnSelectAnotherThread() async {
         var keysToRemove: [String] = []
         let allThreadImages = threads.compactMap({$0.computedImageURL})
         avatarsVM.forEach { (key: String, value: ImageLoaderViewModel) in
@@ -465,16 +473,22 @@ public final class ThreadsViewModel: ObservableObject {
 
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.
     public func setUnreadCount(_ newCount: Int?, threadId: Int?) {
-        let thread = threads.first(where: {$0.id == threadId})
-        if newCount ?? 0 <= thread?.unreadCount ?? 0 {
-            thread?.unreadCount = newCount
+        guard let index = threads.firstIndex(where: {$0.id == threadId}) else { return }
+        if newCount ?? 0 <= threads[index].unreadCount ?? 0 {
+            threads[index].unreadCount = newCount
             animateObjectWillChange()
         }
     }
 
     func onLeftThread(_ response: ChatResponse<User>) {
-        if response.result?.id == AppState.shared.user?.id, let conversationId = response.subjectId {
+        let isMe = response.result?.id == AppState.shared.user?.id
+        let threadVM = AppState.shared.objectsContainer.navVM.viewModel(for: response.subjectId ?? -1)
+        let deletedUserId = response.result?.id
+        let participant = threadVM?.participantsViewModel.participants.first(where: {$0.id == deletedUserId})
+        if isMe, let conversationId = response.subjectId {
             removeThread(.init(id: conversationId))
+        } else if let participant = participant {
+            threadVM?.participantsViewModel.removeParticipant(participant)
         }
     }
 
@@ -489,16 +503,18 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].lastMessageVO?.delivered = true
             threads[index].lastMessageVO?.seen = true
             threads[index].partnerLastSeenMessageId = response.result?.messageId
-            threads[index].animateObjectWillChange()
+            animateObjectWillChange()
         }
     }
 
     /// This method only reduce the unread count if the deleted message has sent after lastSeenMessageTime.
     public func onMessageDeleted(_ response: ChatResponse<Message>) {
-        let thread = threads.first{ $0.id == response.subjectId }
-        if response.result?.time ?? 0 > thread?.lastSeenMessageTime ?? 0, thread?.unreadCount ?? 0 >= 1 {
-            thread?.unreadCount = (thread?.unreadCount ?? 0) - 1
-            thread?.animateObjectWillChange()
+        guard let index = threads.firstIndex(where: { $0.id == response.subjectId }) else { return }
+        var thread = threads[index]
+        if response.result?.time ?? 0 > thread.lastSeenMessageTime ?? 0, thread.unreadCount ?? 0 >= 1 {
+            thread.unreadCount = (thread.unreadCount ?? 0) - 1
+            threads[index] = thread
+            animateObjectWillChange()
         }
     }
 

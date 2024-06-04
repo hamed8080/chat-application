@@ -8,18 +8,17 @@
 import Chat
 import TalkUI
 import TalkViewModels
-import ChatModels
 import SwiftUI
 import TalkExtensions
 import TalkModels
 
 struct MessageReactionDetailView: View {
-    let message: Message
+    let message: any HistoryMessageProtocol 
     private let row: ReactionRowsCalculated.Row
     private var messageId: Int { message.id ?? -1 }
     @EnvironmentObject var tabVM: ReactionTabParticipantsViewModel
 
-    init(message: Message, row: ReactionRowsCalculated.Row) {
+    init(message: any HistoryMessageProtocol, row: ReactionRowsCalculated.Row) {
         self.message = message
         self.row = row
     }

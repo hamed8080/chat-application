@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatModels
 import TalkModels
-import ChatDTO
-import ChatCore
 
 public final class ParticipantsViewModel: ObservableObject {
     private weak var viewModel: ThreadViewModel?
@@ -62,7 +59,7 @@ public final class ParticipantsViewModel: ObservableObject {
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
-            .sink { searchText in
+            .sink { [weak self] searchText in
                 Task { @MainActor [weak self] in
                     if searchText.count >= 2 {
                         await self?.searchParticipants(searchText.lowercased())

@@ -10,9 +10,10 @@ import UIKit
 import TalkViewModels
 import Combine
 import TalkUI
+import TalkModels
 
 public final class ThreadBottomToolbar: UIStackView {
-    private let viewModel: ThreadViewModel
+    private weak var viewModel: ThreadViewModel?
     private let mainSendButtons: MainSendButtons
     private let audioRecordingView: AudioRecordingView
     private let attachmentButtons: AttachmentButtonsView
@@ -27,11 +28,11 @@ public final class ThreadBottomToolbar: UIStackView {
     private var cancellableSet = Set<AnyCancellable>()
     public var onUpdateHeight: ((CGFloat) -> Void)?
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
         self.audioRecordingView = AudioRecordingView(viewModel: viewModel)
-        self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel)
+        self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel?.sendContainerViewModel)
         self.attachmentFilesTableView = AttachmentFilesTableView(viewModel: viewModel)
         self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
         self.replyPrivatelyPlaceholderView = ReplyPrivatelyMessagePlaceholderView(viewModel: viewModel)
@@ -42,7 +43,6 @@ public final class ThreadBottomToolbar: UIStackView {
         self.mentionTableView = MentionTableView(viewModel: viewModel)
         super.init(frame: .zero)
         configureViews()
-        registerObservers()
     }
     
     public required init(coder: NSCoder) {
@@ -81,6 +81,7 @@ public final class ThreadBottomToolbar: UIStackView {
         editMessagePlaceholderView.isHidden = true
         selectionView.isHidden = true
         audioRecordingView.isHidden = true
+
         addArrangedSubview(attachmentFilesTableView)
         addArrangedSubview(attachmentButtons)
         addArrangedSubview(replyPlaceholderView)
@@ -90,11 +91,12 @@ public final class ThreadBottomToolbar: UIStackView {
         addArrangedSubview(selectionView)
         addArrangedSubview(audioRecordingView)
         addArrangedSubview(mentionTableView)
-        if viewModel.sendContainerViewModel.canShowMute {
+        if viewModel?.sendContainerViewModel.canShowMute == true {
             addArrangedSubview(muteBarView)
         } else {
             addArrangedSubview(mainSendButtons)
         }
+
         NSLayoutConstraint.activate([
             topAnchor.constraint(equalTo: attachmentButtons.topAnchor, constant: -8),
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -104,34 +106,77 @@ public final class ThreadBottomToolbar: UIStackView {
         ])
     }
 
-    private func registerObservers() {
-        viewModel.sendContainerViewModel.objectWillChange.sink { [weak self] _ in
-            self?.onModelChanged()
-        }
-        .store(in: &cancellableSet)
-    }
-
-    private func onModelChanged() {
+    public func updateAttachmentButtonsVisibility() {
         animateAttachmentButtonIfNeede()
     }
 
+    public func updateMentionList() {
+        mentionTableView.updateMentionList()
+    }
+
     private func animateAttachmentButtonIfNeede() {
-        let showActionButtons = viewModel.sendContainerViewModel.showActionButtons
+        let showActionButtons = viewModel?.sendContainerViewModel.showActionButtons == true
         if showActionButtons {
+            attachmentButtons.alpha = 0.0
             UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) { [weak self] in
                 guard let self = self else { return }
                 attachmentButtons.isHidden = !showActionButtons
+                attachmentButtons.alpha = 1.0
             }
         } else {
+            attachmentButtons.alpha = 1.0
             UIView.animate(withDuration: 0.2) { [weak self] in
                 guard let self = self else { return }
                 attachmentButtons.isHidden = !showActionButtons
+                attachmentButtons.alpha = 0.0
             }
+        }
+    }
+
+    public func updateHeightWithDelay() {
+        guard let viewModel = viewModel else { return }
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            if viewModel.audioRecoderVM.isRecording {
+                onUpdateHeight?(audioRecordingView.frame.height)
+            } else if viewModel.sendContainerViewModel.showActionButtons {
+                onUpdateHeight?(mainSendButtons.frame.height)
+            } else {
+                onUpdateHeight?(frame.height)
+            }
+        }
+    }
+
+    public func openEditMode(_ message: (any HistoryMessageProtocol)?) {
+        editMessagePlaceholderView.set()
+        viewModel?.sendContainerViewModel.setText(newValue: message?.message ?? "")
+    }
+
+    public func openReplyMode(_ message: (any HistoryMessageProtocol)?) {
+        replyPlaceholderView.set()
+    }
+    
+    public func focusOnTextView(focus: Bool) {
+        mainSendButtons.focusOnTextView(focus: focus)
+    }
+
+    public func openRecording(_ show: Bool) {
+        audioRecordingView.set()
+        viewModel?.attachmentsViewModel.clear()
+        viewModel?.setupRecording()
+        mainSendButtons.alpha = show ? 1.0 : 0.0
+        audioRecordingView.alpha = show ? 0.0 : 1.0
+        UIView.animate(withDuration: 0.2) {
+            self.mainSendButtons.alpha = show ? 0.0 : 1.0
+            self.audioRecordingView.alpha = show ? 1.0 : 0.0
+
+            self.mainSendButtons.isHidden = show
+            self.audioRecordingView.isHidden = !show
         }
     }
 
     public override func layoutSubviews() {
         super.layoutSubviews()
-        onUpdateHeight?(bounds.height)
+        updateHeightWithDelay()
     }
 }

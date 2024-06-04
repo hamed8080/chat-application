@@ -17,7 +17,6 @@ public struct MessageRowSizes {
     public var forwardContainerWidth: CGFloat?
     public var imageWidth: CGFloat? = nil
     public var imageHeight: CGFloat? = nil
-    public var blurRadius: CGFloat? = 0
 
     /// We use max to at least have a width, because there are times that maxWidth is nil.
     public let mapWidth = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + tailSize.width)

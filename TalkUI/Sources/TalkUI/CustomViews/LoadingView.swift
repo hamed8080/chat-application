@@ -37,6 +37,73 @@ public struct LoadingView: View {
     }
 }
 
+public final class UILoadingView: UIView {
+    private var shapeLayer = CAShapeLayer()
+    private var animation = CABasicAnimation(keyPath: "strokeEnd")
+    private var rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
+
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.cornerRadius = bounds.width / 2
+        drawProgress()
+    }
+
+    func drawProgress() {
+        let center = CGPoint(x: bounds.midX, y: bounds.midY)
+        let path = UIBezierPath(arcCenter: center,
+                                radius: bounds.width / 2,
+                                startAngle: -CGFloat.pi / 2,
+                                endAngle: 2 * CGFloat.pi,
+                                clockwise: true)
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.strokeColor = Color.App.accentUIColor?.cgColor
+        shapeLayer.lineWidth = 2
+        shapeLayer.lineCap = .round
+        shapeLayer.path = path.cgPath
+        self.layer.addSublayer(shapeLayer)
+    }
+
+    public func animate(_ animate: Bool) {
+        if animate {
+            start()
+        } else {
+            stop()
+        }
+    }
+
+    private func start() {
+        animation.fromValue = 0.05
+        animation.toValue = 0.8
+        animation.duration = 1.5
+        animation.autoreverses = true
+        animation.repeatCount = .greatestFiniteMagnitude
+        rotateAnimation.repeatCount = .greatestFiniteMagnitude
+        rotateAnimation.isCumulative = true
+        rotateAnimation.toValue = 2 * CGFloat.pi
+        rotateAnimation.duration = 0.8
+        rotateAnimation.fillMode = .forwards
+
+        shapeLayer.add(animation, forKey: "strokeAnimation")
+        layer.add(rotateAnimation, forKey: "rotationAnimation")
+        isHidden = false
+        shapeLayer.isHidden = false
+    }
+
+    private func stop() {
+        shapeLayer.isHidden = true
+        shapeLayer.removeAllAnimations()
+        isHidden = true
+    }
+}
+
 struct LoadingView_Previews: PreviewProvider {
     @State static var isAnimating = true
 

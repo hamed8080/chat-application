@@ -1,5 +1,4 @@
 import Chat
-import ChatModels
 
 public struct SideBarItem: Identifiable, Hashable {
     public var id: String

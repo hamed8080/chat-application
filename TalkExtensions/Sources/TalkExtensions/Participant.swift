@@ -1,5 +1,5 @@
 import Foundation
-import ChatModels
+import Chat
 
 public extension Participant {
     var toContact: Contact {

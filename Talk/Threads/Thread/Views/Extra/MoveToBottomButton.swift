@@ -12,11 +12,11 @@ import ChatModels
 import TalkExtensions
 
 public final class MoveToBottomButton: UIButton {
-    public let viewModel: ThreadViewModel
+    public weak var viewModel: ThreadViewModel?
     private let imgCenter = UIImageView()
     private let lblUnreadCount = PaddingUILabel(frame: .zero, horizontal: 4, vertical: 4)
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureView()
@@ -36,7 +36,7 @@ public final class MoveToBottomButton: UIButton {
         layer.shadowOpacity = 0.1
         layer.masksToBounds = false
         layer.shadowOffset = .init(width: 0.0, height: 1.0)
-        let readAllMeessges = viewModel.thread.lastMessageVO?.id ?? -1 == viewModel.thread.lastSeenMessageId ?? 0
+        let readAllMeessges = viewModel?.thread.lastMessageVO?.id ?? -1 == viewModel?.thread.lastSeenMessageId ?? 0
         isHidden = readAllMeessges
 
         imgCenter.image = UIImage(systemName: "chevron.down")
@@ -70,33 +70,27 @@ public final class MoveToBottomButton: UIButton {
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {
         isHidden = true
-        viewModel.scrollVM.scrollToBottom()
+        viewModel?.scrollVM.scrollToBottom()
     }
 
     public func updateUnreadCount() {
-        lblUnreadCount.isHidden = viewModel.thread.unreadCount == 0 || viewModel.thread.unreadCount == nil
-        lblUnreadCount.text = viewModel.thread.unreadCountString ?? ""
+        lblUnreadCount.isHidden = viewModel?.thread.unreadCount == 0 || viewModel?.thread.unreadCount == nil
+        lblUnreadCount.text = viewModel?.thread.unreadCountString ?? ""
     }
 
     public func setVisibility(visible: Bool) {
         DispatchQueue.main.async {
+            if visible {
+                self.isHidden = false
+            }
+            self.transform = CGAffineTransform(scaleX: visible ? 0.01 : 1.0, y: visible ? 0.01 : 1.0)
             UIView.animate(withDuration: 0.3) { [weak self] in
-                self?.isHidden = !visible
+                self?.transform = CGAffineTransform(scaleX: visible ? 1.0 : 0.01, y: visible ? 1.0 : 0.01)
+            } completion: { completed in
+                if completed {
+                    self.isHidden = !visible
+                }
             }
         }
-    }
-}
-
-struct MoveToBottomButton_Previews: PreviewProvider {
-    static var vm = ThreadViewModel(thread: .init(id: 1))
-
-    struct MoveToBottomButtonWrapper: UIViewRepresentable {
-        let viewModel: ThreadViewModel
-        func makeUIView(context: Context) -> some UIView { MoveToBottomButton(viewModel: viewModel) }
-        func updateUIView(_ uiView: UIViewType, context: Context) {}
-    }
-
-    static var previews: some View {
-        MoveToBottomButtonWrapper(viewModel: vm)
     }
 }

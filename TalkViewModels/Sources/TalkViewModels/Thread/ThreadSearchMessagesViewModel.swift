@@ -6,14 +6,11 @@
 //
 
 import Foundation
-import ChatModels
 import Chat
-import ChatCore
-import ChatDTO
 import TalkModels
 import Combine
 
-public final class ThreadSearchMessagesViewModel: ObservableObject {
+public final class ThreadSearchMessagesViewModel {
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation? { viewModel?.thread }
     private var threadId: Int { thread?.id ?? -1 }
@@ -106,7 +103,6 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
             if !response.cache, !response.hasNext {
                 hasMore = false
             }
-            animateObjectWillChange()
         }
     }
 
@@ -122,7 +118,6 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     private func onCancelTimer(key: String) {
         if isLoading, key.contains(SEARCH_KEY) {
             isLoading = false
-            animateObjectWillChange()
         }
     }
 

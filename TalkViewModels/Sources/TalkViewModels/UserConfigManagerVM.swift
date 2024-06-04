@@ -1,9 +1,7 @@
 import Chat
 import Combine
-import ChatModels
 import TalkModels
 import Foundation
-import ChatCore
 
 public extension UserDefaults {
     enum keys: String {

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
 import TalkUI
 import Chat
 import TalkModels

@@ -7,13 +7,10 @@
 
 import Foundation
 import Chat
-import ChatCore
-import ChatModels
-import ChatDTO
 import Combine
 import TalkModels
 
-public final class SendContainerViewModel: ObservableObject {
+public final class SendContainerViewModel {
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation { viewModel?.thread ?? .init() }
     public var threadId: Int { thread.id ?? -1 }
@@ -42,6 +39,7 @@ public final class SendContainerViewModel: ObservableObject {
     private var editMessage: Message?
     public var height: CGFloat = 0
     private let draftManager = DraftManager.shared
+    public var onTextChanged: ((String?) -> Void)?
 
     public init() {}
 
@@ -56,13 +54,14 @@ public final class SendContainerViewModel: ObservableObject {
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
         let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId ?? -1
-        textMessage = draftManager.get(threadId: threadId) ?? draftManager.get(contactId: contactId) ?? ""
+        let textMessage = draftManager.get(threadId: threadId) ?? draftManager.get(contactId: contactId) ?? ""
+        setText(newValue: textMessage)
         editMessage = getDraftEditMessage()
     }
 
     private func onTextMessageChanged(_ newValue: String) {
         if Language.isRTL && textMessage.first != "\u{200f}" {
-            textMessage = "\u{200f}\(textMessage)"
+            setText(newValue: "\u{200f}\(textMessage)")
         }
         viewModel?.mentionListPickerViewModel.text = textMessage
         viewModel?.sendStartTyping(textMessage)
@@ -75,7 +74,7 @@ public final class SendContainerViewModel: ObservableObject {
     }
 
     public func clear() {
-        textMessage = ""
+        setText(newValue: "")
         editMessage = nil
         isInEditMode = false
     }
@@ -91,7 +90,7 @@ public final class SendContainerViewModel: ObservableObject {
         if let lastIndex = text.lastIndex(of: "@") {
             text.removeSubrange(lastIndex..<text.endIndex)
         }
-        textMessage = "\(text)@\(userName) " // To hide participants dialog
+        setText(newValue: "\(text)@\(userName) ") // To hide participants dialog
     }
 
     public func getText() -> String {
@@ -101,12 +100,12 @@ public final class SendContainerViewModel: ObservableObject {
     public func setText(newValue: String) {
         textMessage = newValue
         onTextMessageChanged(newValue)
-        animateObjectWillChange()
+        onTextChanged?(getText())
     }
 
     public func setEditMessage(message: Message?) {
         self.editMessage = message
-        animateObjectWillChange()
+        isInEditMode = message != nil
     }
 
     public func getEditMessage() -> Message? {
@@ -115,17 +114,15 @@ public final class SendContainerViewModel: ObservableObject {
 
     public func toggleActionButtons() {
         showActionButtons.toggle()
-        animateObjectWillChange()
+        viewModel?.delegate?.onAttchmentButtonsMenu(show: showActionButtons)
     }
 
     public func setFocusOnTextView(focus: Bool = false) {
         focusOnTextInput = focus
-        animateObjectWillChange()
     }
 
     public func toggleVideorecording() {
         isVideoRecordingSelected.toggle()
-        animateObjectWillChange()
     }
 
     public func cancelAllObservers() {
@@ -152,7 +149,7 @@ public final class SendContainerViewModel: ObservableObject {
 
             /// It will trigger onTextMessageChanged method
             if draftManager.get(threadId: threadId) == nil {
-                textMessage = text
+                setText(newValue: text)
             }
         } else {
             setEditMessageDraft(nil)
@@ -168,4 +165,8 @@ public final class SendContainerViewModel: ObservableObject {
     }
 
     private var isSimulated: Bool { threadId == -1 || threadId == LocalId.emptyThread.rawValue }
+
+    public func setAttachmentButtonsVisibility(show: Bool) {
+        showActionButtons = show
+    }
 }

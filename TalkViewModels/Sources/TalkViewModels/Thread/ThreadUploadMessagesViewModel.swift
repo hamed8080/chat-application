@@ -6,10 +6,7 @@
 //
 
 import Foundation
-import ChatModels
 import Chat
-import ChatCore
-import ChatDTO
 import TalkModels
 import Combine
 import SwiftUI
@@ -35,34 +32,35 @@ public final class ThreadUploadMessagesViewModel {
             .store(in: &cancelable)
     }
 
-    internal func append(contentsOf requests: [Message]) {
-        Task { @MainActor in
-            await viewModel?.historyVM.appendSortCalculate(requests)
-//            await threadVM?.historyVM.asyncAnimateObjectWillChange()
+    internal func append(_ requests: [any HistoryMessageProtocol]) {
+        Task { [weak self] in
+            guard let self = self, let historyVM = viewModel?.historyVM else { return }
+            await historyVM.injectMessagesAndSort(requests)
+            var indicies: [IndexPath] = []
+            for request in requests {
+                if let uniqueId = request.uniqueId, let indexPath = historyVM.sections.indicesByMessageUniqueId(uniqueId) {
+                    indicies.append(indexPath)
+                }
+            }
+            viewModel?.delegate?.inserted(at: indicies)
             if let last = requests.last {
                 await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
             }
         }
     }
 
-    internal func append(request: Message) {
-        Task {
-            await viewModel?.historyVM.appendSortCalculate([request])
-//            await threadVM?.historyVM.asyncAnimateObjectWillChange()
-            await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(request)
-        }
-    }
-
     public func cancel(_ uniqueId: String?) {
         ChatManager.activeInstance?.message.cancel(uniqueId: uniqueId ?? "")
-        viewModel?.historyVM.removeByUniqueId(uniqueId)
+        Task { @HistoryActor [weak self] in
+            self?.viewModel?.historyVM.removeByUniqueId(uniqueId)
+        }
     }
 
     private func onUploadEvent(_ event: UploadEventTypes) {
         switch event {
         case .canceled(uniqueId: let uniqueId):
-            withAnimation {
-                viewModel?.historyVM.removeByUniqueId(uniqueId)
+            Task { @HistoryActor [weak self] in
+                self?.viewModel?.historyVM.removeByUniqueId(uniqueId)
             }
         default:
             break

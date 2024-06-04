@@ -11,13 +11,17 @@ import PhotosUI
 import UniformTypeIdentifiers
 import CoreServices
 
-struct CameraCapturer: UIViewControllerRepresentable {
+class CameraCapturer: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     let isVideo: Bool
     let onImagePicked: (UIImage?, URL?, [PHAssetResource]?) -> Void
+    public var vc: UIImagePickerController
 
-    func makeUIViewController(context: Context) -> some UIViewController {
-        let vc = UIImagePickerController()
-        vc.delegate = context.coordinator
+    init(isVideo: Bool, onImagePicked: @escaping (UIImage?, URL?, [PHAssetResource]?) -> Void) {
+        self.isVideo = isVideo
+        self.onImagePicked = onImagePicked
+        vc = UIImagePickerController()
+        super.init()
+        vc.delegate = self
         vc.sourceType  = .camera
         if isVideo {
             if #available(iOS 15.0, *) {
@@ -26,31 +30,20 @@ struct CameraCapturer: UIViewControllerRepresentable {
                 vc.mediaTypes = [kUTTypeMovie as String]
             }
         }
-        return vc
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onImagePicked: onImagePicked)
-    }
-
-    public class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let onImagePicked: (UIImage?, URL?, [PHAssetResource]?) -> Void
-
-        public init(onImagePicked: @escaping (UIImage?, URL?, [PHAssetResource]?) -> Void) {
-            self.onImagePicked = onImagePicked
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as? URL
+        var assetResource: [PHAssetResource]?
+        if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
+            assetResource = PHAssetResource.assetResources(for: asset)
         }
-
-        public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
-            let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as? URL
-            var assetResource: [PHAssetResource]?
-            if let asset = info[UIImagePickerController.InfoKey.phAsset] as? PHAsset {
-                assetResource = PHAssetResource.assetResources(for: asset)
-            }
-            onImagePicked(uiImage, videoURL, assetResource)
-            picker.dismiss(animated: true)
-        }
+        onImagePicked(uiImage, videoURL, assetResource)
+        picker.dismiss(animated: true)
     }
 }

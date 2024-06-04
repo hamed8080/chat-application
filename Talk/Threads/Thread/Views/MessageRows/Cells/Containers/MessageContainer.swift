@@ -1,0 +1,358 @@
+//
+//  MessageContainer.swift
+//  Talk
+//
+//  Created by hamed on 6/27/23.
+//
+
+import AdditiveUI
+import Chat
+import SwiftUI
+import TalkUI
+import TalkViewModels
+import TalkModels
+import TalkExtensions
+
+final class MessageContainer: UIStackView {
+    public weak var cell: MessageBaseCell?
+    private weak var viewModel: MessageRowViewModel?
+    private let messageFileView = MessageFileView()
+    private let messageImageView = MessageImageView(frame: .zero)
+    private let messageVideoView = MessageVideoView()
+    private let messageAudioView = MessageAudioView()
+    private let locationRowView = MessageLocationView(frame: .zero)
+    private let groupParticipantNameView = GroupParticipantNameView()
+    private let replyInfoMessageRow = ReplyInfoView()
+    private let forwardMessageRow = ForwardInfoView()
+    private let textMessageView = TextMessageView()
+    private let reactionView = ReactionCountView()
+    private let fotterView = FooterView()
+    private let unsentMessageView = UnsentMessageView()
+    private let tailImageView = UIImageView(image: UIImage(named: "tail"))
+
+    private var imageViewWidthConstraint: NSLayoutConstraint!
+    private var imageViewHeightConstraint: NSLayoutConstraint!
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+        addMenus()
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public func configureView() {
+        backgroundColor = Color.App.bgChatUserUIColor!
+        axis = .vertical
+        spacing = 8
+        alignment = .leading
+        distribution = .fill
+        layoutMargins = .init(all: 4)
+        isLayoutMarginsRelativeArrangement = true
+        layer.cornerRadius = 10
+        layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+        registerGestures()
+
+        replyInfoMessageRow.translatesAutoresizingMaskIntoConstraints = false
+        messageImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        addArrangedSubview(groupParticipantNameView)
+        addArrangedSubview(replyInfoMessageRow)
+        addArrangedSubview(forwardMessageRow)
+        addArrangedSubview(messageFileView)
+        addArrangedSubview(messageImageView)
+        addArrangedSubview(messageVideoView)
+        addArrangedSubview(messageAudioView)
+        addArrangedSubview(locationRowView)
+        addArrangedSubview(textMessageView)
+        addArrangedSubview(reactionView)
+        addArrangedSubview(fotterView)
+//        addArrangedSubview(unsentMessageView)
+
+        tailImageView.translatesAutoresizingMaskIntoConstraints = false
+        tailImageView.contentMode = .scaleAspectFit
+        addSubview(tailImageView)
+
+        imageViewWidthConstraint = messageImageView.widthAnchor.constraint(equalToConstant: 0)
+        imageViewHeightConstraint = messageImageView.heightAnchor.constraint(equalToConstant: 0)
+
+        NSLayoutConstraint.activate([
+            imageViewWidthConstraint,
+            imageViewHeightConstraint,
+            tailImageView.widthAnchor.constraint(equalToConstant: 16),
+            tailImageView.heightAnchor.constraint(equalToConstant: 32),
+            tailImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -12),
+            tailImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
+            forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+        ])
+    }
+
+    private func setVerticalSpacings(viewModel: MessageRowViewModel) {
+//        let message = viewModel.message
+//        let isReply = viewModel.message.replyInfo != nil
+//        let isForward = viewModel.message.forwardInfo != nil
+//        let isFile = message.isUploadMessage && !message.isImage && message.isFileType
+//        let isImage = viewModel.canShowImageView
+//        let isVideo = !message.isUploadMessage && message.isVideo == true
+//        let isAudio = !message.isUploadMessage && message.isAudio == true
+//        let isLocation = viewModel.isMapType
+//        let isUploadImage = message.isUploadMessage && message.isImage
+//        let isUploadFile = !message.isUploadMessage && message.isFileType && !viewModel.isMapType && !message.isImage && !message.isAudio && !message.isVideo
+//        let isTextEmpty = message.messageTitle.isEmpty
+//        let isUnsent = viewModel.message.isUnsentMessage
+//        let hasReaction = viewModel.reactionsVM.reactionCountList.count > 0
+    }
+
+    public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
+        setVerticalSpacings(viewModel: viewModel)
+        textMessageView.set(viewModel)
+        replyInfoMessageRow.set(viewModel)
+        forwardMessageRow.set(viewModel)
+        messageImageView.set(viewModel)
+        groupParticipantNameView.set(viewModel)
+        locationRowView.set(viewModel)
+        messageFileView.set(viewModel)
+        messageAudioView.set(viewModel)
+        messageVideoView.set(viewModel)
+        unsentMessageView.set(viewModel)
+        reactionView.set(viewModel)
+        fotterView.set(viewModel)
+        isUserInteractionEnabled = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
+        backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        if viewModel.calMessage.isLastMessageOfTheUser && !viewModel.calMessage.isMe {
+            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+            tailImageView.isHidden = false
+        } else {
+            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+            tailImageView.isHidden = true
+        }
+        tailImageView.tintColor = viewModel.calMessage.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+
+        if viewModel.calMessage.rowType.isImage {
+            imageViewWidthConstraint.constant = viewModel.calMessage.sizes.imageWidth ?? 128
+            imageViewHeightConstraint.constant = viewModel.calMessage.sizes.imageHeight ?? 128
+        } else {
+            imageViewWidthConstraint.constant = 0
+            imageViewHeightConstraint.constant = 0
+        }
+    }
+
+    private func registerGestures() {
+        replyInfoMessageRow.isUserInteractionEnabled = true
+        forwardMessageRow.isUserInteractionEnabled = true
+    }
+}
+
+extension MessageContainer: UIContextMenuInteractionDelegate {
+    private func addMenus() {
+        let menu = UIContextMenuInteraction(delegate: self)
+        addInteraction(menu)
+    }
+
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        let config = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self = self, let viewModel = viewModel else { return UIMenu() }
+            return menu(model: .init(viewModel: viewModel))
+        }
+        return config
+    }
+}
+
+struct ActionModel {
+    let viewModel: MessageRowViewModel
+    var threadVM: ThreadViewModel? { viewModel.threadVM }
+    var message: any HistoryMessageProtocol { viewModel.message }
+}
+
+//MARK: Action menus
+extension MessageContainer {
+
+    public func menu(model: ActionModel) -> UIMenu {
+        let message: any HistoryMessageProtocol = model.message
+        let threadVM = model.threadVM
+        let viewModel = model.viewModel
+
+        var menus: [UIAction] = []
+        let replyAction = UIAction(title: "Messages.ActionMenu.reply".localized(), image: UIImage(systemName: "arrowshape.turn.up.left")) { [weak self] _ in
+            self?.onReplyAction(model)
+        }
+        menus.append(replyAction)
+
+        if threadVM?.thread.group == true, !viewModel.calMessage.isMe {
+            let replyPrivatelyAction = UIAction(title: "Messages.ActionMenu.replyPrivately".localized(), image: UIImage(systemName: "arrowshape.turn.up.left")) { [weak self] _ in
+                self?.onReplyPrivatelyAction(model)
+            }
+            menus.append(replyPrivatelyAction)
+        }
+
+        let forwardAction = UIAction(title: "Messages.ActionMenu.forward".localized(), image: UIImage(systemName: "arrowshape.turn.up.right")) { [weak self] _ in
+            self?.onForwardAction(model)
+        }
+        menus.append(forwardAction)
+
+        if viewModel.calMessage.canEdit {
+            let emptyText = message.message == nil || message.message == ""
+            let title = emptyText ? "General.addText".localized() : "General.edit".localized()
+            let editAction = UIAction(title: title, image: UIImage(systemName: "pencil.circle")) { [weak self] _ in
+                self?.onEditAction(model)
+            }
+            menus.append(editAction)
+        }
+
+        if let threadVM = threadVM, viewModel.message.ownerId == AppState.shared.user?.id && threadVM.thread.group == true {
+            let seenListAction = UIAction(title: "SeenParticipants.title".localized(), image: UIImage(systemName: "info.bubble")) { [weak self] _ in
+                self?.onSeenListAction(model)
+            }
+            menus.append(seenListAction)
+        }
+
+        if viewModel.message.isImage {
+            let saveImageAction = UIAction(title: "Messages.ActionMenu.saveImage".localized(), image: UIImage(systemName: "square.and.arrow.down")) { [weak self] _ in
+                self?.onSaveAction(model)
+            }
+            menus.append(saveImageAction)
+        }
+
+        if !viewModel.message.isFileType || message.message?.isEmpty == false {
+            let copyAction = UIAction(title: "Messages.ActionMenu.copy".localized(), image: UIImage(systemName: "doc.on.doc")) { [weak self] _ in
+                self?.onCopyAction(model)
+            }
+            menus.append(copyAction)
+        }
+
+        if EnvironmentValues.isTalkTest, message.isFileType == true {
+            let deleteCacheAction = UIAction(title: "Messages.ActionMenu.deleteCache".localized(), image: UIImage(systemName: "cylinder.split.1x2")) { [weak self] _ in
+                self?.onDeleteCacheAction(model)
+            }
+            menus.append(deleteCacheAction)
+        }
+
+        let isPinned = message.id == threadVM?.thread.pinMessage?.id && threadVM?.thread.pinMessage != nil
+        if threadVM?.thread.admin == true {
+            let title = isPinned ? "Messages.ActionMenu.unpinMessage".localized() : "Messages.ActionMenu.pinMessage".localized()
+            let pinAction = UIAction(title: title, image: UIImage(systemName: "pin")) { [weak self] _ in
+                self?.onPinAction(model)
+            }
+            menus.append(pinAction)
+        }
+
+        let selectAction = UIAction(title: "General.select".localized(), image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
+            self?.onSelectAction(model)
+        }
+        menus.append(selectAction)
+
+        if let message = message as? Message {
+            let isDeletable = DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.calMessage.isMe, message: message, thread: threadVM?.thread)
+            if isDeletable {
+                let deleteAction = UIAction(title: "General.delete".localized(), image: UIImage(systemName: "trash"), attributes: [.destructive]) { [weak self] _ in
+                    self?.onDeleteAction(model)
+                }
+                menus.append(deleteAction)
+            }
+        }
+        return UIMenu(children: menus)
+    }
+
+    private func onReplyAction(_ model: ActionModel) {
+        guard let message = model.message as? Message else { return }
+        model.threadVM?.replyMessage = message
+        model.threadVM?.sendContainerViewModel.setFocusOnTextView(focus: true)
+        model.threadVM?.delegate?.openReplyMode(message)
+    }
+
+    private func onReplyPrivatelyAction(_ model: ActionModel) {
+        guard let message = model.message as? Message else { return }
+        guard let participant = model.message.participant else { return }
+        AppState.shared.appStateNavigationModel.replyPrivately = message
+        AppState.shared.openThread(participant: participant)
+    }
+
+    private func onForwardAction(_ model: ActionModel) {
+        guard let message = model.message as? Message else { return }
+        model.threadVM?.forwardMessage = message
+        cell?.select()
+        model.threadVM?.delegate?.setSelection(true)
+        model.threadVM?.selectedMessagesViewModel.setInSelectionMode(true)
+    }
+
+    private func onEditAction(_ model: ActionModel) {
+        guard let message = model.message as? Message else { return }
+        model.threadVM?.sendContainerViewModel.setEditMessage(message: message)
+        model.threadVM?.delegate?.openEditMode(message)
+    }
+
+    private func onSeenListAction(_ model: ActionModel) {
+        guard let message = model.message as? Message else { return }
+        let value = MessageParticipantsSeenNavigationValue(message: message, threadVM: model.threadVM!)
+//        AppState.shared.objectsContainer.navVM.append(type: .messageParticipantsSeen(value), value: value)
+    }
+
+    private func onSaveAction(_ model: ActionModel) {
+        if let url = model.viewModel.message.fileURL, let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+            UIImageWriteToSavedPhotosAlbum(image, model.viewModel, nil, nil)
+            let icon = Image(systemName: "externaldrive.badge.checkmark")
+                .fontWeight(.semibold)
+                .foregroundStyle(Color.App.white)
+            AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, message: "General.imageSaved", messageColor: Color.App.textPrimary)
+        }
+    }
+
+    private func onCopyAction(_ model: ActionModel) {
+        UIPasteboard.general.string = model.message.message
+    }
+
+    private func onDeleteCacheAction(_ model: ActionModel) {
+        guard let message = model.message as? Message else { return }
+        model.threadVM?.clearCacheFile(message: message)
+//        model.threadVM?.animateObjectWillChange()
+    }
+
+    private func onDeleteAction(_ model: ActionModel) {
+        Task {
+            if let threadVM = model.threadVM {
+                model.viewModel.calMessage.state.isSelected = true
+                let deleteVM = DeleteMessagesViewModelModel()
+                await deleteVM.setup(viewModel: threadVM)
+                let dialog = DeleteMessageDialog(viewModel: deleteVM)
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
+            }
+        }
+    }
+
+    private func onPinAction(_ model: ActionModel) {
+        guard let message = model.message as? Message else { return }
+        let isPinned = model.message.id == model.threadVM?.thread.pinMessage?.id && model.threadVM?.thread.pinMessage != nil
+        if !isPinned, let threadVM = model.threadVM {
+            let dialog = PinMessageDialog(message: message, threadVM: threadVM)
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
+        } else {
+            model.threadVM?.threadPinMessageViewModel.unpinMessage(model.message.id ?? -1)
+        }
+    }
+
+    private func onSelectAction(_ model: ActionModel) {
+        model.threadVM?.delegate?.setSelection(true)
+        cell?.select()
+    }
+}
+
+// MARK: Upadate methods
+extension MessageContainer {
+    func edited() {
+        textMessageView.setText()
+    }
+
+    func pinChanged() {
+        guard let viewModel = viewModel else { return }
+        fotterView.pinChanged(isPin: viewModel.message.pinned == true)
+    }
+
+    func seen() {
+        guard let viewModel = viewModel else { return }
+        fotterView.seen(image: viewModel.message.uiFooterStatus.image)
+    }
+}

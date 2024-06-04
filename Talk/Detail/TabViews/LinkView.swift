@@ -6,7 +6,6 @@
 //
 
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -15,7 +14,7 @@ import TalkExtensions
 struct LinkView: View {
     @StateObject var viewModel: DetailTabDownloaderViewModel
 
-    init(conversation: Conversation, messageType: MessageType) {
+    init(conversation: Conversation, messageType: ChatModels.MessageType) {
         _viewModel = StateObject(wrappedValue: .init(conversation: conversation, messageType: messageType, tabName: "Link"))
     }
 
@@ -101,8 +100,7 @@ struct LinkRowView: View {
         .padding()
         .contentShape(Rectangle())
         .onTapGesture {
-            threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-            viewModel.dismiss = true
+            onTap()
         }.task {
             smallText = String(message.message?.replacingOccurrences(of: "\n", with: " ").prefix(500) ?? "")
             let string = message.message ?? ""
@@ -118,6 +116,13 @@ struct LinkRowView: View {
                     }
                 }
             }
+        }
+    }
+
+    private func onTap() {
+        Task {
+            await threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+            viewModel.dismiss = true
         }
     }
 }

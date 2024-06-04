@@ -6,10 +6,8 @@
 //
 
 import Foundation
-import ChatDTO
-import ChatCore
-import Additive
 import OSLog
+import Chat
 
 public class RequestsManager {
     public static let shared = RequestsManager()

@@ -8,22 +8,9 @@
 import Chat
 import Foundation
 import UIKit
-import ChatModels
 import TalkModels
-import ChatDTO
-import ChatCore
 import TalkExtensions
 import Combine
-import ChatTransceiver
-
-private var token: String? {
-    guard let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey),
-          let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.self, from: data)
-    else {
-        return nil
-    }
-    return ssoToken.accessToken
-}
 
 public struct ImageLoaderConfig {
     public let url: String
@@ -49,7 +36,7 @@ public final class ImageLoaderViewModel: ObservableObject {
     private(set) var fileMetadata: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
     var uniqueId: String?
-    public var config: ImageLoaderConfig
+    public private(set) var config: ImageLoaderConfig
     private var URLObject: URL? { URL(string: config.url) }
     private var isSDKImage: Bool { hashCode != "" }
     private var fileMetadataModel: FileMetaData? {
@@ -89,7 +76,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         NotificationCenter.download.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink{ [weak self] event in
-                DispatchQueue.global().async {
+                DispatchQueue.global().async { [weak self] in
                     self?.onDownloadEvent(event)
                 }
             }
@@ -110,7 +97,8 @@ public final class ImageLoaderViewModel: ObservableObject {
     }
 
     private func setImage(data: Data) {
-        autoreleasepool {
+        autoreleasepool { [weak self] in
+            guard let self = self else { return }
             var image: UIImage? = nil
             if config.size == .ACTUAL {
                 image = UIImage(data: data) ?? UIImage()
@@ -128,8 +116,9 @@ public final class ImageLoaderViewModel: ObservableObject {
         }
     }
 
-    private func setImage(fileURL: URL) {
-        autoreleasepool {
+    private func setCachedImage(fileURL: URL) {
+        autoreleasepool { [weak self] in
+            guard let self = self else { return }
             var image: UIImage? = nil
             if config.size == .ACTUAL, let data = fileURL.data {
                 image = UIImage(data: data) ?? UIImage()
@@ -154,7 +143,7 @@ public final class ImageLoaderViewModel: ObservableObject {
             if isSDKImage {
                 getFromSDK()
             } else if let fileURL = fileURL {
-                setImage(fileURL: fileURL)
+                setCachedImage(fileURL: fileURL)
             } else {
                 downloadFromAnyURL(thumbnail: config.thumbnail)
             }
@@ -177,7 +166,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         } else {
             guard let url = url else { return }
             response.pop(prepend: IMAGE_LOADER_KEY)
-            setImage(fileURL: url)
+            setCachedImage(fileURL: url)
         }
     }
 
@@ -213,7 +202,18 @@ public final class ImageLoaderViewModel: ObservableObject {
         UIImage(data: data) != nil
     }
 
-    private var headers: [String: String] { token != nil ? ["Authorization": "Bearer \(token ?? "")"] : [:] }
+    private var headers: [String: String] {
+        token != nil ? ["Authorization": "Bearer \(token ?? "")"] : [:]
+    }
+
+    private var token: String? {
+        guard let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey),
+              let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.self, from: data)
+        else {
+            return nil
+        }
+        return ssoToken.accessToken
+    }
 
     private var reqWithHeader: URLRequest? {
         guard let URLObject else { return nil }
@@ -227,7 +227,17 @@ public final class ImageLoaderViewModel: ObservableObject {
     }
 
     public func clear() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+        cancelable.removeAll()
         image = .init()
         isFetching = false
+    }
+
+    public func updateCondig(config: ImageLoaderConfig) {
+        image = .init()
+        isFetching = false
+        self.config = config
     }
 }

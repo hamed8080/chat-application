@@ -7,11 +7,8 @@
 
 import Chat
 import Combine
-import ChatModels
-import ChatCore
 import SwiftUI
 import TalkModels
-import ChatDTO
 
 public final class BotViewModel: ObservableObject {
     @Published public var bots: [BotInfo] = []

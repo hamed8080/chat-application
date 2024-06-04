@@ -9,8 +9,8 @@ import SwiftUI
 import TalkViewModels
 import TalkUI
 import PhotosUI
-import ChatModels
 import TalkModels
+import Chat
 
 struct ConversationBuilder: View {
     @EnvironmentObject var viewModel: ConversationBuilderViewModel
@@ -190,8 +190,7 @@ struct EditCreatedConversationDetail: View {
 
             Section {
                 ForEach(viewModel.selectedContacts) { contact in
-                    ContactRow(isInSelectionMode: .constant(false))
-                        .environmentObject(contact)
+                    ContactRow(contact: contact, isInSelectionMode: .constant(false))
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.dividerPrimary)
                 }

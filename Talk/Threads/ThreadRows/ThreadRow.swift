@@ -6,7 +6,6 @@
 //
 
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -66,8 +65,7 @@ struct ThreadRow: View {
                     }
 
                     Spacer()
-                    MutableMessageStatusView(isSelected: isSelected)
-                        .environmentObject(thread)
+                    MutableMessageStatusView(status: status, isSelected: isSelected)
                     ThreadTimeText(thread: thread, isSelected: isSelected)
                         .id(thread.time)
                 }
@@ -77,12 +75,10 @@ struct ThreadRow: View {
                         .environmentObject(viewModel.threadEventModels.first{$0.threadId == thread.id} ?? .init(threadId: thread.id ?? 0))
                     Spacer()
                     if isInForwardMode == nil {
-                        ThreadMentionSign()
+                        ThreadMentionSign(thread: thread)
                             .id(thread.mentioned)
-                            .environmentObject(thread)
-                        ThreadUnreadCount(isSelected: isSelected)
+                        ThreadUnreadCount(thread: thread, isSelected: isSelected)
                             .id(thread.unreadCount)
-                            .environmentObject(thread)
                     }
                 }
             }
@@ -126,6 +122,10 @@ struct ThreadRow: View {
             isSelected = false
         }
     }
+
+    private var status: (icon: UIImage, fgColor: Color)? {
+        thread.messageStatusIcon(currentUserId: AppState.shared.user?.id)
+    }
 }
 
 struct ThreadRowSelfContextMenu: View {
@@ -163,7 +163,7 @@ struct ThreadRowContextMenu: View {
 }
 
 struct ThreadMentionSign: View {
-    @EnvironmentObject var thread: Conversation
+    let thread: Conversation
 
     var body: some View {
         if thread.mentioned == true {
@@ -193,7 +193,7 @@ struct SelectedThreadBar: View {
 }
 
 struct ThreadUnreadCount: View {
-    @EnvironmentObject var thread: Conversation
+    let thread: Conversation
     let isSelected: Bool
     @State private var unreadCountString = ""
     @EnvironmentObject var viewModel: ThreadsViewModel
@@ -212,11 +212,11 @@ struct ThreadUnreadCount: View {
             }
         }
         .animation(.easeInOut, value: unreadCountString)
-        .onReceive(thread.objectWillChange) { newValue in
-            Task {
-                await updateCountAsync()
-            }
-        }
+//        .onReceive(thread.objectWillChange) { newValue in
+//            Task {
+//                await updateCountAsync()
+//            }
+//        }
         .task {
             await updateCountAsync()
         }
@@ -244,11 +244,11 @@ struct ThreadTimeText: View {
         }
         .animation(.easeInOut, value: timeString)
         .animation(.easeInOut, value: isSelected)
-        .onReceive(thread.objectWillChange) { newValue in
-            Task {
-                await updateTimeAsync()
-            }
-        }
+//        .onReceive(thread.objectWillChange) { newValue in
+//            Task {
+//                await updateTimeAsync()
+//            }
+//        }
         .task {
             await updateTimeAsync()
         }
@@ -261,7 +261,7 @@ struct ThreadTimeText: View {
 
 struct ThreadRow_Previews: PreviewProvider {
     static var thread: Conversation {
-        let thread = MockData.thread
+        var thread = MockData.thread
         thread.title = "Hamed  Hosseini"
         thread.time = 1_675_186_636_000
         thread.pin = true

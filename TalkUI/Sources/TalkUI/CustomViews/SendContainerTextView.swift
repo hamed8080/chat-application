@@ -27,7 +27,6 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
     }
 
     func configureView() {
-        translatesAutoresizingMaskIntoConstraints = true
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
         semanticContentAttribute = Locale.current.identifier.contains("fa") ? .forceRightToLeft : .forceLeftToRight
         textContainerInset = .init(top: 12, left: 0, bottom: 0, right: 0)
@@ -52,8 +51,8 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
 
         NSLayoutConstraint.activate([
             heightConstraint,
-            placeholderLabel.widthAnchor.constraint(equalTo: widthAnchor),
-            placeholderLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            placeholderLabel.widthAnchor.constraint(equalTo: widthAnchor, constant: -8),
+            placeholderLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             placeholderLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             placeholderLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
@@ -103,6 +102,10 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
 
     public func hidePlaceholder() {
         placeholderLabel.isHidden = true
+    }
+
+    public func showPlaceholder() {
+        placeholderLabel.isHidden = false
     }
 }
 

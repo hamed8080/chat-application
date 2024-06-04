@@ -6,11 +6,11 @@
 //
 
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
+import TalkExtensions
 
 struct ThreadLastMessageView: View {
     let isSelected: Bool
@@ -36,6 +36,7 @@ struct NormalLastMessageContainer: View {
     // It must be here because we need to redraw the view after the thread inside ViewModel has changed.
     @EnvironmentObject var viewModel: ThreadsViewModel
     private static let pinImage = Image("ic_pin")
+    @State private var fiftyFirstCharacter: String?
 
     var body: some View {
         if let callMessage = callMessage {
@@ -65,6 +66,9 @@ struct NormalLastMessageContainer: View {
                 Spacer()
                 muteView
                 pinView
+            }
+            .task {
+                await calculateFifityFirst()
             }
         }
     }
@@ -157,7 +161,7 @@ struct NormalLastMessageContainer: View {
         }
     }
 
-    private var lastMsgVO: Message? { thread.lastMessageVO }
+    private var lastMsgVO: Message? { thread.lastMessageVO?.toMessage }
     private var isCallType: Bool { lastMsgVO?.callHistory != nil }
     private var isMe: Bool { lastMsgVO?.isMe(currentUserId: AppState.shared.user?.id ?? -1) == true }
     private var isFileType: Bool { lastMsgVO?.isFileType == true }
@@ -167,11 +171,9 @@ struct NormalLastMessageContainer: View {
         return !allActive
     }
 
-    private var fiftyFirstCharacter: String? {
+    private func calculateFifityFirst() async {
         if !isFileType, let message = lastMsgVO?.message?.replacingOccurrences(of: "\n", with: " ").prefix(50) {
-            return String(message)
-        } else {
-            return nil
+            fiftyFirstCharacter = String(message)
         }
     }
 
@@ -189,7 +191,7 @@ struct NormalLastMessageContainer: View {
             let localized = String(localized: .init("Thread.Row.lastMessageSender"), bundle: Language.preferedBundle)
             let participantName = String(format: localized, participantName)
             let name = isMe ? "\(meVerb):" : participantName
-            return Message.textDirectionMark + name
+            return MessageHistoryStatics.textDirectionMark + name
         } else {
             return nil
         }
@@ -212,7 +214,7 @@ struct NormalLastMessageContainer: View {
             let fileStringName = lastMsgVO?.fileStringName ?? "MessageType.file"
             let sentVerb = String(localized: .init(isMe ? "Genral.mineSendVerb" : "General.thirdSentVerb"), bundle: Language.preferedBundle)
             let formatted = String(format: sentVerb, fileStringName.bundleLocalized())
-            return Message.textDirectionMark + "\(formatted)"
+            return MessageHistoryStatics.textDirectionMark + "\(formatted)"
         } else {
             return nil
         }

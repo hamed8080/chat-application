@@ -8,13 +8,11 @@
 import Chat
 import Foundation
 import UIKit
-import ChatModels
 import TalkExtensions
 import TalkModels
-import ChatDTO
 import OSLog
 
-public final class ThreadSendMessageViewModel: ObservableObject {
+public final class ThreadSendMessageViewModel {
     private weak var viewModel: ThreadViewModel?
     private var creator: P2PConversationBuilder?
 
@@ -31,9 +29,8 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             AppState.shared.appStateNavigationModel = newValue
         }
     }
-    private var historyVM: ThreadHistoryViewModel? { viewModel?.historyVM }
-    private var seenVM: HistorySeenViewModel? { historyVM?.seenVM }
     private var recorderVM: AudioRecordingViewModel { viewModel?.audioRecoderVM ?? .init() }
+    private var model = SendMessageModel(threadId: -1)
 
     public init() {}
 
@@ -45,6 +42,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     @MainActor
     public func sendTextMessage() async {
         if isOriginForwardThread() { return }
+        model = makeModel()
         if navModel.forwardMessageRequest?.threadId == threadId {
             sendForwardMessages()
         } else if navModel.replyPrivately != nil {
@@ -61,15 +59,10 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             sendNormalMessage()
         }
 
-        seenVM?.sendSeenForAllUnreadMessages()
-        viewModel?.mentionListPickerViewModel.text = ""
-//        viewModel?.sheetType = nil
-//        viewModel?.animateObjectWillChange()
-        /// A delay is essential for creating a conversation with a person for the person if we are in simulated mode.
-        /// It prevents to delete textMessage inside the SendContainerViewModel with the clear method.
-        if viewModel?.isSimulatedThared == true {
-            try? await Task.sleep(for: .milliseconds(500))
+        Task { @HistoryActor [weak self] in
+            self?.viewModel?.historyVM.seenVM?.sendSeenForAllUnreadMessages()
         }
+        viewModel?.mentionListPickerViewModel.text = ""
         sendVM.clear() // close ui
     }
 
@@ -109,7 +102,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
                 sendAttachmentsMessage()
                 sendSingleReplyAttachment(lastItem, replyMessageId)
             } else {
-                let req = ReplyMessageRequest(model: makeModel())
+                let req = ReplyMessageRequest(model: model)
                 ChatManager.activeInstance?.message.reply(req)
             }
         }
@@ -119,7 +112,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func sendSingleReplyAttachment(_ attachmentFile: AttachmentFile?, _ replyMessageId: Int) {
-        var req = ReplyMessageRequest(model: makeModel())
+        var req = ReplyMessageRequest(model: model)
         if let imageItem = attachmentFile?.request as? ImageItem {
             let imageReq = UploadImageRequest(imageItem: imageItem, thread.userGroupHash)
             req.messageType = .podSpacePicture
@@ -156,22 +149,22 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     private func sendTextOnlyReplyPrivately() {
-        if let req = ReplyPrivatelyRequest(model: makeModel()) {
+        if let req = ReplyPrivatelyRequest(model: model) {
             ChatManager.activeInstance?.message.replyPrivately(req)
         }
     }
 
     private func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile) {
-        if let imageItem = attachmentFile.request as? ImageItem, let message = UploadFileWithReplyPrivatelyMessage(imageItem: imageItem, model: makeModel()) {
-            uplVM.append(contentsOf: [message])
-        } else if let message = UploadFileWithReplyPrivatelyMessage(attachmentFile: attachmentFile, model: makeModel()) {
-            uplVM.append(contentsOf: [message])
+        if let imageItem = attachmentFile.request as? ImageItem, let message = UploadFileWithReplyPrivatelyMessage.make(imageItem: imageItem, model: model) {
+            uplVM.append([message])
+        } else if let message = UploadFileWithReplyPrivatelyMessage.make(attachmentFile: attachmentFile, model: model) {
+            uplVM.append([message])
         }
     }
 
     private func sendReplyPrivatelyWithVoice() {
-        if let message = UploadFileWithReplyPrivatelyMessage(voiceURL: recorderVM.recordingOutputPath, model: makeModel()) {
-            uplVM.append(contentsOf: [message])
+        if let message = UploadFileWithReplyPrivatelyMessage.make(voiceURL: recorderVM.recordingOutputPath, model: model) {
+            uplVM.append([message])
             recorderVM.cancel()
         }
     }
@@ -179,23 +172,25 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     private func sendAudiorecording() {
         send { [weak self] in
             guard let self = self,
-                  let request = UploadFileWithTextMessage(audioFileURL: recorderVM.recordingOutputPath, model: makeModel())
+                  let request = UploadFileMessage(audioFileURL: recorderVM.recordingOutputPath, model: model)
             else { return }
-            uplVM.append(contentsOf: [request])
+            uplVM.append([request])
             recorderVM.cancel()
         }
     }
 
-    public func sendNormalMessage() {
+    private func sendNormalMessage() {
         send {
             Task { [weak self] in
                 guard let self = self else { return }
-                let tuple = Message.makeRequest(model: makeModel())
-                await self.historyVM?.appendSortCalculate([tuple.message])
+                let tuple = Message.makeRequest(model: model)
+                let historyVM = viewModel?.historyVM
+                await historyVM?.injectMessagesAndSort([tuple.message])
                 let lastSectionIndex = max(0, (historyVM?.sections.count ?? 0) - 1)
                 let row = max((historyVM?.sections[lastSectionIndex].vms.count ?? 0) - 1, 0)
                 let indexPath = IndexPath(row: row, section: lastSectionIndex)
-                viewModel?.delegate?.insertd(at: indexPath)
+                viewModel?.delegate?.inserted(at: indexPath)
+                viewModel?.delegate?.scrollTo(index: indexPath, position: .bottom, animate: true)
                 ChatManager.activeInstance?.message.send(tuple.req)
             }
         }
@@ -203,17 +198,22 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
         sendVM.clear() /// Close edit mode in ui
-        seenVM?.animateObjectWillChange()
-//        viewModel?.sheetType = nil
-//        viewModel?.animateObjectWillChange()
-        animateObjectWillChange()
-        let messages = selectVM.selectedMessages.compactMap{$0.message}
-        if let contact = contact {
-            AppState.shared.openForwardThread(from: threadId, contact: contact, messages: messages)
-        } else if let destinationConversation = destinationConversation {
-            AppState.shared.openForwardThread(from: threadId, conversation: destinationConversation, messages: messages)
+        Task { @HistoryActor [weak self] in
+//            self?.viewModel?.historyVM.seenVM?.animateObjectWillChange()
         }
-        selectVM.clearSelection()
+        Task { @MainActor [weak self] in
+//            guard let self = self else { return }
+//            viewModel?.sheetType = nil
+//            viewModel?.animateObjectWillChange()
+//            animateObjectWillChange()
+//            let messages = await selectVM.getSelectedMessages().compactMap{$0.message as? Message}
+//            if let contact = contact {
+//                AppState.shared.openForwardThread(from: threadId, contact: contact, messages: messages)
+//            } else if let destinationConversation = destinationConversation {
+//                AppState.shared.openForwardThread(from: threadId, conversation: destinationConversation, messages: messages)
+//            }
+//            selectVM.clearSelection()
+        }
     }
 
     private func sendForwardMessages() {
@@ -234,7 +234,6 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     private func sendForwardMessages(_ req: ForwardMessageRequest) {
-        let model = makeModel()
         if !model.textMessage.isEmpty {
             let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: model.textMessage, messageType: .text)
             ChatManager.activeInstance?.message.send(messageReq)
@@ -251,32 +250,44 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     public func sendPhotos(_ imageItems: [ImageItem]) {
         send { [weak self] in
             guard let self = self else {return}
+            var imageMessages: [UploadFileMessage] = []
             for(index, imageItem) in imageItems.filter({!$0.isVideo}).enumerated() {
-                let imageMessage = UploadFileWithTextMessage(imageItem: imageItem, imageModel: makeModel(index))
-                uplVM.append(contentsOf: ([imageMessage]))
+                var model = model
+                model.uploadFileIndex = index
+                let imageMessage = UploadFileMessage(imageItem: imageItem, imageModel: model)
+                imageMessages.append(imageMessage)
             }
+            uplVM.append(imageMessages)
             sendVideos(imageItems.filter({$0.isVideo}))
             attVM.clear()
         }
     }
 
     public func sendVideos(_ imageItems: [ImageItem]) {
+        var videoMessages: [UploadFileMessage] = []
         for (index, item) in imageItems.enumerated() {
-            let videoMessage = UploadFileWithTextMessage(videoItem: item, videoModel: makeModel(index))
-            self.uplVM.append(contentsOf: ([videoMessage]))
+            var model = model
+            model.uploadFileIndex = index
+            let videoMessage = UploadFileMessage(videoItem: item, videoModel: model)
+            videoMessages.append(videoMessage)
         }
+        self.uplVM.append(videoMessages)
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
     public func sendFiles(_ urls: [URL]) {
         send { [weak self] in
             guard let self = self else {return}
+            var fileMessages: [UploadFileMessage] = []
             for (index, url) in urls.enumerated() {
                 let isLastItem = url == urls.last || urls.count == 1
-                if let fileMessage = UploadFileWithTextMessage(urlItem: url, isLastItem: isLastItem, urlModel: makeModel(index)) {
-                    self.uplVM.append(contentsOf: [fileMessage])
+                var model = model
+                model.uploadFileIndex = index
+                if let fileMessage = UploadFileMessage(urlItem: url, isLastItem: isLastItem, urlModel: model) {
+                    fileMessages.append(fileMessage)
                 }
             }
+            self.uplVM.append(fileMessages)
             attVM.clear()
         }
     }
@@ -284,25 +295,29 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     public func sendDropFiles(_ items: [DropItem]) {
         send { [weak self] in
             guard let self = self else {return}
+            var fileMessages: [UploadFileMessage] = []
             for (index, item) in items.enumerated() {
-                let fileMessage = UploadFileWithTextMessage(dropItem: item, dropModel: makeModel(index))
-                self.uplVM.append(contentsOf: ([fileMessage]))
+                var model = model
+                model.uploadFileIndex = index
+                let fileMessage = UploadFileMessage(dropItem: item, dropModel: model)
+                fileMessages.append(fileMessage)
             }
+            self.uplVM.append(fileMessages)
             attVM.clear()
         }
     }
 
     public func sendEditMessage() {
         guard let editMessage = sendVM.getEditMessage(), let messageId = editMessage.id else { return }
-        let req = EditMessageRequest(messageId: messageId, model: makeModel())
+        let req = EditMessageRequest(messageId: messageId, model: model)
         ChatManager.activeInstance?.message.edit(req)
     }
 
     public func sendLocation(_ location: LocationItem) {
         send { [weak self] in
             guard let self = self else {return}
-            let message = UploadFileWithLocationMessage(location: location, model: makeModel())
-            uplVM.append(request: message)
+            let message = UploadFileWithLocationMessage(message: Message(), location: location, model: model)
+            uplVM.append([message])
             attVM.clear()
         }
     }
@@ -330,7 +345,6 @@ public final class ThreadSendMessageViewModel: ObservableObject {
         self.viewModel?.updateConversation(conversation)
         DraftManager.shared.clear(contactId: navModel.userToCreateThread?.contactId ?? -1)
         navModel.userToCreateThread = nil
-        animateObjectWillChange()
     }
 
     func makeModel(_ uploadFileIndex: Int? = nil) -> SendMessageModel {

@@ -5,7 +5,6 @@
 //  Created by hamed on 6/27/23.
 //
 
-import ChatModels
 import Foundation
 import SwiftUI
 import TalkViewModels
@@ -15,7 +14,7 @@ import TalkModels
 import Chat
 
 struct MessageActionMenu: View {
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var thread: Conversation { viewModel.threadVM?.thread ?? .init() }
@@ -24,12 +23,15 @@ struct MessageActionMenu: View {
     private var isAdmin: Bool { thread.admin == true }
     private var isPinned: Bool { message.id == thread.pinMessage?.id && thread.pinMessage != nil }
     private var isGroup: Bool { thread.group == true }
-    private var isMe: Bool { viewModel.calculatedMessage.isMe }
+    private var isMe: Bool { viewModel.calMessage.isMe }
     private var notAdminChannel: Bool { !isAdmin && isChannel }
     private var isFileType: Bool { viewModel.message.isFileType }
     private var isImage: Bool { viewModel.message.isImage }
     private var isEmptyText: Bool { message.message?.isEmpty == true || message.message == nil }
-    private var isDeletable: Bool { DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.calculatedMessage.isMe, message: viewModel.message, thread: threadVM?.thread) }
+    private var isDeletable: Bool {
+        guard let message = viewModel.message as? Message else { return false }
+        return DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.calMessage.isMe, message: message, thread: threadVM?.thread)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -77,7 +79,7 @@ struct MessageActionMenu: View {
                 }
             }
 
-            if viewModel.calculatedMessage.canEdit {
+            if viewModel.calMessage.canEdit {
                 let key = isEmptyText ? "General.addText" : "General.edit"
                 ContextMenuButton(title: key.bundleLocalized(), image: "pencil.circle") {
                     onAddOrEditTextTapped()
@@ -132,7 +134,7 @@ struct MessageActionMenu: View {
     private func onDeleteTapped() {
         withAnimation(animation(appear: true)) {
             if let threadVM {
-                viewModel.state.isSelected = true
+                viewModel.calMessage.state.isSelected = true
                 let deleteVM = DeleteMessagesViewModelModel()
                 deleteVM.setup(viewModel: threadVM)
                 let dialog = DeleteMessageDialog(viewModel: deleteVM)
@@ -142,9 +144,10 @@ struct MessageActionMenu: View {
     }
 
     private func onForwardTapped() {
+        guard let message = viewModel.message as? Message else { return }
         withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
             threadVM?.forwardMessage = message
-            viewModel.state.isSelected = true
+            viewModel.calMessage.state.isSelected = true
             threadVM?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: true)
             viewModel.animateObjectWillChange()
             threadVM?.animateObjectWillChange()
@@ -152,6 +155,7 @@ struct MessageActionMenu: View {
     }
 
     private func onReplyTapped() {
+        guard let message = viewModel.message as? Message else { return }
         withAnimation(animation(appear: threadVM?.replyMessage != nil)) {
             threadVM?.replyMessage = message
             threadVM?.sendContainerViewModel.focusOnTextInput = true
@@ -160,8 +164,9 @@ struct MessageActionMenu: View {
     }
 
     private func onPinUnpinTapped() {
+        guard let message = viewModel.message as? Message else { return }
         if !isPinned, let threadVM = threadVM {
-            let dialog = PinMessageDialog(message: viewModel.message)
+            let dialog = PinMessageDialog(message: message)
                 .environmentObject(threadVM)
             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
         } else {
@@ -171,6 +176,7 @@ struct MessageActionMenu: View {
     }
 
     private func onReplyPrivatelyTapped() {
+        guard let message = viewModel.message as? Message else { return }
         withAnimation(animation(appear: true)) {
             guard let participant = message.participant else { return }
             AppState.shared.appStateNavigationModel.replyPrivately = message
@@ -180,7 +186,7 @@ struct MessageActionMenu: View {
 
     private func onSelectTapped() {
         withAnimation(animation(appear: threadVM?.selectedMessagesViewModel.isInSelectMode == true)) {
-            viewModel.state.isSelected = true
+            viewModel.calMessage.state.isSelected = true
             threadVM?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: true)
             viewModel.animateObjectWillChange()
             threadVM?.animateObjectWillChange()
@@ -188,13 +194,15 @@ struct MessageActionMenu: View {
     }
 
     private func onInfoTapped() {
+        guard let message = viewModel.message as? Message else { return }
         withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
-            let value = MessageParticipantsSeenNavigationValue(message: viewModel.message, threadVM: threadVM ?? .init(thread: thread))
+            let value = MessageParticipantsSeenNavigationValue(message: message, threadVM: threadVM ?? .init(thread: thread))
             AppState.shared.objectsContainer.navVM.append(value: value)
         }
     }
 
     private func onAddOrEditTextTapped() {
+        guard let message = viewModel.message as? Message else { return }
         withAnimation(animation(appear: threadVM?.sendContainerViewModel.editMessage != nil)) {
             threadVM?.sendContainerViewModel.editMessage = message
             threadVM?.objectWillChange.send()
@@ -220,6 +228,7 @@ struct MessageActionMenu: View {
     }
 
     private func onClearCacheTapped() {
+        guard let message = viewModel.message as? Message else { return }
         threadVM?.clearCacheFile(message: message)
         threadVM?.animateObjectWillChange()
     }

@@ -9,20 +9,21 @@ import Foundation
 import SwiftUI
 import TalkViewModels
 
-struct ThreadMainToolbar: View {
-    let viewModel: ThreadViewModel
-
-    var body: some View {
-        ToolbarView(
-            searchId: "\(viewModel.threadId)",
-            title: nil,
-            showSearchButton: false,
-            searchPlaceholder: "General.searchHere",
-            leadingViews: ThreadLeadingToolbar(viewModel: viewModel),
-            centerViews:  ThreadViewCenterToolbar(viewModel: viewModel),
-            trailingViews: ThreadViewTrailingToolbar(viewModel: viewModel)
-        ) { searchValue in
-            viewModel.searchedMessagesViewModel.searchText = searchValue
-        }
-    }
-}
+//struct ThreadMainToolbar: View {
+//    let viewModel: ThreadViewModel
+//
+//    var body: some View {
+//        ToolbarView(
+//            searchId: "\(viewModel.threadId)",
+//            title: nil,
+//            showSearchButton: false,
+//            searchPlaceholder: "General.searchHere",
+//            leadingViews: ThreadLeadingToolbar(viewModel: viewModel),
+//            centerViews:  ThreadViewCenterToolbar(threadId: viewModel.threadId),
+//            trailingViews: ThreadViewTrailingToolbar()
+//        ) { searchValue in
+//            viewModel.searchedMessagesViewModel.searchText = searchValue
+//        }
+//        .environmentObject(viewModel)
+//    }
+//}

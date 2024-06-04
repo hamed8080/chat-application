@@ -49,61 +49,6 @@ public struct ImageLoaderView: View {
     }
 }
 
-public final class ParticipantImageLoaderUIView: UIView {
-    public var imageLoaderVM: ImageLoaderViewModel?
-    private let participantLabel = UILabel()
-    private let imageIconView = UIImageView()
-    private var cancelable: AnyCancellable?
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        configureView()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func configureView() {
-        participantLabel.translatesAutoresizingMaskIntoConstraints = false
-        imageIconView.translatesAutoresizingMaskIntoConstraints = false
-
-        imageIconView.contentMode = .scaleAspectFill
-
-        addSubview(participantLabel)
-        addSubview(imageIconView)
-
-        NSLayoutConstraint.activate([
-            participantLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            participantLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            imageIconView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            imageIconView.centerYAnchor.constraint(equalTo: centerYAnchor),
-        ])
-    }
-
-    public func setValues(config: ImageLoaderConfig) {
-        if imageLoaderVM == nil {
-            imageLoaderVM = .init(.init(config: config))
-            setupObserver()
-            Task {
-                await imageLoaderVM?.fetch()
-            }
-        }
-        participantLabel.text = String(imageLoaderVM?.config.userName?.first ?? " ")
-    }
-
-    private func setupObserver() {
-        cancelable = imageLoaderVM?.$image.sink { [weak self] _ in
-            self?.setImage()
-        }
-    }
-
-    private func setImage() {
-        imageIconView.image = imageLoaderVM?.image
-        participantLabel.isHidden = imageLoaderVM?.isImageReady == true    
-    }
-}
-
 public final class ImageLoaderUIView: UIView {
     public var imageLoaderVM: ImageLoaderViewModel?
     private let imageIconView = UIImageView()

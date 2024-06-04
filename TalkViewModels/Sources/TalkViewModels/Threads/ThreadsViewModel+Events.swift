@@ -6,9 +6,7 @@
 //
 
 import Foundation
-import ChatCore
 import Chat
-import ChatModels
 
 extension ThreadsViewModel {
 
@@ -67,7 +65,7 @@ extension ThreadsViewModel {
             .store(in: &cancelable)
         NotificationCenter.system.publisher(for: .system)
             .compactMap { $0.object as? SystemEventTypes }
-            .sink { systemMessageEvent in
+            .sink { [weak self] systemMessageEvent in
                 Task { [weak self] in
                     await self?.onThreadSystemEvent(systemMessageEvent)
                 }
@@ -93,8 +91,6 @@ extension ThreadsViewModel {
         switch event {
         case .add(let chatResponse):
             await onAddPrticipant(chatResponse)
-        case .deleted(let chatResponse):
-            await onDeletePrticipant(chatResponse)
         default:
             break
         }
@@ -151,6 +147,8 @@ extension ThreadsViewModel {
             onLastSeenMessageUpdated(response)
         case .joined(let response):
             onJoinedToPublicConversatin(response)
+        case .left(let response):
+            onLeftThread(response)
         default:
             break
         }

@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 import TalkExtensions
 import OSLog
 
@@ -62,7 +59,7 @@ public final class ThreadsSearchViewModel: ObservableObject {
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .removeDuplicates()
-            .sink { newValue in
+            .sink { [weak self] newValue in
                 Task { [weak self] in
                     await self?.onSearchTextChanged(newValue)
                 }
@@ -82,7 +79,7 @@ public final class ThreadsSearchViewModel: ObservableObject {
             }
             .store(in: &cancelable)
 
-        $showUnreadConversations.sink { newValue in
+        $showUnreadConversations.sink { [weak self] newValue in
             Task { [weak self] in
                 await self?.onUnreadConversationToggled(newValue)
             }

@@ -43,8 +43,10 @@ public struct AudioPlayerView: View {
         .animation(.easeInOut(duration: 0.15), value: audioPlayerVM.isClosed)
         .disabled(audioPlayerVM.isClosed)
         .onTapGesture {
-            if let message = audioPlayerVM.message, let time = message.time, let id = message.id {
-                threadVM?.historyVM.moveToTime(time, id)
+            Task {
+                if let message = audioPlayerVM.message, let time = message.time, let id = message.id {
+                    await threadVM?.historyVM.moveToTime(time, id)
+                }
             }
         }
         .simultaneousGesture(

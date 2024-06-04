@@ -9,10 +9,7 @@ import Chat
 import Combine
 import Foundation
 import SwiftUI
-import ChatDTO
 import TalkModels
-import ChatCore
-import ChatModels
 import TalkExtensions
 
 public final class ThreadDetailViewModel: ObservableObject, Hashable {
@@ -25,7 +22,7 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     }
 
     private(set) var cancelable: Set<AnyCancellable> = []
-    public weak var thread: Conversation?
+    public var thread: Conversation?
     public weak var threadVM: ThreadViewModel?
     @Published public var dismiss = false
     @Published public var isLoading = false
@@ -60,8 +57,6 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
             onDeleteThread(response)
         case .userRemoveFormThread(let response):
             onUserRemovedByAdmin(response)
-        case .updatedInfo(let response):
-            onUpdateThreadInfo(response)
         default:
             break
         }
@@ -71,7 +66,7 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         /// Update thread title inside the thread if we don't have any messages with the partner yet or it's p2p thread so the title of the thread is equal to contactName
         guard let thread = thread else { return }
         if thread.group == false || thread.id ?? 0 == LocalId.emptyThread.rawValue, let contactName = participantDetailViewModel?.participant.contactName {
-            thread.title = contactName
+            threadVM?.thread.title = contactName
 //            threadVM?.animateObjectWillChange()
         }
     }
@@ -132,17 +127,6 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if response.result == thread?.id {
             dismiss = true
-        }
-    }
-
-    private func onUpdateThreadInfo(_ response: ChatResponse<Conversation>) {
-        if let updated = response.result {
-            /// In the update thread info, the image property is nil and the metadata link is been filled by the server.
-            /// So to update the UI properly we have to set it to link.
-            if updated.image == nil, let metadatImagelink = updated.metaData?.file?.link {
-                thread?.image = metadatImagelink
-            }
-            animateObjectWillChange()
         }
     }
 

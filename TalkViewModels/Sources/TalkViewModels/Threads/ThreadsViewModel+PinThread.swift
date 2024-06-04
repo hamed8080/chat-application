@@ -7,8 +7,6 @@
 
 import Chat
 import Foundation
-import ChatModels
-import ChatCore
 
 protocol PinThreadProtocol {
     func togglePin(_ thread: Conversation)

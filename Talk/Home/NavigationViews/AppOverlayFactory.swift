@@ -9,8 +9,8 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkExtensions
-import ChatCore
 import TalkModels
+import Chat
 
 struct AppOverlayFactory: View {
     @EnvironmentObject var viewModel: AppOverlayViewModel

@@ -27,11 +27,11 @@ public final class CloseButtonView: UIButton {
         imageView?.contentMode = .scaleAspectFit
         tintColor = Color.App.iconSecondaryUIColor
         addTarget(self, action: #selector(onUnpinMessageTapped), for: .touchUpInside)
-
-        NSLayoutConstraint.activate([
-            widthAnchor.constraint(equalToConstant: 36),
-            heightAnchor.constraint(equalToConstant: 36),
-        ])
+//
+//        NSLayoutConstraint.activate([
+//            widthAnchor.constraint(equalToConstant: 36),
+//            heightAnchor.constraint(equalToConstant: 36),
+//        ])
     }
 
     @objc private func onUnpinMessageTapped(_ sender: UIButton) {

@@ -2,8 +2,8 @@ import Combine
 import Foundation
 import AVFoundation
 import OSLog
-import ChatModels
 import SwiftUI
+import Chat
 
 public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published public var isPlaying: Bool = false

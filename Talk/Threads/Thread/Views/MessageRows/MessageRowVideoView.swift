@@ -8,41 +8,33 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
 import TalkModels
+import Chat
 
 struct MessageRowVideoView: View {
     /// We have to use EnvironmentObject due to we need to update ui after the video has been uploaded so downloadVM now is not a nil value.
     @EnvironmentObject var viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
-        HStack(alignment: .top, spacing: viewModel.isDownloadCompleted ? 0 : 8) {
-            if !viewModel.calculatedMessage.isMe {
+        HStack(alignment: .top, spacing: viewModel.fileState.state == .completed ? 0 : 8) {
+            if !viewModel.calMessage.isMe {
                 button
             }
 
             playerContainerView
 
-            if viewModel.calculatedMessage.isMe {
+            if viewModel.calMessage.isMe {
                 button
             }
         }
-        .padding(viewModel.isDownloadCompleted ? 0 : 4)
-        .padding(.top, viewModel.isDownloadCompleted ? 0 : viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-        .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
-        .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
-        .task {
-            viewModel.uploadViewModel?.startUploadFile()
-            if viewModel.downloadFileVM?.isInCache == true {
-                viewModel.downloadFileVM?.state = .completed
-                viewModel.downloadFileVM?.animateObjectWillChange()
-            }
-        }
+        .padding(viewModel.fileState.state == .completed ? 0 : 4)
+        .padding(.top, viewModel.fileState.state == .completed ? 0 : viewModel.calMessage.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .animation(.easeInOut, value: viewModel.fileState.isUploading)
     }
 
     @ViewBuilder private var fileNameView: some View {
-        if let fileName = viewModel.calculatedMessage.fileName {
+        if let fileName = viewModel.calMessage.fileName {
             Text(fileName)
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
@@ -52,7 +44,7 @@ struct MessageRowVideoView: View {
     }
 
     @ViewBuilder private var fileTypeView: some View {
-        if let extName = viewModel.calculatedMessage.extName {
+        if let extName = viewModel.calMessage.extName {
             Text(extName)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
@@ -61,7 +53,7 @@ struct MessageRowVideoView: View {
     }
 
     @ViewBuilder private var fileSizeView: some View {
-        if let fileZize = viewModel.calculatedMessage.computedFileSize {
+        if let fileZize = viewModel.calMessage.computedFileSize {
             Text(fileZize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
@@ -81,8 +73,8 @@ struct MessageRowVideoView: View {
     }
 
     @ViewBuilder private var playerView: some View {
-        if viewModel.isDownloadCompleted, let fileURL = viewModel.downloadFileVM?.fileURL {
-            let mtd = viewModel.calculatedMessage.fileMetaData
+        if viewModel.fileState.state == .completed, let fileURL = viewModel.fileState.url {
+            let mtd = viewModel.calMessage.fileMetaData
             VideoPlayerView()
                 .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
                                                         ext: mtd?.file?.mimeType?.ext,
@@ -94,43 +86,24 @@ struct MessageRowVideoView: View {
 
     @ViewBuilder private var button: some View {
         ZStack {
-            if let downloadVM = viewModel.downloadFileVM, downloadVM.state != .completed {
+            if viewModel.fileState.state != .completed && !viewModel.fileState.isUploading {
                 DownloadButton() {
-                    onTapGesture()
+                    viewModel.onTap()
                 }
-                .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
-                .environmentObject(downloadVM)
             }
-            if let uploadVM = viewModel.uploadViewModel {
+
+            if viewModel.fileState.isUploading {
                 UploadButton()
-                    .environmentObject(uploadVM)
             }
         }
-        .frame(width: viewModel.isDownloadCompleted ? 0 : 46, height: viewModel.isDownloadCompleted ? 0 : 46) /// prevent the button lead to huge resize afetr upload completed.
-        .animation(.easeInOut, value: viewModel.isUploadCompleted)
-    }
-
-    private func onTapGesture() {
-        if viewModel.downloadFileVM?.state != .completed {
-            manageDownload()
-        }
-    }
-
-    private func manageDownload() {
-        guard let downloadVM = viewModel.downloadFileVM else { return }
-        if downloadVM.state == .paused {
-            downloadVM.resumeDownload()
-        } else if downloadVM.state == .downloading {
-            downloadVM.pauseDownload()
-        } else {
-            downloadVM.startDownload()
-        }
+        .frame(width: viewModel.fileState.state == .completed ? 0 : 46, height: viewModel.fileState.state == .completed ? 0 : 46) /// prevent the button lead to huge resize afetr upload completed.
+        .animation(.easeInOut, value: viewModel.fileState.isUploading)
     }
 }
 
 struct MessageRowVideoDownloader_Previews: PreviewProvider {
     static var previews: some View {
         MessageRowVideoView()
-            .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+            .environmentObject(MessageRowViewModel(message: Message(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

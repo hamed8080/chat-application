@@ -5,14 +5,14 @@
 //  Created by hamed on 3/13/23.
 //
 
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Chat
 
 struct ThreadSearchList: View {
     let threadVM: ThreadViewModel
-    @EnvironmentObject var viewModel: ThreadSearchMessagesViewModel
+    let viewModel: ThreadSearchMessagesViewModel
 
     var body: some View {
         if viewModel.isInSearchMode, viewModel.searchedMessages.count > 0 {
@@ -34,13 +34,13 @@ struct ThreadSearchList: View {
             .environment(\.layoutDirection, .leftToRight)
         } else if viewModel.isInSearchMode {
             ZStack {
-                if viewModel.isLoading {
-                    ListLoadingView(isLoading: $viewModel.isLoading)
-                        .id(UUID())
-                } else if viewModel.isInSearchMode {
-                    Text("General.nothingFound")
-                        .font(.iransansTitle)
-                }
+//                if viewModel.isLoading {
+//                    ListLoadingView(isLoading: $viewModel.isLoading)
+//                        .id(UUID())
+//                } else if viewModel.isInSearchMode {
+//                    Text("General.nothingFound")
+//                        .font(.iransansTitle)
+//                }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .background(Color.App.bgPrimary.ignoresSafeArea())

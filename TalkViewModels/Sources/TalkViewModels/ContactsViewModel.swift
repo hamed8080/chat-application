@@ -8,14 +8,10 @@
 import Chat
 import Combine
 import Foundation
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 import SwiftUI
 import Photos
 import TalkExtensions
-import ChatTransceiver
 
 public class ContactsViewModel: ObservableObject {
     public var selectedContacts: ContiguousArray<Contact> = []
@@ -57,7 +53,7 @@ public class ContactsViewModel: ObservableObject {
             .store(in: &canceableSet)
         }
         AppState.shared.$connectionStatus
-            .sink { status in
+            .sink { [weak self] status in
                 Task { @MainActor [weak self] in
                     guard let self = self else { return }
                     if firstSuccessResponse == false, status == .connected {
@@ -79,7 +75,7 @@ public class ContactsViewModel: ObservableObject {
         $searchContactString
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .filter { $0.count > 1 }
-            .sink { searchText in
+            .sink { [weak self] searchText in
                 Task { [weak self] in
                     await self?.searchContacts(searchText)
                 }
@@ -256,7 +252,7 @@ public class ContactsViewModel: ObservableObject {
     public func appendOrUpdateContact(_ contacts: [Contact]) {
         // Remove all contacts that were cached, to prevent duplication.
         contacts.forEach { contact in
-            if let oldContact = self.contacts.first(where: { $0.id == contact.id }) {
+            if var oldContact = self.contacts.first(where: { $0.id == contact.id }) {
                 oldContact.update(contact)
             } else {
                 self.contacts.append(contact)
@@ -362,8 +358,8 @@ public class ContactsViewModel: ObservableObject {
 
     @MainActor
     public func onBlockResponse(_ response: ChatResponse<BlockedContactResponse>) async {
-        if let result = response.result {
-            contacts.first(where: { $0.id == result.contact?.id })?.blocked = true
+        if let result = response.result, let index = contacts.firstIndex(where: { $0.id == result.contact?.id }) {
+            contacts[index].blocked = true
             blockedContacts.append(result)
             animateObjectWillChange()
         }
@@ -371,8 +367,8 @@ public class ContactsViewModel: ObservableObject {
 
     @MainActor
     public func onUNBlockResponse(_ response: ChatResponse<BlockedContactResponse>) async {
-        if let result = response.result {
-            contacts.first(where: { $0.id == result.contact?.id })?.blocked = false
+        if let result = response.result, let index = contacts.firstIndex(where: { $0.id == result.contact?.id }) {
+            contacts[index].blocked = false
             blockedContacts.removeAll(where: {$0.coreUserId == response.result?.coreUserId})
             animateObjectWillChange()
         }
@@ -400,20 +396,23 @@ public class ContactsViewModel: ObservableObject {
     }
 
     public func updateActiveThreadsContactName(contact: Contact) {
-        AppState.shared.objectsContainer.navVM.pathsTracking
+        let historyVMS = AppState.shared.objectsContainer.navVM.pathsTracking
             .compactMap{$0 as? ConversationNavigationValue}
             .compactMap{$0.viewModel}
             .compactMap{$0.historyVM}
-            .compactMap{$0.sections}
-            .flatMap{$0}
-            .compactMap{$0.vms}
-            .flatMap{$0}
-            .filter{$0.message.participant?.id == contact.id}
-            .forEach { viewModel in
-                viewModel.message.participant?.contactName = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
-                viewModel.message.participant?.name = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
-                viewModel.animateObjectWillChange()
+
+        Task { @MainActor in
+            for vm in historyVMS {
+                await vm.getSections()
+                    .compactMap{$0.vms}
+                    .flatMap({$0})
+                    .filter{$0.message.participant?.id == contact.id}
+                    .forEach { viewModel in
+                        viewModel.message.participant?.contactName = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
+                        viewModel.message.participant?.name = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
+                    }
             }
+        }
     }
 
     private func onUpdatePartnerContact(_ response: ChatResponse<Conversation>) {

@@ -5,14 +5,14 @@
 //  Created by hamed on 11/17/22.
 //
 
-import ChatModels
 import Foundation
 import TalkModels
+import Chat
 
 public extension Conversation {
     private static let talkId = 49383566
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
-    func updateValues(_ newThread: Conversation) {
+    mutating func updateValues(_ newThread: Conversation) {
         admin = newThread.admin ?? admin
         canEditInfo = newThread.canEditInfo ?? canEditInfo
         canSpam = newThread.canSpam
@@ -90,7 +90,7 @@ public extension Conversation {
     static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
 
     var titleRTLString: String {
-        return Message.textDirectionMark + computedTitle
+        return MessageHistoryStatics.textDirectionMark + computedTitle
     }
 
     var disableSend: Bool {
@@ -108,6 +108,3 @@ public extension Conversation {
         return inviter?.coreUserId == Conversation.talkId
     }
 }
-
-/// It needs to be ObservableObject because when a message is seen deleted... the object needs to update not the whole Thread ViewModel.
-extension Conversation: ObservableObject {}

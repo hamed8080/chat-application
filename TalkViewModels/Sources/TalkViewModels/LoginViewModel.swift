@@ -11,7 +11,6 @@ import UIKit
 import TalkModels
 import TalkExtensions
 import SwiftUI
-import Additive
 
 public final class LoginViewModel: ObservableObject {
     @Published public var isLoading = false

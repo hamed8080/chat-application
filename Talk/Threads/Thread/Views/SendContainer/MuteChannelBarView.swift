@@ -12,9 +12,9 @@ import TalkUI
 import Chat
 
 public final class MuteChannelBarView: UIButton {
-    var viewModel: ThreadViewModel
+    weak var viewModel: ThreadViewModel?
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
@@ -38,13 +38,14 @@ public final class MuteChannelBarView: UIButton {
     }
 
     public func set() {
-        isHidden = !viewModel.sendContainerViewModel.canShowMute
-        let isMute = viewModel.thread.mute == true
+        isHidden = !(viewModel?.sendContainerViewModel.canShowMute == true)
+        let isMute = viewModel?.thread.mute == true
         let title = isMute ? "Thread.unmute".localized() : "Thread.mute".localized()
         setTitle(title, for: .normal)
     }
 
     @objc private func muteTapped(_ sender: UIButton) {
+        guard let viewModel = viewModel else { return }
         viewModel.threadsViewModel?.toggleMute(viewModel.thread)
     }
 }

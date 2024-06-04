@@ -13,99 +13,133 @@ import TalkUI
 
 struct LogView: View {
     @EnvironmentObject var viewModel: LogViewModel
-    @State private var shareDownloadedFile = false
-    @State private var logFileURL: URL?
 
     var body: some View {
-        List(viewModel.filtered) {
-            LogRow(log: $0)
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
-        }
-        .animation(.easeInOut, value: viewModel.filtered.count)
-        .listStyle(.plain)        
-        .normalToolbarView(title: "Logs.title", type: LogNavigationValue.self, trailingView: trailingToolbars)
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer, prompt: "General.searchHere") {
-            if viewModel.searchText.isEmpty == false, viewModel.filtered.count < 1 {
-                HStack {
-                    Image(systemName: "doc.text.magnifyingglass")
-                        .foregroundColor(Color.App.textSecondary.opacity(0.8))
-                    Text("General.nothingFound")
-                        .foregroundColor(Color.App.textSecondary.opacity(0.8))
-                }
+        List {
+            loadingView
+            searchNotFound
+            ForEach(viewModel.filtered) {
+                LogRow(log: $0)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
             }
         }
-        .sheet(isPresented: $shareDownloadedFile) {
-            if let logFileURL {
+        .toolbar(.hidden)
+        .animation(.easeInOut, value: viewModel.filtered.count)
+        .listStyle(.plain)
+        .safeAreaInset(edge: .top) {
+            VStack {
+                HStack {
+                    trailingToolbars
+                    Spacer()
+                }
+                .padding(.leading, 4)
+                searchView
+            }
+            .padding(4)
+            .background(MixMaterialBackground(color: Color.App.bgToolbar).ignoresSafeArea())
+        }
+        .normalToolbarView(title: "Logs.title", type: LogNavigationValue.self, trailingView: EmptyView())
+        .sheet(isPresented: $viewModel.shareDownloadedFile) {
+            if let logFileURL = viewModel.logFileURL {
                 ActivityViewControllerWrapper(activityItems: [logFileURL], title: logFileURL.lastPathComponent)
             }
         }
     }
 
-    @ViewBuilder var trailingToolbars: some View {
-        Button {
-            viewModel.deleteLogs()
-        } label: {
-            Label {
-                Text("General.delete")
-            } icon: {
-                Image(systemName: "trash")
+    @ViewBuilder
+    private var searchView: some View {
+        TextField("General.searchHere".bundleLocalized(), text: $viewModel.searchText)
+            .keyboardType(.default)
+            .padding(4)
+            .applyAppTextfieldStyle(topPlaceholder: "", innerBGColor: Color.App.bgSendInput, minHeight: 42, isFocused: true) {
+
+            }
+            .noSeparators()
+            .listRowBackground(Color.App.bgSecondary)
+    }
+
+    @ViewBuilder
+    private var searchNotFound: some View {
+        if viewModel.searchText.isEmpty == false, viewModel.filtered.count < 1 {
+            HStack {
+                Image(systemName: "doc.text.magnifyingglass")
+                    .foregroundColor(Color.App.textSecondary.opacity(0.8))
+                Text("General.nothingFound")
+                    .foregroundColor(Color.App.textSecondary.opacity(0.8))
             }
         }
+    }
 
+    @ViewBuilder
+    private var loadingView: some View {
+        if viewModel.isFiltering {
+            ListLoadingView(isLoading: .constant(viewModel.isFiltering))
+                .id(-1)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
+                .padding([.top, .bottom])
+                .padding([.top, .bottom], viewModel.isFiltering ? 8 : 0)
+                .animation(.easeInOut, value: viewModel.isFiltering)
+        }
+    }
+
+    @ViewBuilder var trailingToolbars: some View {
+        HStack {
+            trashButton
+            saveButton
+            Menu {
+                Button {
+                    viewModel.type = nil
+                } label: {
+                    if viewModel.type == nil {
+                        Image(systemName: "checkmark")
+                    }
+                    Text("General.all")
+                }
+                ForEach(LogEmitter.allCases) { item in
+                    Button {
+                        viewModel.type = item
+                    } label: {
+                        if viewModel.type == item {
+                            Image(systemName: "checkmark")
+                        }
+                        Text(item.title)
+                    }
+                }
+            } label: {
+                Label("", systemImage: "line.3.horizontal.decrease.circle")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var saveButton: some View {
         Button {
             Task {
-                let name = Date().getDate()
-                let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("\(name).txt")
-                let url = tmp
-                let logMessages = viewModel.logs.compactMap{ log in
-                    var message = "==================================\n"
-                    message += "Type: \(String(describing: log.type ?? .internalLog).uppercased())\n"
-                    message += "Level: \(String(describing: log.level ?? .verbose).uppercased())\n"
-                    message += "Prefix: \(log.prefix ?? "")\n"
-                    message += "UserInfo: \(log.userInfo ?? [:])\n"
-                    message += "DateTime: \(LogRow.formatter.string(from: log.time ?? .now))\n"
-                    message += "\(log.message ?? "")\n"
-                    message += "==================================\n"
-                    return message
-                }
-                let string = logMessages.joined(separator: "\n")
-                try? string.write(to: url, atomically: true, encoding: .utf8)
-                await MainActor.run {
-                    self.logFileURL = url
-                    shareDownloadedFile.toggle()
-                }
+                await viewModel.startExporting()
             }
         } label: {
             Label {
-                Text("General.save")
+                Text("Thread.export".bundleLocalized())
             } icon: {
                 Image(systemName: "square.and.arrow.up")
             }
         }
+    }
 
-        Menu {
-            Button {
-                viewModel.type = nil
-            } label: {
-                if viewModel.type == nil {
-                    Image(systemName: "checkmark")
-                }
-                Text("General.all")
-            }
-            ForEach(LogEmitter.allCases) { item in
-                Button {
-                    viewModel.type = item
-                } label: {
-                    if viewModel.type == item {
-                        Image(systemName: "checkmark")
-                    }
-                    Text(item.title)
-                }
-            }
+    @ViewBuilder
+    private var trashButton: some View {
+        Button {
+            viewModel.deleteLogs()
         } label: {
-            Label("", systemImage: "line.3.horizontal.decrease.circle")
+            Label {
+                Text("General.delete".bundleLocalized())
+            } icon: {
+                Image(systemName: "trash")
+            }
         }
     }
 }

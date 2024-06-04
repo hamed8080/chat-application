@@ -38,13 +38,12 @@ public final class EmptyThreadView: UIView {
         vStack.addSubview(effectView)
 
         let label = UILabel()
-        label.text = "Thread.noMessage".localized()
         label.textColor = Color.App.textPrimaryUIColor
         label.numberOfLines = 2
         label.textAlignment = .center
         label.font = UIFont.uiiransansSubtitle
 
-        let image = UIImageView(image: UIImage(systemName: "text.bubble"))
+        let image = UIImageView(image: nil)
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFit
         image.tintColor = Color.App.accentUIColor
@@ -65,6 +64,18 @@ public final class EmptyThreadView: UIView {
             image.widthAnchor.constraint(equalToConstant: 36),
             image.heightAnchor.constraint(equalToConstant: 36)
         ])
+        prepareIU(image, label)
+    }
+
+    private func prepareIU(_ imageView: UIImageView, _ label: UILabel) {
+        Task {
+            let image = UIImage(systemName: "text.bubble")
+            let text = "Thread.noMessage".localized()
+            await MainActor.run {
+                label.text = text
+                imageView.image = image
+            }
+        }
     }
 }
 

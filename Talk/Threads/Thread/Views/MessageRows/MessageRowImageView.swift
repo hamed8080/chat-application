@@ -8,53 +8,46 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
-import ChatModels
 import TalkModels
 import Chat
 
 struct MessageRowImageView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
+    private var message: any HistoryMessageProtocol { viewModel.message }
 
     var body: some View {
         ZStack {
-            if showImage {
-                Image(uiImage: viewModel.calculatedMessage.image)
-                    .interpolation(.none)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: viewModel.sizes.imageWidth, maxHeight: viewModel.sizes.imageHeight)
-                    .clipped()
-                    .zIndex(0)
-                    .background(gradient)
-                    .blur(radius: viewModel.sizes.blurRadius ?? 0, opaque: false)
-                    .clipShape(RoundedRectangle(cornerRadius:(8)))
-                    .onTapGesture {
-                        viewModel.onTap()
-                    }
-                if let downloadVM = viewModel.downloadFileVM, downloadVM.state != .completed {
-                    OverlayDownloadImageButton(message: message)
-                        .environmentObject(downloadVM)
+            Image(uiImage: viewModel.fileState.image ?? DownloadFileManager.emptyImage)
+                .interpolation(.none)
+                .resizable()
+                .scaledToFit()
+                .frame(width: viewModel.calMessage.sizes.imageWidth, height: viewModel.calMessage.sizes.imageHeight)
+                .clipped()
+                .zIndex(0)
+                .background(MessageRowImageView.emptyImageGradient)
+                .blur(radius: viewModel.fileState.blurRadius, opaque: false)
+                .clipShape(RoundedRectangle(cornerRadius:(8)))
+                .onTapGesture {
+                    viewModel.onTap()
                 }
-            }
+            let showDownload = viewModel.fileState.showDownload
+            OverlayDownloadImageButton()
+                .frame(width: showDownload ? nil : 0, height: showDownload ? nil : 0)
+                .clipped()
+                .disabled(!showDownload)
+                .animation(.easeInOut, value: showDownload)
 
-            if showUpload {
-                UploadMessageImageView(viewModel: viewModel)
+            if viewModel.fileState.isUploading {
+                OverlayUploadImageButton()
             }
         }
-        .padding(.top, viewModel.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .padding(.top, viewModel.calMessage.sizes.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         .clipped()
+        .onAppear {
+            viewModel.prepareForTumbnailIfNeeded()
+        }
     }
 
-    private var showImage: Bool {
-        (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.state.isPreparingThumbnailImageForUploadedImage
-    }
-
-    private var showUpload: Bool {
-        message.uploadFile?.uploadImageRequest != nil || viewModel.state.isPreparingThumbnailImageForUploadedImage
-    }
-
-    private static let clearGradient = LinearGradient(colors: [.clear], startPoint: .top, endPoint: .bottom)
     private static let emptyImageGradient = LinearGradient(
         colors: [
             Color.App.bgPrimary.opacity(0.2),
@@ -66,32 +59,15 @@ struct MessageRowImageView: View {
         startPoint: .top,
         endPoint: .bottom
     )
-
-    private var gradient: LinearGradient {
-        let clearState = viewModel.downloadFileVM?.state == .completed || viewModel.downloadFileVM?.state == .thumbnail
-        return clearState ? MessageRowImageView.clearGradient : MessageRowImageView.emptyImageGradient
-    }
 }
 
-struct OverlayDownloadImageButton: View {
-    @EnvironmentObject var viewModel: DownloadFileViewModel
-    @EnvironmentObject var messageRowVM: MessageRowViewModel
-    let message: Message?
-    private var percent: Int64 { viewModel.downloadPercent }
-    private var stateIcon: String {
-        if viewModel.state == .downloading {
-            return "pause"
-        } else if viewModel.state == .paused {
-            return "play.fill"
-        } else {
-            return "arrow.down"
-        }
-    }
+fileprivate struct OverlayDownloadImageButton: View {
+    @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.state != .completed {
+        if viewModel.fileState.state != .completed {
             Button {
-                manageDownload()
+                viewModel.onTap()
             } label: {
                 HStack {
                     ZStack {
@@ -109,100 +85,50 @@ struct OverlayDownloadImageButton: View {
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
-            .animation(.easeInOut, value: stateIcon)
-            .animation(.easeInOut, value: percent)
+            .animation(.easeInOut, value: viewModel.fileState.iconState)
+            .animation(.easeInOut, value: viewModel.fileState.progress)
             .buttonStyle(.borderless)
         }
     }
 
     private var iconView: some View {
-        Image(systemName: stateIcon)
+        Image(systemName: viewModel.fileState.iconState)
             .interpolation(.none)
             .resizable()
             .scaledToFit()
             .font(.system(size: 14, design: .rounded))
-            .fontWeight(viewModel.state == .downloading ? .semibold : .regular)
+            .fontWeight(viewModel.fileState.state == .downloading ? .semibold : .regular)
             .frame(width: 14, height: 14)
             .foregroundStyle(Color.App.textPrimary)
     }
 
     private var progress: some View {
         Circle()
-            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+            .trim(from: 0.0, to: viewModel.fileState.progress)
             .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
             .foregroundColor(Color.App.white)
             .rotationEffect(Angle(degrees: 270))
             .frame(width: 34, height: 34)
-            .rotateAnimtion(pause: viewModel.state == .paused)
+            .rotateAnimtion(pause: viewModel.fileState.state == .paused)
     }
 
     @ViewBuilder private var sizeView: some View {
-        if let fileSize = messageRowVM.calculatedMessage.computedFileSize {
+        if let fileSize = viewModel.calMessage.computedFileSize {
             Text(fileSize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption2)
                 .foregroundColor(Color.App.textPrimary)
         }
     }
-
-    private func manageDownload() {
-        if viewModel.state == .paused {
-            viewModel.resumeDownload()
-        } else if viewModel.state == .downloading {
-            viewModel.pauseDownload()
-        } else {
-            viewModel.startDownload()
-        }
-    }
 }
 
-public struct UploadMessageImageView: View {
-    let viewModel: MessageRowViewModel
-    var message: Message { viewModel.message }
-
-    public var body: some View {
-        ZStack {
-            if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let image = UIImage(data: data) {
-                Image(uiImage: image)
-                    .interpolation(.none)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: viewModel.sizes.imageWidth, height: viewModel.sizes.imageHeight)
-                    .blur(radius: 16, opaque: false)
-                    .clipped()
-                    .zIndex(0)
-                    .clipShape(RoundedRectangle(cornerRadius:(8)))
-            }
-            if let uploadViewModel = viewModel.uploadViewModel {
-                OverladUploadImageButton(messageRowVM: viewModel)
-                    .environmentObject(uploadViewModel)
-            }
-        }
-        .task {
-            viewModel.uploadViewModel?.startUploadImage()
-        }
-    }
-}
-
-struct OverladUploadImageButton: View {
-    let messageRowVM: MessageRowViewModel
-    @EnvironmentObject var viewModel: UploadFileViewModel
-    var message: Message { messageRowVM.message }
-    var percent: Int64 { viewModel.uploadPercent }
-    var stateIcon: String {
-        if viewModel.state == .uploading {
-            return "xmark"
-        } else if viewModel.state == .paused {
-            return "play.fill"
-        } else {
-            return "arrow.up"
-        }
-    }
+fileprivate struct OverlayUploadImageButton: View {
+    @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.state != .completed {
+        if viewModel.fileState.state != .completed {
             Button {
-                manageUpload()
+                viewModel.cancelUpload()
             } label: {
                 HStack {
                     ZStack {
@@ -220,14 +146,14 @@ struct OverladUploadImageButton: View {
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
-            .animation(.easeInOut, value: stateIcon)
-            .animation(.easeInOut, value: percent)
+            .animation(.easeInOut, value: viewModel.fileState.iconState)
+            .animation(.easeInOut, value: viewModel.fileState.progress)
             .buttonStyle(.borderless)
         }
     }
 
     private var iconView: some View {
-        Image(systemName: stateIcon)
+        Image(systemName: viewModel.fileState.iconState)
             .interpolation(.none)
             .resizable()
             .scaledToFit()
@@ -238,17 +164,17 @@ struct OverladUploadImageButton: View {
 
     private var progress: some View {
         Circle()
-            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+            .trim(from: 0.0, to: viewModel.fileState.progress)
             .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
             .foregroundColor(Color.App.white)
             .rotationEffect(Angle(degrees: 270))
             .frame(width: 34, height: 34)
-            .rotateAnimtion(pause: viewModel.state == .paused)
+            .rotateAnimtion(pause: viewModel.fileState.state == .paused)
     }
 
     @ViewBuilder private var sizeView: some View {
-        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-        let realServerFileSize = messageRowVM.calculatedMessage.fileMetaData?.file?.size
+        let uploadFileSize: Int64 = Int64((viewModel.message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+        let realServerFileSize = viewModel.calMessage.fileMetaData?.file?.size
         if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
             Text(fileSize)
                 .multilineTextAlignment(.leading)
@@ -256,19 +182,11 @@ struct OverladUploadImageButton: View {
                 .foregroundColor(Color.App.textPrimary)
         }
     }
-    
-    private func manageUpload() {
-        if viewModel.state == .paused {
-            viewModel.resumeUpload()
-        } else if viewModel.state == .uploading {
-            viewModel.cancelUpload()
-        }
-    }
 }
 
 struct MessageRowImageDownloader_Previews: PreviewProvider {
     static var previews: some View {
         MessageRowImageView()
-            .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+            .environmentObject(MessageRowViewModel(message: Message(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

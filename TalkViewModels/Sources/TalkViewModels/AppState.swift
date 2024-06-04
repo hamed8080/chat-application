@@ -8,11 +8,8 @@
 import Chat
 import SwiftUI
 import TalkModels
-import ChatModels
 import TalkExtensions
-import ChatCore
 import Combine
-import ChatDTO
 
 /// Properties that can transfer between each navigation page and stay alive unless manually destroyed.
 public struct AppStateNavigationModel {
@@ -28,9 +25,8 @@ public struct AppStateNavigationModel {
 
 public final class AppState: ObservableObject {
     public static let shared = AppState()
-    public var mockUser: User?
     private var cachedUser: User? { UserConfigManagerVM.instance.currentUserConfig?.user }
-    public var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo ?? mockUser }
+    public var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo }
     @Published public var error: ChatError?
     @Published public var isLoading: Bool = false
     @Published public var callLogs: [URL]?
@@ -92,12 +88,6 @@ private extension AppState {
                 self?.onThreadEvent(value)
             }
             .store(in: &cancelable)
-        NotificationCenter.participant.publisher(for: .participant)
-            .compactMap { $0.object as? ParticipantEventTypes }
-            .sink { [weak self] event in
-                self?.onParticipantsEvents(event)
-            }
-            .store(in: &cancelable)
         UIApplication.shared.connectedScenes.first(where: {$0.activationState == .foregroundActive}).publisher.sink { [weak self] newValue in
             self?.updateWindowMode()
         }
@@ -115,15 +105,6 @@ private extension AppState {
             onDeleted(response)
         case .left(let response):
             onLeft(response)
-        default:
-            break
-        }
-    }
-
-    private func onParticipantsEvents(_ event: ParticipantEventTypes) {
-        switch event {
-        case .add(let response):
-            onAddParticipants(response)
         default:
             break
         }
@@ -149,8 +130,6 @@ public extension AppState {
         let myId = AppState.shared.user?.id
         let threadsVM = AppState.shared.objectsContainer.threadsVM
         let conversation = threadsVM.threads.first(where: {$0.id == response.subjectId})
-        let threadVM = objectsContainer.navVM.viewModel(for: conversation?.id ?? -1)
-        let participant = threadVM?.participantsViewModel.participants.first(where: {$0.id == deletedUserId})
 
         if deletedUserId == myId {
             if let conversation = conversation {
@@ -167,13 +146,6 @@ public extension AppState {
                 objectsContainer.navVM.popLastPath()
                 objectsContainer.navVM.popPathTrackingAt(at: index)
             }
-        } else {
-            if let participant = participant {
-                threadVM?.participantsViewModel.removeParticipant(participant)
-            }
-            conversation?.participantCount = (conversation?.participantCount ?? 0) - 1
-            threadVM?.thread.participantCount = conversation?.participantCount
-//            threadVM?.animateObjectWillChange()
         }
     }
 
@@ -321,20 +293,6 @@ public extension AppState {
         searchForGroupThread(threadId: conversationId, moveToMessageId: messageId, moveToMessageTime: messageTime)
     }
 }
-
-// Participant
-public extension AppState {
-    private func onAddParticipants(_ response: ChatResponse<Conversation>) {
-        let addedParticipants = response.result?.participants ?? []
-        let threadsVM = AppState.shared.objectsContainer.threadsVM
-        let conversation = threadsVM.threads.first(where: {$0.id == response.result?.id})
-        let threadVM = objectsContainer.navVM.viewModel(for: conversation?.id ?? -1)
-        conversation?.participantCount = response.result?.participantCount ?? (conversation?.participantCount ?? 0) + addedParticipants.count
-        threadVM?.participantsViewModel.onAdded(addedParticipants)
-//        threadVM?.animateObjectWillChange()
-    }
-}
-
 
 public extension AppState {
     func openURL(url: URL) {

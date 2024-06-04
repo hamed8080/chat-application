@@ -30,6 +30,8 @@ public final class AttachmentFileCell: UITableViewCell {
     }
 
     private func configureView() {
+        contentView.backgroundColor = .clear
+        backgroundColor = .clear
         hStack.translatesAutoresizingMaskIntoConstraints = false
         imgIcon.translatesAutoresizingMaskIntoConstraints = false
         btnRemove.translatesAutoresizingMaskIntoConstraints = false
@@ -37,13 +39,13 @@ public final class AttachmentFileCell: UITableViewCell {
         hStack.axis = .horizontal
         hStack.spacing = 8
         hStack.alignment = .center
-        hStack.layoutMargins = .init(horizontal: 16, vertical: 8)
+        hStack.layoutMargins = .init(horizontal: 16, vertical: 4)
         hStack.isLayoutMarginsRelativeArrangement = true
 
         lblTitle.font = UIFont.uiiransansBoldBody
         lblTitle.textColor = Color.App.textPrimaryUIColor
 
-        lblSubtitle.font = UIFont.uiiransansCaption2
+        lblSubtitle.font = UIFont.uiiransansCaption3
         lblSubtitle.textColor = Color.App.textSecondaryUIColor
 
         let image = UIImage(systemName: "xmark")
@@ -57,7 +59,7 @@ public final class AttachmentFileCell: UITableViewCell {
 
         let vStack = UIStackView()
         vStack.axis = .vertical
-        vStack.spacing = 0
+        vStack.spacing = 2
 
         vStack.addArrangedSubview(lblTitle)
         vStack.addArrangedSubview(lblSubtitle)
@@ -69,17 +71,18 @@ public final class AttachmentFileCell: UITableViewCell {
         contentView.addSubview(hStack)
 
         NSLayoutConstraint.activate([
-            hStack.heightAnchor.constraint(equalToConstant: 46),
-            imgIcon.widthAnchor.constraint(equalToConstant: 36),
-            imgIcon.heightAnchor.constraint(equalToConstant: 36),
+            hStack.heightAnchor.constraint(equalToConstant: 48),
+            imgIcon.widthAnchor.constraint(equalToConstant: 32),
+            imgIcon.heightAnchor.constraint(equalToConstant: 32),
             imgIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             btnRemove.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            btnRemove.widthAnchor.constraint(equalToConstant: 36),
-            btnRemove.heightAnchor.constraint(equalToConstant: 36),
+            btnRemove.widthAnchor.constraint(equalToConstant: 28),
+            btnRemove.heightAnchor.constraint(equalToConstant: 28),
         ])
     }
 
     public func set(attachment: AttachmentFile) {
+        self.attachment = attachment
         lblTitle.text = attachment.title
         lblSubtitle.text = attachment.title
         let imageItem = attachment.request as? ImageItem
@@ -97,6 +100,5 @@ public final class AttachmentFileCell: UITableViewCell {
 
     @objc private func removeTapped(_ sender: UIButton) {
         viewModel.attachmentsViewModel.remove(attachment)
-//        viewModel.animateObjectWillChange() /// Send button to appear
     }
 }

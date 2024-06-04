@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import ChatDTO
 import TalkModels
+import Chat
 
 public extension LocationMessageRequest {
     init(item: LocationItem, model: SendMessageModel) {

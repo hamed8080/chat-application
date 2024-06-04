@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import ChatModels
 import SwiftUI
+import Chat
 
 public extension AssistantActionTypes {
     var imageIconName: String? {

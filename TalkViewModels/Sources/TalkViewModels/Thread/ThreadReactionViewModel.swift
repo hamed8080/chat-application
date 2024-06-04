@@ -7,12 +7,9 @@
 
 import Chat
 import Foundation
-import ChatModels
 import Combine
-import ChatCore
-import ChatDTO
 
-public final class ThreadReactionViewModel: ObservableObject {
+public final class ThreadReactionViewModel {
     private var cancelable: Set<AnyCancellable> = []
     private var inMemoryReactions: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
     weak var threadVM: ThreadViewModel?
@@ -31,7 +28,7 @@ public final class ThreadReactionViewModel: ObservableObject {
     private func registerObservers() {
         NotificationCenter.reaction.publisher(for: .reaction)
             .compactMap { $0.object as? ReactionEventTypes }
-            .sink { reactionEvent in
+            .sink { [weak self] reactionEvent in
                 Task { [weak self] in
                     await self?.onReactionEvent(reactionEvent)
                 }
@@ -113,6 +110,7 @@ public final class ThreadReactionViewModel: ObservableObject {
         clearReactionsOnReconnect()
     }
 
+    @HistoryActor
     internal func fetchReactions(messages: [Message]) {
         if threadVM?.searchedMessagesViewModel.isInSearchMode == false {
             let messageIds = messages.filter({$0.id ?? -1 > 0}).filter({$0.reactionableType}).compactMap({$0.id})
@@ -121,40 +119,44 @@ public final class ThreadReactionViewModel: ObservableObject {
         }
     }
 
+    @HistoryActor
     internal func updateReactions(reactions: [ReactionInMemoryCopy]) async {
         // We have to check if the response count is greater than zero because there is a chance to get reactions of zero count.
         // And we need to remove older reactions if any of them were removed.
         guard let historyVM = threadVM?.historyVM, reactions.count > 0 else { return }
         for copy in reactions {
             inQueueToGetReactions.removeAll(where: {$0 == copy.messageId})
-            if let vm = historyVM.messageViewModel(for: copy.messageId) {
+            if let vm = historyVM.sections.messageViewModel(for: copy.messageId) {
                 await vm.setReaction(reactions: copy)
-                vm.animateObjectWillChange()
             }
         }
 
         /// All things inisde the qeueu are old data and there will be a chance the reaction row has been removed.
         for id in inQueueToGetReactions {
-            if let vm = historyVM.messageViewModel(for: id) {
-                vm.clearReactions()
-                vm.animateObjectWillChange()
+            if let vm = historyVM.sections.messageViewModel(for: id) {
+                await vm.clearReactions()
             }
         }
         inQueueToGetReactions.removeAll()
     }
 
     internal func clearReactionsOnReconnect() {
-        threadVM?.historyVM.sections.forEach { section in
-            section.vms.forEach { vm in
-                vm.invalid()
+        Task { [weak self] in
+            await self?.threadVM?.historyVM.getSections().forEach { section in
+                section.vms.forEach { vm in
+                    vm.invalid()
+                }
             }
+            await self?.fetchVisibleReactionsOnReconnect()
         }
-        fetchVisibleReactionsOnReconnect()
     }
 
-    internal func fetchVisibleReactionsOnReconnect() {
-        let visibleMessages = threadVM?.historyVM.getInvalidVisibleMessages() ?? []
-        fetchReactions(messages: visibleMessages)
+    internal func fetchVisibleReactionsOnReconnect() async {
+        let visibleMessages = await (threadVM?.historyVM.getInvalidVisibleMessages() ?? []).compactMap({$0 as? Message})
+        await fetchReactions(messages: visibleMessages)
     }
 
+    deinit {
+        print("deinit ThreadReactionViewModel")
+    }
 }

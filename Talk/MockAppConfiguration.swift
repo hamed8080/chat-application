@@ -36,21 +36,21 @@ class MockAppConfiguration: ChatDelegate {
     static let isMeId = 1
 
     private init () {
-        AppState.shared.mockUser = .init(cellphoneNumber: nil,
-                                           coreUserId: nil,
-                                           email: nil,
-                                           id: MockAppConfiguration.isMeId,
-                                           image: nil,
-                                           lastSeen: nil,
-                                           name: "MySelf",
-                                           nickname: nil,
-                                           receiveEnable: nil,
-                                           sendEnable: nil,
-                                           username: nil,
-                                           ssoId: nil,
-                                           firstName: nil,
-                                           lastName: nil,
-                                           profile: nil)
+//        AppState.shared.mockUser = .init(cellphoneNumber: nil,
+//                                           coreUserId: nil,
+//                                           email: nil,
+//                                           id: MockAppConfiguration.isMeId,
+//                                           image: nil,
+//                                           lastSeen: nil,
+//                                           name: "MySelf",
+//                                           nickname: nil,
+//                                           receiveEnable: nil,
+//                                           sendEnable: nil,
+//                                           username: nil,
+//                                           ssoId: nil,
+//                                           firstName: nil,
+//                                           lastName: nil,
+//                                           profile: nil)
         AppState.shared.objectsContainer = .init(delegate: self)
         AppState.shared.objectsContainer.audioPlayerVM = .init()
         conversationVM = ThreadViewModel(thread: conversation, threadsViewModel: AppState.shared.objectsContainer.threadsVM)
@@ -99,7 +99,7 @@ In this new line we are going to test if it can break the line.
                     name: "John Doe")
             )
             let vm = makeViewModel(message: message)
-            vm.calculatedMessage.isLastMessageOfTheUser = false
+            vm.calMessage.isLastMessageOfTheUser = false
             return vm
         }()
 
@@ -160,7 +160,7 @@ In this new line we are going to test if it can break the line.
         )
 
         forwardInfo = ForwardInfo(
-            conversation: .init(id: 2, title: "Forwarded thread title"),
+            conversation: ForwardInfoConversation(id: 1, title: "Forwarded thread title"),
             participant: .init(name: "Apple Seed")
         )
 

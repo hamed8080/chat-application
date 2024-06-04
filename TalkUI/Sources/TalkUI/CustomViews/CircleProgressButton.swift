@@ -10,17 +10,17 @@ import UIKit
 import SwiftUI
 
 public final class CircleProgressButton: UIButton {
-    private var color: UIColor?
+    private var progressColor: UIColor?
     private var bgColor: UIColor?
     private var shapeLayer = CAShapeLayer()
     private let imgCenter = UIImageView()
     private var iconTint: UIColor?
     private var animation = CABasicAnimation(keyPath: "strokeEnd")
 
-    public init(color: UIColor? = .darkText, iconTint: UIColor? = Color.App.textPrimaryUIColor, bgColor: UIColor? = .white.withAlphaComponent(0.3)) {
+    public init(progressColor: UIColor? = .darkText, iconTint: UIColor? = Color.App.textPrimaryUIColor, bgColor: UIColor? = .white.withAlphaComponent(0.3)) {
         super.init(frame: .zero)
         self.bgColor = bgColor
-        self.color = color
+        self.progressColor = progressColor
         self.iconTint = iconTint
         configureView()
     }
@@ -46,9 +46,6 @@ public final class CircleProgressButton: UIButton {
     public override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.width / 2
-    }
-
-    public override func draw(_ rect: CGRect) {
         drawProgress()
     }
 
@@ -62,17 +59,10 @@ public final class CircleProgressButton: UIButton {
                                 clockwise: true)
 
         shapeLayer.fillColor = UIColor.clear.cgColor
-        shapeLayer.strokeColor = color?.cgColor
+        shapeLayer.strokeColor = progressColor?.cgColor
         shapeLayer.path = path.cgPath
         shapeLayer.lineCap = .round
         shapeLayer.lineWidth = 3
-
-        animation.duration = 3
-        animation.fillMode = CAMediaTimingFillMode.forwards
-        animation.isRemovedOnCompletion = false
-        animation.fromValue = 0.0
-        shapeLayer.add(animation, forKey: "randomString")
-
         layer.addSublayer(shapeLayer)
     }
 
@@ -81,10 +71,14 @@ public final class CircleProgressButton: UIButton {
         let config = UIImage.SymbolConfiguration(font: font)
         imgCenter.image = UIImage(systemName: systemIconName, withConfiguration: config)
         animation.toValue = progress
+        animation.duration = 0.3
+        animation.fillMode = CAMediaTimingFillMode.forwards
+        animation.isRemovedOnCompletion = false
+        shapeLayer.strokeEnd = progress
+        shapeLayer.add(animation, forKey: "strokeEndAnimation")
     }
 
-    public func removeProgress() {
-        shapeLayer.removeAllAnimations()
-        shapeLayer.removeFromSuperlayer()
+    public func setProgressVisibility(visible: Bool) {
+        shapeLayer.isHidden = !visible
     }
 }

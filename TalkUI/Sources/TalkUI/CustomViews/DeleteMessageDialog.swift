@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ChatModels
 import TalkViewModels
 
 public struct DeleteMessageDialog: View {

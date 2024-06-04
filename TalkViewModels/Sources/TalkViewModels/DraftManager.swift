@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import ChatModels
+import Chat
 
 public class DraftManager {
     private let contactKey = "contact-draft-"

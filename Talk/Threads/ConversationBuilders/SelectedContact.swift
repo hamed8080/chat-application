@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
-import ChatModels
 import TalkViewModels
 import TalkUI
+import Chat
 
 struct SelectedContact: View {
     let viewModel: ContactsViewModel

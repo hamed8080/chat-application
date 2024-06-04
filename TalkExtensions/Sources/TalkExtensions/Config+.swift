@@ -3,7 +3,6 @@ import Foundation
 import Logger
 import Chat
 import Async
-import ChatCore
 
 public extension Config {
     static func getConfig(_ server: ServerTypes = .integration) -> Config? {

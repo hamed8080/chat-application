@@ -7,14 +7,13 @@
 
 import AdditiveUI
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
 
 struct ContactRow: View {
+    let contact: Contact
     @Binding public var isInSelectionMode: Bool
-    @EnvironmentObject var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
     private var searchVM: ThreadsSearchViewModel { AppState.shared.objectsContainer.searchVM }
 
@@ -105,8 +104,7 @@ struct ContactRow_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ContactRow(isInSelectionMode: $isInSelectionMode)
-                .environmentObject(MockData.contact)
+            ContactRow(contact: MockData.contact, isInSelectionMode: $isInSelectionMode)
                 .environmentObject(ContactsViewModel())
                 .preferredColorScheme(.dark)
         }

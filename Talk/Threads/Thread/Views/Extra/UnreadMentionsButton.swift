@@ -11,11 +11,10 @@ import TalkModels
 import TalkUI
 
 public final class UnreadMenitonsButton: UIButton {
-    public let viewModel: ThreadViewModel
-    private let lblAtSing = UILabel()
+    public weak var viewModel: ThreadViewModel?
     private let lblUnreadMentionsCount = PaddingUILabel(frame: .zero, horizontal: 4, vertical: 4)
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureView()
@@ -28,6 +27,7 @@ public final class UnreadMenitonsButton: UIButton {
 
     private func configureView() {
         layer.backgroundColor = Color.App.bgPrimaryUIColor?.cgColor
+        backgroundColor = Color.App.bgPrimaryUIColor
         layer.cornerRadius = 20
         layer.shadowRadius = 5
         layer.shadowColor = Color.App.accentUIColor?.cgColor
@@ -35,6 +35,8 @@ public final class UnreadMenitonsButton: UIButton {
         layer.masksToBounds = false
         layer.shadowOffset = .init(width: 0.0, height: 1.0)
 
+        let lblAtSing = UILabel()
+        lblAtSing.translatesAutoresizingMaskIntoConstraints = false
         lblAtSing.text = "@"
         lblAtSing.textColor = Color.App.accentUIColor
         addSubview(lblAtSing)
@@ -61,26 +63,18 @@ public final class UnreadMenitonsButton: UIButton {
     }
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {
-        viewModel.moveToFirstUnreadMessage()
+        Task {
+            await viewModel?.moveToFirstUnreadMessage()
+        }
     }
 
     public func onChangeUnreadMentions() {
-        let hasMention = viewModel.thread.mentioned ?? false
+        guard let viewModel = viewModel?.unreadMentionsViewModel else { return }
+        let hasMention = viewModel.hasMention
         isHidden = !hasMention
-        lblUnreadMentionsCount.text = "\(viewModel.unreadMentionsViewModel.unreadMentions.count)"
-    }
-}
-
-struct UnreadMenitonsButton_Previews: PreviewProvider {
-    static var vm = ThreadViewModel(thread: .init(id: 1))
-
-    struct UnreadMenitonsButtonWrapper: UIViewRepresentable {
-        let viewModel: ThreadViewModel
-        func makeUIView(context: Context) -> some UIView { UnreadMenitonsButton(viewModel: viewModel) }
-        func updateUIView(_ uiView: UIViewType, context: Context) {}
-    }
-
-    static var previews: some View {
-        UnreadMenitonsButtonWrapper(viewModel: vm)
+        lblUnreadMentionsCount.text = "\(viewModel.unreadMentions.count)"
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
     }
 }

@@ -11,6 +11,7 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelDelegate {
     private let bar = UIView()
@@ -18,16 +19,16 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
     private let imageView = UIImageView(frame: .zero)
     private let textButton = UIButton(type: .system)
     private let unpinButton = UIButton(type: .system)
-    private let viewModel: ThreadPinMessageViewModel!
+    private weak var viewModel: ThreadPinMessageViewModel?
 
-    public init(viewModel: ThreadPinMessageViewModel) {
+    public init(viewModel: ThreadPinMessageViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureView()
-        viewModel.delegate = self
+        viewModel?.delegate = self
         Task {
-            viewModel.downloadImageThumbnail()
-            await viewModel.calculate()
+            viewModel?.downloadImageThumbnail()
+            await viewModel?.calculate()
         }
     }
 
@@ -52,7 +53,7 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
 
         textButton.titleLabel?.font = UIFont.uiiransansBody
         textButton.titleLabel?.numberOfLines = 1
-        textButton.contentHorizontalAlignment = .left
+        textButton.contentHorizontalAlignment = Language.isRTL ? .right : .left
         textButton.setTitleColor(Color.App.textPrimaryUIColor, for: .normal)
         textButton.setTitleColor(Color.App.textPrimaryUIColor?.withAlphaComponent(0.5), for: .highlighted)
         textButton.addTarget(self, action: #selector(onPinMessageTapped), for: .touchUpInside)
@@ -72,7 +73,7 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
         alignment = .center
         layoutMargins = .init(horizontal: 8)
         isLayoutMarginsRelativeArrangement = true
-        isHidden = !viewModel.hasPinMessage
+        isHidden = !(viewModel?.hasPinMessage == true)
 
         addArrangedSubview(bar)
         addArrangedSubview(pinImageView)
@@ -98,14 +99,16 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
     }
 
     @objc func onPinMessageTapped(_ sender: UIButton) {
-        viewModel.moveToPinnedMessage()
+        viewModel?.moveToPinnedMessage()
     }
 
     @objc func onUnpinMessageTapped(_ sender: UIGestureRecognizer) {
+        guard let viewModel = viewModel else { return }
         viewModel.unpinMessage(viewModel.message?.messageId ?? -1)
     }
 
     func set() {
+        guard let viewModel = viewModel else { return }
         if let image = viewModel.image {
             imageView.image = image
             imageView.layer.cornerRadius = 4
@@ -122,38 +125,5 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
             guard let self = self else { return }
             isHidden = viewModel.hasPinMessage == false
         }
-    }
-}
-
-struct ThreadPinMessageViewWrapper: UIViewRepresentable {
-
-
-    func makeUIView(context: Context) -> some UIView {
-        let thread = Conversation(
-            id: 1,
-            pinMessage: .init(messageId: 1,
-                              text: "Hello",
-                              time: 2313244564,
-                              timeNanos: nil,
-                              sender: nil,
-                              metaData: nil,
-                              systemMetadata: nil,
-                              notifyAll: nil)
-        )
-        let threadVM = ThreadViewModel(thread: thread)
-        let viewModel = ThreadPinMessageViewModel()
-        viewModel.setup(viewModel: threadVM)
-        let view = ThreadPinMessageView(viewModel: viewModel)
-        return view
-    }
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-
-    }
-}
-
-struct ThreadPinMessageView_Previews: PreviewProvider {
-    static var previews: some View {
-        ThreadPinMessageViewWrapper()
     }
 }

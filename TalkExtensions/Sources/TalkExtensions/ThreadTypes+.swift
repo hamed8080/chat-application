@@ -5,7 +5,7 @@
 //  Created by hamed on 2/5/23.
 //
 
-import ChatModels
+import Chat
 
 public extension ThreadTypes {
     var stringValue: String? {

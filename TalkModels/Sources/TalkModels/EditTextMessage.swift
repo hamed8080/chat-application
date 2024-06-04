@@ -1,19 +1,20 @@
 import Chat
-import ChatModels
-import ChatDTO
 
-public final class EditTextMessage: Message, UnSentMessageProtocol {
+public class EditTextMessage: HistoryMessageBaseCalss, UnSentMessageProtocol {
     public var editMessageRequest: EditMessageRequest
 
     public init(from editMessageRequest: EditMessageRequest, thread: Conversation?) {
         self.editMessageRequest = editMessageRequest
-        super.init(threadId: editMessageRequest.threadId,
-                   message: editMessageRequest.textMessage,
-                   uniqueId: editMessageRequest.uniqueId)
-        conversation = thread
+        let message = Message(
+            threadId: editMessageRequest.threadId,
+            message: editMessageRequest.textMessage,
+            uniqueId: editMessageRequest.uniqueId,
+            conversation: thread
+        )
+        super.init(message: message)
     }
 
-    public required init(from _: Decoder) throws {
+    public init(from _: Decoder) throws {
         fatalError("init(from:) has not been implemented")
     }
 }

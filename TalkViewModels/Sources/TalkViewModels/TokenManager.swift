@@ -7,7 +7,6 @@
 
 import Chat
 import Foundation
-import ChatModels
 import TalkModels
 import OSLog
 import Logger

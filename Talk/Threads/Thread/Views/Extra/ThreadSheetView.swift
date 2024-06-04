@@ -9,7 +9,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
-import ChatModels
+import Chat
 
 /// We have to use this due to in the ThreadView we used let viewModel in it will never trigger the sheet.
 //struct SheetEmptyBackground: View {

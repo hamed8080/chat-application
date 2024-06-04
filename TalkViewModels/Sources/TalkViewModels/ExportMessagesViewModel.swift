@@ -7,12 +7,9 @@
 
 import Chat
 import Foundation
-import ChatModels
 import Combine
-import ChatCore
-import ChatDTO
 
-public final class ExportMessagesViewModel: ObservableObject {
+public final class ExportMessagesViewModel {
     private weak var viewModel: ThreadViewModel?
     private var thread: Conversation? { viewModel?.thread }
     public var threadId: Int { thread?.id ?? 0 }
@@ -35,7 +32,6 @@ public final class ExportMessagesViewModel: ObservableObject {
 
     private func onExport(_ response: ChatResponse<URL>) {
         filePath = response.result
-        animateObjectWillChange()
     }
 
     public func exportChats(startDate: Date, endDate: Date) {

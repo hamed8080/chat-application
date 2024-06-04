@@ -5,13 +5,11 @@
 //  Created by hamed on 11/26/22.
 //
 
-import ChatModels
 import Foundation
-
-extension Contact: ObservableObject {}
+import Chat
 
 public extension Contact {
-    func update(_ newContact: Contact) {
+    mutating func update(_ newContact: Contact) {
         blocked = newContact.blocked
         cellphoneNumber = newContact.cellphoneNumber
         email = newContact.email

@@ -7,8 +7,6 @@
 
 import Foundation
 import Combine
-import ChatModels
-import ChatCore
 import Chat
 
 public typealias ReactionTabId = String

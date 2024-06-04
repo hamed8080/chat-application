@@ -9,16 +9,14 @@ import SwiftUI
 import TalkViewModels
 import TalkExtensions
 import TalkUI
+import TalkModels
 
 public final class ReplyMessagePlaceholderView: UIStackView {
-    private let imageReply = UIImageView()
-    private let vStack = UIStackView()
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
-    private let viewModel: ThreadViewModel
-    private let closeButton = CloseButtonView()
+    private weak var viewModel: ThreadViewModel?
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
@@ -29,13 +27,12 @@ public final class ReplyMessagePlaceholderView: UIStackView {
     }
 
     private func configureViews() {
-        imageReply.translatesAutoresizingMaskIntoConstraints = false
-        
         axis = .horizontal
         spacing = 4
         layoutMargins = .init(horizontal: 8, vertical: 4)
         isLayoutMarginsRelativeArrangement = true
 
+        let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.spacing = 0
         vStack.alignment = .leading
@@ -51,9 +48,12 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         vStack.addArrangedSubview(nameLabel)
         vStack.addArrangedSubview(messageLabel)
 
-        imageReply.image = UIImage(systemName: "arrow.turn.up.left")
+        let imageReply = UIImageButton(imagePadding: .init(all: 8))
+        imageReply.translatesAutoresizingMaskIntoConstraints = false
+        imageReply.imageView.image = UIImage(systemName: "arrow.turn.up.left")
         imageReply.tintColor = Color.App.iconSecondaryUIColor
 
+        let closeButton = CloseButtonView()
         closeButton.action = { [weak self] in
             self?.close()
         }
@@ -63,14 +63,20 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         addArrangedSubview(closeButton)
 
         NSLayoutConstraint.activate([
-            imageReply.widthAnchor.constraint(equalToConstant: 24),
-            imageReply.heightAnchor.constraint(equalToConstant: 24),
+            imageReply.widthAnchor.constraint(equalToConstant: 36),
+            imageReply.heightAnchor.constraint(equalToConstant: 36),
         ])
     }
 
     public func set() {
-        isHidden = viewModel.replyMessage == nil
-        let replyMessage = viewModel.replyMessage
+        let replyMessage = viewModel?.replyMessage
+        let showReply = replyMessage != nil
+        alpha = showReply ? 0.0 : 1.0
+        UIView.animate(withDuration: 0.2) {
+            self.alpha = showReply ? 1.0 : 0.0
+            self.isHidden = !showReply
+        }
+
         nameLabel.text = replyMessage?.participant?.name
         nameLabel.isHidden = replyMessage?.participant?.name == nil
         Task {
@@ -82,42 +88,10 @@ public final class ReplyMessagePlaceholderView: UIStackView {
     }
 
     private func close() {
-        viewModel.scrollVM.disableExcessiveLoading()
-        viewModel.replyMessage = nil
-        viewModel.sendContainerViewModel.setFocusOnTextView(focus: false)
-        viewModel.selectedMessagesViewModel.clearSelection()
-//        viewModel.animateObjectWillChange()
-    }
-}
-
-struct ReplyMessagePlaceholderView_Previews: PreviewProvider {
-    struct ReplyMessagePlaceholderViewWrapper: UIViewRepresentable {
-        let viewModel: ThreadViewModel
-
-        func makeUIView(context: Context) -> some UIView {
-            let view = ReplyMessagePlaceholderView(viewModel: viewModel)
-            view.set()
-            return view
-        }
-        func updateUIView(_ uiView: UIViewType, context: Context) {}
-    }
-
-    struct Preview: View {
-        var viewModel: ThreadViewModel {
-            let viewModel = ThreadViewModel(thread: .init(id: 1))
-            viewModel.replyMessage = .init(threadId: 1,
-                                           message: "Test message",
-                                           messageType: .text,
-                                           participant: .init(name: "John Doe"))
-            return viewModel
-        }
-
-        var body: some View {
-            return ReplyMessagePlaceholderViewWrapper(viewModel: viewModel)
-        }
-    }
-
-    static var previews: some View {
-        Preview()
+        viewModel?.scrollVM.disableExcessiveLoading()
+        viewModel?.replyMessage = nil
+        viewModel?.sendContainerViewModel.setFocusOnTextView(focus: false)
+        viewModel?.selectedMessagesViewModel.clearSelection()
+        viewModel?.delegate?.openReplyMode(nil) // close the UI
     }
 }

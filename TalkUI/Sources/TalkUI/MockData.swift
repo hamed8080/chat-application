@@ -1,8 +1,7 @@
 import Chat
-import ChatModels
 import Foundation
-import ChatDTO
 import TalkModels
+import Chat
 
 public struct MockDataModel: Decodable {
     public let threads: [Conversation]
@@ -25,7 +24,7 @@ public struct MockDataModel: Decodable {
 public final class MockData {
     /// Threads
     public static var thread: Conversation {
-        let lastMessageVO = Message(
+        let lastMessageVO = LastMessageVO(
             message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night."
         )
         let thread = Conversation(
@@ -43,16 +42,17 @@ public final class MockData {
 
     public static func generateThreads(count: Int = 50) -> [Conversation] {
         var threads: [Conversation] = mockDataModel.threads.map { thread in
-            thread.lastMessageVO = Message(message: thread.lastMessage)
+            var thread = thread
+            thread.lastMessageVO = LastMessageVO(message: thread.lastMessage)
             return thread
         }
         if threads.count < count {
             for i in 0 ... count {
-                let thread = thread
+                var thread = thread
                 thread.title = mockDataModel.threads[Int.random(in: 1 ... 15)].title
                 thread.description = mockDataModel.threads[Int.random(in: 1 ... 15)].description
                 thread.image = mockDataModel.threads[Int.random(in: 1 ... 15)].image
-                thread.lastMessageVO = Message(message: mockDataModel.threads[Int.random(in: 1 ... 15)].lastMessage ?? "")
+                thread.lastMessageVO = LastMessageVO(message: mockDataModel.threads[Int.random(in: 1 ... 15)].lastMessage ?? "")
                 thread.id = i
                 threads.append(thread)
             }
@@ -85,7 +85,7 @@ public final class MockData {
         if contacts.count < count {
             var lastIndex = contacts.count + 2
             for _ in 0 ... count {
-                let contact = contact
+                var contact = contact
                 contact.firstName = mockDataModel.contacts[Int.random(in: 1 ... 15)].firstName
                 contact.lastName = mockDataModel.contacts[Int.random(in: 1 ... 15)].lastName
                 contact.image = mockDataModel.contacts[Int.random(in: 1 ... 15)].image
@@ -110,7 +110,7 @@ public final class MockData {
         return message
     }
 
-    public static var uploadMessage: UploadFileWithTextMessage { UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data(), fileName: "Film.mp4"), thread: thread) }
+    public static var uploadMessage: UploadFileMessage { UploadFileMessage(uploadFileRequest: UploadFileRequest(data: Data(), fileName: "Film.mp4"), sendTextMessageRequest: .init(threadId: 0, textMessage: "", messageType: .text), thread: thread) }
 
     public static func generateMessages(count: Int = 50) -> [Message] {
         //        var messages: [Message] = mockDataModel.messages.map { message in
@@ -120,7 +120,7 @@ public final class MockData {
         var messages: [Message] = []
         var lastIndex = messages.count + 1
         for index in 0 ... count {
-            let message = Message()
+            var message = Message()
             message.uniqueId = UUID().uuidString
             message.message = "Test\(index)"
             message.time = UInt.random(in: 0 ... UInt.max)
@@ -161,7 +161,7 @@ public final class MockData {
         if participants.count < count {
             var lastIndex = participants.count + 1
             for _ in 0 ... count {
-                let participant = participant(1)
+                var participant = participant(1)
                 participant.firstName = mockDataModel.participants[Int.random(in: 1 ... 15)].firstName
                 participant.lastName = mockDataModel.participants[Int.random(in: 1 ... 15)].lastName
                 participant.name = (participant.firstName ?? "") + " " + (participant.lastName ?? "")
@@ -188,7 +188,7 @@ public final class MockData {
     public static func generateTags(count: Int = 50) -> [Tag] {
         var tags: [Tag] = []
         for index in 0 ... count {
-            let tag = tag
+            var tag = tag
             tag.name = "Tag Name \(index)"
             tag.id = index
             tag.active = Bool.random()

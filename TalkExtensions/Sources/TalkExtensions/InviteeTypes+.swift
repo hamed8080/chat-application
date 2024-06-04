@@ -5,7 +5,7 @@
 //  Created by hamed on 3/29/23.
 //
 
-import ChatModels
+import Chat
 
 extension InviteeTypes: Identifiable {}
 public extension InviteeTypes {

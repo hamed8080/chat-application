@@ -7,8 +7,6 @@
 
 import Foundation
 import Chat
-import ChatDTO
-import ChatModels
 import Combine
 import SwiftUI
 import TalkExtensions
@@ -21,7 +19,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private var cancelable = Set<AnyCancellable>()
     public private(set) var isLoading = false
     public private(set) var hasNext = true
-    private let messageType: MessageType
+    private let messageType: ChatModels.MessageType
     private let count = 25
     public var itemCount = 3
     private var downloadVMS: [DownloadFileViewModel] = []
@@ -29,7 +27,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private var objectId = UUID().uuidString
     private let DETAIL_HISTORY_KEY: String
 
-    public init(conversation: Conversation, messageType: MessageType, tabName: String) {
+    public init(conversation: Conversation, messageType: ChatModels.MessageType, tabName: String) {
         DETAIL_HISTORY_KEY = "DETAIL-HISTORY-\(tabName)-KEY-\(objectId)"
         self.tabName = tabName
         self.conversation = conversation

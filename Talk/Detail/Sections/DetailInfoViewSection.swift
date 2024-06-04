@@ -14,7 +14,10 @@ import Chat
 struct DetailInfoViewSection: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     @EnvironmentObject var viewModel: ThreadDetailViewModel
+    var threadVM: ThreadViewModel
     @StateObject private var fullScreenImageLoader: ImageLoaderViewModel
+    // We have to use Thread ViewModel.thread as a reference when an update thread info will happen the only object that gets an update is this.
+    private var thread: Conversation { threadVM.thread }
 
     init(viewModel: ThreadDetailViewModel) {
         let config = ImageLoaderConfig(url: viewModel.thread?.computedImageURL ?? "",
@@ -23,6 +26,7 @@ struct DetailInfoViewSection: View {
                                        userName: String.splitedCharacter(viewModel.thread?.title ?? ""),
                                        forceToDownloadFromServer: true)
         self._fullScreenImageLoader = .init(wrappedValue: .init(config: config))
+        self.threadVM = viewModel.threadVM ?? .init(thread: .init())
     }
 
     var body: some View {
@@ -41,36 +45,35 @@ struct DetailInfoViewSection: View {
         .background(Color.App.dividerPrimary)
     }
 
-
     private var imageLink: String {
-        viewModel.thread?.computedImageURL ?? viewModel.participantDetailViewModel?.participant.image ?? ""
+        thread.computedImageURL ?? viewModel.participantDetailViewModel?.participant.image ?? ""
     }
 
     private var imageVM: ImageLoaderViewModel {
         let config = ImageLoaderConfig(url: imageLink,
-                                       metaData: viewModel.thread?.metadata,
-                                       userName: String.splitedCharacter(viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
+                                       metaData: thread.metadata,
+                                       userName: String.splitedCharacter(thread.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
         let defaultLoader = ImageLoaderViewModel(config: config)
         return defaultLoader
     }
 
     private var avatarVM: ImageLoaderViewModel {
         let threadsVM = AppState.shared.objectsContainer.threadsVM
-        let avatarVM = threadsVM.avatars(for: imageLink, metaData: viewModel.thread?.metadata, userName: String.splitedCharacter(viewModel.thread?.title ?? ""))
+        let avatarVM = threadsVM.avatars(for: imageLink, metaData: thread.metadata, userName: String.splitedCharacter(thread.title ?? ""))
         return avatarVM
     }
 
     @ViewBuilder
     private var imageView: some View {
         ImageLoaderView(imageLoader: avatarVM)
-            .id("\(imageLink)\(viewModel.thread?.id ?? 0)")
+            .id("\(imageLink)\(thread.id ?? 0)")
             .font(.system(size: 16).weight(.heavy))
             .foregroundColor(.white)
             .frame(width: 64, height: 64)
 //            .background(String.getMaterialColorByCharCode(str: viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
             .clipShape(RoundedRectangle(cornerRadius:(28)))
             .overlay {
-                if viewModel.thread?.type == .selfThread {
+                if thread.type == .selfThread {
                     SelfThreadImageView(imageSize: 64, iconSize: 28)
                 }
             }
@@ -82,21 +85,16 @@ struct DetailInfoViewSection: View {
                     appOverlayVM.galleryImageView = newValue
                 }
             }
-            .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in
-                if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(_) = threadEvent {
-                    imageVM.fetch()
-                }
-            }
     }
 
     private var threadTitle: some View {
         HStack {
-            let threadName = viewModel.participantDetailViewModel?.participant.contactName ?? viewModel.thread?.computedTitle ?? ""
+            let threadName = viewModel.participantDetailViewModel?.participant.contactName ?? thread.computedTitle
             Text(threadName)
                 .font(.iransansBody)
                 .foregroundStyle(Color.App.textPrimary)
 
-            if viewModel.thread?.isTalk == true {
+            if thread.isTalk == true {
                 Image("ic_approved")
                     .resizable()
                     .scaledToFit()
@@ -108,12 +106,8 @@ struct DetailInfoViewSection: View {
 
     @ViewBuilder
     private var participantsCount: some View {
-        let count = viewModel.threadVM?.participantsViewModel.thread?.participantCount
-        if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
-            let label = String(localized: .init("Thread.Toolbar.participants"), bundle: Language.preferedBundle)
-            Text(verbatim: "\(countString) \(label)")
-                .font(.iransansCaption3)
-                .foregroundStyle(Color.App.textSecondary)
+        if thread.group == true {
+            DetailViewNumberOfParticipants(viewModel: viewModel.threadVM ?? .init(thread: .init()))
         }
     }
 

@@ -6,7 +6,6 @@
 //
 
 import Chat
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -16,7 +15,7 @@ import ActionableContextMenu
 struct VoiceView: View {
     @StateObject var viewModel: DetailTabDownloaderViewModel
 
-    init(conversation: Conversation, messageType: MessageType) {
+    init(conversation: Conversation, messageType: ChatModels.MessageType) {
         _viewModel =  StateObject(wrappedValue: .init(conversation: conversation, messageType: messageType, tabName: "Voice"))
     }
 
@@ -116,8 +115,10 @@ struct VoiceRowView: View {
         .customContextMenu(id: message.id, self: self.environmentObject(audioVM).environmentObject(downloadVM)) {
             VStack {
                 ContextMenuButton(title: "General.showMessage".bundleLocalized(), image: "message.fill") {
-                    threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-                    viewModel.dismiss = true
+                    Task {
+                        await threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                        viewModel.dismiss = true
+                    }
                 }
             }
             .foregroundColor(.primary)

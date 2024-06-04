@@ -8,8 +8,7 @@
 import SwiftUI
 import TalkModels
 import TalkViewModels
-import ChatModels
-import ChatDTO
+import Chat
 
 struct P2PThreadLastSeenView : View {
     let thread: Conversation

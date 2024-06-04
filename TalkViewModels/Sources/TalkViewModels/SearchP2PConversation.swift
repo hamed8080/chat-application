@@ -7,9 +7,6 @@
 
 import Foundation
 import Chat
-import ChatModels
-import ChatCore
-import ChatDTO
 import Combine
 import TalkModels
 

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import TalkViewModels
-import ChatModels
 
 struct ContainerSplitView<SidebarView: View>: View {
     let sidebarView: SidebarView
@@ -85,7 +84,8 @@ struct NavigationTypeView: View {
         switch type {
         case .threadViewModel(let viewModel):
             UIKitThreadViewWrapper(threadVM: viewModel.viewModel)
-                .ignoresSafeArea()
+                .ignoresSafeArea(.all)
+                .navigationBarHidden(true)
 //                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
 //                    .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
 //                    .environmentObject(container.appOverlayVM)
@@ -129,8 +129,9 @@ struct NavigationTypeView: View {
             EditProfileView()
         case .loadTests(_):
             LoadTestsView()
-        case .threadDetail(_):
-            EmptyView()
+        case .threadDetail(let model):
+            ThreadDetailView()
+                .environmentObject(model.viewModel)
         }
     }
 }

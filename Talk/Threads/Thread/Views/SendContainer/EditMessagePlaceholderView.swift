@@ -17,15 +17,14 @@ public final class EditMessagePlaceholderView: UIStackView {
     private let messageLabel = UILabel()
     private let nameLabel = UILabel()
 
-    private let viewModel: ThreadViewModel
-    private var sendVM: SendContainerViewModel { viewModel.sendContainerViewModel }
+    private weak var viewModel: ThreadViewModel?
+    private var sendVM: SendContainerViewModel { viewModel?.sendContainerViewModel ?? .init() }
     private var cancellable: AnyCancellable?
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
-        registerObservers()
     }
 
     public required init(coder: NSCoder) {
@@ -85,17 +84,23 @@ public final class EditMessagePlaceholderView: UIStackView {
     }
 
     public func set() {
-        isHidden = !sendVM.isInEditMode
-        guard let editMessage = sendVM.getEditMessage() else { return }
-        let iconName = editMessage.iconName
-        let isFileType = editMessage.isFileType == true
-        let isImage = editMessage.isImage == true
-        messageImageView.layer.cornerRadius = isImage ? 4 : 16
-        messageLabel.text = editMessage.message ?? ""
-        nameLabel.text = editMessage.participant?.name
-        nameLabel.isHidden = editMessage.participant?.name == nil
+        let editMessage = sendVM.getEditMessage()
+        let showEdit = editMessage != nil
+        alpha = showEdit ? 0.0 : 1.0
+        UIView.animate(withDuration: 0.2) {
+            self.alpha = showEdit ? 1.0 : 0.0
+            self.isHidden = !showEdit
+        }
 
-        if isImage, let image = viewModel.historyVM.messageViewModel(for: editMessage.uniqueId ?? "")?.calculatedMessage.image {
+        let iconName = editMessage?.iconName
+        let isFileType = editMessage?.isFileType == true
+        let isImage = editMessage?.isImage == true
+        messageImageView.layer.cornerRadius = isImage ? 4 : 16
+        messageLabel.text = editMessage?.message ?? ""
+        nameLabel.text = editMessage?.participant?.name
+        nameLabel.isHidden = editMessage?.participant?.name == nil
+
+        if isImage, let image = viewModel?.historyVM.sections.messageViewModel(for: editMessage?.uniqueId ?? "")?.calMessage.image {
             messageImageView.image = image
             messageImageView.isHidden = false
         } else if isFileType, let iconName = iconName {
@@ -107,14 +112,8 @@ public final class EditMessagePlaceholderView: UIStackView {
         }
     }
 
-    private func registerObservers() {
-        cancellable = viewModel.sendContainerViewModel.objectWillChange.sink { [weak self] _ in
-            self?.animateEditPlaceholderIfNeeded()
-        }
-    }
-
     private func animateEditPlaceholderIfNeeded() {
-        let isInEditMode = viewModel.sendContainerViewModel.isInEditMode
+        let isInEditMode = viewModel?.sendContainerViewModel.isInEditMode == true
         if isInEditMode {
             set()
         }
@@ -125,7 +124,9 @@ public final class EditMessagePlaceholderView: UIStackView {
     }
 
     private func close() {
-        viewModel.scrollVM.disableExcessiveLoading()
+        viewModel?.sendContainerViewModel.setEditMessage(message: nil)
+        viewModel?.delegate?.openEditMode(nil) // close the UI and show normal send buttons
+        viewModel?.scrollVM.disableExcessiveLoading()
         sendVM.clear()
     }
 }

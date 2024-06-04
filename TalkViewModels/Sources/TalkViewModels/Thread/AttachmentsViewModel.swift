@@ -6,24 +6,22 @@
 //
 
 import Foundation
-import TalkModels
+import Chat
 import UniformTypeIdentifiers
 import UIKit
+import TalkModels
 
-public final class FilePickerViewModel: ObservableObject {
-    @Published public var selectedFileUrls: [URL] = []
-
-    func clear() {
-        selectedFileUrls.removeAll()
-    }
+public protocol AttachmentDelegate: AnyObject {
+    func reload()
 }
 
-public final class AttachmentsViewModel: ObservableObject {
+public final class AttachmentsViewModel {
     public private(set)var attachments: [AttachmentFile] = []
-    @Published public var isExpanded: Bool = false
-    public var allImageItems: ContiguousArray<ImageItem> = []
-    public var filePickerViewModel: FilePickerViewModel = .init()
+    public private(set) var isExpanded: Bool = false
+    private var allImageItems: ContiguousArray<ImageItem> = []
+    private var selectedFileUrls: [URL] = []
     private weak var viewModel: ThreadViewModel?
+    public weak var delegate: AttachmentDelegate?
 
     public init() {}
 
@@ -35,57 +33,49 @@ public final class AttachmentsViewModel: ObservableObject {
         attachments.removeAll(where: {$0.type != .gallery})
         allImageItems.append(imageItem)
         attachments.append(.init(id: imageItem.id, type: .gallery, request: imageItem))
-        animateObjectWillChange()
+        delegate?.reload()
     }
 
     public func addSelectedFile() {
         attachments.removeAll(where: {$0.type != .file})
-        filePickerViewModel.selectedFileUrls.forEach { fileItem in
+        selectedFileUrls.forEach { fileItem in
             attachments.append(.init(type: .file, request: fileItem))
         }
-        animateObjectWillChange()
+        delegate?.reload()
     }
 
     public func addFileURL(url: URL) {
         attachments.removeAll(where: {$0.type != .file})
         attachments.append(.init(type: .file, request: url))
-        animateObjectWillChange()
+        delegate?.reload()
     }
 
     public func clear() {
         allImageItems.removeAll()
-        filePickerViewModel.clear()
+        selectedFileUrls.removeAll()
         attachments.removeAll()
-        animateObjectWillChange()
+        delegate?.reload()
     }
 
     public func append(attachments: [AttachmentFile]) {
         self.attachments.removeAll(where: {$0.type != attachments.first?.type})
         self.attachments.append(contentsOf: attachments)
-        animateObjectWillChange()
+        delegate?.reload()
     }
 
     public func remove(_ attachment: AttachmentFile) {
         attachments.removeAll(where: {$0.id == attachment.id})
         allImageItems.removeAll(where: {$0.id == attachment.id})
-        animateObjectWillChange()
+        delegate?.reload()
     }
 
     public func onDocumentPicker(_ urls: [URL]) {
-        viewModel?.attachmentsViewModel.filePickerViewModel.selectedFileUrls = urls
-        viewModel?.attachmentsViewModel.addSelectedFile()
-//        viewModel?.sheetType = nil
-//        viewModel?.animateObjectWillChange()
-        Task { [weak self] in
-            await self?.viewModel?.scrollVM.scrollToEmptySpace()
-        }
+        selectedFileUrls = urls
+        addSelectedFile()
     }
 
     public func onPickerResult(_ itemProviders: [NSItemProvider]) {
         processItemProviders(itemProviders)
-        Task { [weak self] in
-            await self?.viewModel?.scrollVM.scrollToEmptySpace()
-        }
     }
 
     private func processItemProviders(_ itemProviders: [NSItemProvider]) {
@@ -121,8 +111,7 @@ public final class AttachmentsViewModel: ObservableObject {
                              height: Int(image.size.height),
                              originalFilename: name)
         await MainActor.run {
-            viewModel?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
-//            viewModel?.animateObjectWillChange() /// Send button to appear
+            addSelectedPhotos(imageItem: item)
         }
     }
 
@@ -133,8 +122,7 @@ public final class AttachmentsViewModel: ObservableObject {
                              height: 0,
                              originalFilename: name)
         await MainActor.run {
-            viewModel?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
-//            viewModel?.animateObjectWillChange() /// Send button to appear
+            addSelectedPhotos(imageItem: item)
         }
     }
 
@@ -148,5 +136,10 @@ public final class AttachmentsViewModel: ObservableObject {
             return await lessThanTwoMegabyteImage(image: image, quality: max(1, quality - 40.0))
         }
         return data
+    }
+
+    public func toggleExpandMode() {
+        isExpanded.toggle()
+        delegate?.reload()
     }
 }

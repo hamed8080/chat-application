@@ -8,7 +8,6 @@
 import Chat
 import Combine
 import Foundation
-import ChatModels
 import TalkModels
 import ChatCore
 import ChatDTO
@@ -24,7 +23,7 @@ public final class ThreadViewModel: Identifiable, Hashable {
     }
 
     // MARK: Stored Properties
-    public private(set) var thread: Conversation
+    public var thread: Conversation
     public var replyMessage: Message?
     @Published public var dismiss = false
     public var exportMessagesViewModel: ExportMessagesViewModel = .init()
@@ -45,11 +44,14 @@ public final class ThreadViewModel: Identifiable, Hashable {
     public var threadPinMessageViewModel: ThreadPinMessageViewModel = .init()
     public var reactionViewModel: ThreadReactionViewModel = .init()
     public var seenVM: HistorySeenViewModel = .init()
+    public var downloadFileManager: DownloadFileManager = .init()
+    public var uploadFileManager: UploadFileManager = .init()
+    public var avatarManager: ThreadAvatarManager = .init()
     public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
     public var signalMessageText: String?
-    public weak var forwardMessage: Message?
+    public var forwardMessage: Message?
     var model: AppSettingsModel = .init()
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false
@@ -87,7 +89,10 @@ public final class ThreadViewModel: Identifiable, Hashable {
         searchedMessagesViewModel.setup(viewModel: self)
         threadPinMessageViewModel.setup(viewModel: self)
         participantsViewModel.setup(viewModel: self)
-        historyVM.setup(viewModel: self)
+        Task { @HistoryActor [weak self] in
+            guard let self = self else { return }
+            historyVM.setup(viewModel: self)
+        }
         sendMessageViewModel.setup(viewModel: self)
         scrollVM.setup(viewModel: self)
         unsentMessagesViewModel.setup(viewModel: self)
@@ -96,13 +101,16 @@ public final class ThreadViewModel: Identifiable, Hashable {
         exportMessagesViewModel.setup(viewModel: self)
         reactionViewModel.setup(viewModel: self)
         attachmentsViewModel.setup(viewModel: self)
+        downloadFileManager.setup(viewModel: self)
+        uploadFileManager.setup(viewModel: self)
+        avatarManager.setup(viewModel: self)
         registerNotifications()
         setAppSettingsModel()
     }
 
     public func updateConversation(_ conversation: Conversation) {
         self.thread.updateValues(conversation)
-        self.thread.animateObjectWillChange()
+//        self.thread.animateObjectWillChange()
     }
 
     // MARK: Actions
@@ -148,11 +156,6 @@ public final class ThreadViewModel: Identifiable, Hashable {
     }
 
     public func setupExportMessage(startDate: Date, endDate: Date) {
-        exportMessagesViewModel.objectWillChange
-            .sink { [weak self] in
-//                self?.animateObjectWillChange()
-            }
-            .store(in: &cancelable)
         exportMessagesViewModel.exportChats(startDate: startDate, endDate: endDate)
     }
 
@@ -163,14 +166,10 @@ public final class ThreadViewModel: Identifiable, Hashable {
         }
     }
 
-    public func moveToFirstUnreadMessage() {
+    public func moveToFirstUnreadMessage() async {
         if let unreadMessage = unreadMentionsViewModel.unreadMentions.first, let time = unreadMessage.time {
-            historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true, moveToBottom: true)
+            await historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true, moveToBottom: true)
             unreadMentionsViewModel.setAsRead(id: unreadMessage.id)
-            if unreadMentionsViewModel.unreadMentions.count == 0 {
-                thread.mentioned = false
-                thread.animateObjectWillChange()
-            }
         }
     }
 
@@ -199,7 +198,9 @@ public final class ThreadViewModel: Identifiable, Hashable {
     private func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
         case .edited(let response):
-            onEditedMessage(response)
+            Task {
+                await onEditedMessage(response)
+            }
         default:
             break
         }
@@ -245,13 +246,16 @@ public final class ThreadViewModel: Identifiable, Hashable {
         }
     }
 
-    private func onEditedMessage(_ response: ChatResponse<Message>) {
+    @HistoryActor
+    private func onEditedMessage(_ response: ChatResponse<Message>) async {
         guard
             let editedMessage = response.result,
-            let oldMessage = historyVM.message(for: response.result?.id)?.message
+            var oldMessage = historyVM.sections.message(for: response.result?.id)?.message
         else { return }
         oldMessage.updateMessage(message: editedMessage)
-        updateIfIsPinMessage(editedMessage: editedMessage)
+        await MainActor.run {
+            updateIfIsPinMessage(editedMessage: editedMessage)
+        }
     }
 
     // MARK: Logs
@@ -274,7 +278,9 @@ public final class ThreadViewModel: Identifiable, Hashable {
         participantsViewModel.cancelAllObservers()
         mentionListPickerViewModel.cancelAllObservers()
         sendContainerViewModel.cancelAllObservers()
-        historyVM.cancel()
+        Task { @HistoryActor [weak self] in
+            self?.historyVM.cancel()
+        }
         threadPinMessageViewModel.cancelAllObservers()
 //        scrollVM.cancelAllObservers()
     }
@@ -349,10 +355,19 @@ public final class ThreadViewModel: Identifiable, Hashable {
         scrollVM.cancelTask()
 //        scrollVM.setProgramaticallyScrollingState(newState: false)
         scrollVM.scrollingUP = translation.height > 10
-        scrollVM.animateObjectWillChange()
         let isSwipeEdge = Language.isRTL ? (startLocation.x > ThreadViewModel.threadWidth - 20) : startLocation.x < 20
         if isSwipeEdge, abs(translation.width) > 48 && translation.height < 12 {
             AppState.shared.objectsContainer.navVM.remove(threadId: threadId)
+        }
+    }
+
+    public func getParticipantCount() -> String {
+        let count = thread.participantCount ?? 0
+        if thread.group == true, let participantsCount = count.localNumber(locale: Language.preferredLocale) {
+            let localizedLabel = String(localized: "Thread.Toolbar.participants", bundle: Language.preferedBundle)
+            return "\(participantsCount) \(localizedLabel)"
+        } else {
+            return ""
         }
     }
 

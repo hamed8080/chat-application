@@ -6,8 +6,6 @@
 //
 
 import Chat
-import ChatDTO
-import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -34,8 +32,10 @@ struct ThreadPinMessage: View {
         .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top)))
         .clipped()
         .onTapGesture {
-            if let time = viewModel.message?.time, let messageId = viewModel.message?.messageId {
-                threadVM.historyVM.moveToTime(time, messageId)
+            Task {
+                if let time = viewModel.message?.time, let messageId = viewModel.message?.messageId {
+                    await threadVM.historyVM.moveToTime(time, messageId)
+                }
             }
         }
     }

@@ -6,9 +6,6 @@
 //
 
 import Chat
-import ChatCore
-import ChatDTO
-import ChatModels
 import Logger
 import SwiftUI
 import TalkExtensions

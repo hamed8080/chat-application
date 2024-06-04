@@ -1,8 +1,6 @@
 import Combine
 import SwiftUI
 import Chat
-import ChatCore
-import ChatModels
 
 public final class ObjectsContainer: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []
@@ -127,7 +125,7 @@ public final class ObjectsContainer: ObservableObject {
         if userProfileImageVM == nil {
             userProfileImageVM = .init(config: config)
         } else {
-            userProfileImageVM.config = config
+            userProfileImageVM.updateCondig(config: config)
         }
 
         // We wait for the cache to fill its properties, due to forceToDownloadFromServer having set to false,

@@ -13,10 +13,9 @@ import ChatCore
 import UIKit
 import TalkModels
 
-public final class ThreadScrollingViewModel: ObservableObject {
+public final class ThreadScrollingViewModel {
     var task: Task<(), Never>?
     public var isProgramaticallyScroll: Bool = false
-    public weak var scrollDelegate: HistoryScrollDelegate? { viewModel?.historyVM.delegate }
     public var scrollingUP = false
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1)}
@@ -33,27 +32,22 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
-    private func scrollTo(_ uniqueId: String, position: UITableView.ScrollPosition = .bottom, animate: Bool) async {
-        scrollDelegate?.scrollTo(uniqueId: uniqueId, position: position, animate: animate)
+    private func scrollTo(_ uniqueId: String, position: UITableView.ScrollPosition = .bottom, animate: Bool) {
+        viewModel?.historyVM.delegate?.scrollTo(uniqueId: uniqueId, position: position, animate: animate)
     }
 
     public func scrollToBottom() {
-        if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
-            viewModel?.historyVM.moveToTime(time, messageId, highlight: false, moveToBottom: true)
+        Task {
+            if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
+                await viewModel?.historyVM.moveToTime(time, messageId, highlight: false, moveToBottom: true)
+            }
         }
     }
 
-    public func scrollToEmptySpace() {
-        task = Task {
-//            scrollDelegate?.scrollTo("\(LocalId.emptySpcae.rawValue)", position: .bottom)
-        }
-    }
-
-    public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) async {
+    public func scrollToLastMessageIfLastMessageIsVisible(_ message: any HistoryMessageProtocol) async {
         if isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id), let uniqueId = message.uniqueId {
             disableExcessiveLoading()
-            await scrollTo(uniqueId, animate: true)
+            scrollTo(uniqueId, animate: true)
         }
     }
 
@@ -65,18 +59,17 @@ public final class ThreadScrollingViewModel: ObservableObject {
                     NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
                 }
             }
-           await scrollTo(uniqueId, position: position, animate: false)
+           scrollTo(uniqueId, position: position, animate: false)
         }
     }
 
+    @MainActor
     public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom, animate: Bool = false) async {
         if Task.isCancelled { return }
-        await MainActor.run {
-            if highlight {
-                NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
-            }
+        if highlight {
+            NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
         }
-        await scrollTo(uniqueId, position: position, animate: animate)
+        scrollTo(uniqueId, position: position, animate: animate)
     }
 
     public func disableExcessiveLoading() {

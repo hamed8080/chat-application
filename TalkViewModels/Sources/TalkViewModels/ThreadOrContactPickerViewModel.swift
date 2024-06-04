@@ -6,10 +6,7 @@
 //
 
 import Foundation
-import ChatModels
 import Combine
-import ChatDTO
-import ChatCore
 import Chat
 
 public class ThreadOrContactPickerViewModel: ObservableObject {
@@ -49,7 +46,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { $0.count > 1 }
             .removeDuplicates()
-            .sink { newValue in
+            .sink { [weak self] newValue in
                 Task { [weak self] in
                     self?.isIsSearchMode = true
                     await self?.search(newValue)
@@ -59,7 +56,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
 
         $searchText
             .filter { $0.count == 0 }
-            .sink { _ in
+            .sink { [weak self] _ in
                 Task { [weak self] in
                     if self?.isIsSearchMode == true {
                         self?.isIsSearchMode = false
@@ -71,7 +68,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
 
         NotificationCenter.thread.publisher(for: .thread)
             .map({$0.object as? ThreadEventTypes})
-            .sink { event in
+            .sink { [weak self] event in
                 Task { [weak self] in
                     if case let .threads(response) = event {
                         await self?.onConversations(response)
@@ -82,7 +79,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
 
         NotificationCenter.contact.publisher(for: .contact)
             .map({$0.object as? ContactEventTypes})
-            .sink { event in
+            .sink { [weak self] event in
                 Task { [weak self] in
                     if case let .contacts(response) = event {
                         await self?.onContacts(response)

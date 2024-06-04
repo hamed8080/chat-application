@@ -6,53 +6,45 @@
 //
 
 import TalkModels
-import ChatCore
 import MapKit
-import ChatModels
-import ChatDTO
 import Chat
+import SwiftUI
 
-public extension Message {
-    static let textTypes = [ChatModels.MessageType.text, MessageType.link, MessageType.location]
-    static let imageTypes = [ChatModels.MessageType.podSpacePicture, MessageType.picture]
-    static let audioTypes = [ChatModels.MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice]
-    static let videoTypes = [ChatModels.MessageType.video, .podSpaceVideo, .video]
-    static let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
-    static let unreactionableTypes = [ChatModels.MessageType.endCall, .startCall, .participantJoin, .participantLeft]
+public class MessageHistoryStatics {
+    public static let textTypes = [ChatModels.MessageType.text, MessageType.link, MessageType.location]
+    public static let imageTypes = [ChatModels.MessageType.podSpacePicture, MessageType.picture]
+    public static let audioTypes = [ChatModels.MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice]
+    public static let videoTypes = [ChatModels.MessageType.video, .podSpaceVideo, .video]
+    public static let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
+    public static let unreactionableTypes = [ChatModels.MessageType.endCall, .endCall, .participantJoin, .participantLeft]
+    public static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
+    public static let clockImage = UIImage(named: "clock")
+    public static let sentImage = UIImage(named: "ic_single_check_mark")
+    public static let seenImage = UIImage(named: "ic_double_check_mark")
+    public static let leadingTail = UIImage(named: "leading_tail")!
+    public static let trailingTail = UIImage(named: "trailing_tail")!
+    public static let emptyImage = UIImage(named: "empty_image")!
+}
 
+public extension HistoryMessageProtocol {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
     var messageTitle: String { message ?? "" }
     var isPublicLink: Bool { message?.contains(AppRoutes.joinLink) == true }
-    var markdownTitle: NSAttributedString {
-        let option: AttributedString.MarkdownParsingOptions = .init(allowsExtendedAttributes: false,
-                                                                    interpretedSyntax: .inlineOnly,
-                                                                    failurePolicy: .throwError,
-                                                                    languageCode: nil,
-                                                                    appliesSourcePositionAttributes: false)
-        guard let mutableAttr = try? NSMutableAttributedString(markdown: messageTitle, options: option) else { return NSAttributedString() }
-        mutableAttr.addUserColor(UIColor(named: "accent") ?? .orange)
-        mutableAttr.addLinkColor(UIColor(named: "text_secondary") ?? .gray)
-        return mutableAttr
-    }
-
-    var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
-    var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension }
-    var uploadFileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }
     var type: ChatModels.MessageType? { messageType ?? .unknown }
-    var isTextMessageType: Bool { Message.textTypes.contains(messageType ?? .unknown) || isFileType }
-    func isMe(currentUserId: Int?) -> Bool { (ownerId ?? 0 == currentUserId ?? 0) || isUnsentMessage || isUploadMessage }
+    var isTextMessageType: Bool { MessageHistoryStatics.textTypes.contains(messageType ?? .unknown) || isFileType }
+    func isMe(currentUserId: Int?) -> Bool { (ownerId ?? 0 == currentUserId ?? 0) || isUnsentMessage }
     /// We should check metadata to be nil. If it has a value, it means that the message file has been successfully uploaded and sent to the chat server.
-    var isUploadMessage: Bool { self is UploadWithTextMessageProtocol && metadata == nil }
+//    var isUploadMessage: Bool { self is UploadWithTextMessageProtocol && metadata == nil }
     /// Check id because we know that the message was successfully added in server chat.
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
-    var isImage: Bool { Message.imageTypes.contains(messageType ?? .unknown) }
-    var isAudio: Bool { Message.audioTypes.contains(messageType ?? .unknown) }
-    var isVideo: Bool { Message.videoTypes.contains(messageType ?? .unknown) }
-    var reactionableType: Bool { !Message.unreactionableTypes.contains(messageType ?? .unknown) }
+    var isImage: Bool { MessageHistoryStatics.imageTypes.contains(messageType ?? .unknown) }
+    var isAudio: Bool { MessageHistoryStatics.audioTypes.contains(messageType ?? .unknown) }
+    var isVideo: Bool { MessageHistoryStatics.videoTypes.contains(messageType ?? .unknown) }
+    var reactionableType: Bool { !MessageHistoryStatics.unreactionableTypes.contains(messageType ?? .unknown) }
 
-    var isSelectable: Bool { !Message.unreactionableTypes.contains(messageType ?? .unknown) }
+    var isSelectable: Bool { !MessageHistoryStatics.unreactionableTypes.contains(messageType ?? .unknown) }
 
     var fileHashCode: String { fileMetaData?.fileHash ?? fileMetaData?.file?.hashCode ?? "" }
 
@@ -103,7 +95,20 @@ public extension Message {
         }
     }
 
-    func updateMessage(message: Message) {
+    // FIXME: need fix with object decoding in this calss with FileMetaData for proerty metadata
+    var fileMetaData: FileMetaData? {
+        guard let metadata = metadata?.data(using: .utf8),
+              let metaData = try? JSONDecoder.instance.decode(FileMetaData.self, from: metadata) else { return nil }
+        return metaData
+    }
+    
+    var addRemoveParticipant: AddRemoveParticipant? {
+        guard messageType == .participantJoin || messageType == .participantLeft,
+              let metadata = metadata?.data(using: .utf8) else { return nil }
+        return try? JSONDecoder.instance.decode(AddRemoveParticipant.self, from: metadata)
+    }
+
+    mutating func updateMessage(message: any HistoryMessageProtocol) {
         deletable = message.deletable ?? deletable
         delivered = message.delivered ?? delivered ?? delivered
         seen = message.seen ?? seen ?? seen
@@ -145,11 +150,11 @@ public extension Message {
     }
 
     var fileExtIcon: String {
-        (fileMetaData?.file?.extension ?? fileExtension ?? "").systemImageNameForFileExtension
+        (fileMetaData?.file?.extension ?? uploadExt() ?? "").systemImageNameForFileExtension
     }
 
     var isFileType: Bool {
-        return Message.fileTypes.contains(messageType ?? .unknown)
+        return MessageHistoryStatics.fileTypes.contains(messageType ?? .unknown)
     }
 
     var mapCoordinate: Coordinate? {
@@ -176,8 +181,6 @@ public extension Message {
         return URL(string: "maps://?q=\(message ?? "")&ll=\(coordinate.lat),\(coordinate.lng)")
     }
 
-    static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
-
     func addOrRemoveParticipantString(meId: Int?) -> String? {
         guard let requestType = addRemoveParticipant?.requestTypeEnum else { return nil }
         let isMe = participant?.id == meId
@@ -186,27 +189,27 @@ public extension Message {
         let effectedParticipantsName = addRemoveParticipant?.participnats?.compactMap{$0.name}.joined(separator: ", ") ?? ""
         switch requestType {
         case .leaveThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", bundle: Language.preferedBundle, comment: ""), participantName)
+            return MessageHistoryStatics.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", bundle: Language.preferedBundle, comment: ""), participantName)
         case .joinThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", bundle: Language.preferedBundle, comment: ""), participantName)
+            return MessageHistoryStatics.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", bundle: Language.preferedBundle, comment: ""), participantName)
         case .removedFromThread:
             if isMe {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe", bundle: Language.preferedBundle, comment: ""), effectedName)
+                return MessageHistoryStatics.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe", bundle: Language.preferedBundle, comment: ""), effectedName)
             } else {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", bundle: Language.preferedBundle, comment: ""), participantName, effectedName)
+                return MessageHistoryStatics.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", bundle: Language.preferedBundle, comment: ""), participantName, effectedName)
             }
         case .addParticipant:
             if isMe {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", bundle: Language.preferedBundle, comment: ""), effectedParticipantsName)
+                return MessageHistoryStatics.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", bundle: Language.preferedBundle, comment: ""), effectedParticipantsName)
             } else {
-                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", bundle: Language.preferedBundle, comment: ""), participantName, effectedParticipantsName)
+                return MessageHistoryStatics.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", bundle: Language.preferedBundle, comment: ""), participantName, effectedParticipantsName)
             }
         default:
             return nil
         }
     }
 
-    class func makeRequest(model: SendMessageModel, checkLink: Bool = false) -> (message: Message, req: SendTextMessageRequest) {
+    static func makeRequest(model: SendMessageModel, checkLink: Bool = false) -> (message: Message, req: SendTextMessageRequest) {
         let type = modelMessageType(model.textMessage, checkLink)
         let req = SendTextMessageRequest(threadId: model.threadId,
                                          textMessage: model.textMessage,
@@ -221,7 +224,7 @@ public extension Message {
         return (message, req)
     }
 
-    class private func modelMessageType(_ textMessage: String, _ checkLink: Bool) ->  ChatModels.MessageType {
+    static private func modelMessageType(_ textMessage: String, _ checkLink: Bool) ->  ChatModels.MessageType {
         if checkLink {
             return hasLink(textMessage) ? .link : .text
         } else {
@@ -229,7 +232,7 @@ public extension Message {
         }
     }
 
-    class private func hasLink(_ message: String) -> Bool {
+    static private func hasLink(_ message: String) -> Bool {
         if let linkRegex = NSRegularExpression.urlRegEx {
             let allRange = NSRange(message.startIndex..., in: message)
             return linkRegex.firstMatch(in: message, range: allRange) != nil
@@ -237,9 +240,25 @@ public extension Message {
             return false
         }
     }
+    
+    func uploadExt() -> String? {
+        let fileMessageType = self as? UploadFileMessage
+        let replyType = self as? UploadFileWithReplyPrivatelyMessage
+        let uploadfileReq = fileMessageType?.uploadFileRequest ?? replyType?.uploadFileRequest
+        let uploadImageReq = fileMessageType?.uploadImageRequest ?? replyType?.uploadImageRequest
+        return uploadImageReq?.fileExtension ?? uploadfileReq?.fileExtension
+    }
+
+    func uploadFileName() -> String? {
+        let fileMessageType = self as? UploadFileMessage
+        let replyType = self as? UploadFileWithReplyPrivatelyMessage
+        let uploadfileReq = fileMessageType?.uploadFileRequest ?? replyType?.uploadFileRequest
+        let uploadImageReq = fileMessageType?.uploadImageRequest ?? replyType?.uploadImageRequest
+        return uploadImageReq?.fileName ?? uploadfileReq?.fileName
+    }
 }
 
-public extension Array where Element: Message {
+public extension Array where Element == Message {
     func sortedByTime() -> [Message] {
         sorted(by: {$0.time ?? 0 < $1.time ?? 0})
     }

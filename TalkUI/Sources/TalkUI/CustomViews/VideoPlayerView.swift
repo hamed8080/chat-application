@@ -11,7 +11,6 @@ import SwiftUI
 import TalkViewModels
 import OSLog
 
-fileprivate let logger = Logger(subsystem: "TalkUI", category: "VideoPlayerView")
 //public struct VideoPlayerView: View {
 //
 //    @EnvironmentObject var videoPlayerVM: VideoPlayerViewModel
@@ -84,16 +83,16 @@ public final class VideoPlayerView: UIView {
     }
     
     public func setValues(viewModel: MessageRowViewModel) {
-        guard let fileURL = viewModel.downloadFileVM?.fileURL else { return }
-        let mtd = viewModel.calculatedMessage.fileMetaData
-        let file = mtd?.file
-        let videoVM = VideoPlayerViewModel(fileURL: fileURL,
-                                           ext: file?.mimeType?.ext,
-                                           title: mtd?.name,
-                                           subtitle: file?.originalName ?? "")
-        if let player = videoVM.player {
-
-        }
+//        guard let fileURL = viewModel.downloadFileVM?.fileURL else { return }
+//        let mtd = viewModel.calMessage.fileMetaData
+//        let file = mtd?.file
+//        let videoVM = VideoPlayerViewModel(fileURL: fileURL,
+//                                           ext: file?.mimeType?.ext,
+//                                           title: mtd?.name,
+//                                           subtitle: file?.originalName ?? "")
+//        if let player = videoVM.player {
+//
+//        }
     }
 }
 
@@ -132,16 +131,10 @@ public struct PlayerViewRepresentable: UIViewControllerRepresentable {
     }
 
     public func updateUIViewController(_ playerController: AVPlayerViewController, context: Context) {
-#if DEBUG
-        logger.info("updateUIViewController-> \(showFullScreen)")
-#endif
         chooseScreenType(playerController)
     }
 
     private func chooseScreenType(_ controller: AVPlayerViewController) {
-#if DEBUG
-        logger.info("chooseScreenType \(self.showFullScreen)")
-#endif
         self.showFullScreen ? controller.enterFullScreen(animated: true) : controller.exitFullScreen(animated: true)
     }
 
@@ -164,14 +157,10 @@ public struct PlayerViewRepresentable: UIViewControllerRepresentable {
 
 public extension AVPlayerViewController {
     func enterFullScreen(animated: Bool) {
-#if DEBUG
-        logger.info("Enter full screen")
-#endif
         perform(NSSelectorFromString("enterFullScreenAnimated:completionHandler:"), with: animated, with: nil)
     }
 
     func exitFullScreen(animated: Bool) {
-        logger.info("Exit full screen")
         perform(NSSelectorFromString("exitFullScreenAnimated:completionHandler:"), with: animated, with: nil)
     }
 }

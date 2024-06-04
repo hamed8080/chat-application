@@ -7,12 +7,9 @@
 
 import Foundation
 import Chat
-import ChatCore
-import ChatModels
-import ChatDTO
 import Combine
 
-public final class MentionListPickerViewModel: ObservableObject {
+public final class MentionListPickerViewModel {
     private weak var viewModel: ThreadViewModel?
     private var thread: Conversation? { viewModel?.thread }
     private var threadId: Int { thread?.id ?? -1 }
@@ -23,6 +20,8 @@ public final class MentionListPickerViewModel: ObservableObject {
     @MainActor public var lazyList = LazyListViewModel()
     private var objectId = UUID().uuidString
     private let MENTION_PARTICIPANTS_KEY: String
+    public private(set) var avatarVMS: [Int: ImageLoaderViewModel] = [:]
+    public var onImageParticipant: ((Participant) -> ())?
 
     public init() {
        MENTION_PARTICIPANTS_KEY = "MENTION-PARTICIPANTS-KEY-\(objectId)"
@@ -36,7 +35,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     private func setupNotificationObservers() {
         $text
             .debounce(for: 0.5, scheduler: RunLoop.main)
-            .sink { newValue in
+            .sink { [weak self] newValue in
                 Task { [weak self] in
                     await self?.searchForParticipantInMentioning(newValue)
                 }
@@ -45,7 +44,7 @@ public final class MentionListPickerViewModel: ObservableObject {
 
         NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
-            .sink { event in
+            .sink { [weak self] event in
                 Task { [weak self] in
                     await self?.onParticipantsEvent(event)
                 }
@@ -70,8 +69,12 @@ public final class MentionListPickerViewModel: ObservableObject {
         } else {
             let mentionListWasFill = mentionList.count > 0
             mentionList = []
+            for item in avatarVMS.enumerated() {
+                item.element.value.clear()
+            }
+            avatarVMS.removeAll()
             if mentionListWasFill {
-                animateObjectWillChange()
+                viewModel?.delegate?.onMentionListUpdated()
             }
         }
     }
@@ -89,7 +92,8 @@ public final class MentionListPickerViewModel: ObservableObject {
             }
             lazyList.setLoading(false)
             mentionList.removeAll(where: {$0.id == AppState.shared.user?.id})
-            animateObjectWillChange()
+            viewModel?.delegate?.onMentionListUpdated()
+            prepareAvatarViewModels(participants)
         }
     }
 
@@ -102,9 +106,27 @@ public final class MentionListPickerViewModel: ObservableObject {
         }
     }
 
+    private func prepareAvatarViewModels(_ participants: [Participant]) {
+        participants.forEach { participant in
+            if !avatarVMS.contains(where: {$0.key == participant.id}) {
+                let userName = String.splitedCharacter(participant.name ?? participant.username ?? "")
+                let config = ImageLoaderConfig(url: participant.image ?? "", userName: userName)
+                let vm = ImageLoaderViewModel(config: config)
+                avatarVMS[participant.id ?? 0] = vm
+                vm.fetch()
+                vm.onImage = { [weak self] image in
+                    if vm.isImageReady {
+                        self?.onImageParticipant?(participant)
+                    }
+                }
+            }
+        }
+    }
+
     @MainActor
     private func getParticipants() async {
         lazyList.setLoading(true)
+        viewModel?.delegate?.onMentionListUpdated()
         let count = lazyList.count
         let offset = lazyList.offset
         let req = ThreadParticipantRequest(threadId: threadId, offset: offset, count: count, name: searchText)

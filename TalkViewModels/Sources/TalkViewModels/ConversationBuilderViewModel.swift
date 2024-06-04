@@ -8,14 +8,10 @@
 import Chat
 import Combine
 import Foundation
-import ChatModels
 import TalkModels
-import ChatCore
-import ChatDTO
 import SwiftUI
 import Photos
 import TalkExtensions
-import ChatTransceiver
 
 public final class ConversationBuilderViewModel: ContactsViewModel {
     public var uploadProfileUniqueId: String?

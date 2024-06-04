@@ -15,7 +15,15 @@ public enum AttachmentType {
     case contact
 }
 
-public struct AttachmentFile: Identifiable {
+public struct AttachmentFile: Identifiable, Hashable {
+    public static func == (lhs: AttachmentFile, rhs: AttachmentFile) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
     public let id: UUID
     public let type: AttachmentType
 

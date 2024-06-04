@@ -7,8 +7,6 @@
 
 import Chat
 import Foundation
-import ChatModels
-import ChatDTO
 
 public final class ThreadEventViewModel: ObservableObject {
     @Published public var isShowingEvent: Bool = false
@@ -24,15 +22,24 @@ public final class ThreadEventViewModel: ObservableObject {
             lastEventTime = Date()
             isShowingEvent = true
             self.smt = event.smt
+            setActiveThreadSubtitle()
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
                 if let self = self, self.lastEventTime.advanced(by: 1) < Date() {
                     timer.invalidate()
                     self.isShowingEvent = false
                     self.smt = nil
+                    setActiveThreadSubtitle()
                 }
             }
         } else {
             lastEventTime = Date()
         }
+    }
+
+    private func setActiveThreadSubtitle() {
+        let activeThread = AppState.shared.objectsContainer.navVM.viewModel(for: threadId)
+        let participantsCount = activeThread?.getParticipantCount()
+        let subtitle = isShowingEvent ? smt?.stringEvent?.localized() : participantsCount
+        activeThread?.delegate?.updateSubtitleTo(subtitle)
     }
 }
