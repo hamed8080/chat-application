@@ -15,7 +15,7 @@ import Chat
 
 final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     private var playerVC: AVPlayerViewController?
-    private var videoPlayerVM: VideoPlayerViewModel?
+    @HistoryActor private var videoPlayerVM: VideoPlayerViewModel?
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
@@ -51,6 +51,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
 
         layer.cornerRadius = 4
         layer.masksToBounds = true
+        backgroundColor = UIColor.black
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
@@ -128,18 +129,18 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     }
 
     private func prepareUIForPlayback(url: URL) {
-        backgroundColor = .clear
         showDownloadProgress(show: false)
         playIcon.isHidden = false
-        makeViewModel(url: url)
-        if let player = videoPlayerVM?.player {
-            setVideo(player: player)
+        Task {
+            await makeViewModel(url: url, message: message)
+            if let player = await videoPlayerVM?.player {
+                setVideo(player: player)
+            }
         }
     }
 
     private func prepareUIForDownload() {
         playIcon.isHidden = true
-        backgroundColor = UIColor.black
         showDownloadProgress(show: true)
     }
 
@@ -156,7 +157,9 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {
         if viewModel?.calMessage.fileURL != nil {
-            videoPlayerVM?.toggle()
+            Task {
+                await videoPlayerVM?.toggle()
+            }
             enterFullScreen(animated: true)
         } else {
             // Download file
@@ -165,12 +168,12 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     }
 
     func reset() {
-        playerVC = nil
         if !isHidden {
             isHidden = true
         }
     }
 
+    @MainActor
     private func setVideo(player: AVPlayer) {
         if playerVC == nil {
             playerVC = AVPlayerViewController()
@@ -214,7 +217,8 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         playerVC?.perform(NSSelectorFromString("exitFullScreenAnimated:completionHandler:"), with: animated, with: nil)
     }
 
-    private func makeViewModel(url: URL) {
+    @HistoryActor
+    private func makeViewModel(url: URL, message: (any HistoryMessageProtocol)?) {
         if url.absoluteString == videoPlayerVM?.fileURL.absoluteString ?? "" { return }
         self.videoPlayerVM = VideoPlayerViewModel(fileURL: url,
                              ext: message?.fileMetaData?.file?.mimeType?.ext,
