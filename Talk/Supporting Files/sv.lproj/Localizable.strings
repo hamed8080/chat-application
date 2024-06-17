@@ -66,6 +66,7 @@
 "General.galleyAccessPermissionDenied" = "Åtkomst till galleriet har nekats.";
 "General.moveToSettings" = "Gå till inställningar";
 "General.imageSaved" = "Bild sparad.";
+"General.videoSaved" = "Videon har sparats.";
 "General.ban" = "Servern har blockerat dig i %@ sekunder.";
 "General.addText" = "Lägg till text";
 "General.you" = "Du";

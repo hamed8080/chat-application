@@ -1,5 +1,5 @@
 //
-//  MapPickerView.swift
+//  MapPickerViewController.swift
 //  Talk
 //
 //  Created by hamed on 3/14/23.

@@ -44,6 +44,11 @@ public final class MessageRowViewModel: Identifiable, Hashable {
     @HistoryActor
     public func performaCalculation(appendMessages: [any HistoryMessageProtocol] = []) async {
         calMessage = await MessageRowCalculators.calculate(message: message, threadVM: threadVM, oldData: calMessage, appendMessages: appendMessages)
+        if calMessage.fileURL != nil {
+            fileState.state = .completed
+            fileState.showDownload = false
+            fileState.iconState = message.iconName?.replacingOccurrences(of: ".circle", with: "") ?? ""
+        }
     }
 
     @MainActor
@@ -51,11 +56,16 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         if !fileState.isUploadCompleted && message is UploadProtocol {
             threadVM?.uploadFileManager.register(message: message, viewModelUniqueId: uniqueId)
         }
-        threadVM?.downloadFileManager.register(message: message)
+        if fileState.state != .completed {
+            threadVM?.downloadFileManager.register(message: message)
+        }
     }
 
     public func setFileState(_ state: MessageFileState) {
         fileState.update(state)
+        if state.state == .completed {
+            calMessage.fileURL = message.fileURL // It will use hash code to make the url in some uploading videos and files we only recicve a hash code so it would be better to create a file url from hashcode
+        }
     }
 
     func invalid() {
@@ -163,7 +173,8 @@ public extension MessageRowViewModel {
     }
 
     private var isSameAudioFile: Bool {
-        fileState.url != nil && audioVM.fileURL?.absoluteString == fileState.url?.absoluteString
+        guard let fileURL = calMessage.fileURL else { return false }
+        return audioVM.fileURL?.absoluteString == fileURL.absoluteString
     }
 
     var audioTimerString: String {
@@ -180,7 +191,7 @@ public extension MessageRowViewModel {
     }
 
     private func togglePlaying() {
-        if let fileURL = fileState.url {
+        if let fileURL = calMessage.fileURL {
             let mtd = calMessage.fileMetaData
             try? audioVM.setup(message: message as? Message,
                                fileURL: fileURL,

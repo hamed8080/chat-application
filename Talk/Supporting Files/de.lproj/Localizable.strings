@@ -66,6 +66,7 @@
 "General.galleyAccessPermissionDenied" = "Der Zugriff auf die Galerie wurde verweigert.";
 "General.moveToSettings" = "Zu den Einstellungen wechseln";
 "General.imageSaved" = "Bild gespeichert.";
+"General.videoSaved" = "Video gespeichert.";
 "General.copied" = "In die Zwischenablage kopiert.";
 "General.ban" = "Der Server hat Sie für %@ Sekunden gesperrt.";
 "General.addText" = "Text hinzufügen";

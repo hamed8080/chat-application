@@ -65,6 +65,7 @@
 "General.galleyAccessPermissionDenied" = "تم رفض إذن الوصول إلى المعرض.";
 "General.moveToSettings" = "انتقل إلى الإعدادات";
 "General.imageSaved" = "تم حفظ الصورة.";
+"General.videoSaved" = "تم حفظ الفيديو.";
 "General.copied" = "تم النسخ إلى الحافظة.";
 "General.ban" = "قام الخادم بحظرك لمدة %@ ثانية.";
 "General.addText" = "أضف نصًا";

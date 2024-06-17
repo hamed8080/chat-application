@@ -15,21 +15,31 @@ public final class CircleProgressButton: UIButton {
     private var shapeLayer = CAShapeLayer()
     private let imgCenter = UIImageView()
     private var iconTint: UIColor?
+    private var lineWidth: CGFloat
     private var animation = CABasicAnimation(keyPath: "strokeEnd")
+    private let margin: CGFloat
 
-    public init(progressColor: UIColor? = .darkText, iconTint: UIColor? = Color.App.textPrimaryUIColor, bgColor: UIColor? = .white.withAlphaComponent(0.3)) {
+    public init(progressColor: UIColor? = .darkText,
+                iconTint: UIColor? = Color.App.textPrimaryUIColor,
+                bgColor: UIColor? = .white.withAlphaComponent(0.3),
+                lineWidth: CGFloat = 3,
+                iconSize: CGSize = .init(width: 16, height: 16),
+                margin: CGFloat = 6
+    ) {
+        self.lineWidth = lineWidth
+        self.margin = margin
         super.init(frame: .zero)
         self.bgColor = bgColor
         self.progressColor = progressColor
         self.iconTint = iconTint
-        configureView()
+        configureView(iconSize: iconSize)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configureView() {
+    private func configureView(iconSize: CGSize) {
         imgCenter.translatesAutoresizingMaskIntoConstraints = false
         imgCenter.contentMode = .scaleAspectFit
         imgCenter.tintColor = iconTint
@@ -38,8 +48,8 @@ public final class CircleProgressButton: UIButton {
         NSLayoutConstraint.activate([
             imgCenter.centerXAnchor.constraint(equalTo: centerXAnchor),
             imgCenter.centerYAnchor.constraint(equalTo: centerYAnchor),
-            imgCenter.widthAnchor.constraint(equalToConstant: 16),
-            imgCenter.heightAnchor.constraint(equalToConstant: 16),
+            imgCenter.widthAnchor.constraint(equalToConstant: iconSize.width),
+            imgCenter.heightAnchor.constraint(equalToConstant: iconSize.height),
         ])
     }
 
@@ -50,7 +60,6 @@ public final class CircleProgressButton: UIButton {
     }
 
     private func drawProgress() {
-        let margin: CGFloat = 6
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
         let path = UIBezierPath(arcCenter: center,
                                 radius: (bounds.width / 2) - margin,
@@ -62,7 +71,7 @@ public final class CircleProgressButton: UIButton {
         shapeLayer.strokeColor = progressColor?.cgColor
         shapeLayer.path = path.cgPath
         shapeLayer.lineCap = .round
-        shapeLayer.lineWidth = 3
+        shapeLayer.lineWidth = lineWidth
         layer.addSublayer(shapeLayer)
     }
 

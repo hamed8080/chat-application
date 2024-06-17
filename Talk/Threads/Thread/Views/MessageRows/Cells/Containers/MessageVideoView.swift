@@ -13,18 +13,20 @@ import TalkModels
 import AVKit
 import Chat
 
-final class MessageVideoView: UIStackView, AVPlayerViewControllerDelegate {
+final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     private var playerVC: AVPlayerViewController?
     private var videoPlayerVM: VideoPlayerViewModel?
-    private let vStack = UIStackView()
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
-    private let downloadHStack = UIStackView()
     private let playOverlayView = UIView()
+    private let playIcon: UIImageView = UIImageView()
+    private static let playIcon: UIImage = UIImage(systemName: "play.fill")!
     private let progressButton = CircleProgressButton(progressColor: Color.App.whiteUIColor,
-                                                      iconTint: Color.App.textPrimaryUIColor,
-                                                      bgColor: Color.App.accentUIColor
+                                                      iconTint: Color.App.whiteUIColor,
+                                                      lineWidth: 1,
+                                                      iconSize: .init(width: 12, height: 12),
+                                                      margin: 2
     )
     private weak var viewModel: MessageRowViewModel?
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
@@ -39,22 +41,16 @@ final class MessageVideoView: UIStackView, AVPlayerViewControllerDelegate {
     }
 
     private func configureView() {
-        layoutMargins = .init(top: 8, left: 8, bottom: 0, right: 0)
-        layer.cornerRadius = 5
-        layer.masksToBounds = true
-        isLayoutMarginsRelativeArrangement = true
-
+        translatesAutoresizingMaskIntoConstraints = false
         progressButton.translatesAutoresizingMaskIntoConstraints = false
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
+        playOverlayView.translatesAutoresizingMaskIntoConstraints = false
+        playIcon.translatesAutoresizingMaskIntoConstraints = false
 
-        axis = .vertical
-        spacing = 0
-
-        downloadHStack.axis = .horizontal
-        downloadHStack.spacing = 8
-
-        vStack.axis = .vertical
-        vStack.alignment = .leading
-        vStack.spacing = 4
+        layer.cornerRadius = 4
+        layer.masksToBounds = true
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
@@ -70,38 +66,45 @@ final class MessageVideoView: UIStackView, AVPlayerViewControllerDelegate {
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
 
-        let typeSizeHStack = UIStackView()
-        typeSizeHStack.axis = .horizontal
-        typeSizeHStack.spacing = 4
+        playIcon.isHidden = true
+        playIcon.contentMode = .scaleAspectFit
+        playIcon.image = MessageVideoView.playIcon
+        playIcon.tintColor = Color.App.whiteUIColor
 
-        typeSizeHStack.addArrangedSubview(fileTypeLabel)
-        typeSizeHStack.addArrangedSubview(fileSizeLabel)
-
-        vStack.addArrangedSubview(fileNameLabel)
-        vStack.addArrangedSubview(typeSizeHStack)
-
-        downloadHStack.addArrangedSubview(progressButton)
-        downloadHStack.addArrangedSubview(vStack)
-
-        addArrangedSubview(downloadHStack)
-
-        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
-        progressButton.isUserInteractionEnabled = true
-
-        playOverlayView.translatesAutoresizingMaskIntoConstraints = false
         playOverlayView.backgroundColor = .clear
         let tapGesture = UITapGestureRecognizer()
         tapGesture.addTarget(self, action: #selector(onTap))
         playOverlayView.addGestureRecognizer(tapGesture)
+
+        addSubview(progressButton)
+        addSubview(fileNameLabel)
+        addSubview(fileSizeLabel)
+        addSubview(fileTypeLabel)
         addSubview(playOverlayView)
+        addSubview(playIcon)
 
         NSLayoutConstraint.activate([
+            widthAnchor.constraint(equalToConstant: 320),
+            heightAnchor.constraint(equalToConstant: 196),
             playOverlayView.leadingAnchor.constraint(equalTo: leadingAnchor),
             playOverlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
             playOverlayView.topAnchor.constraint(equalTo: topAnchor),
             playOverlayView.heightAnchor.constraint(equalTo: heightAnchor),
-            progressButton.widthAnchor.constraint(equalToConstant: 36),
-            progressButton.heightAnchor.constraint(equalToConstant: 36),
+            progressButton.widthAnchor.constraint(equalToConstant: 24),
+            progressButton.heightAnchor.constraint(equalToConstant: 24),
+            progressButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            progressButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            fileNameLabel.trailingAnchor.constraint(equalTo: progressButton.leadingAnchor, constant: -4),
+            fileNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            fileNameLabel.centerYAnchor.constraint(equalTo: progressButton.centerYAnchor),
+            fileTypeLabel.trailingAnchor.constraint(equalTo: fileNameLabel.trailingAnchor, constant: 0),
+            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
+            fileSizeLabel.trailingAnchor.constraint(equalTo: fileTypeLabel.leadingAnchor, constant: -4),
+            fileSizeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
+            playIcon.widthAnchor.constraint(equalToConstant: 36),
+            playIcon.heightAnchor.constraint(equalToConstant: 36),
+            playIcon.centerXAnchor.constraint(equalTo: centerXAnchor),
+            playIcon.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
 
@@ -113,40 +116,56 @@ final class MessageVideoView: UIStackView, AVPlayerViewControllerDelegate {
         isHidden = false
         semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         self.viewModel = viewModel
-        let progress = viewModel.fileState.progress
-
-        if let fileURL = getURL() {
-            layoutMargins = .init(all: 0)
-            downloadHStack.isHidden = true
-            makeViewModel(url: fileURL)
-            if let player = videoPlayerVM?.player {
-                setVideo(player: player)
-            }
-            bringSubviewToFront(playOverlayView)
-        } else if viewModel.fileState.state != .completed {
-            downloadHStack.isHidden = false
-            progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
-            progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
-        } else if let url = viewModel.fileState.url {
-            layoutMargins = .init(all: 0)
-            downloadHStack.isHidden = true
-            makeViewModel(url: url)
-            if let player = videoPlayerVM?.player {
-                setVideo(player: player)
-            }
-            bringSubviewToFront(playOverlayView)
+        if let url = viewModel.calMessage.fileURL {
+            prepareUIForPlayback(url: url)
+        } else {
+            prepareUIForDownload()
         }
+        updateProgress()
         fileSizeLabel.text = viewModel.calMessage.computedFileSize
         fileNameLabel.text = viewModel.calMessage.fileName
         fileTypeLabel.text = viewModel.calMessage.extName
     }
 
+    private func prepareUIForPlayback(url: URL) {
+        backgroundColor = .clear
+        showDownloadProgress(show: false)
+        playIcon.isHidden = false
+        makeViewModel(url: url)
+        if let player = videoPlayerVM?.player {
+            setVideo(player: player)
+        }
+    }
+
+    private func prepareUIForDownload() {
+        playIcon.isHidden = true
+        backgroundColor = UIColor.black
+        showDownloadProgress(show: true)
+    }
+
+    private func showDownloadProgress(show: Bool) {
+        progressButton.isHidden = !show
+        progressButton.setProgressVisibility(visible: show)
+    }
+
+    private func updateProgress() {
+        guard let viewModel = viewModel else { return }
+        let progress = viewModel.fileState.progress
+        progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
+    }
+
     @objc private func onTap(_ sender: UIGestureRecognizer) {
-        videoPlayerVM?.toggle()
-        enterFullScreen(animated: true)
+        if viewModel?.calMessage.fileURL != nil {
+            videoPlayerVM?.toggle()
+            enterFullScreen(animated: true)
+        } else {
+            // Download file
+            viewModel?.onTap()
+        }
     }
 
     func reset() {
+        playerVC = nil
         if !isHidden {
             isHidden = true
         }
@@ -161,13 +180,19 @@ final class MessageVideoView: UIStackView, AVPlayerViewControllerDelegate {
         playerVC?.allowsVideoFrameAnalysis = false
         playerVC?.entersFullScreenWhenPlaybackBegins = true
         playerVC?.delegate = self
+        addPlayerViewToView()
+    }
+
+    private func addPlayerViewToView() {
         let rootVC = viewModel?.threadVM?.delegate as? UIViewController
         if let rootVC = rootVC, let playerVC = playerVC, let view = playerVC.view {
             view.translatesAutoresizingMaskIntoConstraints = false
-            self.addArrangedSubview(view)
+            self.insertSubview(view, at: 0)
             NSLayoutConstraint.activate([
-                view.widthAnchor.constraint(equalToConstant: 320),
-                view.heightAnchor.constraint(equalToConstant: 196),
+                view.leadingAnchor.constraint(equalTo: leadingAnchor),
+                view.trailingAnchor.constraint(equalTo: trailingAnchor),
+                view.topAnchor.constraint(equalTo: topAnchor),
+                view.bottomAnchor.constraint(equalTo: bottomAnchor),
             ])
             rootVC.addChild(playerVC)
             playerVC.didMove(toParent: rootVC)
@@ -195,15 +220,5 @@ final class MessageVideoView: UIStackView, AVPlayerViewControllerDelegate {
                              ext: message?.fileMetaData?.file?.mimeType?.ext,
                              title: message?.fileMetaData?.name,
                              subtitle: message?.fileMetaData?.file?.originalName ?? "")
-    }
-
-    public func getURL() -> URL? {
-        let urlString = viewModel?.calMessage.fileMetaData?.file?.link
-        if let urlString = urlString, let url = URL(string: urlString) {
-            if ChatManager.activeInstance?.file.isFileExist(url) == false { return nil }
-            let fileURL = ChatManager.activeInstance?.file.filePath(url)
-            return fileURL
-        }
-        return nil
     }
 }

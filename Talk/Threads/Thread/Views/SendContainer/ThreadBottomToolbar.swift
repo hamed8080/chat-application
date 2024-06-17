@@ -16,7 +16,7 @@ public final class ThreadBottomToolbar: UIStackView {
     private weak var viewModel: ThreadViewModel?
     private let mainSendButtons: MainSendButtons
     private let audioRecordingView: AudioRecordingView
-    private let attachmentButtons: AttachmentButtonsView
+    private let pickerButtons: PickerButtonsView
     private let attachmentFilesTableView: AttachmentFilesTableView
     private let replyPrivatelyPlaceholderView: ReplyPrivatelyMessagePlaceholderView
     private let replyPlaceholderView: ReplyMessagePlaceholderView
@@ -32,7 +32,7 @@ public final class ThreadBottomToolbar: UIStackView {
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
         self.audioRecordingView = AudioRecordingView(viewModel: viewModel)
-        self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel?.sendContainerViewModel)
+        self.pickerButtons = PickerButtonsView(viewModel: viewModel?.sendContainerViewModel)
         self.attachmentFilesTableView = AttachmentFilesTableView(viewModel: viewModel)
         self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
         self.replyPrivatelyPlaceholderView = ReplyPrivatelyMessagePlaceholderView(viewModel: viewModel)
@@ -53,7 +53,7 @@ public final class ThreadBottomToolbar: UIStackView {
         translatesAutoresizingMaskIntoConstraints = false
         mainSendButtons.translatesAutoresizingMaskIntoConstraints = false
         audioRecordingView.translatesAutoresizingMaskIntoConstraints = false
-        attachmentButtons.translatesAutoresizingMaskIntoConstraints = false
+        pickerButtons.translatesAutoresizingMaskIntoConstraints = false
         attachmentFilesTableView.translatesAutoresizingMaskIntoConstraints = false
         replyPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
         forwardPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
@@ -74,7 +74,7 @@ public final class ThreadBottomToolbar: UIStackView {
         effectView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         addSubview(effectView)
 
-        attachmentButtons.isHidden = true
+        pickerButtons.isHidden = true
         attachmentFilesTableView.isHidden = true
         replyPrivatelyPlaceholderView.isHidden = true
         replyPlaceholderView.isHidden = true
@@ -82,7 +82,7 @@ public final class ThreadBottomToolbar: UIStackView {
         selectionView.isHidden = true
         audioRecordingView.isHidden = true
 
-        addArrangedSubview(attachmentButtons)
+        addArrangedSubview(pickerButtons)
         addArrangedSubview(attachmentFilesTableView)
         addArrangedSubview(replyPlaceholderView)
         addArrangedSubview(replyPrivatelyPlaceholderView)
@@ -98,7 +98,7 @@ public final class ThreadBottomToolbar: UIStackView {
         }
 
         NSLayoutConstraint.activate([
-            topAnchor.constraint(equalTo: attachmentButtons.topAnchor, constant: -8),
+            topAnchor.constraint(equalTo: pickerButtons.topAnchor, constant: -8),
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
             effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
             effectView.topAnchor.constraint(equalTo: topAnchor),
@@ -139,11 +139,11 @@ public final class ThreadBottomToolbar: UIStackView {
     }
 
     private func showPicker(show: Bool) {
-        attachmentButtons.alpha = show ? 0.0 : 1.0
+        pickerButtons.alpha = show ? 0.0 : 1.0
         UIView.animate(withDuration: show ? 0.3 : 0.2, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) { [weak self] in
             guard let self = self else { return }
-            attachmentButtons.isHidden = !show
-            attachmentButtons.alpha = show ? 1.0 : 0.0
+            pickerButtons.isHidden = !show
+            pickerButtons.alpha = show ? 1.0 : 0.0
         }
     }
 

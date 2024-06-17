@@ -66,6 +66,7 @@
 "General.galleyAccessPermissionDenied" = "Permission to the gallery has been denied.";
 "General.moveToSettings" = "Move to settings";
 "General.imageSaved" = "Image saved.";
+"General.videoSaved" = "Video saved.";
 "General.copied" = "Copied to clipboard.";
 "General.ban" = "The server has banned you for %@ seconds.";
 "General.addText" = "Add text";

@@ -62,6 +62,9 @@ class MessageRowCalculators {
         async let color = threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
         calculatedMessage.participantColor = await color ?? .clear
 
+        calculatedMessage.fileURL = getFileURL(serverURL: message.url)
+        calculatedMessage.image = getCachedImage(calculatedMessage: calculatedMessage, isImage: rowType.isImage)
+
         calculatedMessage.computedFileSize = calculateFileSize(message: message, calculatedMessage: calculatedMessage)
         calculatedMessage.extName = calculateFileTypeWithExt(message: message, calculatedMessage: calculatedMessage)
         calculatedMessage.fileName = calculateFileName(message: message, calculatedMessage: calculatedMessage)
@@ -431,5 +434,22 @@ class MessageRowCalculators {
         let date = Date(milliseconds: Int64(time))
         let text = date.onlyLocaleTime
         return text
+    }
+
+    class func getFileURL(serverURL: URL?) -> URL? {
+        if let url = serverURL {
+            if ChatManager.activeInstance?.file.isFileExist(url) == false { return nil }
+            let fileURL = ChatManager.activeInstance?.file.filePath(url)
+            return fileURL
+        }
+        return nil
+    }
+
+    class func getCachedImage(calculatedMessage: MessageRowCalculatedData, isImage: Bool) -> UIImage? {
+        if isImage, let url = calculatedMessage.fileURL, let data = try? Data(contentsOf: url) {
+            // Full resulation image that has been downloaded before.
+            return UIImage(data: data)
+        }
+        return nil
     }
 }

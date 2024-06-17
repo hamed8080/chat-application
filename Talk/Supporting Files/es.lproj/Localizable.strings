@@ -66,6 +66,7 @@
 "General.galleyAccessPermissionDenied" = "Se ha denegado el permiso para acceder a la galería.";
 "General.moveToSettings" = "Ir a ajustes";
 "General.imageSaved" = "Imagen guardada.";
+"General.videoSaved" = "Vídeo guardado.";
 "General.copied" = "Copiado al portapapeles";
 "General.copied" = "Kopierat till urklipp.";
 "General.ban" = "The server has banned you for %@ seconds.";

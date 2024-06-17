@@ -2,9 +2,7 @@ import Foundation
 import UIKit
 
 public struct MessageFileState {
-    public var url: URL?
     public var progress: CGFloat
-    public var showImage: Bool
     public var showDownload: Bool
     public var isUploading: Bool
     public var isUploadCompleted: Bool
@@ -13,8 +11,7 @@ public struct MessageFileState {
     public var blurRadius: CGFloat
     public var image: UIImage?
 
-    public init(url: URL? = nil,
-                progress: CGFloat = 0.0,
+    public init(progress: CGFloat = 0.0,
                 showImage: Bool = false,
                 showDownload: Bool = false,
                 isUploading: Bool = false,
@@ -23,9 +20,7 @@ public struct MessageFileState {
                 iconState: String = "arrow.down",
                 blurRadius: CGFloat = 0,
                 image: UIImage? = nil) {
-        self.url = url
         self.progress = progress
-        self.showImage = showImage
         self.showDownload = showDownload
         self.isUploading = isUploading
         self.isUploadCompleted = isUploadCompleted

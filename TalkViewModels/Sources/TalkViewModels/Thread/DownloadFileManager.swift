@@ -119,7 +119,6 @@ public final class DownloadFileManager {
         guard let messageId = message.id, let vm = viewModel(for: messageId) else { return }
         let progress: CGFloat = CGFloat(await vm.downloadPercentValue())
         let state = MessageFileState(
-            url: vm.fileURL,
             progress: min(CGFloat(progress) / 100, 1.0),
             showImage: true,
             showDownload: vm.state != .completed,
@@ -174,7 +173,6 @@ public final class DownloadFileManager {
         guard let vm = viewModel(for: messageId) else { return }
         let progress = await vm.downloadPercentValue()
         let state = MessageFileState(
-            url: message.fileURL,
             progress: min(CGFloat(progress) / 100, 1.0),
             showImage: true,
             showDownload: vm.state != .completed,

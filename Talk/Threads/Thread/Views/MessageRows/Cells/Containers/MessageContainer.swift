@@ -12,6 +12,7 @@ import TalkUI
 import TalkViewModels
 import TalkModels
 import TalkExtensions
+import Photos
 
 final class MessageContainer: UIStackView {
     public weak var cell: MessageBaseCell?
@@ -200,6 +201,14 @@ extension MessageContainer {
             menus.append(saveImageAction)
         }
 
+
+        if viewModel.calMessage.rowType.isVideo, viewModel.fileState.state == .completed {
+            let saveVideoAction = UIAction(title: "Messages.ActionMenu.saveImage".localized(), image: UIImage(systemName: "square.and.arrow.down")) { [weak self] _ in
+                self?.onSaveVideoAction(model)
+            }
+            menus.append(saveVideoAction)
+        }
+
         if !viewModel.message.isFileType || message.message?.isEmpty == false {
             let copyAction = UIAction(title: "Messages.ActionMenu.copy".localized(), image: UIImage(systemName: "doc.on.doc")) { [weak self] _ in
                 self?.onCopyAction(model)
@@ -281,6 +290,27 @@ extension MessageContainer {
                 .fontWeight(.semibold)
                 .foregroundStyle(Color.App.white)
             AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, message: "General.imageSaved", messageColor: Color.App.textPrimary)
+        }
+    }
+
+    private func onSaveVideoAction(_ model: ActionModel) {
+        Task {
+            guard let url = await model.viewModel.message.makeTempURL() else { return }
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+            }) { saved, error in
+                if saved {
+                    Task {
+                        try? FileManager.default.removeItem(at: url)
+                        await MainActor.run {
+                            let icon = Image(systemName: "externaldrive.badge.checkmark")
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color.App.white)
+                            AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, message: "General.videoSaved", messageColor: Color.App.textPrimary)
+                        }
+                    }
+                }
+            }
         }
     }
 

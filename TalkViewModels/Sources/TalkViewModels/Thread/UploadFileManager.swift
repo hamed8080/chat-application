@@ -95,9 +95,7 @@ public final class UploadFileManager {
         if message.isImage, !isCompleted {
             blurRadius = 16
         }
-        let finalURL = getURL(vm: vm)
-        let fileState = MessageFileState.init(url: finalURL,
-                                              progress: progress,
+        let fileState = MessageFileState.init(progress: progress,
                                               isUploading: isUploading,
                                               isUploadCompleted: isCompleted,
                                               state: isCompleted ? .completed : .undefined,
@@ -118,14 +116,5 @@ public final class UploadFileManager {
         if state.isUploadCompleted {
             unRegister(viewModelUniqueId: viewModelUniqueId)
         }
-    }
-
-    public func getURL(vm: UploadFileViewModel) -> URL? {
-        if vm.state != .completed { return nil }
-        if let urlString = vm.fileMetaData?.file?.link, let url = URL(string: urlString) {
-            let fileURL = ChatManager.activeInstance?.file.filePath(url)
-            return fileURL
-        }
-        return nil
     }
 }
