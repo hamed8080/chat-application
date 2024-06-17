@@ -38,7 +38,7 @@ final class ReplyInfoView: UIStackView {
     }
 
     private func configureView() {
-        backgroundColor = Color.App.bgSecondaryUIColor
+        backgroundColor = Color.App.bgChatMeDarkUIColor
         layer.cornerRadius = 8
         layer.masksToBounds = true
 
@@ -108,6 +108,11 @@ final class ReplyInfoView: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
+        if !viewModel.calMessage.rowType.isReply {
+            reset()
+            return
+        }
+        backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
         semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         vStack.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         participantLabel.text = replyInfo?.participant?.name
@@ -121,8 +126,6 @@ final class ReplyInfoView: UIStackView {
         if viewModel.calMessage.isReplyImage, let url = viewModel.calMessage.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata))
         }
-        let canShow = replyInfo != nil
-        isHidden = !canShow
         imageIconView.isHidden = !hasImage
     }
 
@@ -167,5 +170,11 @@ final class ReplyInfoView: UIStackView {
 
     private var sourceConversationId: Int {
         replyInfo?.replyPrivatelyInfo?.threadId ?? -1
+    }
+
+    private func reset() {
+        if !isHidden {
+            isHidden = true
+        }
     }
 }

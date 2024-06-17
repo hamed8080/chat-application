@@ -60,7 +60,6 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
 
         imageView.contentMode = .scaleAspectFit
         imageView.layer.masksToBounds = true
-        imageView.backgroundColor = .green
 
         let image = UIImage(systemName: "xmark")
         unpinButton.setImage(image, for: .normal)

@@ -133,9 +133,6 @@ extension AttachmentFilesTableView: AttachmentDelegate {
             guard let self = self else { return }
             isHidden = viewModel?.attachmentsViewModel.attachments.isEmpty == true
             self.setHeight()
-            //closeAttachmentButtons
-            viewModel?.sendContainerViewModel.setAttachmentButtonsVisibility(show: false)
-            viewModel?.delegate?.onAttchmentButtonsMenu(show: false)
             expandView.set()
         }
     }
@@ -176,8 +173,6 @@ public class ExpandView: UIView {
         addSubview(fileCountLabel)
 
         NSLayoutConstraint.activate([
-//            expandButton.widthAnchor.constraint(equalToConstant: 18),
-//            expandButton.heightAnchor.constraint(equalToConstant: 18),
             expandButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             expandButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             expandButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
@@ -194,12 +189,17 @@ public class ExpandView: UIView {
     @objc private func clearTapped(_ sender: UIButton) {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2)) {
             viewModel?.attachmentsViewModel.clear()
+            if viewModel?.sendContainerViewModel.isTextEmpty() == true {
+                viewModel?.delegate?.showSendButton(false)
+                viewModel?.delegate?.showMicButton(true)
+            }
         }
     }
 
     public func set() {
         let localized = String(localized: .init("Thread.sendAttachments"))
-        let value = viewModel?.attachmentsViewModel.attachments.count.formatted(.number) ?? ""
+        let count = viewModel?.attachmentsViewModel.attachments.count ?? 0
+        let value = count.localNumber(locale: Language.preferredLocale) ?? ""
         fileCountLabel.text = String(format: localized, "\(value)")
         expandButton.image = UIImage(systemName: viewModel?.attachmentsViewModel.isExpanded  == true ? "chevron.down" : "chevron.up")
     }

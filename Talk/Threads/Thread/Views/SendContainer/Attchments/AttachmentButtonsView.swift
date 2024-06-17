@@ -67,20 +67,25 @@ public final class AttachmentButtonsView: UIStackView {
 
     @objc private func onBtnGalleryTapped(_ sender: UIGestureRecognizer) {
         presentImagePicker()
+        closePickerButtons()
     }
 
     @objc private func onBtnFileTapped(_ sender: UIGestureRecognizer) {
         presentFilePicker()
+        closePickerButtons()
     }
 
     @objc private func onBtnLocationTapped(_ sender: UIGestureRecognizer) {
         presentMapPicker()
+        closePickerButtons()
     }
 
     @objc private func onBtnContactTapped(_ sender: UIGestureRecognizer) {
+        closePickerButtons()
     }
 
-    private func closeSheet() {
+    public func closePickerButtons() {
+        viewModel?.viewModel?.delegate?.showPickerButtons(false)
     }
 }
 
@@ -101,10 +106,10 @@ extension AttachmentButtonsView: UIDocumentPickerDelegate  {
 
     public func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         viewModel?.viewModel?.attachmentsViewModel.onDocumentPicker(urls)
+        viewModel?.viewModel?.delegate?.onItemsPicked()
     }
 
     public func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
-        closeSheet()
     }
 }
 
@@ -125,6 +130,7 @@ extension AttachmentButtonsView: PHPickerViewControllerDelegate {
         picker.dismiss(animated: true)
         let itemProviders = results.map(\.itemProvider)
         processProviders(itemProviders)
+        viewModel?.viewModel?.delegate?.onItemsPicked()
     }
 
     private func processProviders(_ itemProviders: [NSItemProvider]) {
@@ -241,17 +247,5 @@ public final class AttchmentButton: UIStackView {
             imageContainerHeightConstraint.constant = sender.state == .began ? 52 : 66
             imageContainer.backgroundColor = sender.state == .began ? Color.App.textSecondaryUIColor?.withAlphaComponent(0.5) : .clear
         }
-    }
-}
-
-struct AttachmentDialog_Previews: PreviewProvider {
-
-    struct AttachmentButtonsViewWrapper: UIViewRepresentable {
-        func makeUIView(context: Context) -> some UIView { AttachmentButtonsView(viewModel: .init()) }
-        func updateUIView(_ uiView: UIViewType, context: Context) {}
-    }
-
-    static var previews: some View {
-        AttachmentButtonsViewWrapper()
     }
 }

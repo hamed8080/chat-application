@@ -107,6 +107,7 @@ public final class MapPickerViewController: UIViewController {
     private func submitTapped() {
         if let location = locationManager.currentLocation {
             viewModel?.attachmentsViewModel.append(attachments: [.init(type: .map, request: location)])
+            viewModel?.delegate?.onItemsPicked()
         }
     }
 

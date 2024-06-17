@@ -75,52 +75,24 @@ final class ForwardInfoView: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeUIColor : Color.App.bgChatUserDarkUIColor
+        if !viewModel.calMessage.rowType.isForward {
+            reset()
+            return
+        }
+        backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
         semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         vStack.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
-        let canShow = viewModel.message.forwardInfo != nil
-        forwardStaticLebel.isHidden = !canShow
-        bar.isHidden = !canShow
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name ?? viewModel.message.participant?.name
         participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
-        isHidden = !canShow
     }
 
     @IBAction func onForwardTapped(_ sender: UIGestureRecognizer) {
         print("on forward tapped")
     }
-}
 
-struct ForwardMessageRowWapper: UIViewRepresentable {
-    let viewModel: MessageRowViewModel
-
-    func makeUIView(context: Context) -> some UIView {
-        let view = ForwardInfoView()
-        view.set(viewModel)
-        return view
-    }
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-
-    }
-}
-
-struct ForwardMessageRow_Previews: PreviewProvider {
-    struct Preview: View {
-        var viewModel: MessageRowViewModel
-
-        init(viewModel: MessageRowViewModel) {
-            ThreadViewModel.maxAllowedWidth = 340
-            self.viewModel = viewModel
+    private func reset() {
+        if !isHidden {
+            isHidden = true
         }
-
-        var body: some View {
-            ForwardMessageRowWapper(viewModel: viewModel)
-        }
-    }
-
-    static var previews: some View {
-        Preview(viewModel: MockAppConfiguration.shared.viewModels.first(where: {$0.message.forwardInfo != nil })!)
-            .previewDisplayName("Forward")
     }
 }

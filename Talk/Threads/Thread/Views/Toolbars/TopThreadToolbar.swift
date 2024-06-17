@@ -87,6 +87,7 @@ public class CustomConversationNavigationBar: UIView {
     private let titlebutton = UIButton(type: .system)
     private let subtitleLabel = UILabel()
     private var threadImageButton = UIImageButton(imagePadding: .init(all: 0))
+    private var threadTitleSupplementary = UILabel()
     private let rightTitleImageView = UIImageView()
     private var centerYTitleConstraint: NSLayoutConstraint!
     private let gradientLayer = CAGradientLayer()
@@ -135,14 +136,16 @@ public class CustomConversationNavigationBar: UIView {
         threadImageButton.translatesAutoresizingMaskIntoConstraints = false
         threadImageButton.layer.cornerRadius = 17
         threadImageButton.layer.masksToBounds = true
-
         threadImageButton.imageView.layer.cornerRadius = 8
         threadImageButton.imageView.layer.masksToBounds = true
-
         threadImageButton.imageView.contentMode  = .scaleAspectFill
         threadImageButton.action = { [weak self] in
             self?.navigateToDetailView()
         }
+
+        threadTitleSupplementary.translatesAutoresizingMaskIntoConstraints = false
+        threadTitleSupplementary.font = UIFont.uiiransansCaption3
+        threadTitleSupplementary.textColor = .white
 
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.imageView.image = UIImage(systemName: "chevron.backward")
@@ -159,6 +162,7 @@ public class CustomConversationNavigationBar: UIView {
 
         addSubview(backButton)
         addSubview(threadImageButton)
+        addSubview(threadTitleSupplementary)
         addSubview(titlebutton)
         addSubview(rightTitleImageView)
         addSubview(subtitleLabel)
@@ -169,6 +173,9 @@ public class CustomConversationNavigationBar: UIView {
             threadImageButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             threadImageButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
             threadImageButton.widthAnchor.constraint(equalToConstant: 38),
+
+            threadTitleSupplementary.centerXAnchor.constraint(equalTo: threadImageButton.centerXAnchor),
+            threadTitleSupplementary.centerYAnchor.constraint(equalTo: threadImageButton.centerYAnchor),
 
             backButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
             backButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
@@ -215,6 +222,20 @@ public class CustomConversationNavigationBar: UIView {
     public func updateImageTo(_ image: UIImage?) {
         UIView.transition(with: threadImageButton.imageView, duration: 0.2, options: .transitionCrossDissolve) {
             self.threadImageButton.imageView.image = image
+            if image == nil {
+                Task { [weak self] in
+                    await self?.setSplitedText()
+                }
+            }
+        }
+    }
+
+    private func setSplitedText() async {
+        let splitedText = String.splitedCharacter(self.viewModel?.thread.title ?? "")
+        let bg = String.getMaterialColorByCharCode(str: self.viewModel?.thread.computedTitle ?? "")
+        await MainActor.run {
+            self.threadImageButton.layer.backgroundColor = bg.cgColor
+            self.threadTitleSupplementary.text = splitedText
         }
     }
 
@@ -245,6 +266,10 @@ public class CustomConversationNavigationBar: UIView {
                 updateImageTo(newImage)
             }
             .store(in: &cancellableSet)
+        } else {
+            Task {
+                await setSplitedText()
+            }
         }
     }
 

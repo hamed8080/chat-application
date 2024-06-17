@@ -36,6 +36,8 @@ final class FooterView: UIStackView {
         spacing = 4
         axis = .horizontal
         alignment = .firstBaseline
+        layoutMargins = .init(top: 2, left: 0, bottom: 0, right: 0)
+        isLayoutMarginsRelativeArrangement = true
 
         statusImage.translatesAutoresizingMaskIntoConstraints = false
         statusImage.translatesAutoresizingMaskIntoConstraints = false

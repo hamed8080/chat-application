@@ -82,8 +82,8 @@ public final class ThreadBottomToolbar: UIStackView {
         selectionView.isHidden = true
         audioRecordingView.isHidden = true
 
-        addArrangedSubview(attachmentFilesTableView)
         addArrangedSubview(attachmentButtons)
+        addArrangedSubview(attachmentFilesTableView)
         addArrangedSubview(replyPlaceholderView)
         addArrangedSubview(replyPrivatelyPlaceholderView)
         addArrangedSubview(forwardPlaceholderView)
@@ -106,30 +106,44 @@ public final class ThreadBottomToolbar: UIStackView {
         ])
     }
 
-    public func updateAttachmentButtonsVisibility() {
-        animateAttachmentButtonIfNeede()
+    public func showMainButtons(_ show: Bool) {
+        UIView.animate(withDuration: 0.2) {
+            self.mainSendButtons.alpha = !show ? 0.0 : 1.0
+            self.mainSendButtons.isHidden = !show
+        }
+    }
+
+    public func showPickerButtons(_ show: Bool) {
+        mainSendButtons.toggleAttchmentButton(show: show)
+        showPicker(show: show)
+    }
+
+    public func showSendButton(_ show: Bool) {
+        mainSendButtons.showSendButton(show)
+    }
+
+    public func showMicButton(_ show: Bool) {
+        mainSendButtons.showMicButton(show)
+    }
+
+    public func showSelectionBar(_ show: Bool) {
+        selectionView.update()
+    }
+
+    public func updateSelectionBar() {
+        selectionView.update()
     }
 
     public func updateMentionList() {
         mentionTableView.updateMentionList()
     }
 
-    private func animateAttachmentButtonIfNeede() {
-        let showActionButtons = viewModel?.sendContainerViewModel.showActionButtons == true
-        if showActionButtons {
-            attachmentButtons.alpha = 0.0
-            UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) { [weak self] in
-                guard let self = self else { return }
-                attachmentButtons.isHidden = !showActionButtons
-                attachmentButtons.alpha = 1.0
-            }
-        } else {
-            attachmentButtons.alpha = 1.0
-            UIView.animate(withDuration: 0.2) { [weak self] in
-                guard let self = self else { return }
-                attachmentButtons.isHidden = !showActionButtons
-                attachmentButtons.alpha = 0.0
-            }
+    private func showPicker(show: Bool) {
+        attachmentButtons.alpha = show ? 0.0 : 1.0
+        UIView.animate(withDuration: show ? 0.3 : 0.2, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) { [weak self] in
+            guard let self = self else { return }
+            attachmentButtons.isHidden = !show
+            attachmentButtons.alpha = show ? 1.0 : 0.0
         }
     }
 
@@ -139,7 +153,7 @@ public final class ThreadBottomToolbar: UIStackView {
             guard let self = self else { return }
             if viewModel.audioRecoderVM.isRecording {
                 onUpdateHeight?(audioRecordingView.frame.height)
-            } else if viewModel.sendContainerViewModel.showActionButtons {
+            } else if viewModel.sendContainerViewModel.showPickerButtons {
                 onUpdateHeight?(mainSendButtons.frame.height)
             } else {
                 onUpdateHeight?(frame.height)
@@ -161,16 +175,19 @@ public final class ThreadBottomToolbar: UIStackView {
     }
 
     public func openRecording(_ show: Bool) {
-        audioRecordingView.set()
+        audioRecordingView.show(show) // Reset to show RecordingView again
         viewModel?.attachmentsViewModel.clear()
-        viewModel?.setupRecording()
-        mainSendButtons.alpha = show ? 1.0 : 0.0
-        audioRecordingView.alpha = show ? 0.0 : 1.0
-        UIView.animate(withDuration: 0.2) {
-            self.mainSendButtons.alpha = show ? 0.0 : 1.0
-            self.audioRecordingView.alpha = show ? 1.0 : 0.0
+        // We have to be in showing mode to setup recording unless we will end up toggle isRecording inside the setupRecording method.
+        if show {
+            viewModel?.setupRecording()
+        }
+        showMainButtons(!show)
+        showRecordingView(show)
+    }
 
-            self.mainSendButtons.isHidden = show
+    private func showRecordingView(_ show: Bool) {
+        UIView.animate(withDuration: 0.2) {
+            self.audioRecordingView.alpha = show ? 1.0 : 0.0
             self.audioRecordingView.isHidden = !show
         }
     }

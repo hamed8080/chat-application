@@ -33,7 +33,7 @@ public final class SendContainerViewModel {
     public var isVoice: Bool { viewModel?.attachmentsViewModel.attachments.count == 0 }
     public var showRecordingView: Bool { viewModel?.audioRecoderVM.isRecording == true || viewModel?.audioRecoderVM.recordingOutputPath != nil }
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
-    public private(set) var showActionButtons: Bool = false
+    public private(set) var showPickerButtons: Bool = false
     public private(set) var focusOnTextInput: Bool = false
     public private(set) var isVideoRecordingSelected = false
     private var editMessage: Message?
@@ -112,9 +112,8 @@ public final class SendContainerViewModel {
         return editMessage
     }
 
-    public func toggleActionButtons() {
-        showActionButtons.toggle()
-        viewModel?.delegate?.onAttchmentButtonsMenu(show: showActionButtons)
+    public func showPickerButtons(_ show: Bool) {
+        showPickerButtons = show
     }
 
     public func setFocusOnTextView(focus: Bool = false) {
@@ -167,6 +166,6 @@ public final class SendContainerViewModel {
     private var isSimulated: Bool { threadId == -1 || threadId == LocalId.emptyThread.rawValue }
 
     public func setAttachmentButtonsVisibility(show: Bool) {
-        showActionButtons = show
+        showPickerButtons = show
     }
 }

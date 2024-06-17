@@ -144,7 +144,7 @@ extension ThreadViewController {
         sendContainer.onUpdateHeight = { [weak self] (height: CGFloat) in
             guard let self = self else { return }
             guard let viewModel = viewModel else { return }
-            let isButtonsVisible = viewModel.sendContainerViewModel.showActionButtons
+            let isButtonsVisible = viewModel.sendContainerViewModel.showPickerButtons
             let safeAreaHeight = (isButtonsVisible ? 0 : view.safeAreaInsets.bottom)
             let height = (height - safeAreaHeight) + keyboardheight
             if tableView.contentInset.bottom != height {
@@ -328,7 +328,7 @@ extension ThreadViewController: ThreadViewDelegate {
         tableView.visibleCells.compactMap{$0 as? MessageBaseCell}.forEach { cell in
             cell.setInSelectionMode(value)
         }
-        updateSelectionView()
+        showSelectionBar(value)
         // We need a delay to show selection view to calculate height of sendContainer then update to the last Message if it is visible
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             self?.moveTolastMessageIfVisible()
@@ -336,7 +336,7 @@ extension ThreadViewController: ThreadViewDelegate {
     }
 
     func updateSelectionView() {
-        sendContainer.selectionView.update()
+        sendContainer.updateSelectionBar()
     }
 
     func lastMessageAppeared(_ appeared: Bool) {
@@ -367,11 +367,6 @@ extension ThreadViewController: ThreadViewDelegate {
         present(vc, animated: true)
     }
 
-    func onAttchmentButtonsMenu(show: Bool) {
-        sendContainer.updateAttachmentButtonsVisibility()
-        dimView.show(show)
-    }
-
     func onMentionListUpdated() {
         sendContainer.updateMentionList()
         tapGetsure.isEnabled = viewModel?.mentionListPickerViewModel.mentionList.count == 0
@@ -384,26 +379,6 @@ extension ThreadViewController: ThreadViewDelegate {
             .forEach { cell in
                 cell.setImage(image)
             }
-    }
-
-    func openEditMode(_ message: (any HistoryMessageProtocol)?) {
-        sendContainer.openEditMode(message)
-        focusOnTextView(focus: message != nil)
-    }
-
-    func openReplyMode(_ message: (any HistoryMessageProtocol)?) {
-        viewModel?.replyMessage = message as? Message
-        focusOnTextView(focus: message != nil)
-        sendContainer.openReplyMode(message)
-        scrollTo(uniqueId: message?.uniqueId ?? "", position: .middle)
-    }
-
-    func focusOnTextView(focus: Bool) {
-        sendContainer.focusOnTextView(focus: focus)
-    }
-
-    func showRecording(_ show: Bool) {
-        sendContainer.openRecording(show)
     }
 
     func edited(_ indexPath: IndexPath) {
@@ -434,6 +409,56 @@ extension ThreadViewController: ThreadViewDelegate {
 
     public func updateImageTo(_ image: UIImage?) {
         topThreadToolbar.updateImageTo(image)
+    }
+}
+
+extension ThreadViewController: BottomToolbarDelegate {
+    func showMainButtons(_ show: Bool) {
+        sendContainer.showMainButtons(show)
+    }
+
+    func showSelectionBar(_ show: Bool) {
+        sendContainer.showSelectionBar(show)
+        showMainButtons(!show)
+    }
+
+    func showPickerButtons(_ show: Bool) {
+        viewModel?.sendContainerViewModel.showPickerButtons(show)
+        sendContainer.showPickerButtons(show)
+        dimView.show(show)
+    }
+    
+    func showSendButton(_ show: Bool) {
+        sendContainer.showSendButton(show)
+    }
+
+    func showMicButton(_ show: Bool) {
+        sendContainer.showMicButton(show)
+    }
+
+    func onItemsPicked() {
+        showSendButton(true)
+        showMicButton(false)
+    }
+
+    func showRecording(_ show: Bool) {
+        sendContainer.openRecording(show)
+    }
+
+    func openEditMode(_ message: (any HistoryMessageProtocol)?) {
+        sendContainer.openEditMode(message)
+        focusOnTextView(focus: message != nil)
+    }
+
+    func openReplyMode(_ message: (any HistoryMessageProtocol)?) {
+        viewModel?.replyMessage = message as? Message
+        focusOnTextView(focus: message != nil)
+        sendContainer.openReplyMode(message)
+        scrollTo(uniqueId: message?.uniqueId ?? "", position: .middle)
+    }
+
+    func focusOnTextView(focus: Bool) {
+        sendContainer.focusOnTextView(focus: focus)
     }
 }
 

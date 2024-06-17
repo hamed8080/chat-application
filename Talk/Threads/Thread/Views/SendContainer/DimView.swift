@@ -40,6 +40,6 @@ class DimView: UIView {
     }
 
     @objc private func onTap() {
-        viewModel?.sendContainerViewModel.toggleActionButtons() // It will recall show method to hide
+        viewModel?.delegate?.showPickerButtons(false)
     }
 }

@@ -50,10 +50,14 @@ public final class AudioRecordingView: UIStackView {
         }
     }
 
-    public func set() {
+    public func show(_ show: Bool) {
         recordedAudioView.isHidden = true
-        recordingAudioView.isHidden = false
-        recordingAudioView.startCircleAnimation()
+        recordingAudioView.isHidden = !show
+        recordingAudioView.alpha = 1.0
+        recordedAudioView.alpha = 0.0
+        if show {
+            recordingAudioView.startCircleAnimation()
+        }
     }
 
     public func onSubmitRecord() {
@@ -265,9 +269,9 @@ public final class RecordingAudioView: UIStackView {
     }
 
     private func micTapped() {
-        viewModel?.stop()
         Task { [weak self] in
             guard let self = self else { return }
+            viewModel?.stop()
             if let fileURL = viewModel?.recordingOutputPath {
                 let playerVM = AppState.shared.objectsContainer.audioPlayerVM
                 try? playerVM.setup(fileURL: fileURL,

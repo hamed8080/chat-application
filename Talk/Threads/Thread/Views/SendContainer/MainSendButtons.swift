@@ -242,15 +242,36 @@ public final class MainSendButtons: UIStackView {
     }
 
     @objc private func onBtnToggleAttachmentButtonsTapped() {
-        viewModel.toggleActionButtons()
+        let currentValue = viewModel.viewModel?.sendContainerViewModel.showPickerButtons == true
+        let newState = !currentValue
+        viewModel.viewModel?.delegate?.showPickerButtons(newState) // toggle
+        toggleAttchmentButton(show: newState)
+        onViewModelChanged()
     }
 
-    private func onViewModelChanged() {
+    public func onViewModelChanged() {
         if viewModel.getText() != multilineTextField.text {
             multilineTextField.text = viewModel.getText() // When sending a message and we want to clear out the txetfield
         }
         animateMainButtons()
-        animateActionButtonsIfNeeded()
+    }
+
+    public func showSendButton(_ show: Bool) {
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            guard let self = self else { return }
+            if btnSend.isHidden != !show {
+                btnSend.isHidden = !show
+            }
+        }
+    }
+    
+    public func showMicButton(_ show: Bool) {
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            guard let self = self else { return }
+            if btnMic.isHidden != !show {
+                btnMic.isHidden = !show
+            }
+        }
     }
 
     private func animateMainButtons() {
@@ -268,10 +289,10 @@ public final class MainSendButtons: UIStackView {
         }
     }
 
-    private func animateActionButtonsIfNeeded() {
+    public func toggleAttchmentButton(show: Bool) {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            let attImage = UIImage(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
+            let attImage = UIImage(systemName: show ? "chevron.down" : "paperclip")
             btnToggleAttachmentButtons.imageView.image = attImage
         }
     }

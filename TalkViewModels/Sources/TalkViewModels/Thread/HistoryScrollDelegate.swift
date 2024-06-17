@@ -52,19 +52,22 @@ public protocol SheetsDelegate {
 }
 
 public protocol BottomToolbarDelegate {
+    func showMainButtons(_ show: Bool)
+    func showSelectionBar(_ show: Bool)
+    func showRecording(_ show: Bool)
+    func showPickerButtons(_ show: Bool)
+    func showSendButton(_ show: Bool)
+    func showMicButton(_ show: Bool)
+    func onItemsPicked()
     func openEditMode(_ message: (any HistoryMessageProtocol)?)
     func openReplyMode(_ message: (any HistoryMessageProtocol)?)
-    func showRecording(_ show: Bool)
+    func focusOnTextView(focus: Bool)
 }
 
 public protocol LoadingDelegate {
     func startTopAnimation(_ animate: Bool)
     func startCenterAnimation(_ animate: Bool)
     func startBottomAnimation(_ animate: Bool)
-}
-
-public protocol AttachmentsDelegate {
-    func onAttchmentButtonsMenu(show: Bool)
 }
 
 public protocol MentionList {
@@ -81,5 +84,5 @@ public protocol TopToolbarDelegate {
     func updateImageTo(_ image: UIImage?)
 }
 
-public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate, AttachmentsDelegate, MentionList, AvatarDelegate, BottomToolbarDelegate, TopToolbarDelegate {
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate, MentionList, AvatarDelegate, BottomToolbarDelegate, TopToolbarDelegate {
 }

@@ -46,7 +46,7 @@ final class MessageContainer: UIStackView {
     public func configureView() {
         backgroundColor = Color.App.bgChatUserUIColor!
         axis = .vertical
-        spacing = 8
+        spacing = 0
         alignment = .leading
         distribution = .fill
         layoutMargins = .init(all: 4)
@@ -85,30 +85,13 @@ final class MessageContainer: UIStackView {
             tailImageView.heightAnchor.constraint(equalToConstant: 32),
             tailImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -12),
             tailImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
-            forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
         ])
-    }
-
-    private func setVerticalSpacings(viewModel: MessageRowViewModel) {
-//        let message = viewModel.message
-//        let isReply = viewModel.message.replyInfo != nil
-//        let isForward = viewModel.message.forwardInfo != nil
-//        let isFile = message.isUploadMessage && !message.isImage && message.isFileType
-//        let isImage = viewModel.canShowImageView
-//        let isVideo = !message.isUploadMessage && message.isVideo == true
-//        let isAudio = !message.isUploadMessage && message.isAudio == true
-//        let isLocation = viewModel.isMapType
-//        let isUploadImage = message.isUploadMessage && message.isImage
-//        let isUploadFile = !message.isUploadMessage && message.isFileType && !viewModel.isMapType && !message.isImage && !message.isAudio && !message.isVideo
-//        let isTextEmpty = message.messageTitle.isEmpty
-//        let isUnsent = viewModel.message.isUnsentMessage
-//        let hasReaction = viewModel.reactionsVM.reactionCountList.count > 0
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        setVerticalSpacings(viewModel: viewModel)
         textMessageView.set(viewModel)
         replyInfoMessageRow.set(viewModel)
         forwardMessageRow.set(viewModel)
@@ -288,7 +271,7 @@ extension MessageContainer {
     private func onSeenListAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         let value = MessageParticipantsSeenNavigationValue(message: message, threadVM: model.threadVM!)
-//        AppState.shared.objectsContainer.navVM.append(type: .messageParticipantsSeen(value), value: value)
+        AppState.shared.objectsContainer.navVM.append(value: value)
     }
 
     private func onSaveAction(_ model: ActionModel) {
@@ -308,7 +291,9 @@ extension MessageContainer {
     private func onDeleteCacheAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         model.threadVM?.clearCacheFile(message: message)
-//        model.threadVM?.animateObjectWillChange()
+        if let uniqueId = message.uniqueId, let indexPath = model.threadVM?.historyVM.sections.indicesByMessageUniqueId(uniqueId) {
+            model.threadVM?.delegate?.reconfig(at: indexPath)
+        }
     }
 
     private func onDeleteAction(_ model: ActionModel) {
