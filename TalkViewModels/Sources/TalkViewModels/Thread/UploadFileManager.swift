@@ -86,10 +86,10 @@ public final class UploadFileManager {
         let isUploading = vm.state == .uploading
         let progress = min(CGFloat(vm.uploadPercent) / 100, 1.0)
         let iconState = getIconState(vm: vm)
-        var image: UIImage?
+        var preloadImage: UIImage?
         var blurRadius: CGFloat = 0
         if let data = (message as? UploadFileMessage)?.uploadImageRequest?.dataToSend, let uiimage = UIImage(data: data) {
-            image = uiimage
+            preloadImage = uiimage
         }
 
         if message.isImage, !isCompleted {
@@ -101,7 +101,7 @@ public final class UploadFileManager {
                                               state: isCompleted ? .completed : .undefined,
                                               iconState: iconState,
                                               blurRadius: blurRadius,
-                                              image: image
+                                              preloadImage: preloadImage
         )
         await changeStateTo(state: fileState, viewModelUniqueId: viewModelUniqueId)
     }

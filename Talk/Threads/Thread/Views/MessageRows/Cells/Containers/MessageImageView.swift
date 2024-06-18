@@ -84,11 +84,15 @@ final class MessageImageView: UIImageView {
         self.viewModel = viewModel
         let state = viewModel.fileState.state
         let canShow = state != .completed
-        setImage(fileURL: viewModel.calMessage.fileURL)
+        if let fileURL = viewModel.calMessage.fileURL {
+            setImage(fileURL: fileURL)
+        } else {
+            setPreloadImage()
+        }
         stack.isHidden = !canShow
         effectView.isHidden = !canShow
 
-        if viewModel.fileState.state != .completed {
+        if state != .completed {
             let progress = viewModel.fileState.progress
             progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
         }
@@ -102,15 +106,21 @@ final class MessageImageView: UIImageView {
         }
     }
 
-    private func setImage(fileURL: URL?) {
+    private func setImage(fileURL: URL) {
         Task { @HistoryActor in
-            if let scaledImage = fileURL?.imageScale(width: 300)?.image {
+            if let scaledImage = fileURL.imageScale(width: 300)?.image {
                 let image = scaledImage
                 await MainActor.run {
                     self.image = UIImage(cgImage: image)
                 }
             }
         }
+    }
+
+    // Thumbnail or placeholder image
+    private func setPreloadImage() {
+        guard let image = viewModel?.fileState.preloadImage else { return }
+        self.image = image
     }
 
     @objc func onTap(_ sender: UIGestureRecognizer) {

@@ -13,7 +13,7 @@ public protocol HistoryScrollDelegate: AnyObject, HistoryEmptyDelegate {
     func scrollTo(index: IndexPath, position: UITableView.ScrollPosition, animate: Bool)
     func scrollTo(uniqueId: String, position: UITableView.ScrollPosition, animate: Bool)
     func reload()
-    func relaod(at: IndexPath)
+    func reload(at: IndexPath)
     func reconfig(at: IndexPath)
     func inserted(at: IndexPath)
     func inserted(at: [IndexPath])

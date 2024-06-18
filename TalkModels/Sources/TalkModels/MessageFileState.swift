@@ -9,7 +9,8 @@ public struct MessageFileState {
     public var state: DownloadFileState
     public var iconState: String
     public var blurRadius: CGFloat
-    public var image: UIImage?
+    // Preload Image: Either a placeholder image or a thumbnail image
+    public var preloadImage: UIImage?
 
     public init(progress: CGFloat = 0.0,
                 showImage: Bool = false,
@@ -19,7 +20,7 @@ public struct MessageFileState {
                 state: DownloadFileState = .undefined,
                 iconState: String = "arrow.down",
                 blurRadius: CGFloat = 0,
-                image: UIImage? = nil) {
+                preloadImage: UIImage? = nil) {
         self.progress = progress
         self.showDownload = showDownload
         self.isUploading = isUploading
@@ -27,14 +28,16 @@ public struct MessageFileState {
         self.state = state
         self.iconState = iconState
         self.blurRadius = blurRadius
-        self.image = image
+        self.preloadImage = preloadImage
     }
 
     mutating public func update(_ newState: MessageFileState) {
-        let oldImage = image
+        let oldImage = preloadImage
         self = newState
         if newState.state == .downloading, let oldImage = oldImage {
-            image = oldImage
+            preloadImage = oldImage
+        } else if newState.state == .completed {
+            preloadImage = nil
         }
     }
 }

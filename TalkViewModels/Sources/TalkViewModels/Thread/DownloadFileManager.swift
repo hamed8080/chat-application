@@ -38,10 +38,7 @@ public final class DownloadFileManager {
     }
 
     private func downloadImage(vm: DownloadFileViewModel, messageId: Int) async {
-        if vm.isInCache {
-            guard let data = vm.data, let image = UIImage(data: data) else { return }
-            await changeStateTo(state: .init(showImage: true, state: .completed, blurRadius: 0, image: image), messageId: messageId)
-        } else if vm.isInCache == false && vm.thumbnailData == nil {
+        if vm.thumbnailData == nil {
             vm.downloadBlurImage()
         } else {
             downloadNormalFile(vm: vm) // Download real image due to image thumbnail has been already on the screen
@@ -133,28 +130,33 @@ public final class DownloadFileManager {
         guard let vm = viewModel(for: messageId) else { return }
         var showDownload = true
         var blurRadius: CGFloat = 16
-        var image: UIImage? = nil
+        var preloadImage: UIImage? = nil
         let progress: CGFloat = CGFloat(await vm.downloadPercentValue())
         let iconState = getIconState(vm: vm)
-        if vm.state == .completed, let realImage = realImage(vm: vm) {
-            image = realImage
+        if vm.state == .completed {
+            preloadImage = nil
             blurRadius = 0
             showDownload = false
+            log("Image download has been completed with id: \(messageId) message:\(message.message ?? "")")
         } else if let blurImage = blurImage(vm: vm) {
-            image = blurImage
+            preloadImage = blurImage
             blurRadius = 16
             showDownload = true
+            log("thumbnail created for id: \(messageId) message:\(message.message ?? "")")
         } else if vm.state == .downloading {
             blurRadius = 16
             showDownload = true
+            log("Downloading the image with id: \(messageId) message:\(message.message ?? "")")
         } else {
-            image = DownloadFileManager.emptyImage
+            preloadImage = DownloadFileManager.emptyImage
             blurRadius = 0
             showDownload = true
+            log("Image placeholder for image with id: \(messageId) message:\(message.message ?? "")")
         }
 
         if isMap, vm.state != .completed {
-            image = DownloadFileManager.mapPlaceholder
+            preloadImage = DownloadFileManager.mapPlaceholder
+            log("Map placeholder with message id: \(messageId) message:\(message.message ?? "")")
         }
         let state = MessageFileState(
             progress: min(CGFloat(progress) / 100, 1.0),
@@ -163,7 +165,7 @@ public final class DownloadFileManager {
             state: vm.state,
             iconState: iconState,
             blurRadius: blurRadius,
-            image: image
+            preloadImage: preloadImage
         )
         await changeStateTo(state: state, messageId: messageId)
     }
@@ -195,13 +197,22 @@ public final class DownloadFileManager {
     }
 
     private func changeStateTo(state: MessageFileState, messageId: Int) async {
-        guard let result = viewModel?.historyVM.sections.viewModelAndIndexPath(for: messageId) else { return }
+        guard let result = viewModel?.historyVM.sections.viewModelAndIndexPath(for: messageId) else {
+            log("Index path could not be found for message id:\(messageId)")
+            return
+        }
         await MainActor.run {
             result.vm.setFileState(state)
-            viewModel?.historyVM.delegate?.reconfig(at: result.indexPath)
+            viewModel?.delegate?.reconfig(at: result.indexPath)
         }
         if state.state == .completed {
             unRegister(messageId: messageId)
         }
+    }
+
+    private func log(_ string: String) {
+#if DEBUG
+        Logger.viewModels.info("\(string, privacy: .sensitive)")
+#endif
     }
 }

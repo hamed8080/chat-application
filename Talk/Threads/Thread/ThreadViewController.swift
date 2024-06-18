@@ -508,7 +508,7 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
-    func relaod(at: IndexPath) {
+    func reload(at: IndexPath) {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.reloadRows(at: [at], with: .fade)
         }
@@ -522,11 +522,7 @@ extension ThreadViewController: HistoryScrollDelegate {
 
     func reconfig(at: IndexPath) {
         DispatchQueue.main.async { [weak self] in
-            /// Prevent to reconfigure if the cell is not currently visible on the screen
-            /// The desired cell will be dequeued and call cellForRowAtIndexPath and set valid properties if it wants to show.
-            if self?.tableView.indexPathsForVisibleRows?.contains(where: {$0.row == at.row && $0.section == at.section}) == true {
-                self?.tableView.reconfigureRows(at: [at])
-            }
+            self?.tableView.reconfigureRows(at: [at])
         }
     }
 

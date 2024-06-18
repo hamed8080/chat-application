@@ -60,7 +60,11 @@ final class MessageLocationView: UIImageView {
         }
         isHidden = false
         UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) {
-            self.image = viewModel.fileState.state == .completed ? viewModel.fileState.image : DownloadFileManager.mapPlaceholder
+            if let fileURL = viewModel.calMessage.fileURL {
+                self.setImage(fileURL: fileURL)
+            } else {
+                self.image = viewModel.fileState.preloadImage ?? DownloadFileManager.mapPlaceholder
+            }
         }
         tintColor = viewModel.fileState.state == .completed ? .clear : .gray
 
@@ -74,6 +78,18 @@ final class MessageLocationView: UIImageView {
 
         if mapViewHeightConstraint.constant != viewModel.calMessage.sizes.mapHeight {
             mapViewHeightConstraint.constant = viewModel.calMessage.sizes.mapHeight
+        }
+    }
+
+
+    private func setImage(fileURL: URL?) {
+        Task { @HistoryActor in
+            if let scaledImage = fileURL?.imageScale(width: 300)?.image {
+                let image = scaledImage
+                await MainActor.run {
+                    self.image = UIImage(cgImage: image)
+                }
+            }
         }
     }
 
