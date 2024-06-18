@@ -50,7 +50,7 @@ public final class SelectMessageRadio: UIView {
             reset()
             return
         }
-        isHidden = false
+        setIsHidden(false)
         UIView.animate(withDuration: 0.3) { [weak self] in
             self?.imageView.image = selected ? SelectMessageRadio.staticSelectedImage : SelectMessageRadio.staticUNSelectedImage
         }

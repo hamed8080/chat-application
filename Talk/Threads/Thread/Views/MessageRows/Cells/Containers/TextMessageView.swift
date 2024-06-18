@@ -49,19 +49,14 @@ final class TextMessageView: UITextView {
     }
 
     private func reset() {
-        if !isHidden {
-            isHidden = true
-        }
+        setIsHidden(true)
     }
 
     public func setText() {
         self.attributedText = self.viewModel?.calMessage.markdownTitle
         self.textColor = Color.App.textPrimaryUIColor
         self.font = UIFont.uiiransansBody
-        let newHiddenValue = viewModel?.calMessage.rowType.hasText == false
-        if self.isHidden != newHiddenValue {
-            self.isHidden = newHiddenValue
-        }
+        setIsHidden(viewModel?.calMessage.rowType.hasText == false)
     }
 }
 

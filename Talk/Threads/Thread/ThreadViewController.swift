@@ -168,7 +168,7 @@ extension ThreadViewController {
     private func configureEmptyThreadView() {
         emptyThreadView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(emptyThreadView)
-        emptyThreadView.isHidden = true
+        emptyThreadView.setIsHidden(true)
         NSLayoutConstraint.activate([
             emptyThreadView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             emptyThreadView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -209,8 +209,8 @@ extension ThreadViewController {
 
     private func showEmptyThread(show: Bool) {
         if show {
-            emptyThreadView.isHidden = true
-            unreadMentionsButton.isHidden = true
+            emptyThreadView.setIsHidden(true)
+            unreadMentionsButton.setIsHidden(true)
         }
     }
 

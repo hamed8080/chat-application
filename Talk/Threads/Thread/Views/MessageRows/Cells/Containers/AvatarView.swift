@@ -57,15 +57,15 @@ final class AvatarView: UIImageView {
         self.viewModel = viewModel
         let avManager = viewModel.threadVM?.avatarManager
         backgroundColor = viewModel.calMessage.avatarColor
-        label.isHidden = true // reset
+        label.setIsHidden(true) // reset
         label.text = viewModel.calMessage.avatarSplitedCharaters
         if hiddenView(viewModel) {
             backgroundColor = nil
-            isHidden = true
+            setIsHidden(true)
             image = nil
             isUserInteractionEnabled = false
         } else if viewModel.calMessage.isLastMessageOfTheUser {
-            isHidden = false
+            setIsHidden(false)
             if let image = avManager?.getImage(viewModel) {
                 setImage(image: image)
             } else {
@@ -75,7 +75,7 @@ final class AvatarView: UIImageView {
             isUserInteractionEnabled = true
         } else if !viewModel.calMessage.isLastMessageOfTheUser {
             image = nil
-            isHidden = false
+            setIsHidden(false)
             backgroundColor = nil
             label.isHidden = true
             isUserInteractionEnabled = false

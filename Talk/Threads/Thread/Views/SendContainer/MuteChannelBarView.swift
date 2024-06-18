@@ -43,7 +43,7 @@ public final class MuteChannelBarView: UIView {
     }
 
     public func set() {
-        isHidden = !(viewModel?.sendContainerViewModel.canShowMute == true)
+        setIsHidden(!(viewModel?.sendContainerViewModel.canShowMute == true))
         let isMute = viewModel?.thread.mute == true
         let title = isMute ? "Thread.unmute".localized() : "Thread.mute".localized()
         btn.setTitle(title, for: .normal)

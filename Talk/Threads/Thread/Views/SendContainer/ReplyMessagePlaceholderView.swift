@@ -74,11 +74,11 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         alpha = showReply ? 0.0 : 1.0
         UIView.animate(withDuration: 0.2) {
             self.alpha = showReply ? 1.0 : 0.0
-            self.isHidden = !showReply
+            self.setIsHidden(!showReply)
         }
 
         nameLabel.text = replyMessage?.participant?.name
-        nameLabel.isHidden = replyMessage?.participant?.name == nil
+        nameLabel.setIsHidden(replyMessage?.participant?.name == nil)
         Task {
             let message = replyMessage?.message ?? replyMessage?.fileMetaData?.name ?? ""
             await MainActor.run {

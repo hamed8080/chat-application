@@ -94,12 +94,12 @@ public final class SelectionView: UIStackView {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
             let show = viewModel.selectedMessagesViewModel.isInSelectMode
-            isHidden = false
+            setIsHidden(false)
             UIView.animate(withDuration: 0.2) {
                 self.alpha = show ? 1.0 : 0.0
-                self.isHidden = !show
+                self.setIsHidden(!show)
             }
-            btnDelete.isHidden = viewModel.thread.disableSend
+            btnDelete.setIsHidden(viewModel.thread.disableSend)
             updateCount()
         }
     }

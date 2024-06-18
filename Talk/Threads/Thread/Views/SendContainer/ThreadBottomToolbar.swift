@@ -74,13 +74,13 @@ public final class ThreadBottomToolbar: UIStackView {
         effectView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         addSubview(effectView)
 
-        pickerButtons.isHidden = true
-        attachmentFilesTableView.isHidden = true
-        replyPrivatelyPlaceholderView.isHidden = true
-        replyPlaceholderView.isHidden = true
-        editMessagePlaceholderView.isHidden = true
-        selectionView.isHidden = true
-        audioRecordingView.isHidden = true
+        pickerButtons.setIsHidden(true)
+        attachmentFilesTableView.setIsHidden(true)
+        replyPrivatelyPlaceholderView.setIsHidden(true)
+        replyPlaceholderView.setIsHidden(true)
+        editMessagePlaceholderView.setIsHidden(true)
+        selectionView.setIsHidden(true)
+        audioRecordingView.setIsHidden(true)
 
         addArrangedSubview(pickerButtons)
         addArrangedSubview(attachmentFilesTableView)
@@ -109,7 +109,7 @@ public final class ThreadBottomToolbar: UIStackView {
     public func showMainButtons(_ show: Bool) {
         UIView.animate(withDuration: 0.2) {
             self.mainSendButtons.alpha = !show ? 0.0 : 1.0
-            self.mainSendButtons.isHidden = !show
+            self.mainSendButtons.setIsHidden(!show)
         }
     }
 
@@ -142,7 +142,7 @@ public final class ThreadBottomToolbar: UIStackView {
         pickerButtons.alpha = show ? 0.0 : 1.0
         UIView.animate(withDuration: show ? 0.3 : 0.2, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) { [weak self] in
             guard let self = self else { return }
-            pickerButtons.isHidden = !show
+            pickerButtons.setIsHidden(!show)
             pickerButtons.alpha = show ? 1.0 : 0.0
         }
     }
@@ -188,7 +188,7 @@ public final class ThreadBottomToolbar: UIStackView {
     private func showRecordingView(_ show: Bool) {
         UIView.animate(withDuration: 0.2) {
             self.audioRecordingView.alpha = show ? 1.0 : 0.0
-            self.audioRecordingView.isHidden = !show
+            self.audioRecordingView.setIsHidden(!show)
         }
     }
 

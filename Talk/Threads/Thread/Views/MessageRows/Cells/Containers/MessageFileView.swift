@@ -89,9 +89,9 @@ final class MessageFileView: UIStackView {
             reset()
             return
         }
-        isHidden = false
+        setIsHidden(false)
         self.viewModel = viewModel
-        semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
         progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
@@ -106,8 +106,6 @@ final class MessageFileView: UIStackView {
     }
     
     func reset() {
-        if !isHidden {
-            isHidden = true
-        }
+        setIsHidden(true)
     }
 }

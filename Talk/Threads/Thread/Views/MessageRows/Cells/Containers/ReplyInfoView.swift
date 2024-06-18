@@ -112,21 +112,27 @@ final class ReplyInfoView: UIStackView {
             reset()
             return
         }
-        backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
-        semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
-        vStack.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        setIsHidden(false)
+        setBackgroundColor(viewModel.calMessage.isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor)
+
+        setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
+        vStack.setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
+
         participantLabel.text = replyInfo?.participant?.name
-        participantLabel.isHidden = replyInfo?.participant?.name == nil
+        participantLabel.setIsHidden(replyInfo?.participant?.name == nil)
+
         replyLabel.text = replyInfo?.message
-        replyLabel.isHidden = replyInfo?.message?.isEmpty == true
+        replyLabel.setIsHidden(replyInfo?.message?.isEmpty == true)
         replyLabel.textAlignment = viewModel.calMessage.isEnglish || viewModel.calMessage.isMe ? .right : .left
-        deletedLabel.isHidden = replyInfo?.deleted == nil || replyInfo?.deleted == false
+
+        deletedLabel.setIsHidden(replyInfo?.deleted == nil || replyInfo?.deleted == false)
+
         let hasImage = viewModel.calMessage.isReplyImage
-        imageIconView.isHidden = !hasImage
+
         if viewModel.calMessage.isReplyImage, let url = viewModel.calMessage.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata))
         }
-        imageIconView.isHidden = !hasImage
+        imageIconView.setIsHidden( !hasImage)
     }
 
     @objc func onReplyTapped(_ sender: UIGestureRecognizer) {
@@ -173,8 +179,6 @@ final class ReplyInfoView: UIStackView {
     }
 
     private func reset() {
-        if !isHidden {
-            isHidden = true
-        }
+        setIsHidden(true)
     }
 }

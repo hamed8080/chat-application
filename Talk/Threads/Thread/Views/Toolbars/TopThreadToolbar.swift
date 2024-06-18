@@ -117,7 +117,7 @@ public class CustomConversationNavigationBar: UIView {
         subtitleLabel.text = subtitle
         subtitleLabel.textColor = Color.App.toolbarSecondaryTextUIColor
         subtitleLabel.font = UIFont.uiiransansFootnote
-        subtitleLabel.isHidden = subtitle == nil || subtitle?.isEmpty == true
+        subtitleLabel.setIsHidden(subtitle == nil || subtitle?.isEmpty == true)
 
 
         let isSelfThread = viewModel?.thread.type == .selfThread
@@ -132,6 +132,7 @@ public class CustomConversationNavigationBar: UIView {
             threadImageButton.imageView.tintColor = Color.App.textPrimaryUIColor
             threadImageButton.layer.addSublayer(gradientLayer)
             threadImageButton.bringSubviewToFront(threadImageButton.imageView)
+            threadTitleSupplementary.setIsHidden(true)
         }
         threadImageButton.translatesAutoresizingMaskIntoConstraints = false
         threadImageButton.layer.cornerRadius = 17
@@ -158,7 +159,7 @@ public class CustomConversationNavigationBar: UIView {
         rightTitleImageView.translatesAutoresizingMaskIntoConstraints = false
         rightTitleImageView.image = UIImage(named: "ic_approved")
         rightTitleImageView.contentMode = .scaleAspectFit
-        rightTitleImageView.isHidden = viewModel?.thread.isTalk == false
+        rightTitleImageView.setIsHidden(viewModel?.thread.isTalk == false)
 
         addSubview(backButton)
         addSubview(threadImageButton)
@@ -211,7 +212,7 @@ public class CustomConversationNavigationBar: UIView {
 
     public func updateSubtitleTo(_ subtitle: String?) {
         let hide = subtitle == nil || subtitle?.isEmpty == true
-        subtitleLabel.isHidden = hide
+        subtitleLabel.setIsHidden(hide)
         self.subtitleLabel.text = subtitle
         self.centerYTitleConstraint.constant = hide ? 0 : -8
         UIView.animate(withDuration: 0.2) {

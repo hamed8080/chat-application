@@ -65,7 +65,7 @@ public final class MapPickerViewController: UIViewController {
         }
         view.addSubview(btnSubmit)
 
-        toastView.isHidden = true
+        toastView.setIsHidden(true)
         view.addSubview(toastView)
 
         NSLayoutConstraint.activate([
@@ -120,11 +120,11 @@ public final class MapPickerViewController: UIViewController {
     }
 
     private func onError() {
-        toastView.isHidden = false
+        toastView.setIsHidden(false)
         Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
             withAnimation {
                 self.locationManager.error = nil
-                self.toastView.isHidden = true
+                self.toastView.setIsHidden(true)
             }
         }
     }

@@ -80,7 +80,7 @@ final class MessageImageView: UIImageView {
             reset()
             return
         }
-        isHidden = false
+        setIsHidden(false)
         self.viewModel = viewModel
         let state = viewModel.fileState.state
         let canShow = state != .completed
@@ -89,8 +89,8 @@ final class MessageImageView: UIImageView {
         } else {
             setPreloadImage()
         }
-        stack.isHidden = !canShow
-        effectView.isHidden = !canShow
+        stack.setIsHidden(!canShow)
+        effectView.setIsHidden(!canShow)
 
         if state != .completed {
             let progress = viewModel.fileState.progress
@@ -128,10 +128,8 @@ final class MessageImageView: UIImageView {
     }
 
     func reset() {
-        if !isHidden {
-            stack.isHidden = true
-            effectView.isHidden = true
-            isHidden = true
-        }
+        setIsHidden(true)
+        stack.setIsHidden(true)
+        effectView.setIsHidden(true)
     }
 }

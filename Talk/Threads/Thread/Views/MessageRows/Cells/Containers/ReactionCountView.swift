@@ -51,7 +51,7 @@ final class ReactionCountView: UIScrollView {
             reset()
             return
         }
-        isHidden = false
+        setIsHidden(false)
         semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         stack.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
 //        let recitonList = viewModel.reactionsVM.reactionCountList
@@ -68,9 +68,7 @@ final class ReactionCountView: UIScrollView {
     }
 
     private func reset() {
-        if !isHidden {
-            isHidden = true
-        }
+        setIsHidden(true)
     }
 }
 

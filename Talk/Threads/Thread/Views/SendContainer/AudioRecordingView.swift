@@ -33,8 +33,8 @@ public final class AudioRecordingView: UIStackView {
         axis = .vertical
         spacing = 0
         
-        recordedAudioView.isHidden = false
-        recordingAudioView.isHidden = false
+        recordedAudioView.setIsHidden(false)
+        recordingAudioView.setIsHidden(false)
         addArrangedSubview(recordedAudioView)
         addArrangedSubview(recordingAudioView)
 
@@ -44,15 +44,15 @@ public final class AudioRecordingView: UIStackView {
 
         recordedAudioView.onSendOrClose = { [weak self] in
             guard let self = self else { return }
-            recordedAudioView.isHidden = true
-            recordingAudioView.isHidden = true
+            recordedAudioView.setIsHidden(true)
+            recordingAudioView.setIsHidden(true)
             viewModel?.delegate?.showRecording(false)
         }
     }
 
     public func show(_ show: Bool) {
-        recordedAudioView.isHidden = true
-        recordingAudioView.isHidden = !show
+        recordedAudioView.setIsHidden(true)
+        recordingAudioView.setIsHidden(!show)
         recordingAudioView.alpha = 1.0
         recordedAudioView.alpha = 0.0
         if show {
@@ -63,9 +63,9 @@ public final class AudioRecordingView: UIStackView {
     public func onSubmitRecord() {
         UIView.animate(withDuration: 0.2) {
             self.recordingAudioView.alpha = 0.0
-            self.recordingAudioView.isHidden = true
+            self.recordingAudioView.setIsHidden(true)
             self.recordedAudioView.alpha = 1.0
-            self.recordedAudioView.isHidden = false
+            self.recordedAudioView.setIsHidden(false)
             self.recordedAudioView.setup()
         }
     }

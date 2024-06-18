@@ -62,20 +62,20 @@ public final class MainSendButtons: UIStackView {
 
         btnCamera.imageView.contentMode = .scaleAspectFit
         btnCamera.tintColor = Color.App.textSecondaryUIColor
-        btnCamera.isHidden = true
+        btnCamera.setIsHidden(true)
 
         btnSend.imageView.contentMode = .scaleAspectFit
         btnSend.tintColor = Color.App.textPrimaryUIColor
         btnSend.layer.masksToBounds = true
         btnSend.layer.cornerRadius = (MainSendButtons.initSize - 4) / 2
         btnSend.layer.backgroundColor = Color.App.accentUIColor?.cgColor
-        btnSend.isHidden = true
+        btnSend.setIsHidden(true)
         btnSend.action = { [weak self] in
             self?.onBtnSendTapped()
         }
 
         btnEmoji.imageView.tintColor = Color.App.redUIColor
-        btnEmoji.isHidden = true
+        btnEmoji.setIsHidden(true)
 
         let hStack = UIStackView()
         hStack.translatesAutoresizingMaskIntoConstraints = false
@@ -179,14 +179,14 @@ public final class MainSendButtons: UIStackView {
             guard let self = self else { return }
             if viewModel.isVideoRecordingSelected {
                 btnCamera.alpha = 1.0
-                btnCamera.isHidden = false
+                btnCamera.setIsHidden(false)
                 btnMic.alpha = 0.0
-                btnMic.isHidden = true
+                btnMic.setIsHidden(true)
             } else {
                 btnCamera.alpha = 0.0
-                btnCamera.isHidden = true
+                btnCamera.setIsHidden(true)
                 btnMic.alpha = 1.0
-                btnMic.isHidden = false
+                btnMic.setIsHidden(false)
             }
         }
     }
@@ -259,33 +259,23 @@ public final class MainSendButtons: UIStackView {
     public func showSendButton(_ show: Bool) {
         UIView.animate(withDuration: 0.2) { [weak self] in
             guard let self = self else { return }
-            if btnSend.isHidden != !show {
-                btnSend.isHidden = !show
-            }
+            btnSend.setIsHidden(!show)
         }
     }
     
     public func showMicButton(_ show: Bool) {
         UIView.animate(withDuration: 0.2) { [weak self] in
             guard let self = self else { return }
-            if btnMic.isHidden != !show {
-                btnMic.isHidden = !show
-            }
+            btnMic.setIsHidden(!show)
         }
     }
 
     private func animateMainButtons() {
         UIView.animate(withDuration: 0.2) { [weak self] in
             guard let self = self else { return }
-            if btnMic.isHidden != !viewModel.showAudio {
-                btnMic.isHidden = !viewModel.showAudio
-            }
-            if btnCamera.isHidden != !viewModel.showCamera {
-                btnCamera.isHidden = !viewModel.showCamera
-            }
-            if btnSend.isHidden != !viewModel.showSendButton {
-                btnSend.isHidden = !viewModel.showSendButton
-            }
+            btnMic.setIsHidden(!viewModel.showAudio)
+            btnCamera.setIsHidden(!viewModel.showCamera)
+            btnSend.setIsHidden(!viewModel.showSendButton)
         }
     }
 
@@ -332,16 +322,16 @@ public final class MainSendButtons: UIStackView {
         if btnSend.isHidden && newValue?.isEmpty == false {
             UIView.animate(withDuration: 0.2) {
                 self.btnMic.alpha = 0.0
-                self.btnMic.isHidden = true
+                self.btnMic.setIsHidden(true)
                 self.btnSend.alpha = 1.0
-                self.btnSend.isHidden = false
+                self.btnSend.setIsHidden(false)
             }
         } else {
             UIView.animate(withDuration: 0.2) {
                 self.btnMic.alpha = 1.0
-                self.btnMic.isHidden = false
+                self.btnMic.setIsHidden(false)
                 self.btnSend.alpha = 0.0
-                self.btnSend.isHidden = true
+                self.btnSend.setIsHidden(true)
             }
         }
     }

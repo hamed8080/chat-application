@@ -58,7 +58,7 @@ final class MessageLocationView: UIImageView {
             reset()
             return
         }
-        isHidden = false
+        setIsHidden(false)
         UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) {
             if let fileURL = viewModel.calMessage.fileURL {
                 self.setImage(fileURL: fileURL)
@@ -94,10 +94,7 @@ final class MessageLocationView: UIImageView {
     }
 
     private func reset() {
-        if !isHidden {
-            isHidden = true
-        }
-
+        setIsHidden(true)
         if mapViewWidthConstraint.constant > 0 {
             mapViewWidthConstraint.constant = 0
             mapViewHeightConstraint.constant = 0

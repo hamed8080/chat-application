@@ -40,7 +40,7 @@ public class MessageBaseCell: UITableViewCell {
         hStack.spacing = 8
         hStack.distribution = .fill
 
-        radio.isHidden = true
+        radio.setIsHidden(true)
 
         messageContainer.cell = self
         hStack.addArrangedSubview(radio)
@@ -72,7 +72,7 @@ public class MessageBaseCell: UITableViewCell {
         hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
         avatar?.set(viewModel)
         messageContainer.set(viewModel)
-        radio.isHidden = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
+        radio.setIsHidden(viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false)
         radio.set(selected: viewModel.calMessage.state.isSelected, viewModel: viewModel)
         setSelectedBackground()
     }
@@ -100,8 +100,8 @@ public class MessageBaseCell: UITableViewCell {
     func setInSelectionMode(_ isInSelectionMode: Bool) {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            radio.isHidden = !isInSelectionMode
-            avatar?.isHidden = isInSelectionMode
+            radio.setIsHidden(!isInSelectionMode)
+            avatar?.setIsHidden(isInSelectionMode)
             messageContainer.isUserInteractionEnabled = !isInSelectionMode
             if !isInSelectionMode {
                 deselect()

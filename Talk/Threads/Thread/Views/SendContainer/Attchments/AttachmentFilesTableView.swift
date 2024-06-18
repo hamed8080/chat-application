@@ -86,9 +86,9 @@ public final class AttachmentFilesTableView: UIView {
             animateHieght(cellHeight)
         }
         tableView.alwaysBounceVertical = attachments.count > 4
-        expandView.isHidden = attachments.count <= 1
+        expandView.setIsHidden(attachments.count <= 1)
         expandViewHeightConstraint.constant = attachments.count <= 1 ? 0 : expandViewHeight
-        tableView.isHidden = viewModel?.attachmentsViewModel.isExpanded == false && attachments.count != 1
+        tableView.setIsHidden(viewModel?.attachmentsViewModel.isExpanded == false && attachments.count != 1)
     }
 
     private func animateHieght(_ newValue: CGFloat) {
@@ -131,7 +131,7 @@ extension AttachmentFilesTableView: AttachmentDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.reloadData()
             guard let self = self else { return }
-            isHidden = viewModel?.attachmentsViewModel.attachments.isEmpty == true
+            setIsHidden(viewModel?.attachmentsViewModel.attachments.isEmpty == true)
             self.setHeight()
             expandView.set()
         }

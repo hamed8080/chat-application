@@ -69,10 +69,10 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     }
 
     public func set() {
-        isHidden = viewModel?.replyMessage == nil
+        setIsHidden(viewModel?.replyMessage == nil)
         let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately
         nameLabel.text = replyMessage?.participant?.name
-        nameLabel.isHidden = replyMessage?.participant?.name == nil
+        nameLabel.setIsHidden(replyMessage?.participant?.name == nil)
         Task {
             let message = replyMessage?.message ?? replyMessage?.fileMetaData?.name ?? ""
             await MainActor.run {

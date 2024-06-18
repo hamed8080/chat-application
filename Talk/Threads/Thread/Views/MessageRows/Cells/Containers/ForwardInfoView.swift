@@ -79,11 +79,12 @@ final class ForwardInfoView: UIStackView {
             reset()
             return
         }
+        setIsHidden(false)
         backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
-        semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
-        vStack.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
+        vStack.setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name ?? viewModel.message.participant?.name
-        participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
+        participantLabel.setIsHidden(viewModel.message.forwardInfo?.participant?.name == nil)
     }
 
     @IBAction func onForwardTapped(_ sender: UIGestureRecognizer) {
@@ -91,8 +92,6 @@ final class ForwardInfoView: UIStackView {
     }
 
     private func reset() {
-        if !isHidden {
-            isHidden = true
-        }
+        setIsHidden(true)
     }
 }

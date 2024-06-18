@@ -72,7 +72,7 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
         alignment = .center
         layoutMargins = .init(horizontal: 8)
         isLayoutMarginsRelativeArrangement = true
-        isHidden = !(viewModel?.hasPinMessage == true)
+        setIsHidden(!(viewModel?.hasPinMessage == true))
 
         addArrangedSubview(bar)
         addArrangedSubview(pinImageView)
@@ -118,11 +118,11 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
             imageView.layer.cornerRadius = 0
         }
         textButton.setTitle(viewModel.title, for: .normal)
-        imageView.isHidden = viewModel.image == nil && viewModel.icon == nil
-        unpinButton.isHidden = !viewModel.canUnpinMessage
+        imageView.setIsHidden(viewModel.image == nil && viewModel.icon == nil)
+        unpinButton.setIsHidden(!viewModel.canUnpinMessage)
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            isHidden = viewModel.hasPinMessage == false
+            setIsHidden(viewModel.hasPinMessage == false)
         }
     }
 }

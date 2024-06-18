@@ -67,7 +67,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
 
-        playIcon.isHidden = true
+        playIcon.setIsHidden(true)
         playIcon.contentMode = .scaleAspectFit
         playIcon.image = MessageVideoView.playIcon
         playIcon.tintColor = Color.App.whiteUIColor
@@ -85,7 +85,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         addSubview(playIcon)
 
         NSLayoutConstraint.activate([
-            widthAnchor.constraint(equalToConstant: 320),
+            widthAnchor.constraint(equalToConstant: viewModel?.calMessage.sizes.width ?? 320),
             heightAnchor.constraint(equalToConstant: 196),
             playOverlayView.leadingAnchor.constraint(equalTo: leadingAnchor),
             playOverlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -114,7 +114,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
             reset()
             return
         }
-        isHidden = false
+        setIsHidden(false)
         semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         self.viewModel = viewModel
         if let url = viewModel.calMessage.fileURL {
@@ -130,7 +130,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
 
     private func prepareUIForPlayback(url: URL) {
         showDownloadProgress(show: false)
-        playIcon.isHidden = false
+        playIcon.setIsHidden(false)
         Task {
             await makeViewModel(url: url, message: message)
             if let player = await videoPlayerVM?.player {
@@ -140,12 +140,12 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     }
 
     private func prepareUIForDownload() {
-        playIcon.isHidden = true
+        playIcon.setIsHidden(true)
         showDownloadProgress(show: true)
     }
 
     private func showDownloadProgress(show: Bool) {
-        progressButton.isHidden = !show
+        progressButton.setIsHidden(!show)
         progressButton.setProgressVisibility(visible: show)
     }
 
@@ -168,9 +168,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     }
 
     func reset() {
-        if !isHidden {
-            isHidden = true
-        }
+        setIsHidden(true)
     }
 
     @MainActor

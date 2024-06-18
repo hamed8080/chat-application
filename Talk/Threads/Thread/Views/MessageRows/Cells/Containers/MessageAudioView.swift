@@ -94,8 +94,8 @@ final class MessageAudioView: UIStackView {
             reset()
             return
         }
-        isHidden = false
-        semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
+        setIsHidden(false)
+        setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
         self.viewModel = viewModel
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
@@ -114,8 +114,6 @@ final class MessageAudioView: UIStackView {
     }
 
     func reset() {
-        if !isHidden {
-            isHidden = true
-        }
+        setIsHidden(true)
     }
 }

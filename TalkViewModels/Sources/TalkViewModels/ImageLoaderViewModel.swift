@@ -35,38 +35,9 @@ public final class ImageLoaderViewModel: ObservableObject {
     public var onImage: ((UIImage) -> Void)?
     private(set) var fileMetadata: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
-    var uniqueId: String?
+    private var uniqueId: String?
     public private(set) var config: ImageLoaderConfig
-    private var URLObject: URL? { URL(string: config.url) }
-    private var isSDKImage: Bool { hashCode != "" }
-    private var fileMetadataModel: FileMetaData? {
-        guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
-        return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
-    }
     private var isFetching: Bool = false
-    private var accesQueue = DispatchQueue(label: "ChatFileManagerSerialQueue")
-    private var fileURL: URL? {
-        guard let URLObject = URLObject, let fileManager = ChatManager.activeInstance?.file else { return nil }
-        if fileManager.isFileExist(URLObject) {
-            return fileManager.filePath(URLObject)
-        } else if fileManager.isFileExistInGroup(URLObject) {
-            return fileManager.filePathInGroup(URLObject)
-        }
-        return nil
-    }
-
-    var fileServerURL: URL? {
-        guard let fileServer = ChatManager.activeInstance?.config.fileServer else { return nil }
-        return URL(string: fileServer)
-    }
-
-    private var oldURLHash: String? {
-        guard let urlObject = URLObject, let comp = URLComponents(url: urlObject, resolvingAgainstBaseURL: true) else { return nil }
-        return comp.queryItems?.first(where: { $0.name == "hash" })?.value
-    }
-
-    private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
-
     private var objectId = UUID().uuidString
     private let IMAGE_LOADER_KEY: String
 
@@ -75,18 +46,18 @@ public final class ImageLoaderViewModel: ObservableObject {
         self.config = config
         NotificationCenter.download.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
-            .sink{ [weak self] event in
-                DispatchQueue.global().async { [weak self] in
-                    self?.onDownloadEvent(event)
+            .sink{ event in
+                Task { [weak self] in
+                    await self?.onDownloadEvent(event)
                 }
             }
             .store(in: &cancelable)
     }
 
-    private func onDownloadEvent(_ event: DownloadEventTypes) {
+    private func onDownloadEvent(_ event: DownloadEventTypes) async {
         switch event {
         case .image(let chatResponse, let url):
-            onGetImage(chatResponse, url)
+            await onGetImage(chatResponse, url)
         default:
             break
         }
@@ -96,110 +67,89 @@ public final class ImageLoaderViewModel: ObservableObject {
         image.size.width > 0
     }
 
-    private func setImage(data: Data) {
-        autoreleasepool { [weak self] in
-            guard let self = self else { return }
-            var image: UIImage? = nil
-            if config.size == .ACTUAL {
+    private func setImage(data: Data) async {
+        var image: UIImage? = nil
+        if config.size == .ACTUAL {
+            autoreleasepool {
                 image = UIImage(data: data) ?? UIImage()
-            } else {
-                guard let cgImage = data.imageScale(width: config.size == .SMALL ? 128 : 256)?.image else { return }
+            }
+        } else {
+            guard let cgImage = data.imageScale(width: config.size == .SMALL ? 128 : 256)?.image else { return }
+            autoreleasepool {
                 image = UIImage(cgImage: cgImage)
             }
+        }
 
-            DispatchQueue.main.async { [weak self] in
-                guard let image = image else { return }
-                self?.image = image
-                self?.isFetching = false
-                self?.onImage?(image)
-            }
+        if let image = image {
+            await updateImage(image: image)
         }
     }
 
-    private func setCachedImage(fileURL: URL) {
-        autoreleasepool { [weak self] in
-            guard let self = self else { return }
-            var image: UIImage? = nil
-            if config.size == .ACTUAL, let data = fileURL.data {
-                image = UIImage(data: data) ?? UIImage()
-            } else {
-                guard let cgImage = fileURL.imageScale(width: config.size == .SMALL ? 128 : 256)?.image else { return }
-                image = UIImage(cgImage: cgImage)
-            }
-            DispatchQueue.main.async { [weak self] in
-                guard let image = image else { return }
-                self?.image = image
-                self?.onImage?(image)
-            }
+    private func setCachedImage(fileURL: URL) async {
+        var image: UIImage? = nil
+        if config.size == .ACTUAL, let data = fileURL.data {
+            image = UIImage(data: data) ?? UIImage()
+        } else {
+            guard let cgImage = fileURL.imageScale(width: config.size == .SMALL ? 128 : 256)?.image else { return }
+            image = UIImage(cgImage: cgImage)
         }
+        if let image = image {
+            await updateImage(image: image)
+        }
+    }
+
+    @MainActor
+    private func updateImage(image: UIImage) {
+        self.image = image
+        isFetching = false
+        onImage?(image)
     }
 
     /// The hashCode decode FileMetaData so it needs to be done on the background thread.
     public func fetch() {
-        accesQueue.sync {
-            if isFetching { return }
+        Task {
+            let hashCode = await getHashCode()
             isFetching = true
             fileMetadata = config.metaData
-            if isSDKImage {
-                getFromSDK()
-            } else if let fileURL = fileURL {
-                setCachedImage(fileURL: fileURL)
-            } else {
-                downloadFromAnyURL(thumbnail: config.thumbnail)
+            if let hashCode = hashCode {
+                getFromSDK(hashCode: hashCode)
+            } else if isPodURL() {
+                await downloadRestImageFromPodURL()
+            } else if let fileURL = getCachedFileURL() {
+                await setCachedImage(fileURL: fileURL)
             }
         }
     }
 
-    private func getFromSDK() {
+    private func getFromSDK(hashCode: String) {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: config.forceToDownloadFromServer, size: config.size, thumbnail: config.thumbnail)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(prepend: IMAGE_LOADER_KEY, value: req)
         ChatManager.activeInstance?.file.get(req)
     }
 
-    private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) {
+    private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) async {
         guard response.uniqueId == uniqueId else { return }
         if response.uniqueId == uniqueId, !response.cache, let data = response.result {
             response.pop(prepend: IMAGE_LOADER_KEY)
-            update(data: data)
-            storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
+            await update(data: data)
+            await storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
         } else {
             guard let url = url else { return }
             response.pop(prepend: IMAGE_LOADER_KEY)
-            setCachedImage(fileURL: url)
+            await setCachedImage(fileURL: url)
         }
     }
 
-    private func downloadFromAnyURL(thumbnail: Bool) {
-        guard let req = reqWithHeader else { return }
-        let task = URLSession.shared.dataTask(with: req) { [weak self] data, _, _ in
-            self?.update(data: data)
-            if !thumbnail {
-                self?.uniqueId = nil
-                self?.storeInCache(data: data)
-            }
-        }
-        task.resume()
+    private func update(data: Data) async {
+        guard isRealImage(data) else { return }
+        await setImage(data: data)
     }
 
-    private func update(data: Data?) {
-        guard let data = data else { return }
-        if !isRealImage(data: data) { return }
-        setImage(data: data)
-    }
-
-    private func storeInCache(data: Data?) {
-        guard let data = data else { return }
-        if !isRealImage(data: data) { return }
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self, let url = URL(string: self.config.url) else { return }
-            ChatManager.activeInstance?.file.saveFileInGroup(url: url, data: data) { _ in }
-        }
-    }
-
-    /// Check if the response is not a string.
-    private func isRealImage(data: Data) -> Bool {
-        UIImage(data: data) != nil
+    @MainActor
+    private func storeInCache(data: Data) {
+        guard isRealImage(data), let url = getURL() else { return }
+        ChatManager.activeInstance?.file.saveFileInGroup(url: url, data: data) { _ in }
     }
 
     private var headers: [String: String] {
@@ -215,17 +165,6 @@ public final class ImageLoaderViewModel: ObservableObject {
         return ssoToken.accessToken
     }
 
-    private var reqWithHeader: URLRequest? {
-        guard let URLObject else { return nil }
-        let req = URLRequest(url: URLObject)
-        uniqueId = "\(req.hashValue)"
-        var request = URLRequest(url: URLObject)
-        headers.forEach { key, value in
-            request.addValue(value, forHTTPHeaderField: key)
-        }
-        return req
-    }
-
     public func clear() {
         cancelable.forEach { cancelable in
             cancelable.cancel()
@@ -239,5 +178,59 @@ public final class ImageLoaderViewModel: ObservableObject {
         image = .init()
         isFetching = false
         self.config = config
+    }
+
+    private func getMetaData() async ->  FileMetaData? {
+        guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
+        return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
+    }
+
+    private func getHashCode() async -> String? {
+        let parsedMetadata = await getMetaData()
+        return parsedMetadata?.fileHash ?? getOldURLHash()
+    }
+
+    private func getOldURLHash() -> String? {
+        guard let url = getURL(), let comp = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return nil }
+        return comp.queryItems?.first(where: { $0.name == "hash" })?.value
+    }
+
+    private func getCachedFileURL() -> URL? {
+        guard let url = getURL(),
+              let fileManager = ChatManager.activeInstance?.file
+        else { return nil }
+        if fileManager.isFileExist(url) {
+            return fileManager.filePath(url)
+        } else if fileManager.isFileExistInGroup(url) {
+            return fileManager.filePathInGroup(url)
+        }
+        return nil
+    }
+
+    private func getURL() -> URL? {
+        URL(string: config.url)
+    }
+
+    private func isRealImage(_ data: Data) -> Bool {
+        return UIImage(data: data) != nil
+    }
+
+    private func isPodURL() -> Bool {
+        let url = getURL()
+        return url?.host() == "core.pod.ir"
+    }
+
+    private func downloadRestImageFromPodURL() async {
+        guard let url = getURL() else { return }
+        var request = URLRequest(url: url)
+        uniqueId = "\(request.hashValue)"
+        headers.forEach { key, value in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        let response = try? await URLSession.shared.data(for: request)
+        guard let data = response?.0 else { return }
+        await update(data: data)
+        uniqueId = nil
+        await storeInCache(data: data)
     }
 }

@@ -78,7 +78,7 @@ public final class ForwardMessagePlaceholderView: UIStackView {
 
     public func set() {
         let model = AppState.shared.appStateNavigationModel
-        isHidden = model.forwardMessageRequest == nil
+        setIsHidden(model.forwardMessageRequest == nil)
         if isSingleForward {
             staticForwardLabel.text = "Thread.forwardTheMessage".localized()
             let message = model.forwardMessages?.first?.message ?? ""
@@ -96,7 +96,7 @@ public final class ForwardMessagePlaceholderView: UIStackView {
     private func close() {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            isHidden = true
+            setIsHidden(true)
             AppState.shared.appStateNavigationModel = .init()
             viewModel?.selectedMessagesViewModel.clearSelection()
 //            viewModel.animateObjectWillChange()

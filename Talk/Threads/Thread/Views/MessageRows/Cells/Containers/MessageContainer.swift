@@ -110,10 +110,10 @@ final class MessageContainer: UIStackView {
         backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         if viewModel.calMessage.isLastMessageOfTheUser && !viewModel.calMessage.isMe {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
-            tailImageView.isHidden = false
+            tailImageView.setIsHidden(false)
         } else {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
-            tailImageView.isHidden = true
+            tailImageView.setIsHidden(true)
         }
 
         if viewModel.calMessage.rowType.isImage {

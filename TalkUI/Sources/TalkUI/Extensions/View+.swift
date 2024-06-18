@@ -59,3 +59,25 @@ public extension Text {
         self.init(.init(key), tableName: nil, bundle: Language.preferedBundle, comment: "")
     }
 }
+
+
+public extension UIView {
+    // It will give us a lot of performance it won't update the stack/uiview if they are hidden already because isHidden if called twice even with the same value causes a lot of hiccups
+    func setIsHidden(_ newState: Bool) {
+        if newState != isHidden {
+            isHidden = newState
+        }
+    }
+
+    func setSemanticContent(_ newState: UISemanticContentAttribute) {
+        if newState != semanticContentAttribute {
+            semanticContentAttribute = newState
+        }
+    }
+
+    func setBackgroundColor(_ newState: UIColor?) {
+        if newState != backgroundColor {
+            backgroundColor = newState
+        }        
+    }
+}

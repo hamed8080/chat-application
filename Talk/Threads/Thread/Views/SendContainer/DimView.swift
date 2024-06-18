@@ -24,7 +24,7 @@ class DimView: UIView {
     }
 
     private func configureView() {
-        isHidden = true
+        setIsHidden(true)
         backgroundColor = Color.App.bgChatUserDarkUIColor?.withAlphaComponent(0.3)
         tapGesture.isEnabled = false
         tapGesture.addTarget(self, action: #selector(onTap))
@@ -35,7 +35,7 @@ class DimView: UIView {
         UIView.animate(withDuration: 0.2) {
             self.isUserInteractionEnabled = show
             self.tapGesture.isEnabled = show
-            self.isHidden = !show
+            self.setIsHidden(!show)
         }
     }
 

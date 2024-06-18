@@ -69,7 +69,7 @@ public final class MoveToBottomButton: UIButton {
     }
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {
-        isHidden = true
+        setIsHidden(true)
         viewModel?.scrollVM.scrollToBottom()
     }
 
@@ -81,14 +81,14 @@ public final class MoveToBottomButton: UIButton {
     public func setVisibility(visible: Bool) {
         DispatchQueue.main.async {
             if visible {
-                self.isHidden = false
+                self.setIsHidden(false)
             }
             self.transform = CGAffineTransform(scaleX: visible ? 0.01 : 1.0, y: visible ? 0.01 : 1.0)
             UIView.animate(withDuration: 0.3) { [weak self] in
                 self?.transform = CGAffineTransform(scaleX: visible ? 1.0 : 0.01, y: visible ? 1.0 : 0.01)
             } completion: { completed in
                 if completed {
-                    self.isHidden = !visible
+                    self.setIsHidden(!visible)
                 }
             }
         }

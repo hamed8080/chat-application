@@ -57,7 +57,7 @@ public final class MentionParticipantImageView: UIView {
 
     private func setImage() {
         imageIconView.image = imageLoaderVM?.image
-        participantLabel.isHidden = imageLoaderVM?.isImageReady == true
+        participantLabel.setIsHidden(imageLoaderVM?.isImageReady == true)
     }
 
     public override func layoutSubviews() {

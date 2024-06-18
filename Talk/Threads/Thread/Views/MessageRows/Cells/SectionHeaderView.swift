@@ -41,11 +41,6 @@ final class SectionHeaderView: UIView {
     }
 
     public func set(_ section: MessageSection) {
-        Task {
-            let text = section.date.yearCondence
-            await MainActor.run {
-                self.label.text = text
-            }
-        }
+        self.label.text = section.sectionText
     }
 }

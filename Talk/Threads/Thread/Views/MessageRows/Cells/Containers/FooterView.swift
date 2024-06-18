@@ -72,16 +72,16 @@ final class FooterView: UIStackView {
         let isPin = message.id != nil && message.id == thread?.pinMessage?.id
         statusImage.image = message.uiFooterStatus.image
         statusImage.tintColor = message.uiFooterStatus.fgColor
-        statusImage.isHidden = !viewModel.calMessage.isMe
+        statusImage.setIsHidden(!viewModel.calMessage.isMe)
         timelabel.text = viewModel.calMessage.timeString
-        editedLabel.isHidden = viewModel.message.edited != true
-        pinImage.isHidden = !isPin
+        editedLabel.setIsHidden(viewModel.message.edited != true)
+        pinImage.setIsHidden(!isPin)
         let isSelfThread = thread?.type == .selfThread
         let isDelivered = message.id != nil
         if isDelivered, isSelfThread {
-            statusImage.isHidden = false
+            statusImage.setIsHidden(false)
         } else if viewModel.calMessage.isMe, !isSelfThread {
-            statusImage.isHidden = false
+            statusImage.setIsHidden(false)
         }
 
         if message.id == nil || message.id ?? 0 < 0 {
@@ -94,14 +94,14 @@ final class FooterView: UIStackView {
     public func pinChanged(isPin: Bool) {
         UIView.animate(withDuration: 0.2) {
             self.pinImage.alpha = isPin ? 1.0 : 0.0
-            self.pinImage.isHidden = !isPin
+            self.pinImage.setIsHidden(!isPin)
         }
     }
 
     public func seen(image: UIImage?) {
         UIView.transition(with: statusImage, duration: 0.2, options: .transitionCrossDissolve) {
             self.statusImage.image = image
-            self.statusImage.isHidden = image == nil
+            self.statusImage.setIsHidden(image == nil)
         }
     }
 
