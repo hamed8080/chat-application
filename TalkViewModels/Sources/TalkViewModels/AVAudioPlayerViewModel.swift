@@ -9,7 +9,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     @Published public var isPlaying: Bool = false
     @Published public var isClosed: Bool = true
     @Published public var player: AVAudioPlayer?
-    public var title: String = ""
+    @Published public var title: String = ""
     public var subtitle: String = ""
     @Published public var duration: Double = 0
     @Published public var currentTime: Double = 0
@@ -80,6 +80,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     public func close() {
         stopTimer()
         isClosed = true
+        currentTime = 0
         pause()
         fileURL = nil
     }
@@ -101,7 +102,6 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         timer?.invalidate()
         timer = nil
         isPlaying = false
-        currentTime = 0
         animateObjectWillChange()
     }
 }

@@ -15,6 +15,7 @@ import Combine
 public final class TopThreadToolbar: UIStackView {
     private let navBarView: CustomConversationNavigationBar
     private var pinMessageView: ThreadPinMessageView?
+    private var navigationPlayerView: ThreadNavigationPlayer?
     private weak var viewModel: ThreadViewModel?
 
     init(viewModel: ThreadViewModel?) {
@@ -22,6 +23,7 @@ public final class TopThreadToolbar: UIStackView {
         self.navBarView = .init(viewModel: viewModel)
         if let viewModel = viewModel {
             self.pinMessageView = .init(viewModel: viewModel.threadPinMessageViewModel)
+            self.navigationPlayerView = ThreadNavigationPlayer(viewModel: viewModel)
         }
         super.init(frame: .zero)
         configureViews()
@@ -50,6 +52,7 @@ public final class TopThreadToolbar: UIStackView {
         ])
         configureNavBarView()
         configurePinMessageView()
+        configurePlayerView()
     }
 
     private func configureNavBarView() {
@@ -65,6 +68,12 @@ public final class TopThreadToolbar: UIStackView {
     private func configurePinMessageView() {
         if let pinMessageView = pinMessageView {
             addArrangedSubview(pinMessageView)
+        }
+    }
+
+    private func configurePlayerView() {
+        if let navigationPlayerView = navigationPlayerView {
+            addArrangedSubview(navigationPlayerView)
         }
     }
 
