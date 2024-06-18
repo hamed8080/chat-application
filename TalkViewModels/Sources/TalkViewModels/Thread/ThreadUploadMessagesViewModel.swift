@@ -35,6 +35,7 @@ public final class ThreadUploadMessagesViewModel {
     internal func append(_ requests: [any HistoryMessageProtocol]) {
         Task { [weak self] in
             guard let self = self, let historyVM = viewModel?.historyVM else { return }
+            let beforeSectionCount = historyVM.sections.count
             await historyVM.injectMessagesAndSort(requests)
             var indicies: [IndexPath] = []
             for request in requests {
@@ -42,7 +43,13 @@ public final class ThreadUploadMessagesViewModel {
                     indicies.append(indexPath)
                 }
             }
-            viewModel?.delegate?.inserted(at: indicies)
+            let afterSectionCount = historyVM.sections.count
+            if afterSectionCount > beforeSectionCount {
+                let secitonSet = IndexSet(beforeSectionCount..<afterSectionCount)
+                viewModel?.delegate?.inserted(secitonSet, indicies)
+            } else {
+                viewModel?.delegate?.inserted(at: indicies)
+            }
             if let last = requests.last {
                 await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
             }
