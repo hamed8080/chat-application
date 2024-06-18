@@ -149,10 +149,11 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         progressButton.setProgressVisibility(visible: show)
     }
 
-    private func updateProgress() {
+    public func updateProgress() {
         guard let viewModel = viewModel else { return }
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
+        progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
     }
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {

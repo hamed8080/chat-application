@@ -18,7 +18,7 @@ class MessageRowCalculators {
         var sizes = MessageRowSizes()
         var rowType = MessageViewRowType()
 
-        calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id) || message is UploadProtocol
 
         calculatedMessage.canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
         calculatedMessage.isCalculated = true
@@ -57,7 +57,6 @@ class MessageRowCalculators {
         calculatedMessage.participantColor = await color ?? .clear
 
         calculatedMessage.fileURL = getFileURL(serverURL: message.url)
-//        calculatedMessage.image = getCachedImage(calculatedMessage: calculatedMessage, isImage: rowType.isImage)
 
         calculatedMessage.computedFileSize = calculateFileSize(message: message, calculatedMessage: calculatedMessage)
         calculatedMessage.extName = calculateFileTypeWithExt(message: message, calculatedMessage: calculatedMessage)

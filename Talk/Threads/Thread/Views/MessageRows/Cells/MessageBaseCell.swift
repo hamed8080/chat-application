@@ -135,4 +135,8 @@ public class MessageBaseCell: UITableViewCell {
     public func seen() {
         messageContainer.seen()
     }
+
+    public func updateProgress() {
+        messageContainer.updateProgress()
+    }
 }

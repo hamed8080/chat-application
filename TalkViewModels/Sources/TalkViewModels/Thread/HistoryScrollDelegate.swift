@@ -23,6 +23,7 @@ public protocol HistoryScrollDelegate: AnyObject, HistoryEmptyDelegate {
     func edited(_ indexPath: IndexPath)
     func pinChanged(_ indexPath: IndexPath)
     func seen(_ indexPath: IndexPath)
+    func updateProgress(at: IndexPath)
 }
 
 public protocol HistoryEmptyDelegate {

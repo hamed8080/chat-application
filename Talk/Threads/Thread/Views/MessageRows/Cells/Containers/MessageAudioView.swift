@@ -116,4 +116,12 @@ final class MessageAudioView: UIStackView {
     func reset() {
         setIsHidden(true)
     }
+
+
+    public func updateProgress() {
+        guard let viewModel = viewModel else { return }
+        let progress = viewModel.fileState.progress
+        progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
+        progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+    }
 }

@@ -132,4 +132,11 @@ final class MessageImageView: UIImageView {
         stack.setIsHidden(true)
         effectView.setIsHidden(true)
     }
+
+    public func updateProgress() {
+        guard let viewModel = viewModel else { return }
+        let progress = viewModel.fileState.progress
+        progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
+        progressView.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+    }
 }

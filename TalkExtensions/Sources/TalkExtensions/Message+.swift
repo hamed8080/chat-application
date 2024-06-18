@@ -24,6 +24,8 @@ public class MessageHistoryStatics {
     public static let leadingTail = UIImage(named: "leading_tail")!
     public static let trailingTail = UIImage(named: "trailing_tail")!
     public static let emptyImage = UIImage(named: "empty_image")!
+    public static let audioExtentions = [".mp3", ".aac", ".wav"]
+    public static let videoExtentions = [".mp4", ".mov"]
 }
 
 public extension HistoryMessageProtocol {
@@ -39,9 +41,10 @@ public extension HistoryMessageProtocol {
     /// Check id because we know that the message was successfully added in server chat.
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
-    var isImage: Bool { MessageHistoryStatics.imageTypes.contains(messageType ?? .unknown) }
-    var isAudio: Bool { MessageHistoryStatics.audioTypes.contains(messageType ?? .unknown) }
-    var isVideo: Bool { MessageHistoryStatics.videoTypes.contains(messageType ?? .unknown) }
+    var isImage: Bool { MessageHistoryStatics.imageTypes.contains(messageType ?? .unknown) || (self as? UploadFileMessage)?.uploadImageRequest != nil }
+    var uploadFileRequest: UploadFileRequest? { (self as? UploadFileMessage)?.uploadFileRequest }
+    var isAudio: Bool { MessageHistoryStatics.audioTypes.contains(messageType ?? .unknown) || isUploadAudio() }
+    var isVideo: Bool { MessageHistoryStatics.videoTypes.contains(messageType ?? .unknown) || isUploadVideo() }
     var reactionableType: Bool { !MessageHistoryStatics.unreactionableTypes.contains(messageType ?? .unknown) }
 
     var isSelectable: Bool { !MessageHistoryStatics.unreactionableTypes.contains(messageType ?? .unknown) }
@@ -255,6 +258,16 @@ public extension HistoryMessageProtocol {
         let uploadfileReq = fileMessageType?.uploadFileRequest ?? replyType?.uploadFileRequest
         let uploadImageReq = fileMessageType?.uploadImageRequest ?? replyType?.uploadImageRequest
         return uploadImageReq?.fileName ?? uploadfileReq?.fileName
+    }
+
+    func isUploadAudio() -> Bool {
+        guard let ext = uploadFileRequest?.fileExtension else { return false }
+        return MessageHistoryStatics.audioExtentions.contains(where: {$0 == ext})
+    }
+
+    func isUploadVideo() -> Bool {
+        guard let ext = uploadFileRequest?.fileExtension else { return false }
+        return MessageHistoryStatics.videoExtentions.contains(where: {$0 == ext})
     }
 }
 

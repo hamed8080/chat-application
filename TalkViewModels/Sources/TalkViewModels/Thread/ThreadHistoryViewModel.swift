@@ -30,7 +30,6 @@ public final class ThreadHistoryViewModel {
     private var isInInsertionBottom = false
     private var topLoading = false
     private var bottomLoading = false
-    private var needUpdates: ContiguousArray<MessageRowViewModel> = .init()
     private var hasNextTop = true
     private var hasNextBottom = true
     private let count: Int = 25
@@ -598,6 +597,7 @@ extension ThreadHistoryViewModel {
             if let indexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "") {
                  // Update a message sent by Me
                 vm = sections[indexPath.section].vms[indexPath.row]
+                vm.swapUploadMessageWith(message)
                 await vm.performaCalculation(appendMessages: [])
             } else {
                 // A new message comes from server
@@ -607,7 +607,6 @@ extension ThreadHistoryViewModel {
                 let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, [vm])
                 delegate?.inserted(tuple.sections, tuple.rows)
             }
-            await updateNeeded()
             print("after: section count \(sections.count) rowsCount:\(sections.last?.vms.count ?? 0)")
 
             await viewModel.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
@@ -681,19 +680,6 @@ extension ThreadHistoryViewModel {
             sections.remove(at: indices.section)
         }
         delegate?.removed(at: indices)
-    }
-
-    private func updateNeeded() async {
-        for (_, vm) in needUpdates.enumerated() {
-            await vm.performaCalculation()
-            if let indexPath = sections.indexPath(for: vm) {
-                viewModel?.delegate?.reconfig(at: indexPath)
-            }
-            if vm.calMessage.rowType.isMap {
-                vm.downloadMap() // For downloading the map after upload
-            }
-        }
-        needUpdates.removeAll()
     }
 }
 
@@ -803,10 +789,6 @@ extension ThreadHistoryViewModel {
         let messagedIds = messages.compactMap(\.id)
         ChatManager.activeInstance?.message.delete(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: forAll))
         viewModel?.selectedMessagesViewModel.clearSelection()
-    }
-
-    internal func appendToNeedUpdate(_ vm: MessageRowViewModel) {
-        needUpdates.append(vm)
     }
     
     @discardableResult

@@ -370,4 +370,11 @@ extension MessageContainer {
         guard let viewModel = viewModel else { return }
         fotterView.seen(image: viewModel.message.uiFooterStatus.image)
     }
+
+    func updateProgress() {
+        messageAudioView.updateProgress()
+        messageFileView.updateProgress()
+        messageImageView.updateProgress()
+        messageVideoView.updateProgress()
+    }
 }

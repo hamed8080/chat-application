@@ -53,7 +53,7 @@ public final class MessageRowViewModel: Identifiable, Hashable {
 
     @MainActor
     public func register() {
-        if !fileState.isUploadCompleted && message is UploadProtocol {
+        if message is UploadProtocol {
             threadVM?.uploadFileManager.register(message: message, viewModelUniqueId: uniqueId)
         }
         if fileState.state != .completed {
@@ -98,10 +98,7 @@ public extension MessageRowViewModel {
 public extension MessageRowViewModel {
     func swapUploadMessageWith(_ message: any HistoryMessageProtocol) {
         self.message = message
-        Task { @HistoryActor [weak self] in
-            guard let self = self else { return }
-            threadVM?.historyVM.appendToNeedUpdate(self)
-        }
+        calMessage.fileURL = message.fileURL
     }
 }
 

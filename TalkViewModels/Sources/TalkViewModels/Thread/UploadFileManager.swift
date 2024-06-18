@@ -97,7 +97,6 @@ public final class UploadFileManager {
         }
         let fileState = MessageFileState.init(progress: progress,
                                               isUploading: isUploading,
-                                              isUploadCompleted: isCompleted,
                                               state: isCompleted ? .completed : .undefined,
                                               iconState: iconState,
                                               blurRadius: blurRadius,
@@ -108,12 +107,17 @@ public final class UploadFileManager {
 
     @HistoryActor
     private func changeStateTo(state: MessageFileState, viewModelUniqueId: String) async {
-        let vm = viewModel?.historyVM.sections.messageViewModel(viewModelUniqueId: viewModelUniqueId)
+        let tuple = viewModel?.historyVM.sections.viewModelAndIndexPath(viewModelUniqueId: viewModelUniqueId)
         await MainActor.run {
-            guard let vm = vm else { return }
-            vm.setFileState(state)
+            guard let tuple = tuple else { return }
+            tuple.vm.setFileState(state)
+            if state.state == .completed {
+                viewModel?.delegate?.reconfig(at: tuple.indexPath)
+            } else {
+                viewModel?.delegate?.updateProgress(at: tuple.indexPath)
+            }
         }
-        if state.isUploadCompleted {
+        if state.state == .completed {
             unRegister(viewModelUniqueId: viewModelUniqueId)
         }
     }

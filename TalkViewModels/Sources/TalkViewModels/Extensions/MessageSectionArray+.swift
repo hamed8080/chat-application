@@ -117,9 +117,27 @@ extension ContiguousArray where Element == MessageSection {
         return self[indicies.section].vms[indicies.row]
     }
 
+
+    /*
+     In upload, we need speed to redraw the row so it's better to reverse search for the index path.
+     And it prevents the use of the reverse function which is O(n), however,
+     the function below is likely to be O(1) because we always insert at the bottom of a thread.
+     */
     @discardableResult
-    public func messageViewModel(viewModelUniqueId: String) -> MessageRowViewModel? {
-        return flatMap({$0.vms}).first(where: {$0.uniqueId == viewModelUniqueId})
+    public func viewModelAndIndexPath(viewModelUniqueId uniqueId: String) -> (vm: MessageRowViewModel, indexPath: IndexPath)? {
+        var sectionIndex = count - 1
+        var rowIndex: Int? = nil
+        while sectionIndex >= 0 {
+            if let index = self[sectionIndex].vms.firstIndex(where: {$0.uniqueId == uniqueId}) {
+                rowIndex = index
+                break
+            } else {
+                sectionIndex = sectionIndex - 1
+            }
+        }
+        guard let rowIndex = rowIndex else { return nil }
+        let vm = self[sectionIndex].vms[rowIndex]
+        return (vm, IndexPath(row: rowIndex, section: sectionIndex))
     }
 
     public func isLastSeenMessageExist(thread: Conversation?) -> Bool {

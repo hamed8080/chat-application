@@ -203,7 +203,11 @@ public final class DownloadFileManager {
         }
         await MainActor.run {
             result.vm.setFileState(state)
-            viewModel?.delegate?.reconfig(at: result.indexPath)
+            if state.state == .completed {
+                viewModel?.delegate?.reconfig(at: result.indexPath)
+            } else {
+                viewModel?.delegate?.updateProgress(at: result.indexPath)
+            }
         }
         if state.state == .completed {
             unRegister(messageId: messageId)
