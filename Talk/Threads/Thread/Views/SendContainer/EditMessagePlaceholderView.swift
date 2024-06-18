@@ -100,8 +100,8 @@ public final class EditMessagePlaceholderView: UIStackView {
         nameLabel.text = editMessage?.participant?.name
         nameLabel.isHidden = editMessage?.participant?.name == nil
 
-        if isImage, let image = viewModel?.historyVM.sections.messageViewModel(for: editMessage?.uniqueId ?? "")?.calMessage.image {
-            messageImageView.image = image
+        if isImage, let image = viewModel?.historyVM.sections.messageViewModel(for: editMessage?.uniqueId ?? "")?.calMessage.fileURL?.imageScale(width: 36)?.image {
+            messageImageView.image = UIImage(cgImage: image)
             messageImageView.isHidden = false
         } else if isFileType, let iconName = iconName {
             messageImageView.image = UIImage(systemName: iconName)

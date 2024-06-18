@@ -41,10 +41,11 @@ public struct MessageRowCalculatedData {
     public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
     public var groupMessageParticipantName: String?
-    public var image: UIImage?
     public var canEdit: Bool = false
     // Disk file path
     public var fileURL: URL?
+    public var textLayer: CATextLayer?
+    public var textRect: CGRect?
 
     public var sizes = MessageRowSizes()
     public var state = MessageRowState()

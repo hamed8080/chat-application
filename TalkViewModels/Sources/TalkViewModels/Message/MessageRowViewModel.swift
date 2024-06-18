@@ -43,7 +43,7 @@ public final class MessageRowViewModel: Identifiable, Hashable {
 
     @HistoryActor
     public func performaCalculation(appendMessages: [any HistoryMessageProtocol] = []) async {
-        calMessage = await MessageRowCalculators.calculate(message: message, threadVM: threadVM, oldData: calMessage, appendMessages: appendMessages)
+        calMessage = await MessageRowCalculators.calculate(message: message, threadVM: threadVM, appendMessages: appendMessages)
         if calMessage.fileURL != nil {
             fileState.state = .completed
             fileState.showDownload = false

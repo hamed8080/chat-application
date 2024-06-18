@@ -11,8 +11,9 @@ import TalkExtensions
 import TalkUI
 import Chat
 
-public final class MuteChannelBarView: UIButton {
+public final class MuteChannelBarView: UIView {
     weak var viewModel: ThreadViewModel?
+    private let btn = UIButton(type: .system)
 
     public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
@@ -25,14 +26,18 @@ public final class MuteChannelBarView: UIButton {
     }
 
     private func configureViews() {
-        translatesAutoresizingMaskIntoConstraints = false
-        titleLabel?.font = UIFont.uiiransansSubheadline
-        setTitleColor(Color.App.accentUIColor, for: .normal)
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(muteTapped)))
-        layoutMargins = .init(all: 10)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.titleLabel?.font = UIFont.uiiransansSubheadline
+        btn.setTitleColor(Color.App.accentUIColor, for: .normal)
+        btn.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(muteTapped)))
 
+        addSubview(btn)
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: 48)
+            heightAnchor.constraint(equalToConstant: 72),
+            btn.heightAnchor.constraint(equalToConstant: 48),
+            btn.topAnchor.constraint(equalTo: topAnchor),
+            btn.leadingAnchor.constraint(equalTo: leadingAnchor),
+            btn.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
         set()
     }
@@ -41,23 +46,11 @@ public final class MuteChannelBarView: UIButton {
         isHidden = !(viewModel?.sendContainerViewModel.canShowMute == true)
         let isMute = viewModel?.thread.mute == true
         let title = isMute ? "Thread.unmute".localized() : "Thread.mute".localized()
-        setTitle(title, for: .normal)
+        btn.setTitle(title, for: .normal)
     }
 
     @objc private func muteTapped(_ sender: UIButton) {
         guard let viewModel = viewModel else { return }
         viewModel.threadsViewModel?.toggleMute(viewModel.thread)
-    }
-}
-
-struct MuteChannelViewPlaceholder_Previews: PreviewProvider {
-    struct MuteChannelBarViewWrapper: UIViewRepresentable {
-        let viewModel: ThreadViewModel
-        func makeUIView(context: Context) -> some UIView { MuteChannelBarView(viewModel: viewModel) }
-        func updateUIView(_ uiView: UIViewType, context: Context) {}
-    }
-
-    static var previews: some View {
-        MuteChannelBarViewWrapper(viewModel: .init(thread: .init(type: .channel)))
     }
 }

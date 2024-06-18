@@ -18,6 +18,9 @@ public final class CircleProgressButton: UIButton {
     private var lineWidth: CGFloat
     private var animation = CABasicAnimation(keyPath: "strokeEnd")
     private let margin: CGFloat
+    private var systemImageName: String = ""
+    private static let font = UIFont.systemFont(ofSize: 8, weight: .bold)
+    private static let config = UIImage.SymbolConfiguration(font: font)
 
     public init(progressColor: UIColor? = .darkText,
                 iconTint: UIColor? = Color.App.textPrimaryUIColor,
@@ -76,9 +79,10 @@ public final class CircleProgressButton: UIButton {
     }
 
     public func animate(to progress: CGFloat, systemIconName: String = "") {
-        let font = UIFont.systemFont(ofSize: 8, weight: .bold)
-        let config = UIImage.SymbolConfiguration(font: font)
-        imgCenter.image = UIImage(systemName: systemIconName, withConfiguration: config)
+        if systemIconName != systemImageName {
+            self.systemImageName = systemIconName
+            imgCenter.image = UIImage(systemName: systemIconName, withConfiguration: CircleProgressButton.config)
+        }
         animation.toValue = progress
         animation.duration = 0.3
         animation.fillMode = CAMediaTimingFillMode.forwards

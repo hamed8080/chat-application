@@ -74,6 +74,7 @@ final class MessageContainer: UIStackView {
 
         tailImageView.translatesAutoresizingMaskIntoConstraints = false
         tailImageView.contentMode = .scaleAspectFit
+        tailImageView.tintColor = Color.App.bgChatUserUIColor!
         addSubview(tailImageView)
 
         imageViewWidthConstraint = messageImageView.widthAnchor.constraint(equalToConstant: 0)
@@ -114,7 +115,6 @@ final class MessageContainer: UIStackView {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
             tailImageView.isHidden = true
         }
-        tailImageView.tintColor = viewModel.calMessage.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
 
         if viewModel.calMessage.rowType.isImage {
             imageViewWidthConstraint.constant = viewModel.calMessage.sizes.imageWidth ?? 128

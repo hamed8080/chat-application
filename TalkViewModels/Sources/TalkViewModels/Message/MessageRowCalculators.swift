@@ -13,16 +13,10 @@ import Chat
 class MessageRowCalculators {
     typealias MessageType = any HistoryMessageProtocol
 
-    class func calculate(message: MessageType, threadVM: ThreadViewModel?, oldData: MessageRowCalculatedData, appendMessages: [MessageType] = []) async -> MessageRowCalculatedData {
-        let oldImage = oldData.image
+    class func calculate(message: MessageType, threadVM: ThreadViewModel?, appendMessages: [MessageType] = []) async -> MessageRowCalculatedData {
         var calculatedMessage = MessageRowCalculatedData()
         var sizes = MessageRowSizes()
         var rowType = MessageViewRowType()
-
-        // image has been calculated before so DownloadFileViewModel.data is nil, we have to use the old value
-        if let oldImage = oldImage, oldImage.size.width > 0, oldImage != DownloadFileManager.emptyImage {
-            calculatedMessage.image = oldImage
-        }
 
         calculatedMessage.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
 
@@ -63,7 +57,7 @@ class MessageRowCalculators {
         calculatedMessage.participantColor = await color ?? .clear
 
         calculatedMessage.fileURL = getFileURL(serverURL: message.url)
-        calculatedMessage.image = getCachedImage(calculatedMessage: calculatedMessage, isImage: rowType.isImage)
+//        calculatedMessage.image = getCachedImage(calculatedMessage: calculatedMessage, isImage: rowType.isImage)
 
         calculatedMessage.computedFileSize = calculateFileSize(message: message, calculatedMessage: calculatedMessage)
         calculatedMessage.extName = calculateFileTypeWithExt(message: message, calculatedMessage: calculatedMessage)
@@ -75,7 +69,8 @@ class MessageRowCalculators {
         sizes.replyContainerWidth = await calculateReplyContainerWidth(message: message, calculatedMessage: calculatedMessage, sizes: sizes)
         sizes.forwardContainerWidth = await calculateForwardContainerWidth(rowType: rowType, sizes: sizes)
         calculatedMessage.isInTwoWeekPeriod = calculateIsInTwoWeekPeriod(message: message)
-
+        calculatedMessage.textLayer = getTextLayer(markdownTitle: calculatedMessage.markdownTitle)
+        calculatedMessage.textRect = getRect(markdownTitle: calculatedMessage.markdownTitle)
 
         let originalPaddings = sizes.paddings
         sizes.paddings = calculateSpacingPaddings(message: message, calculatedMessage: calculatedMessage)
@@ -451,5 +446,31 @@ class MessageRowCalculators {
             return UIImage(data: data)
         }
         return nil
+    }
+
+    class func getTextLayer(markdownTitle: NSAttributedString?) -> CATextLayer? {
+        if let attributedString = markdownTitle {
+            let textLayer = CATextLayer()
+            textLayer.frame.size = getRect(markdownTitle: attributedString)?.size ?? .zero
+            textLayer.string = attributedString
+            textLayer.backgroundColor = UIColor.clear.cgColor
+            textLayer.alignmentMode = .right
+            return textLayer
+        }
+        return nil
+    }
+
+    class func getRect(markdownTitle: NSAttributedString?) -> CGRect? {
+        guard let markdownTitle = markdownTitle else { return nil }
+        let ts = NSTextStorage(attributedString: markdownTitle)
+        let size = CGSize(width: 300, height: CGFloat.greatestFiniteMagnitude)
+        let tc = NSTextContainer(size: size)
+        tc.lineFragmentPadding = 0.0
+        let lm = NSLayoutManager()
+        lm.addTextContainer(tc)
+        ts.addLayoutManager(lm)
+        lm.glyphRange(forBoundingRect: CGRect(origin: .zero, size: size), in: tc)
+        let rect = lm.usedRect(for: tc)
+        return rect
     }
 }

@@ -84,16 +84,32 @@ final class MessageImageView: UIImageView {
         self.viewModel = viewModel
         let state = viewModel.fileState.state
         let canShow = state != .completed
-        image = viewModel.calMessage.image ?? viewModel.fileState.image // fileState.image for thumbnail image
+        setImage(fileURL: viewModel.calMessage.fileURL)
         stack.isHidden = !canShow
         effectView.isHidden = !canShow
 
-        let progress = viewModel.fileState.progress
-        progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
-        fileSizeLabel.text = viewModel.calMessage.computedFileSize
+        if viewModel.fileState.state != .completed {
+            let progress = viewModel.fileState.progress
+            progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
+        }
+
+        if viewModel.calMessage.computedFileSize != fileSizeLabel.text {
+            fileSizeLabel.text = viewModel.calMessage.computedFileSize
+        }
 
         if viewModel.calMessage.rowType.isImage, state != .downloading, state != .completed && state != .thumbnailDownloaing, state != .thumbnail {
             viewModel.onTap() // Download thumbnail
+        }
+    }
+
+    private func setImage(fileURL: URL?) {
+        Task { @HistoryActor in
+            if let scaledImage = fileURL?.imageScale(width: 300)?.image {
+                let image = scaledImage
+                await MainActor.run {
+                    self.image = UIImage(cgImage: image)
+                }
+            }
         }
     }
 
