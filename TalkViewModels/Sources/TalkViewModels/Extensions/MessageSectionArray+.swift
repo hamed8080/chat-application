@@ -151,4 +151,19 @@ extension ContiguousArray where Element == MessageSection {
         let vm = messageViewModel(for: messageId) ?? messageViewModel(for: uniqueId)
         return vm
     }
+
+    public func indexPathsForUpload(requests: [MessageType], beforeSectionCount: Int) -> (indices: [IndexPath], sectionIndex: IndexSet?) {
+        var indicies: [IndexPath] = []
+        for request in requests {
+            if let uniqueId = request.uniqueId, let indexPath = indicesByMessageUniqueId(uniqueId) {
+                indicies.append(indexPath)
+            }
+        }
+        let afterSectionCount = count
+        if afterSectionCount > beforeSectionCount {
+            let secitonSet = IndexSet(beforeSectionCount..<afterSectionCount)
+            return (indicies, secitonSet)
+        }
+        return (indicies, nil)
+    }
 }

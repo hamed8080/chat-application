@@ -37,18 +37,11 @@ public final class ThreadUploadMessagesViewModel {
             guard let self = self, let historyVM = viewModel?.historyVM else { return }
             let beforeSectionCount = historyVM.sections.count
             await historyVM.injectMessagesAndSort(requests)
-            var indicies: [IndexPath] = []
-            for request in requests {
-                if let uniqueId = request.uniqueId, let indexPath = historyVM.sections.indicesByMessageUniqueId(uniqueId) {
-                    indicies.append(indexPath)
-                }
-            }
-            let afterSectionCount = historyVM.sections.count
-            if afterSectionCount > beforeSectionCount {
-                let secitonSet = IndexSet(beforeSectionCount..<afterSectionCount)
-                viewModel?.delegate?.inserted(secitonSet, indicies)
+            let tuple = historyVM.sections.indexPathsForUpload(requests: requests, beforeSectionCount: beforeSectionCount)
+            if let sectionSet = tuple.sectionIndex {
+                viewModel?.delegate?.inserted(sectionSet, tuple.indices)
             } else {
-                viewModel?.delegate?.inserted(at: indicies)
+                viewModel?.delegate?.inserted(at: tuple.indices)
             }
             if let last = requests.last {
                 await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
