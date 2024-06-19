@@ -40,6 +40,7 @@ final class ThreadViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        startCenterAnimation(true)
         ThreadViewModel.threadWidth = view.frame.width
         viewModel?.historyVM.start()
     }
@@ -195,8 +196,8 @@ extension ThreadViewController {
             topLoading.widthAnchor.constraint(equalToConstant: width),
             topLoading.heightAnchor.constraint(equalToConstant: width),
 
-            centerLoading.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
-            centerLoading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
+            centerLoading.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            centerLoading.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             centerLoading.widthAnchor.constraint(equalToConstant: width),
             centerLoading.heightAnchor.constraint(equalToConstant: width),
 
@@ -216,7 +217,6 @@ extension ThreadViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        startCenterAnimation(true)
         viewModel?.historyVM.setThreashold(view.bounds.height * 1.5)
     }
 }

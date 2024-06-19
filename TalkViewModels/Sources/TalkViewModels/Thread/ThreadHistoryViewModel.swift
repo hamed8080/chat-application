@@ -145,6 +145,7 @@ extension ThreadHistoryViewModel {
         if let fromTime = thread.lastSeenMessageTime {
             await moreBottom(prepend: keys.MORE_BOTTOM_FIRST_SCENARIO_KEY, fromTime.advanced(by: 1))
         }
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     private func onMoreBottomFirstScenario(_ messages: [Message], _ response: HistoryResponse) async {
@@ -172,6 +173,7 @@ extension ThreadHistoryViewModel {
             delegate?.scrollTo(uniqueId: uniqueId, position: .bottom, animate: false)
             await viewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: false)
         }
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     // MARK: Scenario 3 or 4 more top/bottom.
@@ -212,6 +214,7 @@ extension ThreadHistoryViewModel {
         isInInsertionBottom = false
         bottomLoading = false
         viewModel?.delegate?.startBottomAnimation(false)
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     // MARK: Scenario 6
@@ -224,6 +227,7 @@ extension ThreadHistoryViewModel {
         } else {
             log("The message id to move to is not exist in the list")
         }
+        viewModel?.delegate?.startCenterAnimation(true)
         sections.removeAll()
         delegate?.reload()
         /// 2- Fetch the top part of the message with the message itself.
@@ -250,6 +254,7 @@ extension ThreadHistoryViewModel {
         logHistoryRequest(req: fromTimeReq)
         ChatManager.activeInstance?.message.history(fromTimeReq)
         viewModel?.delegate?.startBottomAnimation(true)
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     private func onMoveFromTime(_ messages: [Message], request: OnMoveTime, _ response: HistoryResponse) async {
@@ -265,6 +270,7 @@ extension ThreadHistoryViewModel {
         }
         await setHasMoreBottom(response)
         isInInsertionBottom = false
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
@@ -361,6 +367,7 @@ extension ThreadHistoryViewModel {
         for vm in viewModels {
             await vm.register()
         }
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     private func moreTop(prepend: String, _ toTime: UInt?) async {
