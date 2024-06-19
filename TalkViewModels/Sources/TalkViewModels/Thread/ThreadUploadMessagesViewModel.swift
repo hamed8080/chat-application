@@ -43,8 +43,10 @@ public final class ThreadUploadMessagesViewModel {
             } else {
                 viewModel?.delegate?.inserted(at: tuple.indices)
             }
-            if let last = requests.last {
-                await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
+            if let lastIndexPath = tuple.indices.last {
+                // Sleep for better animation when we insert something at the end of the list in upload for multiple items.
+                try? await Task.sleep(for: .seconds(0.2))
+                await viewModel?.scrollVM.scrollToLastUploadedMessageWith(lastIndexPath)
             }
         }
     }

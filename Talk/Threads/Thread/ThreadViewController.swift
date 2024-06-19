@@ -216,6 +216,7 @@ extension ThreadViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        startCenterAnimation(true)
         viewModel?.historyVM.setThreashold(view.bounds.height * 1.5)
     }
 }

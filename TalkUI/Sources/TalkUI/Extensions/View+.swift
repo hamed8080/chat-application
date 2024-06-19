@@ -80,4 +80,12 @@ public extension UIView {
             backgroundColor = newState
         }        
     }
+
+    func showWithAniamtion(_ show: Bool) {
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            guard let self = self else { return }
+            alpha = show ? 1.0 : 0.0
+            setIsHidden(!show)
+        }
+    }
 }

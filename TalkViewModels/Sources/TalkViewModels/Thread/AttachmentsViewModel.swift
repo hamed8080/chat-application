@@ -34,6 +34,7 @@ public final class AttachmentsViewModel {
         allImageItems.append(imageItem)
         attachments.append(.init(id: imageItem.id, type: .gallery, request: imageItem))
         delegate?.reload()
+        resetSendContainerIfIsEmpty()
     }
 
     public func addSelectedFile() {
@@ -42,12 +43,14 @@ public final class AttachmentsViewModel {
             attachments.append(.init(type: .file, request: fileItem))
         }
         delegate?.reload()
+        resetSendContainerIfIsEmpty()
     }
 
     public func addFileURL(url: URL) {
         attachments.removeAll(where: {$0.type != .file})
         attachments.append(.init(type: .file, request: url))
         delegate?.reload()
+        resetSendContainerIfIsEmpty()
     }
 
     public func clear() {
@@ -55,6 +58,7 @@ public final class AttachmentsViewModel {
         selectedFileUrls.removeAll()
         attachments.removeAll()
         delegate?.reload()
+        resetSendContainerIfIsEmpty()
     }
 
     public func append(attachments: [AttachmentFile]) {
@@ -67,6 +71,7 @@ public final class AttachmentsViewModel {
         attachments.removeAll(where: {$0.id == attachment.id})
         allImageItems.removeAll(where: {$0.id == attachment.id})
         delegate?.reload()
+        resetSendContainerIfIsEmpty()
     }
 
     public func onDocumentPicker(_ urls: [URL]) {
@@ -136,6 +141,13 @@ public final class AttachmentsViewModel {
             return await lessThanTwoMegabyteImage(image: image, quality: max(1, quality - 40.0))
         }
         return data
+    }
+
+    private func resetSendContainerIfIsEmpty() {
+        if viewModel?.sendContainerViewModel.isTextEmpty() == true, attachments.count == 0 {
+            viewModel?.delegate?.showSendButton(false)
+            viewModel?.delegate?.showMicButton(true)
+        }
     }
 
     public func toggleExpandMode() {

@@ -97,19 +97,25 @@ public final class MainSendButtons: UIStackView {
         if !viewModel.isTextEmpty() {
             multilineTextField.text = viewModel.getText()
             multilineTextField.hidePlaceholder()
-            animateBtnSendVisibility(multilineTextField.text)
+            let isEmpty = multilineTextField.text.isEmpty
+            btnSend.showWithAniamtion(!isEmpty)
+            btnMic.showWithAniamtion(isEmpty)
         }
         multilineTextField.onTextChanged = { [weak self] text in
             self?.viewModel.setText(newValue: text ?? "")
         }
 
         viewModel.onTextChanged = { [weak self] newValue in
-            self?.multilineTextField.text = newValue
-            self?.animateBtnSendVisibility(newValue)
-            if self?.viewModel.isTextEmpty() == false {
-                self?.multilineTextField.hidePlaceholder()
+            guard let self = self else { return }
+            multilineTextField.text = newValue
+
+            let isEmpty = viewModel.viewModel?.sendContainerViewModel.isTextEmpty() == true
+            btnSend.showWithAniamtion(!isEmpty)
+            btnMic.showWithAniamtion(isEmpty)
+            if viewModel.isTextEmpty() == false {
+                multilineTextField.hidePlaceholder()
             } else {
-                self?.multilineTextField.showPlaceholder()
+                multilineTextField.showPlaceholder()
             }
         }
 
@@ -171,24 +177,10 @@ public final class MainSendButtons: UIStackView {
     }
 
     @objc private func toggleMode(_ sender: UIGestureRecognizer) {
-        btnMic.alpha = 0.0
-        btnCamera.alpha = 0.0
         viewModel.toggleVideorecording()
-
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self = self else { return }
-            if viewModel.isVideoRecordingSelected {
-                btnCamera.alpha = 1.0
-                btnCamera.setIsHidden(false)
-                btnMic.alpha = 0.0
-                btnMic.setIsHidden(true)
-            } else {
-                btnCamera.alpha = 0.0
-                btnCamera.setIsHidden(true)
-                btnMic.alpha = 1.0
-                btnMic.setIsHidden(false)
-            }
-        }
+        let isRecording = viewModel.isVideoRecordingSelected
+        btnCamera.showWithAniamtion(isRecording)
+        btnMic.showWithAniamtion(!isRecording)
     }
 
     @objc private func startRecording(_ sender: UIGestureRecognizer) {
@@ -256,20 +248,6 @@ public final class MainSendButtons: UIStackView {
         animateMainButtons()
     }
 
-    public func showSendButton(_ show: Bool) {
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self = self else { return }
-            btnSend.setIsHidden(!show)
-        }
-    }
-    
-    public func showMicButton(_ show: Bool) {
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self = self else { return }
-            btnMic.setIsHidden(!show)
-        }
-    }
-
     private func animateMainButtons() {
         UIView.animate(withDuration: 0.2) { [weak self] in
             guard let self = self else { return }
@@ -317,22 +295,11 @@ public final class MainSendButtons: UIStackView {
         }
     }
 
-    private func animateBtnSendVisibility(_ newValue: String?) {
-        if !btnSend.isHidden && newValue?.isEmpty == false { return }
-        if btnSend.isHidden && newValue?.isEmpty == false {
-            UIView.animate(withDuration: 0.2) {
-                self.btnMic.alpha = 0.0
-                self.btnMic.setIsHidden(true)
-                self.btnSend.alpha = 1.0
-                self.btnSend.setIsHidden(false)
-            }
-        } else {
-            UIView.animate(withDuration: 0.2) {
-                self.btnMic.alpha = 1.0
-                self.btnMic.setIsHidden(false)
-                self.btnSend.alpha = 0.0
-                self.btnSend.setIsHidden(true)
-            }
-        }
+    public func showSendButton(_ show: Bool) {
+        btnSend.showWithAniamtion(show)
+    }
+
+    public func showMicButton(_ show: Bool) {
+        btnMic.showWithAniamtion(show)
     }
 }

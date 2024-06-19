@@ -62,10 +62,6 @@ public class ExpandView: UIView {
     @objc private func clearTapped(_ sender: UIButton) {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2)) {
             viewModel?.attachmentsViewModel.clear()
-            if viewModel?.sendContainerViewModel.isTextEmpty() == true {
-                viewModel?.delegate?.showSendButton(false)
-                viewModel?.delegate?.showMicButton(true)
-            }
         }
     }
 

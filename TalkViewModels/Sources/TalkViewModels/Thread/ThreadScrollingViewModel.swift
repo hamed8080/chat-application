@@ -51,6 +51,11 @@ public final class ThreadScrollingViewModel {
         }
     }
 
+    public func scrollToLastUploadedMessageWith(_ indexPath: IndexPath) async {
+        disableExcessiveLoading()
+        viewModel?.delegate?.scrollTo(index: indexPath, position: .top, animate: true)
+    }
+
     public func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom) {
        task = Task {
             if Task.isCancelled { return }
