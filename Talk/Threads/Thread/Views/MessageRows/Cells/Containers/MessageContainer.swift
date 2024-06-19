@@ -377,4 +377,8 @@ extension MessageContainer {
         messageImageView.updateProgress()
         messageVideoView.updateProgress()
     }
+
+    func updateThumbnail() {
+        messageImageView.updateThumbnail()
+    }
 }

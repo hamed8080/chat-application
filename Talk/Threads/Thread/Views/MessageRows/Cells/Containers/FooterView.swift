@@ -36,7 +36,7 @@ final class FooterView: UIStackView {
         spacing = 4
         axis = .horizontal
         alignment = .firstBaseline
-        layoutMargins = .init(top: 2, left: 0, bottom: 0, right: 0)
+        layoutMargins = .init(top: 12, left: 2, bottom: 4, right: 2)
         isLayoutMarginsRelativeArrangement = true
 
         statusImage.translatesAutoresizingMaskIntoConstraints = false
@@ -84,7 +84,7 @@ final class FooterView: UIStackView {
             statusImage.setIsHidden(false)
         }
 
-        if message.id == nil || message.id ?? 0 < 0 {
+        if message is UploadProtocol {
             startSendingAnimation()
         } else {
             stopSendingAnimation()

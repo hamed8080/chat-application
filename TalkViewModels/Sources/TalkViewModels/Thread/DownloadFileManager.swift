@@ -205,6 +205,8 @@ public final class DownloadFileManager {
             result.vm.setFileState(state)
             if state.state == .completed {
                 viewModel?.delegate?.reconfig(at: result.indexPath)
+            } else if state.state == .thumbnail {
+                viewModel?.delegate?.updateThumbnail(at: result.indexPath)
             } else {
                 viewModel?.delegate?.updateProgress(at: result.indexPath)
             }

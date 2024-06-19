@@ -3,6 +3,7 @@ import Chat
 import TalkExtensions
 import TalkModels
 
+
 public extension HistoryMessageProtocol {
     func footerStatus(isUploading: Bool) -> (image: UIImage, fgColor: Color) {
         if seen == true {
@@ -21,7 +22,7 @@ public extension HistoryMessageProtocol {
             return (MessageHistoryStatics.seenImage!, Color.App.textPrimaryUIColor!)
         } else if delivered == true {
             return (MessageHistoryStatics.seenImage!, Color.App.textSecondaryUIColor!)
-        } else if id != nil {
+        } else if id != nil, !(self is UploadProtocol) {
             return (MessageHistoryStatics.sentImage!, Color.App.textSecondaryUIColor!)
         } else {
             return (MessageHistoryStatics.clockImage!, Color.App.textPrimaryUIColor!.withAlphaComponent(0.6))

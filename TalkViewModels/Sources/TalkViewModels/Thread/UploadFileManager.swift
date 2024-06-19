@@ -64,6 +64,10 @@ public final class UploadFileManager {
 
     public func cancel(viewModelUniqueId: String) async {
         if let vm = uploadVMS.first(where: {$0.key == viewModelUniqueId})?.value {
+            if let indexPath = viewModel?.historyVM.sections.viewModelAndIndexPath(viewModelUniqueId: viewModelUniqueId)?.indexPath {
+                viewModel?.historyVM.sections[indexPath.section].vms.remove(at: indexPath.row)
+                viewModel?.delegate?.removed(at: indexPath)
+            }
             vm.cancelUpload()
             unRegister(viewModelUniqueId: viewModelUniqueId)
         }

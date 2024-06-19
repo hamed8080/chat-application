@@ -533,6 +533,13 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
+    func updateThumbnail(at: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            guard let cell = self?.tableView.cellForRow(at: at) as? MessageBaseCell else { return }
+            cell.updateThumbnail()
+        }
+    }
+
     func inserted(at: IndexPath) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }

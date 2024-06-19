@@ -24,6 +24,7 @@ public protocol HistoryScrollDelegate: AnyObject, HistoryEmptyDelegate {
     func pinChanged(_ indexPath: IndexPath)
     func seen(_ indexPath: IndexPath)
     func updateProgress(at: IndexPath)
+    func updateThumbnail(at: IndexPath)
 }
 
 public protocol HistoryEmptyDelegate {

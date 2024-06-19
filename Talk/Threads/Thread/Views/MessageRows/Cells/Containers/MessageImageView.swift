@@ -15,7 +15,9 @@ import Chat
 final class MessageImageView: UIImageView {
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
-    private let progressView = CircleProgressButton(progressColor: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
+    private let progressView = CircleProgressButton(progressColor: Color.App.whiteUIColor,
+                                                    iconTint: Color.App.whiteUIColor,
+                                                    margin: 2)
     private weak var viewModel: MessageRowViewModel?
     private var effectView: UIVisualEffectView!
 
@@ -138,5 +140,9 @@ final class MessageImageView: UIImageView {
         let progress = viewModel.fileState.progress
         progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
         progressView.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+    }
+
+    public func updateThumbnail() {
+        setPreloadImage()
     }
 }

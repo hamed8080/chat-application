@@ -107,6 +107,8 @@ public extension MessageRowViewModel {
     func onTap() {
         if fileState.state == .completed {
             doAction()
+        } else if message is UploadProtocol {
+            cancelUpload()
         } else {
             manageDownload()
         }

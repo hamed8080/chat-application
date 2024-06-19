@@ -139,4 +139,8 @@ public class MessageBaseCell: UITableViewCell {
     public func updateProgress() {
         messageContainer.updateProgress()
     }
+
+    public func updateThumbnail() {
+        messageContainer.updateThumbnail()
+    }
 }
