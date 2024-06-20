@@ -20,20 +20,22 @@ final class ForwardInfoView: UIStackView {
     private weak var viewModel: MessageRowViewModel?
     private static let forwardFromStaticText = "Message.forwardedFrom".localized()
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configureView() {
+    private func configureView(isMe: Bool) {
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 6
         layer.masksToBounds = true
+        backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
+        semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
         bar.translatesAutoresizingMaskIntoConstraints = false
 
@@ -45,6 +47,7 @@ final class ForwardInfoView: UIStackView {
         vStack.spacing = 0
         vStack.layoutMargins = .init(horizontal: 4, vertical: 8)
         vStack.isLayoutMarginsRelativeArrangement = true
+        vStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
         forwardStaticLebel.font = UIFont.uiiransansCaption3
         forwardStaticLebel.textColor = Color.App.accentUIColor
@@ -80,9 +83,6 @@ final class ForwardInfoView: UIStackView {
             return
         }
         setIsHidden(false)
-        backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
-        setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
-        vStack.setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name ?? viewModel.message.participant?.name
         participantLabel.setIsHidden(viewModel.message.forwardInfo?.participant?.name == nil)
     }

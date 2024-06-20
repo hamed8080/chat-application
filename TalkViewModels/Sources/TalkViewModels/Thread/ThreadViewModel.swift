@@ -81,7 +81,7 @@ public final class ThreadViewModel: Identifiable, Hashable {
         setup()
     }
 
-    public func setup() {
+    private func setup() {
         seenVM.setup(viewModel: self)
         unreadMentionsViewModel.setup(viewModel: self)
         mentionListPickerViewModel.setup(viewModel: self)

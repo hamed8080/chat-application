@@ -14,17 +14,18 @@ public protocol HistoryScrollDelegate: AnyObject, HistoryEmptyDelegate {
     func scrollTo(uniqueId: String, position: UITableView.ScrollPosition, animate: Bool)
     func reload()
     func reload(at: IndexPath)
-    func reconfig(at: IndexPath)
     func inserted(at: IndexPath)
     func inserted(at: [IndexPath])
-    func inserted(_ sections: IndexSet, _ rows: [IndexPath])
+    func inserted(_ sections: IndexSet, _ rows: [IndexPath], _ scrollTo: IndexPath?)
     func removed(at: IndexPath)
     func removed(at: [IndexPath])
     func edited(_ indexPath: IndexPath)
     func pinChanged(_ indexPath: IndexPath)
     func seen(_ indexPath: IndexPath)
-    func updateProgress(at: IndexPath)
-    func updateThumbnail(at: IndexPath)
+    func updateProgress(at: IndexPath, viewModel: MessageRowViewModel)
+    func updateThumbnail(at: IndexPath, viewModel: MessageRowViewModel)
+    func downloadCompleted(at: IndexPath, viewModel: MessageRowViewModel)
+    func uploadCompleted(at: IndexPath, viewModel: MessageRowViewModel)
 }
 
 public protocol HistoryEmptyDelegate {

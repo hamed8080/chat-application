@@ -16,13 +16,14 @@ public class MessageBaseCell: UITableViewCell {
     let hStack = UIStackView()
     private var avatar: AvatarView?
     private let radio = SelectMessageRadio()
-    private let messageContainer = MessageContainer()
+    private var messageContainer: MessageContainer!
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
     private var isEmptyMessage: Bool { message?.message == nil || message?.message?.isEmpty == true  }
     private var hstackBottomConstraint: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.messageContainer = .init(frame: .zero, isMe: self is MyselfMessageCell)
         configureView()
     }
 
@@ -136,11 +137,19 @@ public class MessageBaseCell: UITableViewCell {
         messageContainer.seen()
     }
 
-    public func updateProgress() {
-        messageContainer.updateProgress()
+    public func updateProgress(viewModel: MessageRowViewModel) {
+        messageContainer.updateProgress(viewModel: viewModel)
     }
 
-    public func updateThumbnail() {
-        messageContainer.updateThumbnail()
+    public func updateThumbnail(viewModel: MessageRowViewModel) {
+        messageContainer.updateThumbnail(viewModel: viewModel)
+    }
+
+    public func downloadCompleted(viewModel: MessageRowViewModel) {
+        messageContainer.downloadCompleted(viewModel: viewModel)
+    }
+
+    public func uploadCompleted(viewModel: MessageRowViewModel) {
+        messageContainer.uploadCompleted(viewModel: viewModel)
     }
 }

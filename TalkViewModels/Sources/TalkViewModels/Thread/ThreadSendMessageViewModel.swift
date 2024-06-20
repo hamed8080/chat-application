@@ -263,9 +263,9 @@ public final class ThreadSendMessageViewModel {
         }
     }
 
-    public func sendVideos(_ imageItems: [ImageItem]) {
+    public func sendVideos(_ viedeoItems: [ImageItem]) {
         var videoMessages: [UploadFileMessage] = []
-        for (index, item) in imageItems.enumerated() {
+        for (index, item) in viedeoItems.enumerated() {
             var model = model
             model.uploadFileIndex = index
             let videoMessage = UploadFileMessage(videoItem: item, videoModel: model)

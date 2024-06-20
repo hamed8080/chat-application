@@ -31,16 +31,16 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     private weak var viewModel: MessageRowViewModel?
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configureView() {
+    private func configureView(isMe: Bool) {
         translatesAutoresizingMaskIntoConstraints = false
         progressButton.translatesAutoresizingMaskIntoConstraints = false
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -52,6 +52,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         layer.cornerRadius = 4
         layer.masksToBounds = true
         backgroundColor = UIColor.black
+        semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
@@ -115,14 +116,13 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
             return
         }
         setIsHidden(false)
-        semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         self.viewModel = viewModel
         if let url = viewModel.calMessage.fileURL {
             prepareUIForPlayback(url: url)
         } else {
             prepareUIForDownload()
         }
-        updateProgress()
+        updateProgress(viewModel: viewModel)
         fileSizeLabel.text = viewModel.calMessage.computedFileSize
         fileNameLabel.text = viewModel.calMessage.fileName
         fileTypeLabel.text = viewModel.calMessage.extName
@@ -149,11 +149,24 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         progressButton.setProgressVisibility(visible: show)
     }
 
-    public func updateProgress() {
-        guard let viewModel = viewModel else { return }
+    public func updateProgress(viewModel: MessageRowViewModel) {
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
         progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+    }
+
+    public func downloadCompleted(viewModel: MessageRowViewModel) {
+        updateProgress(viewModel: viewModel)
+        if let fileURL = viewModel.calMessage.fileURL {
+            prepareUIForPlayback(url: fileURL)
+        }
+    }
+
+    public func uploadCompleted(viewModel: MessageRowViewModel) {
+        updateProgress(viewModel: viewModel)
+        if let fileURL = viewModel.calMessage.fileURL {
+            prepareUIForPlayback(url: fileURL)
+        }
     }
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {

@@ -28,19 +28,23 @@ final class ReplyInfoView: UIStackView {
     private static let deletedStaticText = "Messages.deletedMessageReply".localized()
     private static let repliedToStaticText = "Message.replyTo".localized()
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configureView() {
+    private func configureView(isMe: Bool) {
         backgroundColor = Color.App.bgChatMeDarkUIColor
         layer.cornerRadius = 8
         layer.masksToBounds = true
+
+        semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+        vStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+        backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
 
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,7 +70,7 @@ final class ReplyInfoView: UIStackView {
         replyLabel.numberOfLines = 1
         replyLabel.textColor = UIColor.gray
         replyLabel.lineBreakMode = .byTruncatingTail
-        replyLabel.textAlignment = .left
+        replyLabel.textAlignment = isMe ? .right : .left
 
         imageTextHStack.axis = .horizontal
         imageTextHStack.spacing = 4
@@ -113,17 +117,12 @@ final class ReplyInfoView: UIStackView {
             return
         }
         setIsHidden(false)
-        setBackgroundColor(viewModel.calMessage.isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor)
-
-        setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
-        vStack.setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
 
         participantLabel.text = replyInfo?.participant?.name
         participantLabel.setIsHidden(replyInfo?.participant?.name == nil)
 
         replyLabel.text = replyInfo?.message
         replyLabel.setIsHidden(replyInfo?.message?.isEmpty == true)
-        replyLabel.textAlignment = viewModel.calMessage.isEnglish || viewModel.calMessage.isMe ? .right : .left
 
         deletedLabel.setIsHidden(replyInfo?.deleted == nil || replyInfo?.deleted == false)
 

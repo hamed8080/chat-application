@@ -313,7 +313,7 @@ public extension MessageRowViewModel {
 
     func reconfig() {
         if let indexPath = threadVM?.historyVM.sections.indexPath(for: self) {
-            threadVM?.delegate?.reconfig(at: indexPath)
+//            threadVM?.delegate?.reconfig(at: indexPath)
         }
     }
 }

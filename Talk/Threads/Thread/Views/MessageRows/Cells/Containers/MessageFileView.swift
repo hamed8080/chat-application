@@ -92,7 +92,7 @@ final class MessageFileView: UIStackView {
         setIsHidden(false)
         self.viewModel = viewModel
         setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
-        updateProgress()
+        updateProgress(viewModel: viewModel)
         fileSizeLabel.text = viewModel.calMessage.computedFileSize
         fileNameLabel.text = viewModel.calMessage.fileName
         fileTypeLabel.text = viewModel.calMessage.extName
@@ -106,10 +106,17 @@ final class MessageFileView: UIStackView {
         setIsHidden(true)
     }
 
-    public func updateProgress() {
-        guard let viewModel = viewModel else { return }
+    public func updateProgress(viewModel: MessageRowViewModel) {
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
         progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+    }
+
+    public func downloadCompleted(viewModel: MessageRowViewModel) {
+        updateProgress(viewModel: viewModel)
+    }
+
+    public func uploadCompleted(viewModel: MessageRowViewModel) {
+        updateProgress(viewModel: viewModel)
     }
 }

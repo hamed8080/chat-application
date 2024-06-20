@@ -19,14 +19,14 @@ final class MessageContainer: UIStackView {
     private weak var viewModel: MessageRowViewModel?
     private let messageFileView = MessageFileView()
     private let messageImageView = MessageImageView(frame: .zero)
-    private let messageVideoView = MessageVideoView()
-    private let messageAudioView = MessageAudioView()
+    private let messageVideoView: MessageVideoView
+    private let messageAudioView: MessageAudioView
     private let locationRowView = MessageLocationView(frame: .zero)
     private let groupParticipantNameView = GroupParticipantNameView()
-    private let replyInfoMessageRow = ReplyInfoView()
-    private let forwardMessageRow = ForwardInfoView()
+    private let replyInfoMessageRow: ReplyInfoView
+    private let forwardMessageRow: ForwardInfoView
     private let textMessageView = TextMessageView()
-    private let reactionView = ReactionCountView()
+    private let reactionView: ReactionCountView
     private let fotterView = FooterView()
     private let unsentMessageView = UnsentMessageView()
     private let tailImageView = UIImageView(image: UIImage(named: "tail"))
@@ -34,9 +34,14 @@ final class MessageContainer: UIStackView {
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
+        self.replyInfoMessageRow = .init(frame: frame, isMe: isMe)
+        self.forwardMessageRow = .init(frame: frame, isMe: isMe)
+        self.messageAudioView = .init(frame: frame, isMe: isMe)
+        self.messageVideoView = .init(frame: frame, isMe: isMe)
+        self.reactionView = .init(frame: frame, isMe: isMe)
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
         addMenus()
     }
 
@@ -44,8 +49,8 @@ final class MessageContainer: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func configureView() {
-        backgroundColor = Color.App.bgChatUserUIColor!
+    public func configureView(isMe: Bool) {
+        backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         axis = .vertical
         spacing = 0
         alignment = .leading
@@ -107,7 +112,7 @@ final class MessageContainer: UIStackView {
         reactionView.set(viewModel)
         fotterView.set(viewModel)
         isUserInteractionEnabled = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
-        backgroundColor = viewModel.calMessage.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+
         if viewModel.calMessage.isLastMessageOfTheUser && !viewModel.calMessage.isMe {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
             tailImageView.setIsHidden(false)
@@ -322,7 +327,7 @@ extension MessageContainer {
         guard let message = model.message as? Message else { return }
         model.threadVM?.clearCacheFile(message: message)
         if let uniqueId = message.uniqueId, let indexPath = model.threadVM?.historyVM.sections.indicesByMessageUniqueId(uniqueId) {
-            model.threadVM?.delegate?.reconfig(at: indexPath)
+//            model.threadVM?.delegate?.reconfig(at: indexPath)
         }
     }
 
@@ -371,14 +376,28 @@ extension MessageContainer {
         fotterView.seen(image: viewModel.message.uiFooterStatus.image)
     }
 
-    func updateProgress() {
-        messageAudioView.updateProgress()
-        messageFileView.updateProgress()
-        messageImageView.updateProgress()
-        messageVideoView.updateProgress()
+    func updateProgress(viewModel: MessageRowViewModel) {
+        messageAudioView.updateProgress(viewModel: viewModel)
+        messageFileView.updateProgress(viewModel: viewModel)
+        messageImageView.updateProgress(viewModel: viewModel)
+        messageVideoView.updateProgress(viewModel: viewModel)
     }
 
-    func updateThumbnail() {
-        messageImageView.updateThumbnail()
+    func updateThumbnail(viewModel: MessageRowViewModel) {
+        messageImageView.updateThumbnail(viewModel: viewModel)
+    }
+
+    public func downloadCompleted(viewModel: MessageRowViewModel) {
+        messageAudioView.downloadCompleted(viewModel: viewModel)
+        messageFileView.downloadCompleted(viewModel: viewModel)
+        messageImageView.downloadCompleted(viewModel: viewModel)
+        messageVideoView.downloadCompleted(viewModel: viewModel)
+    }
+
+    public func uploadCompleted(viewModel: MessageRowViewModel) {
+        messageAudioView.uploadCompleted(viewModel: viewModel)
+        messageFileView.uploadCompleted(viewModel: viewModel)
+        messageImageView.uploadCompleted(viewModel: viewModel)
+        messageVideoView.uploadCompleted(viewModel: viewModel)
     }
 }

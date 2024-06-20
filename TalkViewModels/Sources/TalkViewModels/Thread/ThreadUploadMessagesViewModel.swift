@@ -33,21 +33,23 @@ public final class ThreadUploadMessagesViewModel {
     }
 
     internal func append(_ requests: [any HistoryMessageProtocol]) {
+        if requests.isEmpty { return }
         Task { [weak self] in
             guard let self = self, let historyVM = viewModel?.historyVM else { return }
             let beforeSectionCount = historyVM.sections.count
             await historyVM.injectMessagesAndSort(requests)
             let tuple = historyVM.sections.indexPathsForUpload(requests: requests, beforeSectionCount: beforeSectionCount)
             if let sectionSet = tuple.sectionIndex {
-                viewModel?.delegate?.inserted(sectionSet, tuple.indices)
+                viewModel?.delegate?.inserted(sectionSet, tuple.indices, nil)
             } else {
                 viewModel?.delegate?.inserted(at: tuple.indices)
             }
-            if let lastIndexPath = tuple.indices.last {
-                // Sleep for better animation when we insert something at the end of the list in upload for multiple items.
-                try? await Task.sleep(for: .seconds(0.2))
-                await viewModel?.scrollVM.scrollToLastUploadedMessageWith(lastIndexPath)
-            }
+            // Sleep for better animation when we insert something at the end of the list in upload for multiple items.
+            try? await Task.sleep(for: .seconds(0.2))
+            let sectionCount = historyVM.sections.count
+            let rowCount = historyVM.sections.last?.vms.count ?? 0
+            let indexPath = IndexPath(row: rowCount - 1, section: sectionCount - 1)
+            await viewModel?.scrollVM.scrollToLastUploadedMessageWith(indexPath)
         }
     }
 

@@ -23,8 +23,8 @@ public final class ParticipantsColorViewModel {
         return UIColor(named: "userColor\(newNumber ?? number)") ?? .random()
     }
     
-    @MainActor
-    public func color(for participantId: Int) -> UIColor {
+    @HistoryActor
+    public func color(for participantId: Int) async -> UIColor {
         if let color = participantsColor[participantId] {
             return color
         } else {

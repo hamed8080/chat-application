@@ -89,7 +89,7 @@ final class MessageImageView: UIImageView {
         if let fileURL = viewModel.calMessage.fileURL {
             setImage(fileURL: fileURL)
         } else {
-            setPreloadImage()
+            setPreloadImage(viewModel: viewModel)
         }
         stack.setIsHidden(!canShow)
         effectView.setIsHidden(!canShow)
@@ -103,7 +103,7 @@ final class MessageImageView: UIImageView {
             fileSizeLabel.text = viewModel.calMessage.computedFileSize
         }
 
-        if viewModel.calMessage.rowType.isImage, state != .downloading, state != .completed && state != .thumbnailDownloaing, state != .thumbnail {
+        if !viewModel.fileState.isUploading, viewModel.calMessage.rowType.isImage, state != .downloading, state != .completed && state != .thumbnailDownloaing, state != .thumbnail {
             viewModel.onTap() // Download thumbnail
         }
     }
@@ -120,8 +120,8 @@ final class MessageImageView: UIImageView {
     }
 
     // Thumbnail or placeholder image
-    private func setPreloadImage() {
-        guard let image = viewModel?.fileState.preloadImage else { return }
+    private func setPreloadImage(viewModel: MessageRowViewModel) {
+        guard let image = viewModel.fileState.preloadImage else { return }
         self.image = image
     }
 
@@ -135,14 +135,31 @@ final class MessageImageView: UIImageView {
         effectView.setIsHidden(true)
     }
 
-    public func updateProgress() {
-        guard let viewModel = viewModel else { return }
+    public func updateProgress(viewModel: MessageRowViewModel) {
         let progress = viewModel.fileState.progress
         progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
         progressView.setProgressVisibility(visible: viewModel.fileState.state != .completed)
     }
 
-    public func updateThumbnail() {
-        setPreloadImage()
+    public func updateThumbnail(viewModel: MessageRowViewModel) {
+        setPreloadImage(viewModel: viewModel)
+    }
+
+    public func downloadCompleted(viewModel: MessageRowViewModel) {
+        if let fileURL = viewModel.calMessage.fileURL {
+            updateProgress(viewModel: viewModel)
+            stack.setIsHidden(true)
+            effectView.setIsHidden(true)
+            setImage(fileURL: fileURL)
+        }
+    }
+
+    public func uploadCompleted(viewModel: MessageRowViewModel) {
+        if let fileURL = viewModel.calMessage.fileURL {
+            updateProgress(viewModel: viewModel)
+            stack.setIsHidden(true)
+            effectView.setIsHidden(true)
+            setImage(fileURL: fileURL)
+        }
     }
 }

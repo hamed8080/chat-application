@@ -204,11 +204,11 @@ public final class DownloadFileManager {
         await MainActor.run {
             result.vm.setFileState(state)
             if state.state == .completed {
-                viewModel?.delegate?.reconfig(at: result.indexPath)
+                viewModel?.delegate?.downloadCompleted(at: result.indexPath, viewModel: result.vm)
             } else if state.state == .thumbnail {
-                viewModel?.delegate?.updateThumbnail(at: result.indexPath)
+                viewModel?.delegate?.updateThumbnail(at: result.indexPath, viewModel: result.vm)
             } else {
-                viewModel?.delegate?.updateProgress(at: result.indexPath)
+                viewModel?.delegate?.updateProgress(at: result.indexPath, viewModel: result.vm)
             }
         }
         if state.state == .completed {

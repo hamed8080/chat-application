@@ -116,9 +116,9 @@ public final class UploadFileManager {
             guard let tuple = tuple else { return }
             tuple.vm.setFileState(state)
             if state.state == .completed {
-                viewModel?.delegate?.reconfig(at: tuple.indexPath)
+                viewModel?.delegate?.uploadCompleted(at: tuple.indexPath, viewModel: tuple.vm)
             } else {
-                viewModel?.delegate?.updateProgress(at: tuple.indexPath)
+                viewModel?.delegate?.updateProgress(at: tuple.indexPath, viewModel: tuple.vm)
             }
         }
         if state.state == .completed {

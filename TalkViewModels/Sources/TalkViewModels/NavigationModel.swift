@@ -129,6 +129,14 @@ public extension NavigationModel {
         }
         setSelectedThreadId()
     }
+
+    func cleanOnPop(threadId: Int? = nil) {
+        if threadId != nil {
+            presentedThreadViewModel?.viewModel.cancelAllObservers()
+        }
+        popLastPathTracking()
+        setSelectedThreadId()
+    }
 }
 
 // ThreadDetailViewModel

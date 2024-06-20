@@ -26,20 +26,21 @@ final class MessageAudioView: UIStackView {
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
     private var audioVM: AVAudioPlayerViewModel { AppState.shared.objectsContainer.audioPlayerVM }
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configureView() {
+    private func configureView(isMe: Bool) {
         layoutMargins = .init(top: 8, left: 8, bottom: 0, right: 0)
         layer.cornerRadius = 5
         layer.masksToBounds = true
         isLayoutMarginsRelativeArrangement = true
+        semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
         progressButton.translatesAutoresizingMaskIntoConstraints = false
 
@@ -95,7 +96,6 @@ final class MessageAudioView: UIStackView {
             return
         }
         setIsHidden(false)
-        setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
         self.viewModel = viewModel
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
@@ -118,10 +118,17 @@ final class MessageAudioView: UIStackView {
     }
 
 
-    public func updateProgress() {
-        guard let viewModel = viewModel else { return }
+    public func updateProgress(viewModel: MessageRowViewModel) {
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
         progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+    }
+
+    public func downloadCompleted(viewModel: MessageRowViewModel) {
+        updateProgress(viewModel: viewModel)
+    }
+
+    public func uploadCompleted(viewModel: MessageRowViewModel) {
+        updateProgress(viewModel: viewModel)
     }
 }

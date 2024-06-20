@@ -112,6 +112,23 @@ extension ContiguousArray where Element == MessageSection {
     }
 
     @discardableResult
+    public func indexPathBy(messageUniqueId uniqueId: String) -> IndexPath? {
+        var row: Int?
+        var sectionIndex: Int?
+        for (sIndex, section) in enumerated() {
+            for (mIndex, vm) in section.vms.enumerated() {
+                if vm.message.uniqueId == uniqueId {
+                    row = mIndex
+                    sectionIndex = sIndex
+                    break
+                }
+            }
+        }
+        guard let sectionIndex = sectionIndex, let row = row else { return nil }
+        return IndexPath(row: row, section: sectionIndex)
+    }
+
+    @discardableResult
     public func messageViewModel(for uniqueId: String) -> MessageRowViewModel? {
         guard let indicies = indicesByMessageUniqueId(uniqueId) else {return nil}
         return self[indicies.section].vms[indicies.row]

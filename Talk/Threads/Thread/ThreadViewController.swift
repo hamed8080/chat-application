@@ -56,7 +56,7 @@ final class ThreadViewController: UIViewController {
             }
         })
         if !hasAnyInstanceInStack, let viewModel = viewModel {
-            AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.threadId)
+            AppState.shared.objectsContainer.navVM.cleanOnPop(threadId: viewModel.threadId)
         }
     }
 
@@ -122,8 +122,8 @@ extension ThreadViewController {
         tableView.allowsSelection = false // Prevent the user select things when open the thread
         tableView.sectionHeaderTopPadding = 0
         ConversationHistoryCellFactory.registerCells(tableView)
-        view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
 
         let imageView = UIImageView(image: UIImage(named: "chat_bg"))
         imageView.contentMode = .scaleAspectFill
@@ -183,7 +183,7 @@ extension ThreadViewController {
         centerLoading.translatesAutoresizingMaskIntoConstraints = false
         bottomLoading.translatesAutoresizingMaskIntoConstraints = false
         tableView.addSubview(topLoading)
-        tableView.addSubview(centerLoading)
+        view.addSubview(centerLoading)
         tableView.addSubview(bottomLoading)
 
         topLoading.animate(false)
@@ -217,7 +217,7 @@ extension ThreadViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewModel?.historyVM.setThreashold(view.bounds.height * 1.5)
+        viewModel?.historyVM.setThreashold(view.bounds.height * 2.5)
     }
 }
 
@@ -521,23 +521,31 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
-    func reconfig(at: IndexPath) {
+    func uploadCompleted(at: IndexPath, viewModel: MessageRowViewModel) {
         DispatchQueue.main.async { [weak self] in
-            self?.tableView.reconfigureRows(at: [at])
+            guard let cell = self?.tableView.cellForRow(at: at) as? MessageBaseCell else { return }
+            cell.uploadCompleted(viewModel: viewModel)
         }
     }
 
-    func updateProgress(at: IndexPath) {
+    func downloadCompleted(at: IndexPath, viewModel: MessageRowViewModel) {
         DispatchQueue.main.async { [weak self] in
             guard let cell = self?.tableView.cellForRow(at: at) as? MessageBaseCell else { return }
-            cell.updateProgress()
+            cell.downloadCompleted(viewModel: viewModel)
         }
     }
 
-    func updateThumbnail(at: IndexPath) {
+    func updateProgress(at: IndexPath, viewModel: MessageRowViewModel) {
         DispatchQueue.main.async { [weak self] in
             guard let cell = self?.tableView.cellForRow(at: at) as? MessageBaseCell else { return }
-            cell.updateThumbnail()
+            cell.updateProgress(viewModel: viewModel)
+        }
+    }
+
+    func updateThumbnail(at: IndexPath, viewModel: MessageRowViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            guard let cell = self?.tableView.cellForRow(at: at) as? MessageBaseCell else { return }
+            cell.updateThumbnail(viewModel: viewModel)
         }
     }
 
@@ -555,27 +563,13 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
-    func inserted(_ sections: IndexSet, _ rows: [IndexPath]) {
+    func inserted(_ sections: IndexSet, _ rows: [IndexPath], _ scrollTo: IndexPath?) {
         DispatchQueue.main.async { [weak self] in
-            self?.inserted(sections: sections, rows: rows)
+            self?.inserted(sections: sections, rows: rows, scrollTo: scrollTo)
         }
     }
 
-    private func inserted(sections: IndexSet, rows: [IndexPath]) {
-
-//        let oldContentHeight: CGFloat = tableView.contentSize.height
-//        let oldOffsetY: CGFloat = tableView.contentOffset.y
-//        tableView.reloadData()
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//            let newContentHeight: CGFloat = self.tableView.contentSize.height
-//            self.tableView.contentOffset.y = oldOffsetY + (newContentHeight - oldContentHeight)
-//            print("old content height: \(oldContentHeight) oldOffsetY:\(oldOffsetY) newContentHeight:\(newContentHeight) move to offset: \(oldOffsetY + (newContentHeight - oldContentHeight))")
-//
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                print("current offsetY: \(self.tableView.contentOffset.y)")
-//            }
-//        }
-
+    private func inserted(sections: IndexSet, rows: [IndexPath], scrollTo: IndexPath?) {
 
         // Save the current content offset and content height
         let beforeOffsetY = tableView.contentOffset.y
@@ -586,8 +580,8 @@ extension ThreadViewController: HistoryScrollDelegate {
         tableView.beginUpdates()
 
         // Insert the sections and rows without animation
-        tableView.insertSections(sections, with: .none)
-        tableView.insertRows(at: rows, with: .none)
+        tableView.insertSections(sections, with: .middle)
+        tableView.insertRows(at: rows, with: .middle)
 
         // Calculate the new content size and offset
         let afterContentHeight = tableView.contentSize.height
@@ -596,12 +590,14 @@ extension ThreadViewController: HistoryScrollDelegate {
         // Update the content offset to keep the visible content stationary
         let newOffsetY = beforeOffsetY + offsetChange
         print("new offset y is: \(newOffsetY)")
-
-        // Set the new content offset
-        //        tableView.setContentOffset(CGPoint(x: tableView.contentOffset.x, y: newOffsetY), animated: false)
+        tableView.contentOffset.y = newOffsetY
+//        tableView.setContentOffset(.init(x: 0, y: newOffsetY), animated: true)
 
         // End table view updates
         tableView.endUpdates()
+        if let scrollTo = scrollTo {
+            tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
+        }
     }
 
     func inserted(at: [IndexPath]) {

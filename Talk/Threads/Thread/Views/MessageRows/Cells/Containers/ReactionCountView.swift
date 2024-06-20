@@ -15,25 +15,25 @@ import TalkModels
 final class ReactionCountView: UIScrollView {
     private let stack = UIStackView()
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configureView() {
-        stack.translatesAutoresizingMaskIntoConstraints = false
-
+    private func configureView(isMe: Bool) {
         layoutMargins = .init(horizontal: 6)
-        
+        semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+
+        stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
         stack.spacing = 4
         stack.alignment = .fill
         stack.distribution = .equalSpacing
-
+        stack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         addSubview(stack)
 
         NSLayoutConstraint.activate([
@@ -52,8 +52,6 @@ final class ReactionCountView: UIScrollView {
             return
         }
         setIsHidden(false)
-        semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
-        stack.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
 //        let recitonList = viewModel.reactionsVM.reactionCountList
 //        stack.subviews.forEach { reaction in
 //            reaction.removeFromSuperview()
@@ -119,37 +117,3 @@ final class ReactionCountRow: UIStackView {
         }
     }
 }
-
-struct ReactionCountViewWapper: UIViewRepresentable {
-    let viewModel: MessageRowViewModel
-
-    func makeUIView(context: Context) -> some UIView {
-        let view = ReactionCountView()
-        view.set(viewModel)
-        return view
-    }
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-//
-//    private func onReactionTapped() {
-//        if let tappedStciker = row.sticker {
-//            reactionVM.reaction(tappedStciker, messageId: viewModel.message.id ?? -1)
-//        }
-//    }
-//
-//    private var contextMenu: some View {
-//        let tabVM = ReactionTabParticipantsViewModel(messageId: viewModel.message.id ?? -1)
-//        tabVM.viewModel = viewModel.threadVM?.reactionViewModel
-//        return MessageReactionDetailView(message: viewModel.message, row: row)
-//            .environmentObject(tabVM)
-//            .environmentObject(viewModel.threadVM?.reactionViewModel ?? .init())
-//            .frame(width: 300, height: 400)
-//            .clipShape(RoundedRectangle(cornerRadius:(12)))
-    }
-}
-//
-//struct ReactionCountView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ReactionCountViewWapper(viewModel: .init(message: .init(), viewModel: .init(thread: .init())))
-//    }
-//}

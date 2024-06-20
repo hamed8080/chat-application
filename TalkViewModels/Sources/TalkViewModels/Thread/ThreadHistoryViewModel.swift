@@ -264,7 +264,7 @@ extension ThreadHistoryViewModel {
         let sortedMessages = messages.sortedByTime()
         let viewModels = await createCalculateAppendSort(sortedMessages)
         let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
-        delegate?.inserted(tuple.sections, tuple.rows)
+        delegate?.inserted(tuple.sections, tuple.rows, nil)
         for vm in viewModels {
             await vm.register()
         }
@@ -381,7 +381,7 @@ extension ThreadHistoryViewModel {
     }
 
     private func onMoreTop(_ messages: [Message], _ response: HistoryResponse) async {
-        let lastTopMessage = sections.first?.vms.first?.message
+        let lastTopMessageVM = sections.first?.vms.first
         let beforeSectionCount = sections.count
         isInInsertionTop = true
         /// 3- Append and sort the array but not call to update the view.
@@ -398,13 +398,16 @@ extension ThreadHistoryViewModel {
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
-        let tuple = sections.insertedIndices(insertTop: true, beforeSectionCount: beforeSectionCount, viewModels)
-        delegate?.inserted(tuple.sections, tuple.rows)
-        let moveToMessage = viewModel?.scrollVM.lastContentOffsetY ?? 0 < 48
-        if moveToMessage, let uniqueId = lastTopMessage?.uniqueId {
-            delegate?.scrollTo(uniqueId: uniqueId, position: .top, animate: false)
-        }
         await setHasMoreTop(response)
+        let tuple = sections.insertedIndices(insertTop: true, beforeSectionCount: beforeSectionCount, viewModels)
+
+        let moveToMessage = viewModel?.scrollVM.lastContentOffsetY ?? 0 < 48
+        var indexPathToScroll: IndexPath?
+        if moveToMessage, let lastTopMessageVM = lastTopMessageVM {
+            indexPathToScroll = sections.indexPath(for: lastTopMessageVM)
+        }
+        delegate?.inserted(tuple.sections, tuple.rows, indexPathToScroll)
+
         // Register for downloading thumbnails or read a cached version
         for vm in viewModels {
             await vm.register()
@@ -443,10 +446,9 @@ extension ThreadHistoryViewModel {
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
-        let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
-        delegate?.inserted(tuple.sections, tuple.rows)
-
         await setHasMoreBottom(response)
+        let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
+        delegate?.inserted(tuple.sections, tuple.rows, nil)
 
         for vm in viewModels {
             await vm.register()
@@ -612,11 +614,10 @@ extension ThreadHistoryViewModel {
                 await vm.performaCalculation(appendMessages: [message])
                 appendSort([vm])
                 let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, [vm])
-                delegate?.inserted(tuple.sections, tuple.rows)
+                delegate?.inserted(tuple.sections, tuple.rows, nil)
             }
             print("after: section count \(sections.count) rowsCount:\(sections.last?.vms.count ?? 0)")
 
-            await viewModel.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
             setSeenForAllOlderMessages(newMessage: message)
             isInInsertionTop = false
             await viewModel.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
