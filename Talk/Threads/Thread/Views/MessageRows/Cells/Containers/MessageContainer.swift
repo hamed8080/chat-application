@@ -71,7 +71,7 @@ final class MessageContainer: UIStackView {
         addArrangedSubview(locationRowView)
         addArrangedSubview(textMessageView)
         addArrangedSubview(reactionView)
-//        addArrangedSubview(fotterView)
+        addArrangedSubview(fotterView)
 //        addArrangedSubview(unsentMessageView)
 
         tailImageView.translatesAutoresizingMaskIntoConstraints = false
