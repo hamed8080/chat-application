@@ -19,6 +19,7 @@ final class FooterView: UIStackView {
     private let editedLabel = UILabel()
     private let statusImage = UIImageView()
     private static let staticEditString = "Messages.Footer.edited".localized()
+    private var statusImageWidthConstriant: NSLayoutConstraint!
 
     private var shapeLayer = CAShapeLayer()
     private var rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
@@ -33,36 +34,39 @@ final class FooterView: UIStackView {
     }
     
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         spacing = 4
         axis = .horizontal
-        alignment = .firstBaseline
-        layoutMargins = .init(top: 12, left: 2, bottom: 4, right: 2)
-        isLayoutMarginsRelativeArrangement = true
+        alignment = .lastBaseline
+
+        pinImage.translatesAutoresizingMaskIntoConstraints = false
+        pinImage.tintColor = Color.App.accentUIColor
+        pinImage.contentMode = .scaleAspectFit
+        addArrangedSubview(pinImage)
 
         statusImage.translatesAutoresizingMaskIntoConstraints = false
-        statusImage.translatesAutoresizingMaskIntoConstraints = false
-        pinImage.translatesAutoresizingMaskIntoConstraints = false
-        pinImage.translatesAutoresizingMaskIntoConstraints = false
+        statusImage.contentMode = .scaleAspectFit
+        addArrangedSubview(statusImage)
 
+        timelabel.translatesAutoresizingMaskIntoConstraints = false
         timelabel.font = UIFont.uiiransansBoldCaption2
         timelabel.textColor = Color.App.textPrimaryUIColor?.withAlphaComponent(0.5)
+        addArrangedSubview(timelabel)
+
+        editedLabel.translatesAutoresizingMaskIntoConstraints = false
         editedLabel.font = UIFont.uiiransansCaption2
         editedLabel.textColor = Color.App.textSecondaryUIColor
         editedLabel.text = FooterView.staticEditString
-        pinImage.tintColor = Color.App.accentUIColor
-        statusImage.contentMode = .scaleAspectFit
-        pinImage.contentMode = .scaleAspectFit
-
-        addArrangedSubview(pinImage)
-        addArrangedSubview(statusImage)
-        addArrangedSubview(timelabel)
         addArrangedSubview(editedLabel)
-
+        statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: 22)
         NSLayoutConstraint.activate([
-            statusImage.widthAnchor.constraint(equalToConstant: 16),
-            statusImage.heightAnchor.constraint(equalToConstant: 16),
-            pinImage.widthAnchor.constraint(equalToConstant: 12),
-            pinImage.heightAnchor.constraint(equalToConstant: 12),
+            heightAnchor.constraint(equalToConstant: 22),
+            statusImage.heightAnchor.constraint(equalTo: heightAnchor),
+            statusImageWidthConstriant,
+            pinImage.heightAnchor.constraint(equalToConstant: 16),
+            pinImage.widthAnchor.constraint(equalToConstant: 22),
+            timelabel.heightAnchor.constraint(equalTo: heightAnchor),
+            editedLabel.heightAnchor.constraint(equalTo: heightAnchor),
         ])
     }
 
@@ -73,6 +77,8 @@ final class FooterView: UIStackView {
         statusImage.image = message.uiFooterStatus.image
         statusImage.tintColor = message.uiFooterStatus.fgColor
         statusImage.setIsHidden(!viewModel.calMessage.isMe)
+        statusImageWidthConstriant.constant = message.seen == true ? 22 : 12
+
         timelabel.text = viewModel.calMessage.timeString
         editedLabel.setIsHidden(viewModel.message.edited != true)
         pinImage.setIsHidden(!isPin)
@@ -106,7 +112,6 @@ final class FooterView: UIStackView {
     }
 
     private func startSendingAnimation() {
-
         rotateAnimation.repeatCount = .greatestFiniteMagnitude
         rotateAnimation.isCumulative = true
         rotateAnimation.toValue = 2 * CGFloat.pi

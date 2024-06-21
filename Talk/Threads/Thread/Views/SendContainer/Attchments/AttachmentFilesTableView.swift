@@ -56,7 +56,7 @@ public final class AttachmentFilesTableView: UIView {
         addSubview(tableView)
 
         heightConstraint = heightAnchor.constraint(equalToConstant: 0)
-        expandViewHeightConstraint = expandView.heightAnchor.constraint(equalToConstant: 48)
+        expandViewHeightConstraint = expandView.heightAnchor.constraint(equalToConstant: 0)
         NSLayoutConstraint.activate([
             heightConstraint,
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),

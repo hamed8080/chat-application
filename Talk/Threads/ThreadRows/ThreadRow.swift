@@ -11,6 +11,7 @@ import TalkUI
 import TalkViewModels
 import TalkModels
 import ActionableContextMenu
+import TalkExtensions
 
 struct ThreadRow: View {
     @State private var isSelected: Bool = false
@@ -65,7 +66,9 @@ struct ThreadRow: View {
                     }
 
                     Spacer()
-                    MutableMessageStatusView(status: status, isSelected: isSelected)
+
+                    let isSeen = status?.icon != MessageHistoryStatics.sentImage
+                    MutableMessageStatusView(status: status, isSelected: isSelected, isSeen: isSeen)
                     ThreadTimeText(thread: thread, isSelected: isSelected)
                         .id(thread.time)
                 }

@@ -35,7 +35,8 @@ class ThreadNavigationPlayer: UIView {
     }
 
     private func configureViews() {
-        
+        translatesAutoresizingMaskIntoConstraints = false
+
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont.uiiransansCaption
         titleLabel.textColor = Color.App.textPrimaryUIColor

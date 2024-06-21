@@ -20,8 +20,8 @@ public extension HistoryMessageProtocol {
     var uiFooterStatus: (image: UIImage, fgColor: UIColor) {
         if seen == true {
             return (MessageHistoryStatics.seenImage!, Color.App.textPrimaryUIColor!)
-        } else if delivered == true {
-            return (MessageHistoryStatics.seenImage!, Color.App.textSecondaryUIColor!)
+//        } else if delivered == true {
+//            return (MessageHistoryStatics.seenImage!, Color.App.textSecondaryUIColor!)
         } else if id != nil, !(self is UploadProtocol) {
             return (MessageHistoryStatics.sentImage!, Color.App.textSecondaryUIColor!)
         } else {

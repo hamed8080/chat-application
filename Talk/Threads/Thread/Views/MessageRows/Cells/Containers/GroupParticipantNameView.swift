@@ -12,6 +12,7 @@ import Chat
 import TalkModels
 
 final class GroupParticipantNameView: UILabel {
+    private var heightConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,8 +24,14 @@ final class GroupParticipantNameView: UILabel {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         font = UIFont.uiiransansBoldBody
         numberOfLines = 1
+        heightConstraint = heightAnchor.constraint(equalToConstant: 16)
+        heightConstraint.identifier = "GroupParticipantNameViewHeightAnchor"
+        NSLayoutConstraint.activate([
+            heightConstraint
+        ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {

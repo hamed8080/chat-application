@@ -42,48 +42,47 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
 
     private func configureView(isMe: Bool) {
         translatesAutoresizingMaskIntoConstraints = false
-        progressButton.translatesAutoresizingMaskIntoConstraints = false
-        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
-        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        playOverlayView.translatesAutoresizingMaskIntoConstraints = false
-        playIcon.translatesAutoresizingMaskIntoConstraints = false
-
         layer.cornerRadius = 4
         layer.masksToBounds = true
         backgroundColor = UIColor.black
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        addSubview(fileSizeLabel)
 
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
         fileNameLabel.textColor = Color.App.textPrimaryUIColor
         fileNameLabel.numberOfLines = 1
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
+        addSubview(fileNameLabel)
 
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
+        addSubview(fileTypeLabel)
 
+        playIcon.translatesAutoresizingMaskIntoConstraints = false
         playIcon.setIsHidden(true)
         playIcon.contentMode = .scaleAspectFit
         playIcon.image = MessageVideoView.playIcon
         playIcon.tintColor = Color.App.whiteUIColor
+        addSubview(playIcon)
 
+        playOverlayView.translatesAutoresizingMaskIntoConstraints = false
         playOverlayView.backgroundColor = .clear
         let tapGesture = UITapGestureRecognizer()
         tapGesture.addTarget(self, action: #selector(onTap))
         playOverlayView.addGestureRecognizer(tapGesture)
-
-        addSubview(progressButton)
-        addSubview(fileNameLabel)
-        addSubview(fileSizeLabel)
-        addSubview(fileTypeLabel)
         addSubview(playOverlayView)
-        addSubview(playIcon)
+
+        progressButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(progressButton)
 
         NSLayoutConstraint.activate([
             widthAnchor.constraint(equalToConstant: viewModel?.calMessage.sizes.width ?? 320),

@@ -42,25 +42,3 @@ final class UnreadBubbleCell: UITableViewCell {
         ])
     }
 }
-
-struct UnreadMessagesBubbleWapper: UIViewRepresentable {
-    let viewModel: MessageRowViewModel
-
-    func makeUIView(context: Context) -> some UIView {
-        return UnreadBubbleCell()
-    }
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-
-    }
-}
-
-struct UnreadMessagesBubble_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            let message = Message(id: 1, messageType: .participantJoin, time: 155600555)
-            let viewModel = MessageRowViewModel(message: message, viewModel: .init(thread: .init(id: 1)))
-            UnreadMessagesBubbleWapper(viewModel: viewModel)
-        }
-    }
-}

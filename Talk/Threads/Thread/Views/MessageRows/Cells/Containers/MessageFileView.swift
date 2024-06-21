@@ -38,19 +38,30 @@ final class MessageFileView: UIStackView {
         layer.cornerRadius = 5
         layer.masksToBounds = true
         isLayoutMarginsRelativeArrangement = true
-
-        progressButton.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .horizontal
         spacing = 8
 
-        vStack.axis = .vertical
-        vStack.alignment = .leading
-        vStack.spacing = 4
+        progressButton.translatesAutoresizingMaskIntoConstraints = false
+        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
+        progressButton.isUserInteractionEnabled = true
+        addArrangedSubview(progressButton)
+
+        let typeSizeHStack = UIStackView()
+        typeSizeHStack.axis = .horizontal
+        typeSizeHStack.spacing = 4
+        fileTypeLabel.font = UIFont.uiiransansBoldCaption2
+        fileTypeLabel.textAlignment = .left
+        fileTypeLabel.textColor = Color.App.textSecondaryUIColor
+        typeSizeHStack.addArrangedSubview(fileTypeLabel)
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        typeSizeHStack.addArrangedSubview(fileSizeLabel)
+
+        vStack.axis = .vertical
+        vStack.alignment = .leading
+        vStack.spacing = 4
 
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
@@ -58,24 +69,8 @@ final class MessageFileView: UIStackView {
         fileNameLabel.numberOfLines = 1
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
 
-        fileTypeLabel.font = UIFont.uiiransansBoldCaption2
-        fileTypeLabel.textAlignment = .left
-        fileTypeLabel.textColor = Color.App.textSecondaryUIColor
-
-        let typeSizeHStack = UIStackView()
-        typeSizeHStack.axis = .horizontal
-        typeSizeHStack.spacing = 4
-
-        typeSizeHStack.addArrangedSubview(fileTypeLabel)
-        typeSizeHStack.addArrangedSubview(fileSizeLabel)
-
         vStack.addArrangedSubview(fileNameLabel)
         vStack.addArrangedSubview(typeSizeHStack)
-
-        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
-        progressButton.isUserInteractionEnabled = true
-
-        addArrangedSubview(progressButton)
         addArrangedSubview(vStack)
 
         NSLayoutConstraint.activate([

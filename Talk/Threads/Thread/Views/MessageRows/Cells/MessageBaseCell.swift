@@ -17,41 +17,43 @@ public class MessageBaseCell: UITableViewCell {
     private var avatar: AvatarView?
     private let radio = SelectMessageRadio()
     private var messageContainer: MessageContainer!
-    private var message: (any HistoryMessageProtocol)? { viewModel?.message }
-    private var isEmptyMessage: Bool { message?.message == nil || message?.message?.isEmpty == true  }
     private var hstackBottomConstraint: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.messageContainer = .init(frame: .zero, isMe: self is MyselfMessageCell)
-        configureView()
+        let isMe = self is MyselfMessageCell
+        self.messageContainer = .init(frame: .zero, isMe: isMe)
+        configureView(isMe: isMe)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func configureView() {
+    public func configureView(isMe: Bool) {
         selectionStyle = .none // Prevent iOS selection background color view added we use direct background color on content view instead of selectedBackgroundView or backgroundView
-        contentView.isUserInteractionEnabled = true
-        hStack.translatesAutoresizingMaskIntoConstraints = false
 
+        radio.setIsHidden(true)
+
+        messageContainer.translatesAutoresizingMaskIntoConstraints = false
+        messageContainer.cell = self
+        messageContainer.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+
+        hStack.translatesAutoresizingMaskIntoConstraints = false
         hStack.axis = .horizontal
         hStack.alignment = .bottom
         hStack.spacing = 8
         hStack.distribution = .fill
-
-        radio.setIsHidden(true)
-
-        messageContainer.cell = self
-        hStack.addArrangedSubview(radio)
+        hStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         if self is PartnerMessageCell {
             let avatar = AvatarView(frame: .zero)
             hStack.addArrangedSubview(avatar)
             self.avatar = avatar
         }
+        hStack.addArrangedSubview(radio)
         hStack.addArrangedSubview(messageContainer)
 
+        contentView.isUserInteractionEnabled = true
         contentView.addSubview(hStack)
 
         setConstraints()
@@ -68,8 +70,6 @@ public class MessageBaseCell: UITableViewCell {
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        hStack.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
-        messageContainer.semanticContentAttribute = viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight
         hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
         avatar?.set(viewModel)
         messageContainer.set(viewModel)
@@ -111,13 +111,11 @@ public class MessageBaseCell: UITableViewCell {
     }
 
     private func setSelectedBackground() {
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            guard let self = self, let viewModel = viewModel else { return }
-            if viewModel.calMessage.state.isHighlited || viewModel.calMessage.state.isSelected {
-                contentView.backgroundColor = Color.App.bgChatSelectedUIColor?.withAlphaComponent(0.8)
-            } else {
-                contentView.backgroundColor = nil
-            }
+        guard let viewModel = viewModel else { return }
+        if viewModel.calMessage.state.isHighlited || viewModel.calMessage.state.isSelected {
+            contentView.backgroundColor = Color.App.bgChatSelectedUIColor?.withAlphaComponent(0.8)
+        } else {
+            contentView.backgroundColor = nil
         }
     }
 

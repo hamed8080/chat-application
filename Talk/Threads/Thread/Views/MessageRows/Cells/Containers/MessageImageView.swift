@@ -20,6 +20,8 @@ final class MessageImageView: UIImageView {
                                                     margin: 2)
     private weak var viewModel: MessageRowViewModel?
     private var effectView: UIVisualEffectView!
+    private var widthConstraint: NSLayoutConstraint!
+    private var heightConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -31,26 +33,28 @@ final class MessageImageView: UIImageView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 6
         layer.masksToBounds = true
         contentMode = .scaleAspectFit
 
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        progressView.translatesAutoresizingMaskIntoConstraints = false
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         effectView = UIVisualEffectView(effect: blurEffect)
+        effectView.translatesAutoresizingMaskIntoConstraints = false
         effectView.frame = bounds
         effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         effectView.isUserInteractionEnabled = false
         addSubview(effectView)
-
         bringSubviewToFront(effectView)
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
 
+        stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
         stack.spacing = 12
         stack.addArrangedSubview(progressView)
@@ -67,7 +71,12 @@ final class MessageImageView: UIImageView {
 
         addSubview(stack)
 
+        widthConstraint = widthAnchor.constraint(equalToConstant: 0)
+        heightConstraint = heightAnchor.constraint(equalToConstant: 0)
+
         NSLayoutConstraint.activate([
+            widthConstraint,
+            heightConstraint,
             effectView.widthAnchor.constraint(equalTo: widthAnchor),
             effectView.heightAnchor.constraint(equalTo: heightAnchor),
             stack.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -105,6 +114,14 @@ final class MessageImageView: UIImageView {
 
         if !viewModel.fileState.isUploading, viewModel.calMessage.rowType.isImage, state != .downloading, state != .completed && state != .thumbnailDownloaing, state != .thumbnail {
             viewModel.onTap() // Download thumbnail
+        }
+
+        if viewModel.calMessage.rowType.isImage {
+            widthConstraint.constant = (viewModel.calMessage.sizes.imageWidth ?? 128) - 8 // -8 for parent stack view margin
+            heightConstraint.constant = viewModel.calMessage.sizes.imageHeight ?? 128
+        } else {
+            widthConstraint.constant = 0
+            heightConstraint.constant = 0
         }
     }
 

@@ -47,14 +47,14 @@ public class ExpandView: UIView {
 
         NSLayoutConstraint.activate([
             expandButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            expandButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-            expandButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
-            btnClear.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-            btnClear.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
+            expandButton.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            expandButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
+            btnClear.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            btnClear.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
             btnClear.trailingAnchor.constraint(equalTo: expandButton.leadingAnchor, constant: -8),
             fileCountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            fileCountLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-            fileCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
+            fileCountLabel.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            fileCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
         ])
     }
 

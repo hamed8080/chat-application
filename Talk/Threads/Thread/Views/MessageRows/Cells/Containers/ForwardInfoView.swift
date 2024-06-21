@@ -37,8 +37,6 @@ final class ForwardInfoView: UIStackView {
         backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
-        bar.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .horizontal
         spacing = 4
 
@@ -57,6 +55,7 @@ final class ForwardInfoView: UIStackView {
         participantLabel.textColor = Color.App.accentUIColor
         participantLabel.numberOfLines = 1
 
+        bar.translatesAutoresizingMaskIntoConstraints = false
         bar.backgroundColor = Color.App.accentUIColor
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true

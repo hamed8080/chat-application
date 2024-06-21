@@ -24,12 +24,11 @@ final class MessageLocationView: UIImageView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 6
         layer.masksToBounds = true
         contentMode = .scaleAspectFill
-
-        translatesAutoresizingMaskIntoConstraints = false
 
         mapViewWidthConstraint = widthAnchor.constraint(equalToConstant: 0)
         mapViewHeightConstraint = heightAnchor.constraint(equalToConstant: 0)

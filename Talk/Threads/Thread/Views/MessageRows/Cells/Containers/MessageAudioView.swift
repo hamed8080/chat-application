@@ -42,8 +42,6 @@ final class MessageAudioView: UIStackView {
         isLayoutMarginsRelativeArrangement = true
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
-        progressButton.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .horizontal
         spacing = 8
 
@@ -78,6 +76,7 @@ final class MessageAudioView: UIStackView {
         vStack.addArrangedSubview(fileNameLabel)
         vStack.addArrangedSubview(typeSizeHStack)
 
+        progressButton.translatesAutoresizingMaskIntoConstraints = false
         addArrangedSubview(progressButton)
         addArrangedSubview(vStack)
 

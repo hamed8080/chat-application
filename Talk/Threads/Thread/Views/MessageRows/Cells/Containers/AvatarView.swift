@@ -23,26 +23,23 @@ final class AvatarView: UIImageView {
 
     private func configureView() {
         translatesAutoresizingMaskIntoConstraints = true
-        label.translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
+        layer.cornerRadius = MessageRowSizes.avatarSize / 2
+        layer.masksToBounds = true
+        contentMode = .scaleAspectFill
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        isUserInteractionEnabled = true
+        addGestureRecognizer(tapGesture)
 
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.uiiransansCaption
         label.textColor = Color.App.whiteUIColor
         label.textAlignment = .center
         label.backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
         label.layer.cornerRadius = MessageRowSizes.avatarSize / 2
         label.layer.masksToBounds = true
-
-        backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
-        layer.cornerRadius = MessageRowSizes.avatarSize / 2
-        layer.masksToBounds = true
-        contentMode = .scaleAspectFill
-
         addSubview(label)
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
-        isUserInteractionEnabled = true
-        addGestureRecognizer(tapGesture)
-
         NSLayoutConstraint.activate([
             widthAnchor.constraint(equalToConstant: MessageRowSizes.avatarSize),
             heightAnchor.constraint(equalToConstant: MessageRowSizes.avatarSize),

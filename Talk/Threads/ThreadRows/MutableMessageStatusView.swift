@@ -14,13 +14,14 @@ import TalkUI
 struct MutableMessageStatusView: View {
     let status: (icon: UIImage, fgColor: Color)?
     let isSelected: Bool
+    let isSeen: Bool
 
     var body: some View {
         if let status = status {
             Image(uiImage: status.icon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 22, height: 22)
+                .frame(width: isSeen ? 22 : 12, height: isSeen ? 22 : 12)
                 .foregroundColor(isSelected ? Color.App.white : status.fgColor)
                 .font(.subheadline)
                 .offset(y: -2)

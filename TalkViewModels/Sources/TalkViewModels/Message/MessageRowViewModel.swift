@@ -30,7 +30,6 @@ public final class MessageRowViewModel: Identifiable, Hashable {
     private var highlightTimer: Timer?
     public var calMessage = MessageRowCalculatedData()
     public private(set) var fileState: MessageFileState = .init()
-    public var shareDownloadedFile: Bool = false
 
     public init(message: any HistoryMessageProtocol, viewModel: ThreadViewModel) {
         self.message = message

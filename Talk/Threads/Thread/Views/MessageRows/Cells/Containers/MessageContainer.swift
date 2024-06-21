@@ -31,9 +31,6 @@ final class MessageContainer: UIStackView {
     private let unsentMessageView = UnsentMessageView()
     private let tailImageView = UIImageView(image: UIImage(named: "tail"))
 
-    private var imageViewWidthConstraint: NSLayoutConstraint!
-    private var imageViewHeightConstraint: NSLayoutConstraint!
-
     init(frame: CGRect, isMe: Bool) {
         self.replyInfoMessageRow = .init(frame: frame, isMe: isMe)
         self.forwardMessageRow = .init(frame: frame, isMe: isMe)
@@ -62,7 +59,7 @@ final class MessageContainer: UIStackView {
         registerGestures()
 
         replyInfoMessageRow.translatesAutoresizingMaskIntoConstraints = false
-        messageImageView.translatesAutoresizingMaskIntoConstraints = false
+        forwardMessageRow.translatesAutoresizingMaskIntoConstraints = false
 
         addArrangedSubview(groupParticipantNameView)
         addArrangedSubview(replyInfoMessageRow)
@@ -74,7 +71,7 @@ final class MessageContainer: UIStackView {
         addArrangedSubview(locationRowView)
         addArrangedSubview(textMessageView)
         addArrangedSubview(reactionView)
-        addArrangedSubview(fotterView)
+//        addArrangedSubview(fotterView)
 //        addArrangedSubview(unsentMessageView)
 
         tailImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -82,12 +79,7 @@ final class MessageContainer: UIStackView {
         tailImageView.tintColor = Color.App.bgChatUserUIColor!
         addSubview(tailImageView)
 
-        imageViewWidthConstraint = messageImageView.widthAnchor.constraint(equalToConstant: 0)
-        imageViewHeightConstraint = messageImageView.heightAnchor.constraint(equalToConstant: 0)
-
         NSLayoutConstraint.activate([
-            imageViewWidthConstraint,
-            imageViewHeightConstraint,
             tailImageView.widthAnchor.constraint(equalToConstant: 16),
             tailImageView.heightAnchor.constraint(equalToConstant: 32),
             tailImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -12),
@@ -99,15 +91,15 @@ final class MessageContainer: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        textMessageView.set(viewModel)
+        groupParticipantNameView.set(viewModel)
         replyInfoMessageRow.set(viewModel)
         forwardMessageRow.set(viewModel)
         messageImageView.set(viewModel)
-        groupParticipantNameView.set(viewModel)
         locationRowView.set(viewModel)
         messageFileView.set(viewModel)
         messageAudioView.set(viewModel)
         messageVideoView.set(viewModel)
+        textMessageView.set(viewModel)
         unsentMessageView.set(viewModel)
         reactionView.set(viewModel)
         fotterView.set(viewModel)
@@ -119,14 +111,6 @@ final class MessageContainer: UIStackView {
         } else {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
             tailImageView.setIsHidden(true)
-        }
-
-        if viewModel.calMessage.rowType.isImage {
-            imageViewWidthConstraint.constant = viewModel.calMessage.sizes.imageWidth ?? 128
-            imageViewHeightConstraint.constant = viewModel.calMessage.sizes.imageHeight ?? 128
-        } else {
-            imageViewWidthConstraint.constant = 0
-            imageViewHeightConstraint.constant = 0
         }
     }
 
