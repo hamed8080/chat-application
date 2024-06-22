@@ -19,14 +19,14 @@ struct DetailInfoViewSection: View {
     // We have to use Thread ViewModel.thread as a reference when an update thread info will happen the only object that gets an update is this.
     private var thread: Conversation { threadVM.thread }
 
-    init(viewModel: ThreadDetailViewModel) {
+    init(viewModel: ThreadDetailViewModel, threadVM: ThreadViewModel) {
         let config = ImageLoaderConfig(url: viewModel.thread?.computedImageURL ?? "",
                                        size: .ACTUAL,
                                        metaData: viewModel.thread?.metadata,
                                        userName: String.splitedCharacter(viewModel.thread?.title ?? ""),
                                        forceToDownloadFromServer: true)
         self._fullScreenImageLoader = .init(wrappedValue: .init(config: config))
-        self.threadVM = viewModel.threadVM ?? .init(thread: .init())
+        self.threadVM = threadVM
     }
 
     var body: some View {
@@ -106,8 +106,8 @@ struct DetailInfoViewSection: View {
 
     @ViewBuilder
     private var participantsCount: some View {
-        if thread.group == true {
-            DetailViewNumberOfParticipants(viewModel: viewModel.threadVM ?? .init(thread: .init()))
+        if thread.group == true, let threadVM = viewModel.threadVM {
+            DetailViewNumberOfParticipants(viewModel: threadVM)
         }
     }
 
@@ -124,6 +124,6 @@ struct DetailInfoViewSection: View {
 
 struct DetailInfoViewSection_Previews: PreviewProvider {
     static var previews: some View {
-        DetailInfoViewSection(viewModel: .init())
+        DetailInfoViewSection(viewModel: .init(), threadVM: .init(thread: .init()))
     }
 }

@@ -115,7 +115,7 @@ public final class ThreadViewModel: Identifiable, Hashable {
 
     // MARK: Actions
     public func sendStartTyping(_ newValue: String) {
-        if threadId == LocalId.emptyThread.rawValue { return }
+        if threadId == LocalId.emptyThread.rawValue, threadId != 0 { return }
         if newValue.isEmpty == false {
             ChatManager.activeInstance?.system.snedStartTyping(threadId: threadId)
         } else {

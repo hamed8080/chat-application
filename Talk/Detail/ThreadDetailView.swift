@@ -61,11 +61,11 @@ struct TarilingEditConversation: View {
     var body: some View {
         if viewModel.canShowEditConversationButton == true {
             NavigationLink {
-//                if viewModel.canShowEditConversationButton, let viewModel = viewModel.editConversationViewModel {
-//                    EditGroup()
-//                        .environmentObject(viewModel)
-//                        .navigationBarBackButtonHidden(true)
-//                }
+                if viewModel.canShowEditConversationButton, let viewModel = viewModel.editConversationViewModel {
+                    EditGroup(threadVM: viewModel.threadVM)
+                        .environmentObject(viewModel)
+                        .navigationBarBackButtonHidden(true)
+                }
             } label: {
                 Image(systemName: "pencil")
                     .resizable()

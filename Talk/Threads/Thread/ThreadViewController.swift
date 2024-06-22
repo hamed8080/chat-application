@@ -14,7 +14,7 @@ import ChatModels
 import TalkUI
 
 final class ThreadViewController: UIViewController {
-    weak var viewModel: ThreadViewModel?
+    var viewModel: ThreadViewModel?
     private var tableView: UITableView!
     private let tapGetsure = UITapGestureRecognizer()
     private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
@@ -36,11 +36,11 @@ final class ThreadViewController: UIViewController {
         registerKeyboard()
         viewModel?.delegate = self
         viewModel?.historyVM.delegate = self
+        startCenterAnimation(true)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        startCenterAnimation(true)
         ThreadViewModel.threadWidth = view.frame.width
         viewModel?.historyVM.start()
     }
@@ -58,6 +58,11 @@ final class ThreadViewController: UIViewController {
         if !hasAnyInstanceInStack, let viewModel = viewModel {
             AppState.shared.objectsContainer.navVM.cleanOnPop(threadId: viewModel.threadId)
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel?.historyVM.setThreashold(view.bounds.height * 2.5)
     }
 
     deinit {
@@ -213,11 +218,6 @@ extension ThreadViewController {
             emptyThreadView.setIsHidden(true)
             unreadMentionsButton.setIsHidden(true)
         }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        viewModel?.historyVM.setThreashold(view.bounds.height * 2.5)
     }
 }
 

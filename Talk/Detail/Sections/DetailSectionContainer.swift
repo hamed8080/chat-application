@@ -14,7 +14,9 @@ struct DetailSectionContainer: View {
 
     var body: some View {
         VStack {
-            DetailInfoViewSection(viewModel: viewModel)
+            if let threadVM = viewModel.threadVM {
+                DetailInfoViewSection(viewModel: viewModel, threadVM: threadVM)
+            }
             if let participantViewModel = viewModel.participantDetailViewModel {
                 DetailUserNameSection()
                     .environmentObject(participantViewModel)

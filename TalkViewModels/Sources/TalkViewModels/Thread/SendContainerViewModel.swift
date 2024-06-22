@@ -64,7 +64,9 @@ public final class SendContainerViewModel {
             setText(newValue: "\u{200f}\(textMessage)")
         }
         viewModel?.mentionListPickerViewModel.text = textMessage
-        viewModel?.sendStartTyping(textMessage)
+        if !isTextEmpty() {
+            viewModel?.sendStartTyping(textMessage)
+        }
         let isRTLChar = textMessage.count == 1 && textMessage.first == "\u{200f}"
         if !isTextEmpty() && !isRTLChar {
             setDraft(newText: newValue)
