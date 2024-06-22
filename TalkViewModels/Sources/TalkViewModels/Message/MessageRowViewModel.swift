@@ -166,17 +166,11 @@ public extension MessageRowViewModel {
 // MARK: Audio file
 public extension MessageRowViewModel {
     private var audioVM: AVAudioPlayerViewModel { AppState.shared.objectsContainer.audioPlayerVM }
-    private var progress: CGFloat {
-        isSameAudioFile ? min(audioVM.currentTime / audioVM.duration, 1.0) : 0
-    }
 
     private var isSameAudioFile: Bool {
+        if audioVM.fileURL == nil { return true } // It means it has never played a audio.
         guard let fileURL = calMessage.fileURL else { return false }
         return audioVM.fileURL?.absoluteString == fileURL.absoluteString
-    }
-
-    var audioTimerString: String {
-        isSameAudioFile ? "\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")" : " " // We use space to prevent the text collapse
     }
 
     private func toggleAudio() {

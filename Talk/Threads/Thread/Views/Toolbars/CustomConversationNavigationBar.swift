@@ -52,7 +52,6 @@ public class CustomConversationNavigationBar: UIView {
         subtitleLabel.font = UIFont.uiiransansFootnote
         subtitleLabel.setIsHidden(subtitle == nil || subtitle?.isEmpty == true)
 
-
         let isSelfThread = viewModel?.thread.type == .selfThread
         if isSelfThread {
             threadImageButton = UIImageButton(imagePadding: .init(all: 8))

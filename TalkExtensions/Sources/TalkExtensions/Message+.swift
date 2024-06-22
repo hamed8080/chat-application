@@ -16,7 +16,7 @@ public class MessageHistoryStatics {
     public static let audioTypes = [ChatModels.MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice]
     public static let videoTypes = [ChatModels.MessageType.video, .podSpaceVideo, .video]
     public static let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
-    public static let unreactionableTypes = [ChatModels.MessageType.endCall, .endCall, .participantJoin, .participantLeft]
+    public static let unreactionableTypes = [ChatModels.MessageType.endCall, .startCall, .participantJoin, .participantLeft]
     public static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
     public static let clockImage = UIImage(named: "clock")
     public static let sentImage = UIImage(named: "ic_single_check_mark")

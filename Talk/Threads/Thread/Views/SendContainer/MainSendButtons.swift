@@ -37,33 +37,30 @@ public final class MainSendButtons: UIStackView {
     }
 
     private func configureView() {
-        semanticContentAttribute = .forceLeftToRight
-        btnToggleAttachmentButtons.translatesAutoresizingMaskIntoConstraints = false
-        btnSend.translatesAutoresizingMaskIntoConstraints = false
-        btnMic.translatesAutoresizingMaskIntoConstraints = false
-        btnCamera.translatesAutoresizingMaskIntoConstraints = false
-        multilineTextField.translatesAutoresizingMaskIntoConstraints = false
-        btnEmoji.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .horizontal
         spacing = 8
         alignment = .bottom
         layoutMargins = .init(horizontal: 8, vertical: 4)
         isLayoutMarginsRelativeArrangement = true
+        semanticContentAttribute = .forceLeftToRight
 
+        btnToggleAttachmentButtons.translatesAutoresizingMaskIntoConstraints = false
         btnToggleAttachmentButtons.imageView.contentMode = .scaleAspectFit
         btnToggleAttachmentButtons.tintColor = Color.App.accentUIColor
         btnToggleAttachmentButtons.layer.masksToBounds = true
         btnToggleAttachmentButtons.layer.cornerRadius = MainSendButtons.initSize / 2
         btnToggleAttachmentButtons.backgroundColor = Color.App.bgSendInputUIColor
 
+        btnMic.translatesAutoresizingMaskIntoConstraints = false
         btnMic.imageView.contentMode = .scaleAspectFit
         btnMic.tintColor = Color.App.textSecondaryUIColor
 
+        btnCamera.translatesAutoresizingMaskIntoConstraints = false
         btnCamera.imageView.contentMode = .scaleAspectFit
         btnCamera.tintColor = Color.App.textSecondaryUIColor
         btnCamera.setIsHidden(true)
 
+        btnSend.translatesAutoresizingMaskIntoConstraints = false
         btnSend.imageView.contentMode = .scaleAspectFit
         btnSend.tintColor = Color.App.textPrimaryUIColor
         btnSend.layer.masksToBounds = true
@@ -74,6 +71,7 @@ public final class MainSendButtons: UIStackView {
             self?.onBtnSendTapped()
         }
 
+        btnEmoji.translatesAutoresizingMaskIntoConstraints = false
         btnEmoji.imageView.tintColor = Color.App.redUIColor
         btnEmoji.setIsHidden(true)
 
@@ -88,37 +86,14 @@ public final class MainSendButtons: UIStackView {
         hStack.layoutMargins = .init(top: -4, left: 8, bottom: 0, right: 8)//-4 to move textfield higher to make the cursor center in the textfield.
         hStack.isLayoutMarginsRelativeArrangement = true
 
+        registerTextChange()
+        multilineTextField.translatesAutoresizingMaskIntoConstraints = false
         hStack.addArrangedSubview(multilineTextField)
+
+        btnEmoji.translatesAutoresizingMaskIntoConstraints = false
         hStack.addArrangedSubview(btnEmoji)
 
         addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera, btnSend])
-
-        // Set draf text
-        if !viewModel.isTextEmpty() {
-            multilineTextField.text = viewModel.getText()
-            multilineTextField.hidePlaceholder()
-            let isEmpty = multilineTextField.text.isEmpty
-            btnSend.showWithAniamtion(!isEmpty)
-            btnMic.showWithAniamtion(isEmpty)
-        }
-        multilineTextField.onTextChanged = { [weak self] text in
-            self?.viewModel.setText(newValue: text ?? "")
-        }
-
-        viewModel.onTextChanged = { [weak self] newValue in
-            guard let self = self else { return }
-            multilineTextField.text = newValue
-            multilineTextField.updateHeightIfNeeded()
-
-            let isEmpty = viewModel.viewModel?.sendContainerViewModel.isTextEmpty() == true
-            btnSend.showWithAniamtion(!isEmpty)
-            btnMic.showWithAniamtion(isEmpty)
-            if viewModel.isTextEmpty() == false {
-                multilineTextField.hidePlaceholder()
-            } else {
-                multilineTextField.showPlaceholder()
-            }
-        }
 
         NSLayoutConstraint.activate([
             btnToggleAttachmentButtons.widthAnchor.constraint(equalToConstant: MainSendButtons.initSize),
@@ -155,6 +130,35 @@ public final class MainSendButtons: UIStackView {
                 btnCamera.imageView.image = cameraImage
                 btnMic.imageView.image = micImage
                 btnToggleAttachmentButtons.imageView.image = toogleImage
+            }
+        }
+    }
+
+    private func registerTextChange() {
+        // Set draf text
+        if !viewModel.isTextEmpty() {
+            multilineTextField.text = viewModel.getText()
+            multilineTextField.hidePlaceholder()
+            let isEmpty = multilineTextField.text.isEmpty
+            btnSend.showWithAniamtion(!isEmpty)
+            btnMic.showWithAniamtion(isEmpty)
+        }
+        multilineTextField.onTextChanged = { [weak self] text in
+            self?.viewModel.setText(newValue: text ?? "")
+        }
+
+        viewModel.onTextChanged = { [weak self] newValue in
+            guard let self = self else { return }
+            multilineTextField.text = newValue
+            multilineTextField.updateHeightIfNeeded()
+
+            let isEmpty = viewModel.viewModel?.sendContainerViewModel.isTextEmpty() == true
+            btnSend.showWithAniamtion(!isEmpty)
+            btnMic.showWithAniamtion(isEmpty)
+            if viewModel.isTextEmpty() == false {
+                multilineTextField.hidePlaceholder()
+            } else {
+                multilineTextField.showPlaceholder()
             }
         }
     }

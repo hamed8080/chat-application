@@ -709,9 +709,11 @@ extension ThreadViewController {
         let sections = viewModel.historyVM.sections
         guard sections.indices.contains(indexPath.section), sections[indexPath.section].vms.indices.contains(indexPath.row) else { return nil }
         let vm = sections[indexPath.section].vms[indexPath.row]
+        if !vm.message.reactionableType { return nil }
         if isLeading && !vm.calMessage.isMe { return nil }
         if !isLeading && vm.calMessage.isMe { return nil }
         let replyAction = UIContextualAction(style: .normal, title: "") { [weak self] action, view, success in
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred(intensity: 1)
             self?.openReplyMode(vm.message)
             success(true)
         }

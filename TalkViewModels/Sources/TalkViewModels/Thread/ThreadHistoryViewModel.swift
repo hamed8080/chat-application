@@ -311,6 +311,7 @@ extension ThreadHistoryViewModel {
         for vm in viewModels {
             await vm.register()
         }
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     // MARK: Scenario 8

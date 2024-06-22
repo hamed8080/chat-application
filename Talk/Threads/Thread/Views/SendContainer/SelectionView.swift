@@ -28,16 +28,10 @@ public final class SelectionView: UIStackView {
     }
 
     private func configureViews() {
-        btnDelete.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .horizontal
         spacing = 4
         layoutMargins = .init(horizontal: 8, vertical: 4)
         isLayoutMarginsRelativeArrangement = true
-
-        btnDelete.setImage(UIImage(named: "ic_delete"), for: .normal)
-        btnDelete.tintColor = Color.App.iconSecondaryUIColor
-        btnDelete.addTarget(self, action: #selector(deleteSelectedMessageTapped), for: .touchUpInside)
 
         let btnForward = UIButton(type: .system)
         let image = UIImage(systemName: "arrow.turn.up.right")
@@ -45,33 +39,37 @@ public final class SelectionView: UIStackView {
         btnForward.tintColor = Color.App.accentUIColor
         btnForward.addTarget(self, action: #selector(forwardSelectedMessageTapped), for: .touchUpInside)
         btnForward.translatesAutoresizingMaskIntoConstraints = false
+        addArrangedSubview(btnForward)
 
         lblCount.font = UIFont.uiiransansBoldBody
         lblCount.textColor = Color.App.accentUIColor
+        addArrangedSubview(lblCount)
 
         lblStatic.text = "General.selected".localized()
         lblStatic.font = UIFont.uiiransansBody
         lblStatic.textColor = Color.App.textSecondaryUIColor
+        addArrangedSubview(lblStatic)
+
+        let spacer = UIView(frame: .init(x: 0, y: 0, width: CGFloat.greatestFiniteMagnitude, height: 0))
+        addArrangedSubview(spacer)
+
+        btnDelete.translatesAutoresizingMaskIntoConstraints = false
+        btnDelete.setImage(UIImage(named: "ic_delete"), for: .normal)
+        btnDelete.tintColor = Color.App.iconSecondaryUIColor
+        btnDelete.addTarget(self, action: #selector(deleteSelectedMessageTapped), for: .touchUpInside)
+        addArrangedSubview(btnDelete)
 
         let closeButton = CloseButtonView()
         closeButton.action = { [weak self] in
             self?.onClose()
         }
-
-        let spacer = UIView(frame: .init(x: 0, y: 0, width: CGFloat.greatestFiniteMagnitude, height: 0))
-
-        addArrangedSubview(btnForward)
-        addArrangedSubview(lblCount)
-        addArrangedSubview(lblStatic)
-        addArrangedSubview(spacer)
-        addArrangedSubview(btnDelete)
         addArrangedSubview(closeButton)
 
         NSLayoutConstraint.activate([
-            btnForward.widthAnchor.constraint(equalToConstant: 36),
-            btnForward.heightAnchor.constraint(equalToConstant: 36),
-            btnDelete.widthAnchor.constraint(equalToConstant: 36),
-            btnDelete.heightAnchor.constraint(equalToConstant: 36),
+            btnForward.widthAnchor.constraint(equalToConstant: 42),
+            btnForward.heightAnchor.constraint(equalToConstant: 42),
+            btnDelete.widthAnchor.constraint(equalToConstant: 42),
+            btnDelete.heightAnchor.constraint(equalToConstant: 42),
         ])
     }
 

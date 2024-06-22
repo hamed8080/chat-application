@@ -81,7 +81,9 @@ public final class CircleProgressButton: UIButton {
     public func animate(to progress: CGFloat, systemIconName: String = "") {
         if systemIconName != systemImageName {
             self.systemImageName = systemIconName
-            imgCenter.image = UIImage(systemName: systemIconName, withConfiguration: CircleProgressButton.config)
+            UIView.transition(with: imgCenter, duration: 0.2, options: .transitionCrossDissolve) {
+                self.imgCenter.image = UIImage(systemName: systemIconName, withConfiguration: CircleProgressButton.config)
+            }
         }
         animation.toValue = progress
         animation.duration = 0.3
