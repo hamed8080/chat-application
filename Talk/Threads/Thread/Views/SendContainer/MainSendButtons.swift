@@ -108,6 +108,7 @@ public final class MainSendButtons: UIStackView {
         viewModel.onTextChanged = { [weak self] newValue in
             guard let self = self else { return }
             multilineTextField.text = newValue
+            multilineTextField.updateHeightIfNeeded()
 
             let isEmpty = viewModel.viewModel?.sendContainerViewModel.isTextEmpty() == true
             btnSend.showWithAniamtion(!isEmpty)

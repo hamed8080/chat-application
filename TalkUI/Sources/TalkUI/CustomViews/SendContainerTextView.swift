@@ -58,15 +58,11 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         ])
     }
 
-    func recalculateHeight() {
-        let fittedSize = sizeThatFits(CGSize(width: frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
-        let minValue: CGFloat = initSize
-        let maxValue: CGFloat = 192
-        let newSize = min(max(fittedSize, minValue), maxValue)
-        if frame.size.height != newSize {
+    func recalculateHeight(newHeight: CGFloat) {
+        if frame.size.height != newHeight {
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 0.3) { [weak self] in
-                    self?.heightConstraint.constant = newSize // !! must be called asynchronously
+                    self?.heightConstraint.constant = newHeight // !! must be called asynchronously
                 }
             }
         }
@@ -80,7 +76,8 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
             }
             uiView.attributedText = attributes
         }
-        recalculateHeight()
+        let newHeight = calculateHeight()
+        recalculateHeight(newHeight: newHeight)
         onTextChanged?(text)
         placeholderLabel.isHidden = !isEmptyText()
     }
@@ -94,7 +91,6 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         return true
     }
 
-//    text.wrappedValue.isEmpty || (text.wrappedValue.first == "\u{200f}" && text.wrappedValue.count == 1)
     private func isEmptyText() -> Bool {
         let isRTLChar = text.count == 1 && text.first == "\u{200f}"
         return text.isEmpty || isRTLChar
@@ -107,35 +103,19 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
     public func showPlaceholder() {
         placeholderLabel.isHidden = false
     }
+
+    private func calculateHeight() -> CGFloat {
+        let fittedSize = sizeThatFits(CGSize(width: frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
+        let minValue: CGFloat = initSize
+        let maxValue: CGFloat = 192
+        let newSize = min(max(fittedSize, minValue), maxValue)
+        return newSize
+    }
+
+    public func updateHeightIfNeeded() {
+        let newHeight = calculateHeight()
+        if heightConstraint.constant != newHeight {
+            recalculateHeight(newHeight: newHeight)
+        }
+    }
 }
-
-#if DEBUG
-    struct SendContainerTextViewWrapper: UIViewRepresentable {
-        func makeUIView(context: Context) -> some UIView {
-            return SendContainerTextView()
-        }
-
-        func updateUIView(_ uiView: UIViewType, context: Context) {
-
-        }
-    }
-
-    struct SendContainerTextView_Previews: PreviewProvider {
-        static var test: String = "" // some very very very long description string to be initially wider than screen"
-        static var testBinding = Binding<String>(get: { test }, set: {
-            test = $0
-        })
-
-        static var previews: some View {
-            VStack(alignment: .leading) {
-                Text("Description:")
-                SendContainerTextViewWrapper()
-                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.App.textPrimary))
-                Text("Something static here...")
-                Spacer()
-            }
-//        .preferredColorScheme(.dark)
-            .padding()
-        }
-    }
-#endif
