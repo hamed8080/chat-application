@@ -102,7 +102,7 @@ public class MessageBaseCell: UITableViewCell {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
             radio.setIsHidden(!isInSelectionMode)
-            avatar?.setIsHidden(isInSelectionMode)
+            avatar?.updateSelectionMode()
             messageContainer.isUserInteractionEnabled = !isInSelectionMode
             if !isInSelectionMode {
                 deselect()

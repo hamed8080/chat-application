@@ -377,6 +377,7 @@ class MessageRowCalculators {
                                                                     languageCode: nil,
                                                                     appliesSourcePositionAttributes: false)
         guard let mutableAttr = try? NSMutableAttributedString(markdown: text, options: option) else { return NSAttributedString() }
+        mutableAttr.addDefaultTextColor(UIColor(named: "text_primary") ?? .white)
         mutableAttr.addUserColor(UIColor(named: "accent") ?? .orange)
         mutableAttr.addLinkColor(UIColor(named: "text_secondary") ?? .gray)
         return NSAttributedString(attributedString: mutableAttr)

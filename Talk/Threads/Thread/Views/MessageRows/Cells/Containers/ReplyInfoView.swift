@@ -38,21 +38,20 @@ final class ReplyInfoView: UIStackView {
     }
 
     private func configureView(isMe: Bool) {
+        layoutMargins = .init(horizontal: 0.5, vertical: 3)
+        isLayoutMarginsRelativeArrangement = true
         backgroundColor = Color.App.bgChatMeDarkUIColor
         layer.cornerRadius = 8
         layer.masksToBounds = true
-
-        semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
-        vStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
-
-        imageIconView.translatesAutoresizingMaskIntoConstraints = false
-        imageIconView.translatesAutoresizingMaskIntoConstraints = false
-        bar.translatesAutoresizingMaskIntoConstraints = false
-
+        semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         axis = .horizontal
         spacing = 4
+        isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onReplyTapped))
+        addGestureRecognizer(tap)
 
+        vStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         vStack.axis = .vertical
         vStack.alignment = .leading
         vStack.spacing = 0
@@ -62,26 +61,24 @@ final class ReplyInfoView: UIStackView {
         replyStaticLebel.font = UIFont.uiiransansBoldCaption2
         replyStaticLebel.textColor = Color.App.accentUIColor
 //        replyStaticLebel.text = ReplyInfoView.repliedToStaticText
+        imageTextHStack.axis = .horizontal
+        imageTextHStack.spacing = 4
 
-        participantLabel.font = UIFont.uiiransansBoldCaption2
-        participantLabel.textColor = Color.App.accentUIColor
+        imageIconView.translatesAutoresizingMaskIntoConstraints = false
+        imageTextHStack.addArrangedSubview(imageIconView)
 
         replyLabel.font = UIFont.uiiransansCaption3
         replyLabel.numberOfLines = 1
         replyLabel.textColor = UIColor.gray
         replyLabel.lineBreakMode = .byTruncatingTail
         replyLabel.textAlignment = isMe ? .right : .left
-
-        imageTextHStack.axis = .horizontal
-        imageTextHStack.spacing = 4
-
-        imageTextHStack.addArrangedSubview(imageIconView)
         imageTextHStack.addArrangedSubview(replyLabel)
 
         deletedLabel.text = ReplyInfoView.deletedStaticText
         deletedLabel.font = UIFont.uiiransansBoldCaption2
-        deletedLabel.textColor = Color.App.redUIColor
+        deletedLabel.textColor = Color.App.textSecondaryUIColor
 
+        bar.translatesAutoresizingMaskIntoConstraints = false
         bar.backgroundColor = Color.App.accentUIColor
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
@@ -90,15 +87,14 @@ final class ReplyInfoView: UIStackView {
         hStack.axis = .horizontal
         hStack.spacing = 2
         hStack.addArrangedSubview(replyStaticLebel)
+
+        participantLabel.font = UIFont.uiiransansBoldCaption2
+        participantLabel.textColor = Color.App.accentUIColor
         hStack.addArrangedSubview(participantLabel)
 
         vStack.addArrangedSubview(hStack)
         vStack.addArrangedSubview(deletedLabel)
         vStack.addArrangedSubview(imageTextHStack)
-
-        isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(onReplyTapped))
-        addGestureRecognizer(tap)
 
         addArrangedSubview(bar)
         addArrangedSubview(vStack)
@@ -106,7 +102,7 @@ final class ReplyInfoView: UIStackView {
         NSLayoutConstraint.activate([
             imageIconView.heightAnchor.constraint(equalToConstant: 24),
             imageIconView.widthAnchor.constraint(equalToConstant: 24),
-            bar.widthAnchor.constraint(equalToConstant: 1.5),
+            bar.widthAnchor.constraint(equalToConstant: 2.0),
         ])
     }
 
@@ -131,7 +127,10 @@ final class ReplyInfoView: UIStackView {
         if viewModel.calMessage.isReplyImage, let url = viewModel.calMessage.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata))
         }
-        imageIconView.setIsHidden( !hasImage)
+
+        let deleted = replyInfo?.deleted == true
+        imageTextHStack.setIsHidden(deleted)
+        imageIconView.setIsHidden(!hasImage)
     }
 
     @objc func onReplyTapped(_ sender: UIGestureRecognizer) {

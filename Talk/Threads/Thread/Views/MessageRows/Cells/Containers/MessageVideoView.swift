@@ -151,7 +151,11 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     public func updateProgress(viewModel: MessageRowViewModel) {
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
-        progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+        progressButton.setProgressVisibility(visible: canShowProgress)
+    }
+
+    private var canShowProgress: Bool {
+        viewModel?.fileState.state == .downloading || viewModel?.fileState.isUploading == true
     }
 
     public func downloadCompleted(viewModel: MessageRowViewModel) {

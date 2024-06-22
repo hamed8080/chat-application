@@ -80,10 +80,12 @@ public final class MoveToBottomButton: UIButton {
 
     public func setVisibility(visible: Bool) {
         DispatchQueue.main.async {
+            // Cancel all animations if the user scrolls fast when it's in the bottom part to prevent double-scale transform.
+            self.layer.removeAllAnimations()
+
             if visible {
                 self.setIsHidden(false)
             }
-            self.transform = CGAffineTransform(scaleX: visible ? 0.01 : 1.0, y: visible ? 0.01 : 1.0)
             UIView.animate(withDuration: 0.3) { [weak self] in
                 self?.transform = CGAffineTransform(scaleX: visible ? 1.0 : 0.01, y: visible ? 1.0 : 0.01)
             } completion: { completed in

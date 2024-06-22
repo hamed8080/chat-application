@@ -26,10 +26,10 @@ final class UnreadBubbleCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
 
         label.font = UIFont.uiiransansCaption
-        label.textColor = Color.App.textPrimaryUIColor
+        label.textColor = Color.App.accentUIColor
         label.textAlignment = .center
         label.text = "Messages.unreadMessages".localized()
-        label.backgroundColor = UIColor.white.withAlphaComponent(0.08)
+        label.backgroundColor = Color.App.bgPrimaryUIColor
 
         contentView.addSubview(label)
 

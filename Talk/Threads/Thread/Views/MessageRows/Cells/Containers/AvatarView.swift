@@ -94,6 +94,16 @@ final class AvatarView: UIImageView {
         }
     }
 
+    public func updateSelectionMode() {
+        if viewModel?.threadVM?.thread.group == false { return }
+        let isInSelectionMode = viewModel?.threadVM?.selectedMessagesViewModel.isInSelectMode == true
+        if isInSelectionMode {
+            setIsHidden(true)
+        } else if !isInSelectionMode {
+            setIsHidden(false)
+        }
+    }
+
     public func setImage(image: UIImage) {
         guard viewModel?.calMessage.isLastMessageOfTheUser == true else { return }
         self.image = image

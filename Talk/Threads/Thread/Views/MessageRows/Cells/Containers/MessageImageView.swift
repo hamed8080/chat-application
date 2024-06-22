@@ -103,11 +103,7 @@ final class MessageImageView: UIImageView {
         stack.setIsHidden(!canShow)
         effectView.setIsHidden(!canShow)
 
-        if state != .completed {
-            let progress = viewModel.fileState.progress
-            progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
-        }
-
+        updateProgress(viewModel: viewModel)
         if viewModel.calMessage.computedFileSize != fileSizeLabel.text {
             fileSizeLabel.text = viewModel.calMessage.computedFileSize
         }
@@ -155,7 +151,7 @@ final class MessageImageView: UIImageView {
     public func updateProgress(viewModel: MessageRowViewModel) {
         let progress = viewModel.fileState.progress
         progressView.animate(to: progress, systemIconName: viewModel.fileState.iconState)
-        progressView.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+        progressView.setProgressVisibility(visible: canShowProgress)
     }
 
     public func updateThumbnail(viewModel: MessageRowViewModel) {
@@ -178,5 +174,9 @@ final class MessageImageView: UIImageView {
             effectView.setIsHidden(true)
             setImage(fileURL: fileURL)
         }
+    }
+
+    private var canShowProgress: Bool {
+        viewModel?.fileState.state == .downloading || viewModel?.fileState.isUploading == true
     }
 }

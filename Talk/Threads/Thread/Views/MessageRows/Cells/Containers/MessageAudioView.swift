@@ -98,7 +98,7 @@ final class MessageAudioView: UIStackView {
         self.viewModel = viewModel
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
-        progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+        progressButton.setProgressVisibility(visible: canShowProgress)
 
         fileSizeLabel.text = viewModel.calMessage.computedFileSize
         fileNameLabel.text = viewModel.calMessage.fileName
@@ -120,7 +120,7 @@ final class MessageAudioView: UIStackView {
     public func updateProgress(viewModel: MessageRowViewModel) {
         let progress = viewModel.fileState.progress
         progressButton.animate(to: progress, systemIconName: viewModel.fileState.iconState)
-        progressButton.setProgressVisibility(visible: viewModel.fileState.state != .completed)
+        progressButton.setProgressVisibility(visible: canShowProgress)
     }
 
     public func downloadCompleted(viewModel: MessageRowViewModel) {
@@ -129,5 +129,9 @@ final class MessageAudioView: UIStackView {
 
     public func uploadCompleted(viewModel: MessageRowViewModel) {
         updateProgress(viewModel: viewModel)
+    }
+
+    private var canShowProgress: Bool {
+        viewModel?.fileState.state == .downloading || viewModel?.fileState.isUploading == true
     }
 }

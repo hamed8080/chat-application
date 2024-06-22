@@ -144,6 +144,10 @@ extension ThreadHistoryViewModel {
 
         /// 4- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
         if let fromTime = thread.lastSeenMessageTime {
+            viewModel?.scrollVM.isProgramaticallyScroll = false
+            if let bannerIndexPath = await appenedUnreadMessagesBannerIfNeeed() {
+                delegate?.inserted(at: bannerIndexPath)
+            }
             await moreBottom(prepend: keys.MORE_BOTTOM_FIRST_SCENARIO_KEY, fromTime.advanced(by: 1))
         }
         viewModel?.delegate?.startCenterAnimation(false)
@@ -151,9 +155,6 @@ extension ThreadHistoryViewModel {
 
     private func onMoreBottomFirstScenario(_ messages: [Message], _ response: HistoryResponse) async {
         await onMoreBottom(messages, response)
-        if let bannerIndexPath = await appenedUnreadMessagesBannerIfNeeed() {
-            delegate?.inserted(at: bannerIndexPath)
-        }
     }
 
     // MARK: Scenario 2

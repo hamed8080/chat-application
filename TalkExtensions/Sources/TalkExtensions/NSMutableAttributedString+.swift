@@ -8,7 +8,13 @@
 import Foundation
 import UIKit
 
-public extension NSMutableAttributedString {    
+public extension NSMutableAttributedString {
+
+    func addDefaultTextColor(_ color: UIColor) {
+        let allRange = NSRange(string.startIndex..., in: string)
+        addAttributes([NSAttributedString.Key.foregroundColor : color], range: allRange)
+    }
+
     func addLinkColor(_ color: UIColor = .blue) {
         if let linkRegex = NSRegularExpression.urlRegEx {
             let allRange = NSRange(string.startIndex..., in: string)

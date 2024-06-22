@@ -29,6 +29,7 @@ final class TextMessageView: UITextView {
         isSelectable = false /// Only is going to be enable when we are in context menu
         ///
         isUserInteractionEnabled = true
+        linkTextAttributes = [:]
         let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
         addGestureRecognizer(tap)
     }
@@ -54,7 +55,6 @@ final class TextMessageView: UITextView {
 
     public func setText() {
         self.attributedText = self.viewModel?.calMessage.markdownTitle
-        self.textColor = Color.App.textPrimaryUIColor
         self.font = UIFont.uiiransansBody
         setIsHidden(viewModel?.calMessage.rowType.hasText == false)
     }
