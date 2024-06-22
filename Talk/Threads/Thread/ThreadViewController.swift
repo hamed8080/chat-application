@@ -394,6 +394,19 @@ extension ThreadViewController: ThreadViewDelegate {
         }
     }
 
+    func sent(_ indexPath: IndexPath) {
+        if let cell = baseVisibleCell(indexPath) {
+            cell.sent()
+        }
+    }
+
+
+    func delivered(_ indexPath: IndexPath) {
+        if let cell = baseVisibleCell(indexPath) {
+            cell.delivered()
+        }
+    }
+
     func seen(_ indexPath: IndexPath) {
         if let cell = baseVisibleCell(indexPath) {
             cell.seen()
@@ -410,6 +423,12 @@ extension ThreadViewController: ThreadViewDelegate {
 
     public func updateImageTo(_ image: UIImage?) {
         topThreadToolbar.updateImageTo(image)
+    }
+
+    func setHighlightRowAt(_ indexPath: IndexPath, highlight: Bool) {
+        if let cell = baseVisibleCell(indexPath) {
+            cell.setHighlight()
+        }
     }
 }
 

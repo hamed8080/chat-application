@@ -347,12 +347,25 @@ extension MessageContainer {
 // MARK: Upadate methods
 extension MessageContainer {
     func edited() {
-        textMessageView.setText()
+        UIView.animate(withDuration: 0.2) {
+            self.textMessageView.setText()
+            self.fotterView.edited()
+        }
     }
 
     func pinChanged() {
         guard let viewModel = viewModel else { return }
         fotterView.pinChanged(isPin: viewModel.message.pinned == true)
+    }
+
+    func sent() {
+        guard let viewModel = viewModel else { return }
+        fotterView.sent(image: viewModel.message.uiFooterStatus.image)
+    }
+
+    func delivered() {
+        guard let viewModel = viewModel else { return }
+        fotterView.delivered(image: viewModel.message.uiFooterStatus.image)
     }
 
     func seen() {

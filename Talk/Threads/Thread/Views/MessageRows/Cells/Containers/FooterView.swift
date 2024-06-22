@@ -58,7 +58,7 @@ final class FooterView: UIStackView {
         editedLabel.textColor = Color.App.textSecondaryUIColor
         editedLabel.text = FooterView.staticEditString
         addArrangedSubview(editedLabel)
-        statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: 22)
+        statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: 12)
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: 22),
             statusImage.heightAnchor.constraint(equalTo: heightAnchor),
@@ -97,6 +97,10 @@ final class FooterView: UIStackView {
         }
     }
 
+    public func edited() {
+        editedLabel.setIsHidden(false)
+    }
+
     public func pinChanged(isPin: Bool) {
         UIView.animate(withDuration: 0.2) {
             self.pinImage.alpha = isPin ? 1.0 : 0.0
@@ -104,10 +108,32 @@ final class FooterView: UIStackView {
         }
     }
 
-    public func seen(image: UIImage?) {
+    public func sent(image: UIImage?) {
+        statusImageWidthConstriant.constant = 12
+        self.statusImage.setIsHidden(false)
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
         UIView.transition(with: statusImage, duration: 0.2, options: .transitionCrossDissolve) {
             self.statusImage.image = image
-            self.statusImage.setIsHidden(image == nil)
+        }
+    }
+
+    public func delivered(image: UIImage?) {
+        self.statusImage.setIsHidden(false)
+        UIView.transition(with: statusImage, duration: 0.2, options: .transitionCrossDissolve) {
+            self.statusImage.image = image
+        }
+    }
+
+    public func seen(image: UIImage?) {
+        statusImageWidthConstriant.constant = 22
+        statusImage.setIsHidden(false)
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
+        UIView.transition(with: statusImage, duration: 0.2, options: .transitionCrossDissolve) {
+            self.statusImage.image = image
         }
     }
 

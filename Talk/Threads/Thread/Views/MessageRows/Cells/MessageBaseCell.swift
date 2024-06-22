@@ -113,7 +113,9 @@ public class MessageBaseCell: UITableViewCell {
     private func setSelectedBackground() {
         guard let viewModel = viewModel else { return }
         if viewModel.calMessage.state.isHighlited || viewModel.calMessage.state.isSelected {
-            contentView.backgroundColor = Color.App.bgChatSelectedUIColor?.withAlphaComponent(0.8)
+            let dark = traitCollection.userInterfaceStyle == .dark
+            let selectedColor = dark ? Color.App.accentUIColor?.withAlphaComponent(0.4) : Color.App.dividerPrimaryUIColor?.withAlphaComponent(0.5)
+            contentView.backgroundColor = selectedColor
         } else {
             contentView.backgroundColor = nil
         }
@@ -129,6 +131,14 @@ public class MessageBaseCell: UITableViewCell {
 
     public func pinChanged() {
         messageContainer.pinChanged()
+    }
+
+    public func sent() {
+        messageContainer.sent()
+    }
+    
+    public func delivered() {
+        messageContainer.delivered()
     }
 
     public func seen() {
@@ -149,5 +159,11 @@ public class MessageBaseCell: UITableViewCell {
 
     public func uploadCompleted(viewModel: MessageRowViewModel) {
         messageContainer.uploadCompleted(viewModel: viewModel)
+    }
+
+    public func setHighlight() {
+        UIView.animate(withDuration: 0.2) {
+            self.setSelectedBackground()
+        }
     }
 }

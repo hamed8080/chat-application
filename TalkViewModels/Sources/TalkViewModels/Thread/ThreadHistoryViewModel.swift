@@ -44,6 +44,7 @@ public final class ThreadHistoryViewModel {
     private var isEmptyThread = false
     private var lastItemIdInSections = 0
     private let keys = RequestKeys()
+    private var highlightTask: Task<Void, Never>?
 
     // MARK: Computed Properties
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1) }
@@ -277,7 +278,7 @@ extension ThreadHistoryViewModel {
     /// - Returns: Indicate that it moved loclally or not.
     private func moveToMessageLocally(_ messageId: Int, highlight: Bool, animate: Bool = false) async -> Bool {
         if let uniqueId = sections.message(for: messageId)?.message.uniqueId {
-            await viewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: highlight, animate: animate)
+            await viewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: highlight, position: .top, animate: animate)
             return true
         }
         return false
@@ -552,7 +553,7 @@ extension ThreadHistoryViewModel {
         case .new(let response):
             await onNewMessage(response)
         case .delivered(let response):
-            onDeliver(response)
+            await onDeliver(response)
         case .seen(let response):
             await onSeen(response)
         case .sent(let response):
@@ -627,7 +628,10 @@ extension ThreadHistoryViewModel {
 
     private func onEdited(_ response: ChatResponse<Message>) async {
         if let message = response.result, let vm = sections.messageViewModel(for: message.id ?? -1) {
-            await vm.setEdited(message)
+            vm.message.message = message.message
+            vm.message.time = message.time
+            vm.message.edited = true
+            await vm.performaCalculation()
             guard let indexPath = sections.indexPath(for: vm) else { return }
             await MainActor.run {
                 delegate?.edited(indexPath)
@@ -655,25 +659,46 @@ extension ThreadHistoryViewModel {
         }
     }
 
-    private func onDeliver(_ response: ChatResponse<MessageResponse>) {
-        guard let vm = sections.viewModel(thread, response) else { return }
-        vm.setDelivered()
+    private func onDeliver(_ response: ChatResponse<MessageResponse>) async {
+        guard let vm = sections.viewModel(thread, response),
+              let indexPath = sections.indexPath(for: vm)
+        else { return }
+        vm.message.delivered = true
+        await vm.performaCalculation()
+        await vm.performaCalculation()
+        await MainActor.run {
+            delegate?.delivered(indexPath)
+        }
     }
 
     private func onSeen(_ response: ChatResponse<MessageResponse>) async {
-        guard let vm = sections.viewModel(thread, response) else { return }
-        vm.setSeen()
-        guard let indexPath = sections.indexPath(for: vm) else { return }
+        guard let vm = sections.viewModel(thread, response),
+              let indexPath = sections.indexPath(for: vm)
+        else { return }
+        vm.message.delivered = true
+        vm.message.seen = true
+        await vm.performaCalculation()
         await MainActor.run {
             delegate?.seen(indexPath)
         }
         setSeenForOlderMessages(messageId: response.result?.messageId)
     }
 
+    /*
+     We have to set id because sent will be called first then onNewMessage will be called,
+     and in queries id is essential to update properly the new message
+     */
     private func onSent(_ response: ChatResponse<MessageResponse>) async {
-        let vm = sections.viewModel(thread, response)
+        guard let vm = sections.viewModel(thread, response),
+              let indexPath = sections.indexPath(for: vm)
+        else { return }
         let result = response.result
-        vm?.setSent(messageId: result?.messageId, messageTime: result?.messageTime)
+        vm.message.id = result?.messageId
+        vm.message.time = result?.messageTime
+        await vm.performaCalculation()
+        await MainActor.run {
+            delegate?.sent(indexPath)
+        }
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.
@@ -899,9 +924,7 @@ extension ThreadHistoryViewModel {
         NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))
             .compactMap {$0.object as? Int}
             .sink { [weak self] newValue in
-                Task { @HistoryActor [weak self] in
-                    self?.setHighlight(messageId: newValue)
-                }
+                self?.setHighlight(messageId: newValue)
             }
             .store(in: &cancelable)
         NotificationCenter.upload.publisher(for: .upload)
@@ -1007,8 +1030,16 @@ extension ThreadHistoryViewModel {
         let isNotMe = !newMessage.isMe(currentUserId: AppState.shared.user?.id)
         if isNotMe, unseenMessages?.count ?? 0 > 0 {
             unseenMessages?.forEach { vm in
-                vm.message.seen = true
-                //                vm.reconfigRow()
+                Task {
+                    if let indexPath = sections.indexPath(for: vm) {
+                        vm.message.delivered = true
+                        vm.message.seen = true
+                        await vm.performaCalculation()
+                        await MainActor.run {
+                            delegate?.seen(indexPath)
+                        }
+                    }
+                }
             }
         }
     }
@@ -1026,9 +1057,16 @@ extension ThreadHistoryViewModel {
                     return isValidToChange
                 }
                 .forEach { vm in
-                    vm.message.delivered = true
-                    vm.message.seen = true
-                    //                    vm.reconfigRow()
+                    Task {
+                        if let indexPath = sections.indexPath(for: vm) {
+                            vm.message.delivered = true
+                            vm.message.seen = true
+                            await vm.performaCalculation()
+                            await MainActor.run {
+                                delegate?.seen(indexPath)
+                            }
+                        }
+                    }
                 }
         }
     }
@@ -1049,8 +1087,26 @@ extension ThreadHistoryViewModel {
     }
 
     private func setHighlight(messageId: Int) {
-        if let vm = sections.messageViewModel(for: messageId) {
-            vm.setHighlight()
+        guard let vm = sections.messageViewModel(for: messageId), let indexPath = sections.indexPath(for: vm) else { return }
+        Task { @HistoryActor in
+            vm.calMessage.state.isHighlited = true
+            await MainActor.run {
+                delegate?.setHighlightRowAt(indexPath, highlight: true)
+            }
+        }
+        highlightTask?.cancel()
+        highlightTask = Task {
+            try? await Task.sleep(for: .seconds(2.5))
+            if !Task.isCancelled {
+                await unHighlightTimer(vm: vm, indexPath: indexPath)
+            }
+        }
+    }
+
+    private func unHighlightTimer(vm: MessageRowViewModel, indexPath: IndexPath) async {
+        vm.calMessage.state.isHighlited = false
+        await MainActor.run { [weak self] in
+            self?.delegate?.setHighlightRowAt(indexPath, highlight: false)
         }
     }
 

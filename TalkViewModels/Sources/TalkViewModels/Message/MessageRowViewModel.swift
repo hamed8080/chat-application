@@ -224,30 +224,6 @@ public extension MessageRowViewModel {
     }
 }
 
-// MARK: Update Message status
-public extension MessageRowViewModel {
-    func setDelivered() {
-        message.delivered = true
-        calculateAndReconfig()
-    }
-
-    /* 
-     We have to set id because sent will be called first then onNewMessage will be called,
-     and in queries id is essential to update properly the new message
-     */
-    func setSent(messageId: Int?, messageTime: UInt?) {
-        message.id = messageId
-        message.time = messageTime
-        calculateAndReconfig()
-    }
-
-    func setSeen() {
-        message.delivered = true
-        message.seen = true
-        calculateAndReconfig()
-    }
-}
-
 // MARK: Pin/UnPin Message
 public extension MessageRowViewModel {
     func unpinMessage() {
@@ -265,54 +241,6 @@ public extension MessageRowViewModel {
             message.pinned = true
             message.pinTime = time
             await recalculateWithAnimation()
-        }
-    }
-}
-
-// MARK: Highlight
-public extension MessageRowViewModel {
-
-    func setHighlight() {
-        Task { @MainActor [weak self] in
-            guard let self = self else { return }
-            calMessage.state.isHighlited = true
-            reconfig()
-            startHighlightTimer()
-        }
-    }
-
-    private func startHighlightTimer() {
-        highlightTimer?.invalidate()
-        highlightTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { [weak self] _ in
-            self?.calMessage.state.isHighlited = false
-            self?.reconfig()
-        }
-    }
-}
-
-// MARK: Edit Message
-public extension MessageRowViewModel {
-    func setEdited(_ edited: Message) async {
-        message.message = edited.message
-        message.time = edited.time
-        message.edited = true
-        await recalculateWithAnimation()
-    }
-}
-
-// MARK: Reconfig row on updates
-public extension MessageRowViewModel {
-    func calculateAndReconfig() {
-        Task { @HistoryActor [weak self] in
-            guard let self = self else { return }
-            await performaCalculation()
-            reconfig()
-        }
-    }
-
-    func reconfig() {
-        if let indexPath = threadVM?.historyVM.sections.indexPath(for: self) {
-//            threadVM?.delegate?.reconfig(at: indexPath)
         }
     }
 }
