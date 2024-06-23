@@ -26,7 +26,7 @@ final class MessageContainer: UIStackView {
     private let replyInfoMessageRow: ReplyInfoView
     private let forwardMessageRow: ForwardInfoView
     private let textMessageView = TextMessageView()
-    private let reactionView: ReactionCountView
+    private let reactionView: ReactionCountScrollView
     private let fotterView = FooterView()
     private let unsentMessageView = UnsentMessageView()
     private let tailImageView = UIImageView(image: UIImage(named: "tail"))
@@ -396,5 +396,10 @@ extension MessageContainer {
         messageFileView.uploadCompleted(viewModel: viewModel)
         messageImageView.uploadCompleted(viewModel: viewModel)
         messageVideoView.uploadCompleted(viewModel: viewModel)
+    }
+
+    public func reationUpdated() {
+        guard let viewModel = viewModel else { return }
+        reactionView.set(viewModel)
     }
 }

@@ -138,6 +138,13 @@ public final class ThreadReactionViewModel {
             }
         }
         inQueueToGetReactions.removeAll()
+
+        // Update UI of each message
+        for reaction in reactions {
+            if let indexPath = historyVM.sections.viewModelAndIndexPath(for: reaction.messageId)?.indexPath {
+                threadVM?.delegate?.reactionsUpdatedAt(indexPath)
+            }
+        }
     }
 
     internal func clearReactionsOnReconnect() {

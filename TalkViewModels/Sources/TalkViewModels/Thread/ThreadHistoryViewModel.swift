@@ -176,6 +176,7 @@ extension ThreadHistoryViewModel {
             await viewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: false)
         }
         viewModel?.delegate?.startCenterAnimation(false)
+        await fetchReactions(messages: messages)
     }
 
     // MARK: Scenario 3 or 4 more top/bottom.
@@ -217,6 +218,7 @@ extension ThreadHistoryViewModel {
         bottomLoading = false
         viewModel?.delegate?.startBottomAnimation(false)
         viewModel?.delegate?.startCenterAnimation(false)
+        await fetchReactions(messages: messages)
     }
 
     // MARK: Scenario 6
@@ -257,6 +259,7 @@ extension ThreadHistoryViewModel {
         ChatManager.activeInstance?.message.history(fromTimeReq)
         viewModel?.delegate?.startBottomAnimation(true)
         viewModel?.delegate?.startCenterAnimation(false)
+        await fetchReactions(messages: messages)
     }
 
     private func onMoveFromTime(_ messages: [Message], request: OnMoveTime, _ response: HistoryResponse) async {
@@ -273,6 +276,7 @@ extension ThreadHistoryViewModel {
         await setHasMoreBottom(response)
         isInInsertionBottom = false
         viewModel?.delegate?.startCenterAnimation(false)
+        await fetchReactions(messages: messages)
     }
 
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
@@ -312,6 +316,7 @@ extension ThreadHistoryViewModel {
             await vm.register()
         }
         viewModel?.delegate?.startCenterAnimation(false)
+        await fetchReactions(messages: messages)
     }
 
     // MARK: Scenario 8
@@ -417,7 +422,7 @@ extension ThreadHistoryViewModel {
         }
         topLoading = false
         isInInsertionTop = false
-        fetchReactions(messages: viewModels.compactMap({$0.message}))
+        await fetchReactions(messages: viewModels.compactMap({$0.message}))
         prepareAvatars(viewModels)
     }
 
@@ -461,7 +466,7 @@ extension ThreadHistoryViewModel {
         isInInsertionBottom = false
         bottomLoading = false
 
-        fetchReactions(messages: viewModels.compactMap({$0.message}))
+        await fetchReactions(messages: viewModels.compactMap({$0.message}))
         prepareAvatars(viewModels)
     }
 
@@ -967,11 +972,11 @@ extension ThreadHistoryViewModel {
 
 // MARK: Reactions
 extension ThreadHistoryViewModel {
-    private func fetchReactions(messages: [MessageType]) {
-//        if viewModel?.searchedMessagesViewModel.isInSearchMode == false {
-//            let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
-            //            ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
-//        }
+    @HistoryActor
+    private func fetchReactions(messages: [MessageType]) async {
+        if viewModel?.searchedMessagesViewModel.isInSearchMode == false {
+            viewModel?.reactionViewModel.fetchReactions(messages: messages.compactMap({$0 as? Message}))
+        }
     }
 }
 

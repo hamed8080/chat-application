@@ -51,9 +51,7 @@ public final class SelectMessageRadio: UIView {
             return
         }
         setIsHidden(false)
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.imageView.image = selected ? SelectMessageRadio.staticSelectedImage : SelectMessageRadio.staticUNSelectedImage
-        }
+        imageView.image = selected ? SelectMessageRadio.staticSelectedImage : SelectMessageRadio.staticUNSelectedImage
     }
 
     private func reset() {

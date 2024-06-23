@@ -47,8 +47,9 @@ public class MessageBaseCell: UITableViewCell {
         hStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         if self is PartnerMessageCell {
             let avatar = AvatarView(frame: .zero)
-            hStack.addArrangedSubview(avatar)
+            avatar.translatesAutoresizingMaskIntoConstraints = false
             self.avatar = avatar
+            hStack.addArrangedSubview(avatar)
         }
         hStack.addArrangedSubview(radio)
         hStack.addArrangedSubview(messageContainer)
@@ -63,14 +64,14 @@ public class MessageBaseCell: UITableViewCell {
         hstackBottomConstraint = hStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
         NSLayoutConstraint.activate([
             messageContainer.widthAnchor.constraint(lessThanOrEqualToConstant: ThreadViewModel.maxAllowedWidth),
-            hStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1),
+            hStack.topAnchor.constraint(equalTo: contentView.topAnchor),
             hstackBottomConstraint
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
+//        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? 6 : 1
         avatar?.set(viewModel)
         messageContainer.set(viewModel)
         radio.setIsHidden(viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false)
@@ -165,5 +166,9 @@ public class MessageBaseCell: UITableViewCell {
         UIView.animate(withDuration: 0.2) {
             self.setSelectedBackground()
         }
+    }
+
+    public func reactionsUpdated() {
+        messageContainer.reationUpdated()
     }
 }

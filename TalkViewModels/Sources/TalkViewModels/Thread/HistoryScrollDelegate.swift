@@ -29,6 +29,7 @@ public protocol HistoryScrollDelegate: AnyObject, HistoryEmptyDelegate {
     func downloadCompleted(at: IndexPath, viewModel: MessageRowViewModel)
     func uploadCompleted(at: IndexPath, viewModel: MessageRowViewModel)
     func setHighlightRowAt(_ indexPath: IndexPath, highlight: Bool)
+    func reactionsUpdatedAt(_ indexPath: IndexPath)
 }
 
 public protocol HistoryEmptyDelegate {

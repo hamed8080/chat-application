@@ -400,7 +400,6 @@ extension ThreadViewController: ThreadViewDelegate {
         }
     }
 
-
     func delivered(_ indexPath: IndexPath) {
         if let cell = baseVisibleCell(indexPath) {
             cell.delivered()
@@ -658,6 +657,14 @@ extension ThreadViewController: HistoryScrollDelegate {
             }
             tableView.deleteRows(at: at, with: .fade)
             tableView.endUpdates()
+        }
+    }
+
+    func reactionsUpdatedAt(_ indexPath: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            if let cell = self?.baseVisibleCell(indexPath) {
+                cell.reactionsUpdated()
+            }
         }
     }
 }

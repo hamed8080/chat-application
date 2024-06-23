@@ -38,7 +38,7 @@ final class ReplyInfoView: UIStackView {
     }
 
     private func configureView(isMe: Bool) {
-        layoutMargins = .init(horizontal: 0.5, vertical: 3)
+        layoutMargins = .init(horizontal: 0.5, vertical: 4)
         isLayoutMarginsRelativeArrangement = true
         layer.cornerRadius = 8
         layer.masksToBounds = true
@@ -54,21 +54,20 @@ final class ReplyInfoView: UIStackView {
         vStack.axis = .vertical
         vStack.alignment = .leading
         vStack.spacing = 0
-        vStack.layoutMargins = .init(all: 4)
+        vStack.layoutMargins = .init(horizontal: 4, vertical: 0)
         vStack.isLayoutMarginsRelativeArrangement = true
 
-        replyStaticLebel.font = UIFont.uiiransansBoldCaption2
-        replyStaticLebel.textColor = Color.App.accentUIColor
-//        replyStaticLebel.text = ReplyInfoView.repliedToStaticText
         imageTextHStack.axis = .horizontal
-        imageTextHStack.spacing = 4
+        imageTextHStack.spacing = 2
+        imageTextHStack.alignment = .leading
 
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
         imageTextHStack.addArrangedSubview(imageIconView)
 
+        replyLabel.translatesAutoresizingMaskIntoConstraints = false
         replyLabel.font = UIFont.uiiransansCaption3
         replyLabel.numberOfLines = 1
-        replyLabel.textColor = UIColor.gray
+        replyLabel.textColor = Color.App.textPrimaryUIColor?.withAlphaComponent(0.7)
         replyLabel.lineBreakMode = .byTruncatingTail
         replyLabel.textAlignment = isMe ? .right : .left
         imageTextHStack.addArrangedSubview(replyLabel)
@@ -77,28 +76,32 @@ final class ReplyInfoView: UIStackView {
         deletedLabel.font = UIFont.uiiransansBoldCaption2
         deletedLabel.textColor = Color.App.textSecondaryUIColor
 
-        bar.translatesAutoresizingMaskIntoConstraints = false
-        bar.backgroundColor = Color.App.accentUIColor
-        bar.layer.cornerRadius = 2
-        bar.layer.masksToBounds = true
-
         let hStack = UIStackView()
         hStack.axis = .horizontal
         hStack.spacing = 2
+
+        replyStaticLebel.font = UIFont.uiiransansBoldCaption2
+        replyStaticLebel.textColor = Color.App.accentUIColor
+        replyStaticLebel.text = ReplyInfoView.repliedToStaticText
         hStack.addArrangedSubview(replyStaticLebel)
 
         participantLabel.font = UIFont.uiiransansBoldCaption2
         participantLabel.textColor = Color.App.accentUIColor
         hStack.addArrangedSubview(participantLabel)
 
+        bar.translatesAutoresizingMaskIntoConstraints = false
+        bar.backgroundColor = Color.App.accentUIColor
+        bar.layer.cornerRadius = 2
+        bar.layer.masksToBounds = true
+        addArrangedSubview(bar)
+
         vStack.addArrangedSubview(hStack)
         vStack.addArrangedSubview(deletedLabel)
         vStack.addArrangedSubview(imageTextHStack)
-
-        addArrangedSubview(bar)
         addArrangedSubview(vStack)
 
         NSLayoutConstraint.activate([
+            replyLabel.heightAnchor.constraint(equalToConstant: 14),
             imageIconView.heightAnchor.constraint(equalToConstant: 24),
             imageIconView.widthAnchor.constraint(equalToConstant: 24),
             bar.widthAnchor.constraint(equalToConstant: 2.0),

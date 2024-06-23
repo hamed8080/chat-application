@@ -380,8 +380,8 @@
 		05EA77A42BBC030400FFB9C2 /* TakeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EA77A22BBC030400FFB9C2 /* TakeButton.swift */; };
 		05EA77A62BBC651F00FFB9C2 /* CameraCapturer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EA77A52BBC651F00FFB9C2 /* CameraCapturer.swift */; };
 		05EA77A72BBC651F00FFB9C2 /* CameraCapturer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EA77A52BBC651F00FFB9C2 /* CameraCapturer.swift */; };
-		05EC8A302ACBED930016361F /* ReactionCountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountView.swift */; };
-		05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountView.swift */; };
+		05EC8A302ACBED930016361F /* ReactionCountScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountScrollView.swift */; };
+		05EC8A312ACBED930016361F /* ReactionCountScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountScrollView.swift */; };
 		05EEADC22C188AA2000562EE /* AudioRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EEADC12C188AA2000562EE /* AudioRecordingView.swift */; };
 		05EEADC32C188AA2000562EE /* AudioRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EEADC12C188AA2000562EE /* AudioRecordingView.swift */; };
 		05F420202BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F4201F2BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift */; };
@@ -598,7 +598,7 @@
 		05EA779F2BBC025E00FFB9C2 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		05EA77A22BBC030400FFB9C2 /* TakeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TakeButton.swift; sourceTree = "<group>"; };
 		05EA77A52BBC651F00FFB9C2 /* CameraCapturer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapturer.swift; sourceTree = "<group>"; };
-		05EC8A2D2ACBED930016361F /* ReactionCountView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionCountView.swift; sourceTree = "<group>"; };
+		05EC8A2D2ACBED930016361F /* ReactionCountScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionCountScrollView.swift; sourceTree = "<group>"; };
 		05EEADC12C188AA2000562EE /* AudioRecordingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioRecordingView.swift; sourceTree = "<group>"; };
 		05F4201F2BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadBottomToolbar.swift; sourceTree = "<group>"; };
 		05F86DDA2BD54B3100A1133E /* EmptyResultViewInTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResultViewInTabs.swift; sourceTree = "<group>"; };
@@ -729,7 +729,7 @@
 				052CA3CE2BA411B800E38E19 /* MessageImageView.swift */,
 				0594FE652B0387370031AADF /* MessageLocationView.swift */,
 				052CA3CF2BA411B800E38E19 /* MessageVideoView.swift */,
-				05EC8A2D2ACBED930016361F /* ReactionCountView.swift */,
+				05EC8A2D2ACBED930016361F /* ReactionCountScrollView.swift */,
 				0570CB882AAEE98C001832E9 /* ReplyInfoView.swift */,
 				051D1BFE2BA0369100676CBD /* SelectMessageRadio.swift */,
 				0594FE622B0386F00031AADF /* TextMessageView.swift */,
@@ -1502,7 +1502,7 @@
 				0570CC3D2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				05E869C62AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0525571E2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
-				05EC8A302ACBED930016361F /* ReactionCountView.swift in Sources */,
+				05EC8A302ACBED930016361F /* ReactionCountScrollView.swift in Sources */,
 				052C94092C11901F0061A6CF /* MyselfMessageCell.swift in Sources */,
 				0570CC432AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
 				052CA3E42BA4166300E38E19 /* ThreadPinMessageView.swift in Sources */,
@@ -1688,7 +1688,7 @@
 				0525571F2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
 				0570CC3E2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				052C940A2C11901F0061A6CF /* MyselfMessageCell.swift in Sources */,
-				05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */,
+				05EC8A312ACBED930016361F /* ReactionCountScrollView.swift in Sources */,
 				052CA3E52BA4166300E38E19 /* ThreadPinMessageView.swift in Sources */,
 				05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC442AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
