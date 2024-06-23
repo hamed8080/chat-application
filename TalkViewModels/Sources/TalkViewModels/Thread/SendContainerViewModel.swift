@@ -11,27 +11,12 @@ import Combine
 import TalkModels
 
 public final class SendContainerViewModel {
-    public weak var viewModel: ThreadViewModel?
+    private weak var viewModel: ThreadViewModel?
     private var thread: Conversation { viewModel?.thread ?? .init() }
     public var threadId: Int { thread.id ?? -1 }
     private var textMessage: String = ""
     private var cancelable: Set<AnyCancellable> = []
-    public var isInEditMode: Bool = false
-    public var canShowMute: Bool {
-        (thread.type?.isChannelType == true) &&
-        (thread.admin == false || thread.admin == nil) &&
-        !isInEditMode
-    }
-    public var disableSend: Bool { thread.disableSend && isInEditMode == false && !canShowMute }
-    public var showSendButton: Bool {
-        !isTextEmpty() ||
-        viewModel?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
-        AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
-    }
-    public var showCamera: Bool { isTextEmpty() && isVideoRecordingSelected }
-    public var showAudio: Bool { isTextEmpty() && !isVideoRecordingSelected && isVoice }
-    public var isVoice: Bool { viewModel?.attachmentsViewModel.attachments.count == 0 }
-    public var showRecordingView: Bool { viewModel?.audioRecoderVM.isRecording == true || viewModel?.audioRecoderVM.recordingOutputPath != nil }
+    public var isInEditMessageMode: Bool = false
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
     public private(set) var showPickerButtons: Bool = false
     public private(set) var focusOnTextInput: Bool = false
@@ -42,14 +27,6 @@ public final class SendContainerViewModel {
     public var onTextChanged: ((String?) -> Void)?
 
     public init() {}
-
-    public static func == (lhs: SendContainerViewModel, rhs: SendContainerViewModel) -> Bool {
-        rhs.thread.id == lhs.thread.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread)
-    }
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
@@ -78,7 +55,7 @@ public final class SendContainerViewModel {
     public func clear() {
         setText(newValue: "")
         editMessage = nil
-        isInEditMode = false
+        isInEditMessageMode = false
     }
 
     public func isTextEmpty() -> Bool {
@@ -107,7 +84,7 @@ public final class SendContainerViewModel {
 
     public func setEditMessage(message: Message?) {
         self.editMessage = message
-        isInEditMode = message != nil
+        isInEditMessageMode = message != nil
     }
 
     public func getEditMessage() -> Message? {
@@ -133,7 +110,7 @@ public final class SendContainerViewModel {
     }
 
     public func setDraft(newText: String) {
-        if !isSimulated {
+        if !isSimulated() {
             draftManager.set(draftValue: newText, threadId: threadId)
         } else if let contactId = AppState.shared.appStateNavigationModel.userToCreateThread?.contactId {
             draftManager.set(draftValue: newText, contactId: contactId)
@@ -165,9 +142,47 @@ public final class SendContainerViewModel {
         draftManager.editMessageText(threadId: threadId)
     }
 
-    private var isSimulated: Bool { threadId == -1 || threadId == LocalId.emptyThread.rawValue }
+    private func isSimulated() -> Bool {
+        threadId == -1 || threadId == LocalId.emptyThread.rawValue
+    }
 
     public func setAttachmentButtonsVisibility(show: Bool) {
         showPickerButtons = show
+    }
+
+    public func canShowMuteChannelBar() -> Bool {
+        (thread.type?.isChannelType == true) &&
+        (thread.admin == false || thread.admin == nil) &&
+        !isInEditMessageMode
+    }
+    
+    public func disableSend() -> Bool {
+        thread.disableSend && isInEditMessageMode == false && !canShowMuteChannelBar()
+    }
+
+    public func showSendButton() -> Bool {
+        !isTextEmpty() ||
+        viewModel?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
+        hasForward()
+    }
+
+    private func hasForward() -> Bool {
+        AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
+    }
+
+    public func showCamera() -> Bool {
+        isTextEmpty() && isVideoRecordingSelected
+    }
+
+    public func showAudio() -> Bool {
+        isTextEmpty() && !isVideoRecordingSelected && isVoice() && !hasForward()
+    }
+
+    public func isVoice() -> Bool {
+        viewModel?.attachmentsViewModel.attachments.count == 0
+    }
+
+    public func showRecordingView() -> Bool {
+        viewModel?.audioRecoderVM.isRecording == true || viewModel?.audioRecoderVM.recordingOutputPath != nil
     }
 }

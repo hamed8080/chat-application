@@ -29,8 +29,9 @@ public final class ReplyMessagePlaceholderView: UIStackView {
     private func configureViews() {
         axis = .horizontal
         spacing = 4
-        layoutMargins = .init(horizontal: 8, vertical: 4)
+        layoutMargins = .init(horizontal: 8, vertical: 2)
         isLayoutMarginsRelativeArrangement = true
+        alignment = .center
 
         let vStack = UIStackView()
         vStack.axis = .vertical
@@ -48,10 +49,11 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         vStack.addArrangedSubview(nameLabel)
         vStack.addArrangedSubview(messageLabel)
 
-        let imageReply = UIImageButton(imagePadding: .init(all: 8))
+        let imageReply = UIImageButton(imagePadding: .init(all: 4))
         imageReply.translatesAutoresizingMaskIntoConstraints = false
         imageReply.imageView.image = UIImage(systemName: "arrow.turn.up.left")
-        imageReply.tintColor = Color.App.iconSecondaryUIColor
+        imageReply.imageView.tintColor = Color.App.accentUIColor
+        imageReply.imageView.contentMode = .scaleAspectFit
 
         let closeButton = CloseButtonView()
         closeButton.action = { [weak self] in
@@ -63,8 +65,8 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         addArrangedSubview(closeButton)
 
         NSLayoutConstraint.activate([
-            imageReply.widthAnchor.constraint(equalToConstant: 36),
-            imageReply.heightAnchor.constraint(equalToConstant: 36),
+            imageReply.widthAnchor.constraint(equalToConstant: 28),
+            imageReply.heightAnchor.constraint(equalToConstant: 28),
         ])
     }
 

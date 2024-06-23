@@ -68,6 +68,8 @@ public protocol BottomToolbarDelegate {
     func openEditMode(_ message: (any HistoryMessageProtocol)?)
     func openReplyMode(_ message: (any HistoryMessageProtocol)?)
     func focusOnTextView(focus: Bool)
+    func showForwardPlaceholder(show: Bool)
+    func showReplyPrivatelyPlaceholder(show: Bool)
 }
 
 public protocol LoadingDelegate {

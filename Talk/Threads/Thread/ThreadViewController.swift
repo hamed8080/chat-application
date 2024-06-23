@@ -480,6 +480,14 @@ extension ThreadViewController: BottomToolbarDelegate {
     func focusOnTextView(focus: Bool) {
         sendContainer.focusOnTextView(focus: focus)
     }
+
+    func showForwardPlaceholder(show: Bool) {
+        sendContainer.showForwardPlaceholder(show: show)
+    }
+
+    func showReplyPrivatelyPlaceholder(show: Bool) {
+        sendContainer.showReplyPrivatelyPlaceholder(show: show)
+    }
 }
 
 // MARK: Sheets Delegate

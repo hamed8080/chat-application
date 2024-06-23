@@ -49,7 +49,7 @@ public final class ThreadSendMessageViewModel {
             sendReplyPrivatelyMessage()
         } else if let replyMessage = viewModel?.replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId)
-        } else if sendVM.isInEditMode {
+        } else if sendVM.isInEditMessageMode {
             sendEditMessage()
         } else if attVM.attachments.count > 0 {
             sendAttachmentsMessage()
@@ -137,6 +137,7 @@ public final class ThreadSendMessageViewModel {
             }
             attVM.clear()
             navModel = .init()
+            viewModel?.delegate?.showReplyPrivatelyPlaceholder(show: false)
         }
     }
 
@@ -198,21 +199,16 @@ public final class ThreadSendMessageViewModel {
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
         sendVM.clear() /// Close edit mode in ui
-        Task { @HistoryActor [weak self] in
-//            self?.viewModel?.historyVM.seenVM?.animateObjectWillChange()
-        }
         Task { @MainActor [weak self] in
-//            guard let self = self else { return }
-//            viewModel?.sheetType = nil
-//            viewModel?.animateObjectWillChange()
-//            animateObjectWillChange()
-//            let messages = await selectVM.getSelectedMessages().compactMap{$0.message as? Message}
-//            if let contact = contact {
-//                AppState.shared.openForwardThread(from: threadId, contact: contact, messages: messages)
-//            } else if let destinationConversation = destinationConversation {
-//                AppState.shared.openForwardThread(from: threadId, conversation: destinationConversation, messages: messages)
-//            }
-//            selectVM.clearSelection()
+            guard let self = self else { return }
+            let messages = selectVM.getSelectedMessages().compactMap{$0.message as? Message}
+            if let contact = contact {
+                AppState.shared.openForwardThread(from: threadId, contact: contact, messages: messages)
+            } else if let destinationConversation = destinationConversation {
+                AppState.shared.openForwardThread(from: threadId, conversation: destinationConversation, messages: messages)
+            }
+            selectVM.clearSelection()
+            viewModel?.delegate?.setSelection(false)
         }
     }
 
@@ -241,7 +237,7 @@ public final class ThreadSendMessageViewModel {
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             ChatManager.activeInstance?.message.send(req)
             self?.navModel = .init()
-//            self?.viewModel?.animateObjectWillChange()
+            self?.viewModel?.delegate?.showForwardPlaceholder(show: false)
         }
         sendAttachmentsMessage()
     }

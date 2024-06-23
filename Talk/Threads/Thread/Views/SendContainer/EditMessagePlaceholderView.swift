@@ -113,7 +113,7 @@ public final class EditMessagePlaceholderView: UIStackView {
     }
 
     private func animateEditPlaceholderIfNeeded() {
-        let isInEditMode = viewModel?.sendContainerViewModel.isInEditMode == true
+        let isInEditMode = viewModel?.sendContainerViewModel.isInEditMessageMode == true
         if isInEditMode {
             set()
         }

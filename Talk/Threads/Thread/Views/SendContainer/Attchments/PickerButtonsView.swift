@@ -18,12 +18,13 @@ public final class PickerButtonsView: UIStackView {
     private let btnFile = AttchmentButton(title: "General.file", image: "doc.fill")
     private let btnLocation = AttchmentButton(title: "General.location", image: "location.fill")
     private let btnContact = AttchmentButton(title: "General.contact", image: "person.2.crop.square.stack.fill")
-    private weak var threadVM: ThreadViewModel? { viewModel?.viewModel }
+    private weak var threadVM: ThreadViewModel?
     private var vc: UIViewController? { threadVM?.delegate as? UIViewController }
     private let documentPicker = DocumnetPickerViewController()
     private let galleryPicker = GallleryViewController()
 
-    public init(viewModel: SendContainerViewModel?) {
+    public init(viewModel: SendContainerViewModel?, threadVM: ThreadViewModel?) {
+        self.threadVM = threadVM
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
@@ -85,7 +86,7 @@ public final class PickerButtonsView: UIStackView {
     }
 
     public func closePickerButtons() {
-        viewModel?.viewModel?.delegate?.showPickerButtons(false)
+        threadVM?.delegate?.showPickerButtons(false)
     }
 }
 

@@ -32,7 +32,7 @@ public final class ThreadBottomToolbar: UIStackView {
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
         self.audioRecordingView = AudioRecordingView(viewModel: viewModel)
-        self.pickerButtons = PickerButtonsView(viewModel: viewModel?.sendContainerViewModel)
+        self.pickerButtons = PickerButtonsView(viewModel: viewModel?.sendContainerViewModel, threadVM: viewModel)
         self.attachmentFilesTableView = AttachmentFilesTableView(viewModel: viewModel)
         self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
         self.replyPrivatelyPlaceholderView = ReplyPrivatelyMessagePlaceholderView(viewModel: viewModel)
@@ -91,12 +91,13 @@ public final class ThreadBottomToolbar: UIStackView {
         addArrangedSubview(selectionView)
         addArrangedSubview(audioRecordingView)
         addArrangedSubview(mentionTableView)
-        if viewModel?.sendContainerViewModel.canShowMute == true {
+        if viewModel?.sendContainerViewModel.canShowMuteChannelBar() == true {
             addArrangedSubview(muteBarView)
         } else {
             addArrangedSubview(mainSendButtons)
         }
 
+        replyPrivatelyPlaceholderView.set()
         NSLayoutConstraint.activate([
             topAnchor.constraint(equalTo: pickerButtons.topAnchor, constant: -8),
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -172,6 +173,14 @@ public final class ThreadBottomToolbar: UIStackView {
     
     public func focusOnTextView(focus: Bool) {
         mainSendButtons.focusOnTextView(focus: focus)
+    }
+
+    public func showForwardPlaceholder(show: Bool) {
+        forwardPlaceholderView.set()
+    }
+
+    public func showReplyPrivatelyPlaceholder(show: Bool) {
+        replyPrivatelyPlaceholderView.set()
     }
 
     public func openRecording(_ show: Bool) {

@@ -132,6 +132,9 @@ public final class MainSendButtons: UIStackView {
                 btnToggleAttachmentButtons.imageView.image = toogleImage
             }
         }
+
+        // It's essential when we open up the thread for the first time in situation like we are forwarding/reply privately
+        animateMainButtons()
     }
 
     private func registerTextChange() {
@@ -152,7 +155,7 @@ public final class MainSendButtons: UIStackView {
             multilineTextField.text = newValue
             multilineTextField.updateHeightIfNeeded()
 
-            let isEmpty = viewModel.viewModel?.sendContainerViewModel.isTextEmpty() == true
+            let isEmpty = threadVM?.sendContainerViewModel.isTextEmpty() == true
             btnSend.showWithAniamtion(!isEmpty)
             btnMic.showWithAniamtion(isEmpty)
             if viewModel.isTextEmpty() == false {
@@ -221,27 +224,25 @@ public final class MainSendButtons: UIStackView {
         // On iPad, action sheets must be presented from a popover.
         alert.popoverPresentationController?.sourceView = btnCamera
 
-        (viewModel.viewModel?.delegate as? UIViewController)?.present(alert, animated: true) {
+        (threadVM?.delegate as? UIViewController)?.present(alert, animated: true) {
             // The alert was presented
         }
     }
 
     @objc private func onBtnSendTapped() {
-        if viewModel.showSendButton {
-            Task { [weak self] in
-                guard let self = self else { return }
-                await threadVM?.sendMessageViewModel.sendTextMessage()
-                threadVM?.mentionListPickerViewModel.text = ""
-                viewModel.viewModel?.delegate?.openReplyMode(nil)
-                viewModel.viewModel?.delegate?.openEditMode(nil)
-            }
+        Task { [weak self] in
+            guard let self = self else { return }
+            await threadVM?.sendMessageViewModel.sendTextMessage()
+            threadVM?.mentionListPickerViewModel.text = ""
+            threadVM?.delegate?.openReplyMode(nil)
+            threadVM?.delegate?.openEditMode(nil)
         }
     }
 
     @objc private func onBtnToggleAttachmentButtonsTapped() {
-        let currentValue = viewModel.viewModel?.sendContainerViewModel.showPickerButtons == true
+        let currentValue = threadVM?.sendContainerViewModel.showPickerButtons == true
         let newState = !currentValue
-        viewModel.viewModel?.delegate?.showPickerButtons(newState) // toggle
+        threadVM?.delegate?.showPickerButtons(newState) // toggle
         toggleAttchmentButton(show: newState)
         onViewModelChanged()
     }
@@ -256,9 +257,9 @@ public final class MainSendButtons: UIStackView {
     private func animateMainButtons() {
         UIView.animate(withDuration: 0.2) { [weak self] in
             guard let self = self else { return }
-            btnMic.setIsHidden(!viewModel.showAudio)
-            btnCamera.setIsHidden(!viewModel.showCamera)
-            btnSend.setIsHidden(!viewModel.showSendButton)
+            btnMic.setIsHidden(!viewModel.showAudio())
+            btnCamera.setIsHidden(!viewModel.showCamera())
+            btnSend.setIsHidden(!viewModel.showSendButton())
         }
     }
 
@@ -275,9 +276,9 @@ public final class MainSendButtons: UIStackView {
             guard let self = self, let videoURL = url, let data = try? Data(contentsOf: videoURL) else { return }
             let fileName = "video-\(Date().fileDateString).mov"
             let item = ImageItem(id: UUID(), isVideo: true, data: data, width: 0, height: 0, originalFilename: fileName)
-            viewModel.viewModel?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+            threadVM?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
         }
-        (viewModel.viewModel?.delegate as? UIViewController)?.present(captureObject.vc, animated: true)
+        (threadVM?.delegate as? UIViewController)?.present(captureObject.vc, animated: true)
     }
 
     private func openTakePicturePicker() {
@@ -287,9 +288,9 @@ public final class MainSendButtons: UIStackView {
                                  width: Int(image.size.width),
                                  height: Int(image.size.height),
                                  originalFilename: "image-\(Date().fileDateString).jpg")
-            viewModel.viewModel?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+            threadVM?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
         }
-        (viewModel.viewModel?.delegate as? UIViewController)?.present(captureObject.vc, animated: true)
+        (threadVM?.delegate as? UIViewController)?.present(captureObject.vc, animated: true)
     }
 
     public func focusOnTextView(focus: Bool) {

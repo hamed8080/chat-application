@@ -12,7 +12,7 @@ import TalkUI
 import TalkModels
 
 public final class SelectionView: UIStackView {
-    private let btnDelete = UIButton(type: .system)
+    private let btnDelete = UIImageButton(imagePadding: .init(all: 10))
     private let lblCount = UILabel()
     private let lblStatic = UILabel()
     private weak var viewModel: ThreadViewModel?
@@ -33,12 +33,16 @@ public final class SelectionView: UIStackView {
         layoutMargins = .init(horizontal: 8, vertical: 4)
         isLayoutMarginsRelativeArrangement = true
 
-        let btnForward = UIButton(type: .system)
+        let btnForward = UIImageButton(imagePadding: .init(all: 10))
         let image = UIImage(systemName: "arrow.turn.up.right")
-        btnForward.setImage(image, for: .normal)
-        btnForward.tintColor = Color.App.accentUIColor
-        btnForward.addTarget(self, action: #selector(forwardSelectedMessageTapped), for: .touchUpInside)
+        btnForward.imageView.image = image
+        btnForward.imageView.image = image
+        btnForward.imageView.contentMode = .scaleAspectFit
+        btnForward.imageView.tintColor = Color.App.accentUIColor
         btnForward.translatesAutoresizingMaskIntoConstraints = false
+        btnForward.action = { [weak self] in
+            self?.forwardSelectedMessageTapped()
+        }
         addArrangedSubview(btnForward)
 
         lblCount.font = UIFont.uiiransansBoldBody
@@ -54,9 +58,12 @@ public final class SelectionView: UIStackView {
         addArrangedSubview(spacer)
 
         btnDelete.translatesAutoresizingMaskIntoConstraints = false
-        btnDelete.setImage(UIImage(named: "ic_delete"), for: .normal)
-        btnDelete.tintColor = Color.App.iconSecondaryUIColor
-        btnDelete.addTarget(self, action: #selector(deleteSelectedMessageTapped), for: .touchUpInside)
+        btnDelete.imageView.image = UIImage(named: "ic_delete")
+        btnDelete.imageView.contentMode = .scaleAspectFit
+        btnDelete.imageView.tintColor = Color.App.iconSecondaryUIColor
+        btnDelete.action = { [weak self] in
+            self?.deleteSelectedMessageTapped()
+        }
         addArrangedSubview(btnDelete)
 
         let closeButton = CloseButtonView()
@@ -73,11 +80,11 @@ public final class SelectionView: UIStackView {
         ])
     }
 
-    @objc private func forwardSelectedMessageTapped(_ sender: UIButton) {
+    private func forwardSelectedMessageTapped() {
         viewModel?.delegate?.openForwardPicker()
     }
 
-    @objc private func deleteSelectedMessageTapped(_ sender: UIButton) {
+    private func deleteSelectedMessageTapped() {
         guard let viewModel = viewModel else { return }
         Task {
             let deleteVM = DeleteMessagesViewModelModel()

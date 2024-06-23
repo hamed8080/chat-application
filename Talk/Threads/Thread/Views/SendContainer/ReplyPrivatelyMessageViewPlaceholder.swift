@@ -11,12 +11,9 @@ import TalkExtensions
 import TalkUI
 
 public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
-    private let imageReply = UIImageView()
-    private let vStack = UIStackView()
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
     private weak var viewModel: ThreadViewModel?
-    private let closeButton = CloseButtonView()
 
     public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
@@ -29,13 +26,20 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     }
 
     private func configureViews() {
-        imageReply.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .horizontal
         spacing = 4
-        layoutMargins = .init(horizontal: 8, vertical: 4)
+        layoutMargins = .init(horizontal: 8, vertical: 2)
         isLayoutMarginsRelativeArrangement = true
+        alignment = .center
 
+        let imageReply = UIImageButton(imagePadding: .init(all: 4))
+        imageReply.translatesAutoresizingMaskIntoConstraints = false
+        imageReply.imageView.image = UIImage(systemName: "arrow.turn.up.left")
+        imageReply.imageView.contentMode = .scaleAspectFit
+        imageReply.imageView.tintColor = Color.App.accentUIColor
+        addArrangedSubview(imageReply)
+
+        let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.spacing = 0
         vStack.alignment = .leading
@@ -43,33 +47,30 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
         nameLabel.font = UIFont.uiiransansBody
         nameLabel.textColor = Color.App.accentUIColor
         nameLabel.numberOfLines = 1
+        vStack.addArrangedSubview(nameLabel)
 
         messageLabel.font = UIFont.uiiransansCaption2
         messageLabel.textColor = Color.App.textPlaceholderUIColor
         messageLabel.numberOfLines = 2
-
-        vStack.addArrangedSubview(nameLabel)
         vStack.addArrangedSubview(messageLabel)
 
-        imageReply.image = UIImage(systemName: "arrow.turn.up.left")
-        imageReply.tintColor = Color.App.iconSecondaryUIColor
+        addArrangedSubview(vStack)
 
+        let closeButton = CloseButtonView()
         closeButton.action = { [weak self] in
             self?.close()
         }
-
-        addArrangedSubview(imageReply)
-        addArrangedSubview(vStack)
         addArrangedSubview(closeButton)
 
         NSLayoutConstraint.activate([
-            imageReply.widthAnchor.constraint(equalToConstant: 24),
-            imageReply.heightAnchor.constraint(equalToConstant: 24),
+            imageReply.widthAnchor.constraint(equalToConstant: 28),
+            imageReply.heightAnchor.constraint(equalToConstant: 28),
         ])
     }
 
     public func set() {
-        setIsHidden(viewModel?.replyMessage == nil)
+        let hasReplyPrivately = AppState.shared.appStateNavigationModel.replyPrivately != nil
+        setIsHidden(!hasReplyPrivately)
         let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately
         nameLabel.text = replyMessage?.participant?.name
         nameLabel.setIsHidden(replyMessage?.participant?.name == nil)
@@ -84,38 +85,8 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     private func close() {
         viewModel?.scrollVM.disableExcessiveLoading()
         AppState.shared.appStateNavigationModel = .init()
-//        viewModel.animateObjectWillChange()
-    }
-}
-
-struct ReplyPrivatelyMessagePlaceholderView_Previews: PreviewProvider {
-    struct ReplyPrivatelyMessagePlaceholderViewWrapper: UIViewRepresentable {
-        let viewModel: ThreadViewModel
-
-        func makeUIView(context: Context) -> some UIView {
-            let view = ReplyMessagePlaceholderView(viewModel: viewModel)
-            view.set()
-            return view
+        UIView.animate(withDuration: 0.3) {
+            self.set()
         }
-        func updateUIView(_ uiView: UIViewType, context: Context) {}
-    }
-
-    struct Preview: View {
-        var viewModel: ThreadViewModel {
-            let viewModel = ThreadViewModel(thread: .init(id: 1))
-            viewModel.replyMessage = .init(threadId: 1,
-                                           message: "Test message",
-                                           messageType: .text,
-                                           participant: .init(name: "John Doe"))
-            return viewModel
-        }
-
-        var body: some View {
-            return ReplyPrivatelyMessagePlaceholderViewWrapper(viewModel: viewModel)
-        }
-    }
-
-    static var previews: some View {
-        Preview()
     }
 }

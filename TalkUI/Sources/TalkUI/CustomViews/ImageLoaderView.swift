@@ -65,7 +65,6 @@ public final class ImageLoaderUIView: UIView {
 
     private func configureView() {
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
-
         imageIconView.contentMode = .scaleAspectFill
 
         addSubview(imageIconView)

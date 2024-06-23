@@ -40,7 +40,6 @@ final class ReplyInfoView: UIStackView {
     private func configureView(isMe: Bool) {
         layoutMargins = .init(horizontal: 0.5, vertical: 3)
         isLayoutMarginsRelativeArrangement = true
-        backgroundColor = Color.App.bgChatMeDarkUIColor
         layer.cornerRadius = 8
         layer.masksToBounds = true
         backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
