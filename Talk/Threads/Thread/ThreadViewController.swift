@@ -280,6 +280,10 @@ extension ThreadViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         makeReplyButton(indexPath: indexPath, isLeading: true)
     }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.textRect?.height ?? 16
+    }
 }
 
 // MARK: Prefetch
@@ -661,9 +665,13 @@ extension ThreadViewController: HistoryScrollDelegate {
     }
 
     func reactionsUpdatedAt(_ indexPath: IndexPath) {
-        DispatchQueue.main.async { [weak self] in
+        // Delay is essential for when we get the bottom part on openning the thread for the first time to it won't lead to crash
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             if let cell = self?.baseVisibleCell(indexPath) {
                 cell.reactionsUpdated()
+                // Update geometry of table view and make cells taller
+                self?.tableView?.beginUpdates()
+                self?.tableView?.endUpdates()
             }
         }
     }

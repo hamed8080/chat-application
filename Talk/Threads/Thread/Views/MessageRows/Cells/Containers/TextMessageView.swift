@@ -12,6 +12,8 @@ import TalkModels
 
 final class TextMessageView: UITextView {
     private weak var viewModel: MessageRowViewModel?
+    private var heightConstraint: NSLayoutConstraint!
+    private var widthConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -32,6 +34,10 @@ final class TextMessageView: UITextView {
         linkTextAttributes = [:]
         let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
         addGestureRecognizer(tap)
+        widthConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
+        heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
+        widthConstraint.isActive = true
+        heightConstraint.isActive = true
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
@@ -43,6 +49,8 @@ final class TextMessageView: UITextView {
         backgroundColor = .clear
         isUserInteractionEnabled = viewModel.calMessage.rowType.isPublicLink
         setText()
+        heightConstraint.constant = viewModel.calMessage.textRect?.width ?? 0
+        heightConstraint.constant = viewModel.calMessage.textRect?.height ?? 0
     }
 
     @objc func onTapJoinGroup(_ sender: UIGestureRecognizer) {
@@ -57,6 +65,7 @@ final class TextMessageView: UITextView {
         self.attributedText = self.viewModel?.calMessage.markdownTitle
         self.font = UIFont.uiiransansBody
         setIsHidden(viewModel?.calMessage.rowType.hasText == false)
+
     }
 }
 

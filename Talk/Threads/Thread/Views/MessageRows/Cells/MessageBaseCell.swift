@@ -65,13 +65,29 @@ public class MessageBaseCell: UITableViewCell {
         NSLayoutConstraint.activate([
             messageContainer.widthAnchor.constraint(lessThanOrEqualToConstant: ThreadViewModel.maxAllowedWidth),
             hStack.topAnchor.constraint(equalTo: contentView.topAnchor),
-            hstackBottomConstraint
+            hstackBottomConstraint,
         ])
+
+        let isMe = self is MyselfMessageCell
+        let isRTL = Language.isRTL
+        if isRTL {
+            if isMe {
+                hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+            } else {
+                hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+            }
+        } else {
+            if isMe {
+                hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+            } else {
+                hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+            }
+        }
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-//        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? 6 : 1
+        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
         avatar?.set(viewModel)
         messageContainer.set(viewModel)
         radio.setIsHidden(viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false)

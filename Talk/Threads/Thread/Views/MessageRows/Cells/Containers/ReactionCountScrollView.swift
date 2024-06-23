@@ -54,6 +54,9 @@ final class ReactionCountScrollView: UIScrollView {
         }
         setIsHidden(false)
         let rows = viewModel.reactionsModel.rows
+        stack.subviews.forEach { reaction in
+            reaction.removeFromSuperview()
+        }
         rows.forEach { rowModel in
             let rowView = ReactionCountRowView(frame: bounds, row: rowModel, isMe: viewModel.calMessage.isMe)
             stack.addArrangedSubview(rowView)
