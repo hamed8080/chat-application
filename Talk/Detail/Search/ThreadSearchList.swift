@@ -12,7 +12,7 @@ import Chat
 
 struct ThreadSearchList: View {
     let threadVM: ThreadViewModel
-    let viewModel: ThreadSearchMessagesViewModel
+    @EnvironmentObject var viewModel: ThreadSearchMessagesViewModel
 
     var body: some View {
         if viewModel.isInSearchMode, viewModel.searchedMessages.count > 0 {
@@ -34,13 +34,13 @@ struct ThreadSearchList: View {
             .environment(\.layoutDirection, .leftToRight)
         } else if viewModel.isInSearchMode {
             ZStack {
-//                if viewModel.isLoading {
-//                    ListLoadingView(isLoading: $viewModel.isLoading)
-//                        .id(UUID())
-//                } else if viewModel.isInSearchMode {
-//                    Text("General.nothingFound")
-//                        .font(.iransansTitle)
-//                }
+                if viewModel.isLoading {
+                    ListLoadingView(isLoading: .constant(viewModel.isLoading))
+                        .id(UUID())
+                } else if viewModel.isInSearchMode {
+                    Text("General.nothingFound")
+                        .font(.iransansTitle)
+                }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .background(Color.App.bgPrimary.ignoresSafeArea())

@@ -10,7 +10,7 @@ import Chat
 import TalkModels
 import Combine
 
-public final class ThreadSearchMessagesViewModel {
+public final class ThreadSearchMessagesViewModel: ObservableObject {
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation? { viewModel?.thread }
     private var threadId: Int { thread?.id ?? -1 }
@@ -80,6 +80,7 @@ public final class ThreadSearchMessagesViewModel {
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, query: "\(text)")
         RequestsManager.shared.append(prepend: SEARCH_KEY, value: req, autoCancel: false)
         ChatManager.activeInstance?.message.history(req)
+        animateObjectWillChange()
     }
 
     public func loadMore() {
@@ -90,6 +91,7 @@ public final class ThreadSearchMessagesViewModel {
             RequestsManager.shared.append(prepend: SEARCH_KEY, value: req, autoCancel: false)
             ChatManager.activeInstance?.message.history(req)
         }
+        animateObjectWillChange()
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {
@@ -103,6 +105,7 @@ public final class ThreadSearchMessagesViewModel {
             if !response.cache, !response.hasNext {
                 hasMore = false
             }
+            animateObjectWillChange()
         }
     }
 
@@ -128,6 +131,7 @@ public final class ThreadSearchMessagesViewModel {
         isInSearchMode = false
         offset = 0
         searchedMessages.removeAll()
+        animateObjectWillChange()
     }
 
     public func cancelAllObservers() {

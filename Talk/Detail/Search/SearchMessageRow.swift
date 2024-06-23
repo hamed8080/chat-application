@@ -47,7 +47,7 @@ struct SearchMessageRow: View {
     }
 
     private func onTap() {
-        Task {
+        Task { @MainActor in
             if let time = message.time, let messageId = message.id {
                 AppState.shared.objectsContainer.threadDetailVM.clear()
                 AppState.shared.objectsContainer.navVM.remove()
