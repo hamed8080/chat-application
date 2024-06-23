@@ -49,7 +49,7 @@ final class MessageContainer: UIStackView {
     public func configureView(isMe: Bool) {
         backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         axis = .vertical
-        spacing = 0
+        spacing = 4
         alignment = .leading
         distribution = .fill
         layoutMargins = .init(all: 4)

@@ -720,6 +720,7 @@ extension ThreadHistoryViewModel {
             sections.remove(at: indices.section)
         }
         delegate?.removed(at: indices)
+        await setIsEmptyThread()
     }
 }
 
@@ -1017,6 +1018,7 @@ extension ThreadHistoryViewModel {
         let emptyThread = viewModel?.isSimulatedThared == true
         isEmptyThread = emptyThread || noMessage
         delegate?.emptyStateChanged(isEmpty: isEmptyThread)
+        viewModel?.delegate?.startCenterAnimation(false)
     }
 
     internal func setCreated(_ created: Bool) {

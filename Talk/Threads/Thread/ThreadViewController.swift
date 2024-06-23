@@ -117,7 +117,7 @@ extension ThreadViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.estimatedRowHeight = 128
-        tableView.estimatedSectionHeaderHeight = 32
+        tableView.sectionHeaderHeight = 28
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
@@ -214,9 +214,10 @@ extension ThreadViewController {
     }
 
     private func showEmptyThread(show: Bool) {
+        emptyThreadView.showWithAniamtion(show)
         if show {
-            emptyThreadView.setIsHidden(true)
-            unreadMentionsButton.setIsHidden(true)
+            self.unreadMentionsButton.showWithAniamtion(false)
+            self.moveToBottom.showWithAniamtion(false)
         }
     }
 }
@@ -282,7 +283,7 @@ extension ThreadViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.textRect?.height ?? 16
+        return viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.textRect?.height ?? 28
     }
 }
 
