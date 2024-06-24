@@ -65,7 +65,6 @@ final class TextMessageView: UITextView {
         self.attributedText = self.viewModel?.calMessage.markdownTitle
         self.font = UIFont.uiiransansBody
         setIsHidden(viewModel?.calMessage.rowType.hasText == false)
-
     }
 }
 

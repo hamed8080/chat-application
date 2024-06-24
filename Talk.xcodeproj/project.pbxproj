@@ -324,6 +324,12 @@
 		05ABE5872B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */; };
 		05ABE5882B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */; };
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
+		05B6175F2C2947C50059FE0A /* MessageContainer+UIMenuItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B6175E2C2947C50059FE0A /* MessageContainer+UIMenuItems.swift */; };
+		05B617602C2947C50059FE0A /* MessageContainer+UIMenuItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B6175E2C2947C50059FE0A /* MessageContainer+UIMenuItems.swift */; };
+		05B617622C2948900059FE0A /* MessageContainer+ContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B617612C2948900059FE0A /* MessageContainer+ContextMenu.swift */; };
+		05B617632C2948900059FE0A /* MessageContainer+ContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B617612C2948900059FE0A /* MessageContainer+ContextMenu.swift */; };
+		05B617652C294BB00059FE0A /* UIReactionsPickerScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B617642C294BB00059FE0A /* UIReactionsPickerScrollView.swift */; };
+		05B617662C294BB00059FE0A /* UIReactionsPickerScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B617642C294BB00059FE0A /* UIReactionsPickerScrollView.swift */; };
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C27F982AF4AFF60008FE2E /* ConversationPlusContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F972AF4AFF60008FE2E /* ConversationPlusContextMenu.swift */; };
@@ -571,6 +577,9 @@
 		05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForwardMessagesViewPlaceholder.swift; sourceTree = "<group>"; };
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
+		05B6175E2C2947C50059FE0A /* MessageContainer+UIMenuItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageContainer+UIMenuItems.swift"; sourceTree = "<group>"; };
+		05B617612C2948900059FE0A /* MessageContainer+ContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageContainer+ContextMenu.swift"; sourceTree = "<group>"; };
+		05B617642C294BB00059FE0A /* UIReactionsPickerScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIReactionsPickerScrollView.swift; sourceTree = "<group>"; };
 		05C099C22AD1135D007AAC6C /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		05C27F972AF4AFF60008FE2E /* ConversationPlusContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPlusContextMenu.swift; sourceTree = "<group>"; };
 		05C27F9B2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyMessagePlaceholderView.swift; sourceTree = "<group>"; };
@@ -734,6 +743,9 @@
 				051D1BFE2BA0369100676CBD /* SelectMessageRadio.swift */,
 				0594FE622B0386F00031AADF /* TextMessageView.swift */,
 				0594FE682B0387920031AADF /* UnsentMessageView.swift */,
+				05B6175E2C2947C50059FE0A /* MessageContainer+UIMenuItems.swift */,
+				05B617612C2948900059FE0A /* MessageContainer+ContextMenu.swift */,
+				05B617642C294BB00059FE0A /* UIReactionsPickerScrollView.swift */,
 			);
 			path = Containers;
 			sourceTree = "<group>";
@@ -1394,6 +1406,7 @@
 				0594FE592B034B050031AADF /* SettingNotificationSection.swift in Sources */,
 				0570CBEF2AAEE98F001832E9 /* ThreadImageView.swift in Sources */,
 				05E9C08D2B1EFBCE00E782BD /* ThreadListRowBackground.swift in Sources */,
+				05B617652C294BB00059FE0A /* UIReactionsPickerScrollView.swift in Sources */,
 				0560C3622AB77B0B009F6A58 /* TabButtonItem.swift in Sources */,
 				05CC0B032B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */,
 				0570CC132AAEE98F001832E9 /* AvatarView.swift in Sources */,
@@ -1491,6 +1504,7 @@
 				0570CC4D2AAEE98F001832E9 /* SettingsView.swift in Sources */,
 				052557272BE94EB500DFCE54 /* DetailLeadingToolbarViews.swift in Sources */,
 				052557172BE94B4700DFCE54 /* SectionRowContainer.swift in Sources */,
+				05B6175F2C2947C50059FE0A /* MessageContainer+UIMenuItems.swift in Sources */,
 				0570CC592AAEE98F001832E9 /* MutualThreadsView.swift in Sources */,
 				054ED7EC2BEB735800F9EDB3 /* OTPTimerView.swift in Sources */,
 				0525571A2BE94BA900DFCE54 /* DetailTopButtonsSection.swift in Sources */,
@@ -1502,6 +1516,7 @@
 				0570CC3D2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				05E869C62AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0525571E2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
+				05B617622C2948900059FE0A /* MessageContainer+ContextMenu.swift in Sources */,
 				05EC8A302ACBED930016361F /* ReactionCountScrollView.swift in Sources */,
 				052C94092C11901F0061A6CF /* MyselfMessageCell.swift in Sources */,
 				0570CC432AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
@@ -1578,6 +1593,7 @@
 				0570CBF02AAEE98F001832E9 /* ThreadImageView.swift in Sources */,
 				0560C3632AB77B0B009F6A58 /* TabButtonItem.swift in Sources */,
 				05E9C08E2B1EFBCE00E782BD /* ThreadListRowBackground.swift in Sources */,
+				05B617662C294BB00059FE0A /* UIReactionsPickerScrollView.swift in Sources */,
 				05CC0B042B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */,
 				0570CC142AAEE98F001832E9 /* AvatarView.swift in Sources */,
 				05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */,
@@ -1675,6 +1691,7 @@
 				05FE15F22ADA5974009AC44A /* SupportView.swift in Sources */,
 				052557282BE94EB500DFCE54 /* DetailLeadingToolbarViews.swift in Sources */,
 				052557182BE94B4700DFCE54 /* SectionRowContainer.swift in Sources */,
+				05B617602C2947C50059FE0A /* MessageContainer+UIMenuItems.swift in Sources */,
 				0570CC4E2AAEE98F001832E9 /* SettingsView.swift in Sources */,
 				054ED7ED2BEB735800F9EDB3 /* OTPTimerView.swift in Sources */,
 				0525571B2BE94BA900DFCE54 /* DetailTopButtonsSection.swift in Sources */,
@@ -1686,6 +1703,7 @@
 				0570CBF42AAEE98F001832E9 /* DraftView.swift in Sources */,
 				05E869C72AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0525571F2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
+				05B617632C2948900059FE0A /* MessageContainer+ContextMenu.swift in Sources */,
 				0570CC3E2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				052C940A2C11901F0061A6CF /* MyselfMessageCell.swift in Sources */,
 				05EC8A312ACBED930016361F /* ReactionCountScrollView.swift in Sources */,
