@@ -70,21 +70,3 @@ struct AssistantActionRow: View {
         }
     }
 }
-
-struct AssistantHistoryView_Previews: PreviewProvider {
-    static let participant = MockData.participant(1)
-    static let activateAction = AssistantAction(actionTime: UInt(Date().timeIntervalSince1970), actionType: .activate, participant: participant)
-    static let blockAction = AssistantAction(actionTime: UInt(Date().timeIntervalSince1970), actionType: .block, participant: participant)
-    static let deactivateAction = AssistantAction(actionTime: UInt(Date().timeIntervalSince1970), actionType: .deactivate, participant: participant)
-    static let registerAction = AssistantAction(actionTime: UInt(Date().timeIntervalSince1970), actionType: .register, participant: participant)
-    static let unknownAction = AssistantAction(actionTime: UInt(Date().timeIntervalSince1970), actionType: .unknown, participant: participant)
-    static var viewModel = AssistantHistoryViewModel()
-
-    static var previews: some View {
-        AssistantHistoryView(viewModel: viewModel)
-            .onAppear {
-                let response: ChatResponse<[AssistantAction]> = .init(result: [activateAction, blockAction, deactivateAction, registerAction, unknownAction])
-                viewModel.onActions(response)
-            }
-    }
-}

@@ -325,8 +325,8 @@ public class ContactsViewModel: ObservableObject {
             return
         }
         let req: AddContactRequest = isNumber ?
-            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
-            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
         ChatManager.activeInstance?.contact.add(req)
     }
 

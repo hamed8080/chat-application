@@ -219,8 +219,8 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     public func editContact(contactValue: String, firstName: String, lastName: String) {
         let isNumber = ContactsViewModel.isNumber(value: contactValue)
         let req: AddContactRequest = isNumber ?
-            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
-            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
         RequestsManager.shared.append(prepend: PARTICIPANT_EDIT_CONTACT_KEY, value: req)
         ChatManager.activeInstance?.contact.add(req)
     }

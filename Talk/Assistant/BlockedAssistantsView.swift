@@ -29,18 +29,3 @@ struct BlockedAssistantsView: View {
         }
     }
 }
-
-struct BlockedAssistantsView_Previews: PreviewProvider {
-    static let participant = MockData.participant(1)
-    static var viewModel = AssistantViewModel()
-    static let assistant = Assistant(id: 1, participant: participant)
-
-    static var previews: some View {
-        BlockedAssistantsView()
-            .environmentObject(viewModel)
-            .onAppear {
-                let response: ChatResponse<[Assistant]> = .init(result: [assistant])
-                viewModel.onBlockedListAssistant(response)
-            }
-    }
-}

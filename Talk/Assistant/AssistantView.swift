@@ -141,20 +141,3 @@ struct AddAssistantRow: View {
         }
     }
 }
-
-struct AssistantView_Previews: PreviewProvider {
-    static var viewModel = AssistantViewModel()
-    static var assistant: Assistant {
-        let participant = Participant(name: "Hamed Hosseini")
-        let roles: [Roles] = [.addNewUser, .editThread, .editMessageOfOthers]
-        return Assistant(id: 1, participant: participant, roles: roles, block: true)
-    }
-
-    static var previews: some View {
-        AssistantView(viewModel: viewModel)
-            .onAppear {
-                let response: ChatResponse<[Assistant]> = .init(uniqueId: UUID().uuidString, result: [assistant])
-                viewModel.onAssistants(response)
-            }
-    }
-}
