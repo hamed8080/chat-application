@@ -22,7 +22,7 @@ public class MessageBaseCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let isMe = self is MyselfMessageCell
-        self.messageContainer = .init(frame: .zero, isMe: isMe)
+        self.messageContainer = .init(frame: contentView.bounds, isMe: isMe)
         configureView(isMe: isMe)
     }
 
@@ -43,9 +43,9 @@ public class MessageBaseCell: UITableViewCell {
 //        container.addSubview(radio)
 
         messageContainer.translatesAutoresizingMaskIntoConstraints = false
-        messageContainer.cell = self
         messageContainer.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         messageContainer.accessibilityIdentifier = "messageContainerMessageBaseCell"
+//        messageContainer.setContentHuggingPriority(.required, for: .horizontal)
         container.addSubview(messageContainer)
 
 //        if self is PartnerMessageCell {
@@ -65,8 +65,8 @@ public class MessageBaseCell: UITableViewCell {
     }
 
     private func setConstraints() {
-//        containerBottomConstraint = container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
-//        containerBottomConstraint.identifier = "containerBottomConstraintContainerMessageBaseCell"
+        containerBottomConstraint = container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+        containerBottomConstraint.identifier = "containerBottomConstraintContainerMessageBaseCell"
         let isMe = self is MyselfMessageCell
         let isRTL = Language.isRTL
         if isRTL {
@@ -84,20 +84,20 @@ public class MessageBaseCell: UITableViewCell {
         }
         NSLayoutConstraint.activate([
             container.widthAnchor.constraint(equalTo: messageContainer.widthAnchor),
-            container.heightAnchor.constraint(equalTo: messageContainer.heightAnchor),
             container.topAnchor.constraint(equalTo: contentView.topAnchor),
-//            containerBottomConstraint,
+            containerBottomConstraint,
 
             messageContainer.widthAnchor.constraint(lessThanOrEqualToConstant: ThreadViewModel.maxAllowedWidth),
             messageContainer.topAnchor.constraint(equalTo: container.topAnchor, constant: 0),
             messageContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 0),
-//            messageContainer.leadingAnchor.constraint(equalTo: avatar?.trailingAnchor ?? contentView.leadingAnchor, constant: 8),
+            messageContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
 //            radio.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8)
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
+        messageContainer.cell = self
 //        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
 //        avatar?.set(viewModel)
         messageContainer.set(viewModel)

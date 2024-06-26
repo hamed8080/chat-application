@@ -21,8 +21,7 @@ final class ReplyInfoView: UIView {
     private let replyLabel = UILabel()
     private let bar = UIView()
     private weak var viewModel: MessageRowViewModel?
-    private var replyStaticLabelLeadingToImageView: NSLayoutConstraint!
-    private var replyStaticLabelLeadingToBar: NSLayoutConstraint!
+    private var imageIconViewLeadingConstriant: NSLayoutConstraint!
 //    // These two texts are used to localize and bundle which are costly to reconstruct every time.
     private static let deletedStaticText = "Messages.deletedMessageReply".localized()
     private static let repliedToStaticText = "Message.replyTo".localized()
@@ -75,7 +74,7 @@ final class ReplyInfoView: UIView {
         replyStaticLabel.textColor = Color.App.accentUIColor
         replyStaticLabel.text = ReplyInfoView.repliedToStaticText
         replyStaticLabel.accessibilityIdentifier = "replyStaticLabelReplyInfoView"
-        replyStaticLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        replyStaticLabel.setContentHuggingPriority(.required, for: .horizontal)
         replyStaticLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(replyStaticLabel)
 
@@ -95,21 +94,19 @@ final class ReplyInfoView: UIView {
         bar.accessibilityIdentifier = "barReplyInfoView"
         addSubview(bar)
 
-        replyStaticLabelLeadingToImageView = replyStaticLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8)
-        replyStaticLabelLeadingToBar = replyStaticLabel.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: 8)
-
+        imageIconViewLeadingConstriant = imageIconView.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: 4)
         NSLayoutConstraint.activate([
             bar.widthAnchor.constraint(equalToConstant: 1.5),
             bar.topAnchor.constraint(equalTo: topAnchor, constant: 2),
             bar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
             bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0.5),
             
-            imageIconView.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: 4),
+            imageIconViewLeadingConstriant,
             imageIconView.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             imageIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
             imageIconView.widthAnchor.constraint(equalToConstant: 36),
 
-            replyStaticLabelLeadingToImageView,
+            replyStaticLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
             replyStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: 2),
             
             participantLabel.topAnchor.constraint(equalTo: topAnchor, constant: 2),
@@ -141,16 +138,16 @@ final class ReplyInfoView: UIView {
         replyLabel.setIsHidden(replyInfo?.message?.isEmpty == true)
 
         deletedLabel.setIsHidden(replyInfo?.deleted == nil || replyInfo?.deleted == false)
+        setImageView(viewModel: viewModel)
+    }
 
+    private func setImageView(viewModel: MessageRowViewModel) {
         let hasImage = viewModel.calMessage.isReplyImage
-
         if viewModel.calMessage.isReplyImage, let url = viewModel.calMessage.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata))
         }
-
         imageIconView.setIsHidden(!hasImage)
-        replyStaticLabelLeadingToImageView.isActive = hasImage
-        replyStaticLabelLeadingToBar.isActive = !hasImage
+        imageIconViewLeadingConstriant.constant = hasImage ? 0 : -36
     }
 
     @objc func onReplyTapped(_ sender: UIGestureRecognizer) {

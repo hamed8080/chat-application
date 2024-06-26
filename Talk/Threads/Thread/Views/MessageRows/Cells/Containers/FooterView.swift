@@ -34,7 +34,6 @@ final class FooterView: UIStackView {
     }
     
     private func configureView() {
-        translatesAutoresizingMaskIntoConstraints = false
         spacing = 4
         axis = .horizontal
         alignment = .lastBaseline
@@ -66,7 +65,6 @@ final class FooterView: UIStackView {
         statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: 12)
         statusImageWidthConstriant.identifier = "statusImageWidthConstriantFooterView"
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: 22),
             statusImage.heightAnchor.constraint(equalTo: heightAnchor),
             statusImageWidthConstriant,
             pinImage.heightAnchor.constraint(equalToConstant: 16),

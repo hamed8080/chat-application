@@ -47,7 +47,6 @@ final class MessageAudioView: UIView {
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         progressButton.isUserInteractionEnabled = true
         progressButton.accessibilityIdentifier = "progressButtonMessageAudioView"
-        progressButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         addSubview(progressButton)
 
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -58,16 +57,9 @@ final class MessageAudioView: UIView {
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
         fileNameLabel.backgroundColor = .blue
         fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageAudioView"
-        fileNameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        fileNameLabel.setContentHuggingPriority(.required, for: .vertical)
+        fileNameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(fileNameLabel)
-
-
-        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        fileTypeLabel.font = UIFont.uiiransansBoldCaption2
-        fileTypeLabel.textAlignment = .left
-        fileTypeLabel.textColor = Color.App.textSecondaryUIColor
-        fileTypeLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        addSubview(fileTypeLabel)
 
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
@@ -76,6 +68,17 @@ final class MessageAudioView: UIView {
         fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageAudioView"
         addSubview(fileSizeLabel)
 
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileTypeLabel.font = UIFont.uiiransansBoldCaption2
+        fileTypeLabel.textAlignment = .left
+        fileTypeLabel.textColor = Color.App.textSecondaryUIColor
+        fileTypeLabel.numberOfLines = 1
+        fileTypeLabel.setContentHuggingPriority(.required, for: .vertical)
+        fileTypeLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        fileTypeLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        fileTypeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        addSubview(fileTypeLabel)
+
         playerProgress.translatesAutoresizingMaskIntoConstraints = false
         playerProgress.tintColor = Color.App.textPrimaryUIColor
         playerProgress.layer.cornerRadius = 1.5
@@ -83,7 +86,6 @@ final class MessageAudioView: UIView {
         playerProgress.trackTintColor = UIColor.gray.withAlphaComponent(0.3)
         playerProgress.accessibilityIdentifier = "playerProgressMessageAudioView"
         addSubview(playerProgress)
-
 
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         timeLabel.textColor = Color.App.textPrimaryUIColor
@@ -94,25 +96,21 @@ final class MessageAudioView: UIView {
         addSubview(timeLabel)
 
         NSLayoutConstraint.activate([
-            
             progressButton.widthAnchor.constraint(equalToConstant: 36),
             progressButton.heightAnchor.constraint(equalToConstant: 36),
             progressButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
             progressButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
 
             fileNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-            fileNameLabel.heightAnchor.constraint(equalToConstant: 20),
             fileNameLabel.leadingAnchor.constraint(equalTo: progressButton.trailingAnchor, constant: 8),
             fileNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
 
-            fileTypeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
-            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
-            fileTypeLabel.heightAnchor.constraint(equalToConstant: 20),
+            fileSizeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
+            fileSizeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor),
 
-            fileSizeLabel.leadingAnchor.constraint(equalTo: fileTypeLabel.trailingAnchor),
-            fileSizeLabel.topAnchor.constraint(equalTo: fileTypeLabel.topAnchor),
-            fileSizeLabel.heightAnchor.constraint(equalToConstant: 20),
-            fileSizeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
+            fileTypeLabel.leadingAnchor.constraint(equalTo: fileSizeLabel.trailingAnchor, constant: 8),
+            fileTypeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
 
             playerProgress.widthAnchor.constraint(greaterThanOrEqualToConstant: 128),
             playerProgress.heightAnchor.constraint(equalToConstant: 3),
@@ -123,8 +121,7 @@ final class MessageAudioView: UIView {
             timeLabel.leadingAnchor.constraint(equalTo: playerProgress.leadingAnchor),
             timeLabel.topAnchor.constraint(equalTo: playerProgress.bottomAnchor, constant: 4),
             timeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
-            timeLabel.heightAnchor.constraint(equalToConstant: 20),
-
+            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
         ])
     }
 
@@ -138,7 +135,8 @@ final class MessageAudioView: UIView {
         updateProgress(viewModel: viewModel)
 
         fileSizeLabel.text = viewModel.calMessage.computedFileSize
-        fileNameLabel.text = viewModel.calMessage.fileName
+        fileNameLabel.text = "Test file name"
+//        fileNameLabel.text = viewModel.calMessage.fileName
         fileTypeLabel.text = viewModel.calMessage.extName
         timeLabel.text = audioTimerString()
     }

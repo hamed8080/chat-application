@@ -34,6 +34,8 @@ final class TextMessageView: UITextView {
         linkTextAttributes = [:]
         let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
         addGestureRecognizer(tap)
+        setContentHuggingPriority(.required, for: .horizontal)
+        setContentCompressionResistancePriority(.required, for: .horizontal)
         setContentHuggingPriority(.required, for: .vertical)
         setContentCompressionResistancePriority(.required, for: .vertical)
 //        widthConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
