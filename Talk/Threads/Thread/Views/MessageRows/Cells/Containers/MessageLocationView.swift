@@ -31,7 +31,9 @@ final class MessageLocationView: UIImageView {
         contentMode = .scaleAspectFill
 
         mapViewWidthConstraint = widthAnchor.constraint(equalToConstant: 0)
+        mapViewWidthConstraint.identifier = "mapViewWidthConstraintMessageLocationView"
         mapViewHeightConstraint = heightAnchor.constraint(equalToConstant: 0)
+        mapViewHeightConstraint.identifier = "mapViewHeightConstraintMessageLocationView"
 
         let tapGesture = UITapGestureRecognizer()
         tapGesture.addTarget(self, action: #selector(onTap))

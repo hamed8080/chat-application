@@ -25,7 +25,6 @@ final class ParticipantsEventCell: UITableViewCell {
 
     private func configureView() {
         label.translatesAutoresizingMaskIntoConstraints = false
-
         label.font = UIFont.uiiransansBody
         label.numberOfLines = 0
         label.textColor = Color.App.textPrimaryUIColor
@@ -33,6 +32,7 @@ final class ParticipantsEventCell: UITableViewCell {
         label.layer.masksToBounds = true
         label.textAlignment = .center
         label.backgroundColor = .black.withAlphaComponent(0.4)
+        label.accessibilityIdentifier = "labelParticipantsEventCell"
 
         contentView.addSubview(label)
 

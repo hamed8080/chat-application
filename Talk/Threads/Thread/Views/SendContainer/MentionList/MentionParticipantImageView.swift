@@ -28,10 +28,13 @@ public final class MentionParticipantImageView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         layer.masksToBounds = true
 
-        participantLabel.translatesAutoresizingMaskIntoConstraints = false
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
         imageIconView.contentMode = .scaleAspectFill
+        imageIconView.accessibilityIdentifier = "imageIconViewMentionParticipantImageView"
+
+        participantLabel.translatesAutoresizingMaskIntoConstraints = false
         participantLabel.textAlignment = .center
+        participantLabel.accessibilityIdentifier = "participantLabelMentionParticipantImageView"
         backgroundColor = Color.App.bgIconUIColor
 
         addSubview(participantLabel)

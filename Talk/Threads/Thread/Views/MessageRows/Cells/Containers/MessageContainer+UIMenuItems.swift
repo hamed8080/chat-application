@@ -1,5 +1,5 @@
 //
-//  MessageContainer+UIMenuItems.swift
+//  MessageContainerStackView+UIMenuItems.swift
 //  Talk
 //
 //  Created by hamed on 6/24/24.
@@ -16,7 +16,7 @@ import SwiftUI
 import Photos
 
 //MARK: Action menus
-extension MessageContainer {
+extension MessageContainerStackView {
 
     public func menu(model: ActionModel) -> UIMenu {
         let message: any HistoryMessageProtocol = model.message

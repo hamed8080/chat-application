@@ -29,6 +29,8 @@ final class UnsentMessageView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         btnCancel.translatesAutoresizingMaskIntoConstraints = false
         btnResend.translatesAutoresizingMaskIntoConstraints = false
+        btnCancel.accessibilityIdentifier = "btnCancelUnsentMessageView"
+        btnResend.accessibilityIdentifier = "btnResendUnsentMessageView"
 
         btnCancel.setTitle("General.cancel".localized(), for: .normal)
         btnResend.setTitle("Messages.resend".localized(), for: .normal)
@@ -37,6 +39,7 @@ final class UnsentMessageView: UIView {
         addSubview(btnResend)
 
         heightConstraint = heightAnchor.constraint(equalToConstant: 0)
+        heightConstraint?.identifier = "UnsentMessageView"
 
         NSLayoutConstraint.activate([
             heightConstraint!,

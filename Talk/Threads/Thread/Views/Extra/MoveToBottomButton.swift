@@ -43,6 +43,7 @@ public final class MoveToBottomButton: UIButton {
         imgCenter.translatesAutoresizingMaskIntoConstraints = false
         imgCenter.contentMode = .scaleAspectFit
         imgCenter.tintColor = Color.App.accentUIColor
+        imgCenter.accessibilityIdentifier = "imgCenterMoveToBottomButton"
         addSubview(imgCenter)
 
         lblUnreadCount.translatesAutoresizingMaskIntoConstraints = false
@@ -52,6 +53,7 @@ public final class MoveToBottomButton: UIButton {
         lblUnreadCount.layer.cornerRadius = 12
         lblUnreadCount.textAlignment = .center
         lblUnreadCount.numberOfLines = 1
+        lblUnreadCount.accessibilityIdentifier = "lblUnreadCountMoveToBottomButton"
 
         addSubview(lblUnreadCount)
 

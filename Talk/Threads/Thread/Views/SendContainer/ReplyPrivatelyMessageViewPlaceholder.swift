@@ -37,16 +37,19 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
         imageReply.imageView.image = UIImage(systemName: "arrow.turn.up.left")
         imageReply.imageView.contentMode = .scaleAspectFit
         imageReply.imageView.tintColor = Color.App.accentUIColor
+        imageReply.accessibilityIdentifier = "imageReplyReplyPrivatelyMessagePlaceholderView"
         addArrangedSubview(imageReply)
 
         let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.spacing = 0
         vStack.alignment = .leading
+        vStack.accessibilityIdentifier = "vStackReplyPrivatelyMessagePlaceholderView"
 
         nameLabel.font = UIFont.uiiransansBody
         nameLabel.textColor = Color.App.accentUIColor
         nameLabel.numberOfLines = 1
+        nameLabel.accessibilityIdentifier = "nameLabelPrivatelyMessagePlaceholderView"
         vStack.addArrangedSubview(nameLabel)
 
         messageLabel.font = UIFont.uiiransansCaption2
@@ -57,6 +60,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
         addArrangedSubview(vStack)
 
         let closeButton = CloseButtonView()
+        closeButton.accessibilityIdentifier = "closeButtonPrivatelyMessagePlaceholderView"
         closeButton.action = { [weak self] in
             self?.close()
         }

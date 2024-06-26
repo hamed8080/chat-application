@@ -31,20 +31,21 @@ public final class AttchmentButton: UIStackView {
     }
 
     private func configureViews() {
-        imageContainer.translatesAutoresizingMaskIntoConstraints = false
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .vertical
         spacing = 4
         isUserInteractionEnabled = true
 
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = traitCollection.userInterfaceStyle == .dark ? Color.App.whiteUIColor : Color.App.accentUIColor
+        imageView.accessibilityIdentifier = "imageViewAttchmentButton"
 
+        imageContainer.translatesAutoresizingMaskIntoConstraints = false
         imageContainer.layer.borderColor = Color.App.textSecondaryUIColor?.withAlphaComponent(0.5).cgColor
         imageContainer.layer.borderWidth = 1
         imageContainer.layer.masksToBounds = true
         imageContainer.layer.cornerRadius = 24
+        imageContainer.accessibilityIdentifier = "imageContainerAttchmentButton"
         imageContainer.addSubview(imageView)
 
         label.textColor = Color.App.textSecondaryUIColor
@@ -52,11 +53,14 @@ public final class AttchmentButton: UIStackView {
         label.textAlignment = .center
         label.numberOfLines = 1
         label.adjustsFontSizeToFitWidth = true
+        label.accessibilityIdentifier = "labelAttchmentButton"
 
         addArrangedSubviews([imageContainer, label])
 
         imageContainerWidthConstraint = imageContainer.widthAnchor.constraint(equalToConstant: 66)
+        imageContainerWidthConstraint.identifier = "imageContainerWidthConstraintAttchmentButton"
         imageContainerHeightConstraint = imageContainer.heightAnchor.constraint(equalToConstant: 66)
+        imageContainerHeightConstraint.identifier = "imageContainerHeightConstraintAttchmentButton"
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 24),
             imageView.heightAnchor.constraint(equalToConstant: 24),

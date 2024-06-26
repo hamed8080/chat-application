@@ -44,30 +44,42 @@ final class MessageFileView: UIStackView {
         progressButton.translatesAutoresizingMaskIntoConstraints = false
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         progressButton.isUserInteractionEnabled = true
+        progressButton.accessibilityIdentifier = "progressButtonMessageFileView"
         addArrangedSubview(progressButton)
 
         let typeSizeHStack = UIStackView()
+        typeSizeHStack.translatesAutoresizingMaskIntoConstraints = false
         typeSizeHStack.axis = .horizontal
         typeSizeHStack.spacing = 4
+        typeSizeHStack.accessibilityIdentifier = "typeSizeHStackMessageFileView"
+
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
+        fileTypeLabel.accessibilityIdentifier = "fileTypeLabelMessageFileView"
         typeSizeHStack.addArrangedSubview(fileTypeLabel)
 
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageFileView"
         typeSizeHStack.addArrangedSubview(fileSizeLabel)
 
+        vStack.translatesAutoresizingMaskIntoConstraints = false
         vStack.axis = .vertical
         vStack.alignment = .leading
         vStack.spacing = 4
+        vStack.accessibilityIdentifier = "vStackMessageFileView"
 
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
         fileNameLabel.textColor = Color.App.textPrimaryUIColor
         fileNameLabel.numberOfLines = 1
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageFileView"
 
         vStack.addArrangedSubview(fileNameLabel)
         vStack.addArrangedSubview(typeSizeHStack)

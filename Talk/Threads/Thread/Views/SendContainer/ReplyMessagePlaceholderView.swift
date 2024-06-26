@@ -37,14 +37,17 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         vStack.axis = .vertical
         vStack.spacing = 0
         vStack.alignment = .leading
+        vStack.accessibilityIdentifier = "vStackReplyMessagePlaceholderView"
 
         nameLabel.font = UIFont.uiiransansBody
         nameLabel.textColor = Color.App.accentUIColor
         nameLabel.numberOfLines = 1
+        nameLabel.accessibilityIdentifier = "nameLabelReplyMessagePlaceholderView"
 
         messageLabel.font = UIFont.uiiransansCaption2
         messageLabel.textColor = Color.App.textPlaceholderUIColor
         messageLabel.numberOfLines = 2
+        messageLabel.accessibilityIdentifier = "messageLabelReplyMessagePlaceholderView"
 
         vStack.addArrangedSubview(nameLabel)
         vStack.addArrangedSubview(messageLabel)
@@ -54,8 +57,10 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         imageReply.imageView.image = UIImage(systemName: "arrow.turn.up.left")
         imageReply.imageView.tintColor = Color.App.accentUIColor
         imageReply.imageView.contentMode = .scaleAspectFit
+        imageReply.accessibilityIdentifier = "imageReplyReplyMessagePlaceholderView"
 
         let closeButton = CloseButtonView()
+        closeButton.accessibilityIdentifier = "closeButtonReplyMessagePlaceholderView"
         closeButton.action = { [weak self] in
             self?.close()
         }

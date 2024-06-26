@@ -34,6 +34,7 @@ class UIReactionsPickerScrollView: UIView {
 
         let blurEffect = UIBlurEffect(style: .systemUltraThinMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
+        effectView.accessibilityIdentifier = "effectViewUIReactionsPickerScrollView"
         addSubview(effectView)
         effectView.translatesAutoresizingMaskIntoConstraints = false
         effectView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
@@ -42,6 +43,7 @@ class UIReactionsPickerScrollView: UIView {
         effectView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
 
         let scrollView = UIScrollView()
+        effectView.accessibilityIdentifier = "scrollViewUIReactionsPickerScrollView"
         scrollView.showsHorizontalScrollIndicator = false
         addSubview(scrollView)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -56,6 +58,7 @@ class UIReactionsPickerScrollView: UIView {
         hSatck.alignment = .leading
         hSatck.distribution = .fill
         hSatck.translatesAutoresizingMaskIntoConstraints = false
+        hSatck.accessibilityIdentifier = "hSatckUIReactionsPickerScrollView"
         scrollView.addSubview(hSatck)
         hSatck.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
         hSatck.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
@@ -66,6 +69,7 @@ class UIReactionsPickerScrollView: UIView {
             let button = UIImageButton(imagePadding: .init(all: 2))
             button.imageView.image = image(emoji: sticker.emoji, size: size)
             button.imageView.contentMode = .scaleAspectFit
+            button.accessibilityIdentifier = "button\(sticker.id)UIReactionsPickerScrollView"
             button.action = { [weak self] in
                 guard let self = self else { return }
                 if let messageId = viewModel?.message.id {

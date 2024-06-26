@@ -42,8 +42,23 @@ public final class PickerButtonsView: UIStackView {
         distribution = .equalCentering
         layoutMargins = .init(horizontal: 8)
         isLayoutMarginsRelativeArrangement = true
-        let leadingSpacer = UIView(frame: .init(x: 0, y: 0, width: 66, height: 66))
-        let trailingSpacer = UIView(frame: .init(x: 0, y: 0, width: 66, height: 66))
+        let leadingSpacer = UIView()
+        leadingSpacer.translatesAutoresizingMaskIntoConstraints = false
+        leadingSpacer.accessibilityIdentifier = "leadingSpacerPickerButtonsView"
+        let trailingSpacer = UIView()
+        trailingSpacer.translatesAutoresizingMaskIntoConstraints = false
+        trailingSpacer.accessibilityIdentifier = "trailingSpacerPickerButtonsView"
+
+        NSLayoutConstraint.activate([
+            leadingSpacer.widthAnchor.constraint(equalToConstant: 66),
+            leadingSpacer.heightAnchor.constraint(equalToConstant: 66),
+            trailingSpacer.widthAnchor.constraint(equalToConstant: 66),
+            trailingSpacer.heightAnchor.constraint(equalToConstant: 66),
+        ])
+
+        btnGallery.accessibilityIdentifier = "btnGalleryPickerButtonsView"
+        btnFile.accessibilityIdentifier = "btnFilePickerButtonsView"
+        btnLocation.accessibilityIdentifier = "btnLocationPickerButtonsView"
 
         addArrangedSubviews([leadingSpacer, btnGallery, btnFile, btnLocation, trailingSpacer])
     }

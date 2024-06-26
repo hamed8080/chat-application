@@ -40,6 +40,7 @@ final class MessageImageView: UIImageView {
         contentMode = .scaleAspectFit
 
         progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.accessibilityIdentifier = "progressViewMessageImageView"
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         effectView = UIVisualEffectView(effect: blurEffect)
@@ -47,12 +48,15 @@ final class MessageImageView: UIImageView {
         effectView.frame = bounds
         effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         effectView.isUserInteractionEnabled = false
+        effectView.accessibilityIdentifier = "effectViewMessageImageView"
         addSubview(effectView)
         bringSubviewToFront(effectView)
 
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageImageView"
 
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
@@ -64,6 +68,7 @@ final class MessageImageView: UIImageView {
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layer.cornerRadius = 18
         stack.isUserInteractionEnabled = false
+        stack.accessibilityIdentifier = "stackMessageImageView"
 
         isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
@@ -72,13 +77,21 @@ final class MessageImageView: UIImageView {
         addSubview(stack)
 
         widthConstraint = widthAnchor.constraint(equalToConstant: 0)
+        widthConstraint.identifier = "widthConstraintMessageImageView"
         heightConstraint = heightAnchor.constraint(equalToConstant: 0)
+        heightConstraint.identifier = "heightConstraintMessageImageView"
 
         NSLayoutConstraint.activate([
             widthConstraint,
             heightConstraint,
+            
+            effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            effectView.topAnchor.constraint(equalTo: topAnchor),
+            effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
             effectView.widthAnchor.constraint(equalTo: widthAnchor),
             effectView.heightAnchor.constraint(equalTo: heightAnchor),
+
             stack.centerXAnchor.constraint(equalTo: centerXAnchor),
             stack.centerYAnchor.constraint(equalTo: centerYAnchor),
             progressView.widthAnchor.constraint(equalToConstant: 32),
@@ -108,17 +121,11 @@ final class MessageImageView: UIImageView {
             fileSizeLabel.text = viewModel.calMessage.computedFileSize
         }
 
-        if !viewModel.fileState.isUploading, viewModel.calMessage.rowType.isImage, state != .downloading, state != .completed && state != .thumbnailDownloaing, state != .thumbnail {
+        if !viewModel.fileState.isUploading, state != .downloading, state != .completed && state != .thumbnailDownloaing, state != .thumbnail {
             viewModel.onTap() // Download thumbnail
         }
-
-        if viewModel.calMessage.rowType.isImage {
-            widthConstraint.constant = (viewModel.calMessage.sizes.imageWidth ?? 128) - 8 // -8 for parent stack view margin
-            heightConstraint.constant = viewModel.calMessage.sizes.imageHeight ?? 128
-        } else {
-            widthConstraint.constant = 0
-            heightConstraint.constant = 0
-        }
+        widthConstraint.constant = (viewModel.calMessage.sizes.imageWidth ?? 128) - 8 // -8 for parent stack view margin
+        heightConstraint.constant = viewModel.calMessage.sizes.imageHeight ?? 128
     }
 
     private func setImage(fileURL: URL) {
@@ -144,8 +151,6 @@ final class MessageImageView: UIImageView {
 
     func reset() {
         setIsHidden(true)
-        stack.setIsHidden(true)
-        effectView.setIsHidden(true)
     }
 
     public func updateProgress(viewModel: MessageRowViewModel) {

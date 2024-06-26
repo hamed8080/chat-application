@@ -39,6 +39,7 @@ public final class UnreadMenitonsButton: UIButton {
         lblAtSing.translatesAutoresizingMaskIntoConstraints = false
         lblAtSing.text = "@"
         lblAtSing.textColor = Color.App.accentUIColor
+        lblAtSing.accessibilityIdentifier = "lblAtSingUnreadMenitonsButton"
         addSubview(lblAtSing)
 
         lblUnreadMentionsCount.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +49,7 @@ public final class UnreadMenitonsButton: UIButton {
         lblUnreadMentionsCount.layer.cornerRadius = 12
         lblUnreadMentionsCount.textAlignment = .center
         lblUnreadMentionsCount.numberOfLines = 1
+        lblUnreadMentionsCount.accessibilityIdentifier = "lblUnreadMentionsCountUnreadMenitonsButton"
 
         addSubview(lblUnreadMentionsCount)
 

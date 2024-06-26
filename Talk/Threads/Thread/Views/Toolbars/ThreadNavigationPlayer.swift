@@ -40,22 +40,26 @@ class ThreadNavigationPlayer: UIView {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont.uiiransansCaption
         titleLabel.textColor = Color.App.textPrimaryUIColor
+        titleLabel.accessibilityIdentifier = "titleLabelThreadNavigationPlayer"
         addSubview(titleLabel)
 
         timerLabel.translatesAutoresizingMaskIntoConstraints = false
         timerLabel.textColor = .gray
         timerLabel.font = .uiiransansCaption2
+        timerLabel.accessibilityIdentifier = "timerLabelThreadNavigationPlayer"
         addSubview(timerLabel)
 
         progress.translatesAutoresizingMaskIntoConstraints = false
         progress.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progress.tintColor = Color.App.accentUIColor
+        progress.accessibilityIdentifier = "progressThreadNavigationPlayer"
         addSubview(progress)
 
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.tintColor = Color.App.accentUIColor
         closeButton.imageView.image = UIImage(systemName: "xmark")
         closeButton.imageView.tintColor = Color.App.textSecondaryUIColor
+        closeButton.accessibilityIdentifier = "closeButtonThreadNavigationPlayer"
         closeButton.action = { [weak self] in
             self?.close()
         }
@@ -65,6 +69,7 @@ class ThreadNavigationPlayer: UIView {
         playButton.tintColor = Color.App.accentUIColor
         playButton.imageView.image = UIImage(systemName: "play.fill")
         playButton.imageView.tintColor = Color.App.accentUIColor
+        playButton.accessibilityIdentifier = "playButtonThreadNavigationPlayer"
         playButton.action = { [weak self] in
             self?.toggle()
         }

@@ -37,10 +37,12 @@ public final class MentionTableView: UITableView {
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
+        effectView.accessibilityIdentifier = "effectViewMentionTableView"
         effectView.translatesAutoresizingMaskIntoConstraints = false
         backgroundView = effectView
         translatesAutoresizingMaskIntoConstraints = false
         heightConstraint = heightAnchor.constraint(equalToConstant: 0)
+        heightConstraint.identifier = "heightConstraintMentionTableView"
         NSLayoutConstraint.activate([
             heightConstraint,
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),

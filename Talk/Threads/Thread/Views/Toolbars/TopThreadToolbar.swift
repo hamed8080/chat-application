@@ -40,6 +40,7 @@ public final class TopThreadToolbar: UIStackView {
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
+        effectView.accessibilityIdentifier = "effectViewTopThreadToolbar"
         effectView.translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(effectView)
@@ -57,6 +58,7 @@ public final class TopThreadToolbar: UIStackView {
 
     private func configureNavBarView() {
         navBarView.translatesAutoresizingMaskIntoConstraints = false
+        navBarView.accessibilityIdentifier = "navBarViewTopThreadToolbar"
         addArrangedSubview(navBarView)
         NSLayoutConstraint.activate([
             navBarView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
@@ -65,12 +67,14 @@ public final class TopThreadToolbar: UIStackView {
     }
 
     private func configurePinMessageView() {
+        pinMessageView?.accessibilityIdentifier = "pinMessageViewTopThreadToolbar"
         if let pinMessageView = pinMessageView {
             addArrangedSubview(pinMessageView)
         }
     }
 
     private func configurePlayerView() {
+        navigationPlayerView?.accessibilityIdentifier = "navigationPlayerViewTopThreadToolbar"
         if let navigationPlayerView = navigationPlayerView {
             addArrangedSubview(navigationPlayerView)
         }

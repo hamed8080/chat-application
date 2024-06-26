@@ -50,14 +50,17 @@ public final class MainSendButtons: UIStackView {
         btnToggleAttachmentButtons.layer.masksToBounds = true
         btnToggleAttachmentButtons.layer.cornerRadius = MainSendButtons.initSize / 2
         btnToggleAttachmentButtons.backgroundColor = Color.App.bgSendInputUIColor
+        btnToggleAttachmentButtons.accessibilityIdentifier = "btnToggleAttachmentButtonsMainSendButtons"
 
         btnMic.translatesAutoresizingMaskIntoConstraints = false
         btnMic.imageView.contentMode = .scaleAspectFit
         btnMic.tintColor = Color.App.textSecondaryUIColor
+        btnMic.accessibilityIdentifier = "btnMicMainSendButtons"
 
         btnCamera.translatesAutoresizingMaskIntoConstraints = false
         btnCamera.imageView.contentMode = .scaleAspectFit
         btnCamera.tintColor = Color.App.textSecondaryUIColor
+        btnCamera.accessibilityIdentifier = "btnCameraMainSendButtons"
         btnCamera.setIsHidden(true)
 
         btnSend.translatesAutoresizingMaskIntoConstraints = false
@@ -66,14 +69,11 @@ public final class MainSendButtons: UIStackView {
         btnSend.layer.masksToBounds = true
         btnSend.layer.cornerRadius = (MainSendButtons.initSize - 4) / 2
         btnSend.layer.backgroundColor = Color.App.accentUIColor?.cgColor
+        btnSend.accessibilityIdentifier = "btnSendMainSendButtons"
         btnSend.setIsHidden(true)
         btnSend.action = { [weak self] in
             self?.onBtnSendTapped()
         }
-
-        btnEmoji.translatesAutoresizingMaskIntoConstraints = false
-        btnEmoji.imageView.tintColor = Color.App.redUIColor
-        btnEmoji.setIsHidden(true)
 
         let hStack = UIStackView()
         hStack.translatesAutoresizingMaskIntoConstraints = false
@@ -83,14 +83,20 @@ public final class MainSendButtons: UIStackView {
         hStack.layer.cornerRadius = MainSendButtons.initSize / 2
         hStack.backgroundColor = Color.App.bgSendInputUIColor
         hStack.alignment = .bottom
+        hStack.accessibilityIdentifier = "hStackMainSendButtons"
         hStack.layoutMargins = .init(top: -4, left: 8, bottom: 0, right: 8)//-4 to move textfield higher to make the cursor center in the textfield.
         hStack.isLayoutMarginsRelativeArrangement = true
 
         registerTextChange()
         multilineTextField.translatesAutoresizingMaskIntoConstraints = false
+        multilineTextField.accessibilityIdentifier = "multilineTextFieldMainSendButtons"
+        multilineTextField.setContentCompressionResistancePriority(.required, for: .horizontal)
         hStack.addArrangedSubview(multilineTextField)
 
         btnEmoji.translatesAutoresizingMaskIntoConstraints = false
+        btnEmoji.imageView.tintColor = Color.App.redUIColor
+        btnEmoji.accessibilityIdentifier = "btnEmojiMainSendButtons"
+        btnEmoji.setIsHidden(true)
         hStack.addArrangedSubview(btnEmoji)
 
         addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera, btnSend])

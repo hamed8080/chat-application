@@ -1,5 +1,5 @@
 //
-//  MessageContainer+ContextMenu.swift
+//  MessageContainerStackView+ContextMenu.swift
 //  Talk
 //
 //  Created by hamed on 6/24/24.
@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import TalkViewModels
 
-extension MessageContainer: UIContextMenuInteractionDelegate {
+extension MessageContainerStackView: UIContextMenuInteractionDelegate {
     func addMenus() {
         let menu = UIContextMenuInteraction(delegate: self)
         addInteraction(menu)
@@ -42,7 +42,7 @@ extension MessageContainer: UIContextMenuInteractionDelegate {
         params.backgroundColor = .clear
         params.shadowPath = UIBezierPath()
 
-        let messageContainer = MessageContainer(frame: .zero, isMe: isMe)
+        let messageContainer = MessageContainerStackView(frame: .zero, isMe: isMe)
         messageContainer.frame = bounds
         if let viewModel = viewModel {
             messageContainer.set(viewModel)

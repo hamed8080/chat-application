@@ -32,14 +32,17 @@ public class ExpandView: UIView {
         btnClear.setTitle("General.cancel".localized(), for: .normal)
         btnClear.titleLabel?.font = UIFont.uiiransansCaption
         btnClear.setTitleColor(Color.App.redUIColor, for: .normal)
+        btnClear.accessibilityIdentifier = "btnClearExpandView"
         btnClear.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
 
         fileCountLabel.font = UIFont.uiiransansCaption
         fileCountLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileCountLabel.accessibilityIdentifier = "fileCountLabelClearExpandView"
 
         expandButton.translatesAutoresizingMaskIntoConstraints = false
         expandButton.tintColor = Color.App.iconSecondaryUIColor
         expandButton.contentMode = .scaleAspectFit
+        expandButton.accessibilityIdentifier = "expandButtonClearExpandView"
 
         addSubview(expandButton)
         addSubview(btnClear)

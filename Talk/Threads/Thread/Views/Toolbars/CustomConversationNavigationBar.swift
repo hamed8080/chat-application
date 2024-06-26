@@ -43,6 +43,7 @@ public class CustomConversationNavigationBar: UIView {
         titlebutton.setTitle(viewModel?.thread.titleRTLString, for: .normal)
         titlebutton.titleLabel?.font = UIFont.uiiransansBoldBody
         titlebutton.setTitleColor(Color.App.whiteUIColor, for: .normal)
+        titlebutton.accessibilityIdentifier = "titlebuttonCustomConversationNavigationBar"
         titlebutton.addTarget(self, action: #selector(navigateToDetailView), for: .touchUpInside)
 
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -50,11 +51,13 @@ public class CustomConversationNavigationBar: UIView {
         subtitleLabel.text = subtitle
         subtitleLabel.textColor = Color.App.toolbarSecondaryTextUIColor
         subtitleLabel.font = UIFont.uiiransansFootnote
+        subtitleLabel.accessibilityIdentifier = "subtitleLabelCustomConversationNavigationBar"
         subtitleLabel.setIsHidden(subtitle == nil || subtitle?.isEmpty == true)
 
         let isSelfThread = viewModel?.thread.type == .selfThread
         if isSelfThread {
             threadImageButton = UIImageButton(imagePadding: .init(all: 8))
+            threadImageButton.accessibilityIdentifier = "threadImageButtonCustomConversationNavigationBar"
             let startColor = UIColor(red: 255/255, green: 145/255, blue: 98/255, alpha: 1.0)
             let endColor = UIColor(red: 255/255, green: 90/255, blue: 113/255, alpha: 1.0)
             gradientLayer.colors = [startColor.cgColor, endColor.cgColor]
@@ -64,6 +67,7 @@ public class CustomConversationNavigationBar: UIView {
             threadImageButton.imageView.tintColor = Color.App.textPrimaryUIColor
             threadImageButton.layer.addSublayer(gradientLayer)
             threadImageButton.bringSubviewToFront(threadImageButton.imageView)
+            threadTitleSupplementary.accessibilityIdentifier = "threadTitleSupplementaryCustomConversationNavigationBar"
             threadTitleSupplementary.setIsHidden(true)
         }
         threadImageButton.translatesAutoresizingMaskIntoConstraints = false
@@ -72,6 +76,7 @@ public class CustomConversationNavigationBar: UIView {
         threadImageButton.imageView.layer.cornerRadius = 8
         threadImageButton.imageView.layer.masksToBounds = true
         threadImageButton.imageView.contentMode  = .scaleAspectFill
+        threadImageButton.accessibilityIdentifier = "threadImageButtonCustomConversationNavigationBar"
         threadImageButton.action = { [weak self] in
             self?.navigateToDetailView()
         }
@@ -79,11 +84,13 @@ public class CustomConversationNavigationBar: UIView {
         threadTitleSupplementary.translatesAutoresizingMaskIntoConstraints = false
         threadTitleSupplementary.font = UIFont.uiiransansCaption3
         threadTitleSupplementary.textColor = .white
+        threadTitleSupplementary.accessibilityIdentifier = "threadTitleSupplementaryCustomConversationNavigationBar"
 
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.imageView.image = UIImage(systemName: "chevron.backward")
         backButton.imageView.tintColor = Color.App.toolbarButtonUIColor
         backButton.imageView.contentMode = .scaleAspectFit
+        backButton.accessibilityIdentifier = "backButtonCustomConversationNavigationBar"
         backButton.action = { [weak self] in
             (self?.viewModel?.delegate as? UIViewController)?.navigationController?.popViewController(animated: true)
         }
@@ -91,6 +98,7 @@ public class CustomConversationNavigationBar: UIView {
         rightTitleImageView.translatesAutoresizingMaskIntoConstraints = false
         rightTitleImageView.image = UIImage(named: "ic_approved")
         rightTitleImageView.contentMode = .scaleAspectFit
+        rightTitleImageView.accessibilityIdentifier = "rightTitleImageViewCustomConversationNavigationBar"
         rightTitleImageView.setIsHidden(viewModel?.thread.isTalk == false)
 
         addSubview(backButton)
@@ -101,6 +109,7 @@ public class CustomConversationNavigationBar: UIView {
         addSubview(subtitleLabel)
 
         centerYTitleConstraint = titlebutton.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0)
+        centerYTitleConstraint.identifier = "centerYTitleConstraintCustomConversationNavigationBar"
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: 46),
 

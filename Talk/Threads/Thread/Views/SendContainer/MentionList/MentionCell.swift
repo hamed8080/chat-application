@@ -34,12 +34,15 @@ final class MentionCell: UITableViewCell {
         hStack.alignment = .center
         hStack.layoutMargins = .init(all: 8)
         hStack.isLayoutMarginsRelativeArrangement = true
+        hStack.accessibilityIdentifier = "hStackMentionCell"
 
         lblName.font = .uiiransansCaption2
         lblName.textColor = Color.App.textPrimaryUIColor
         lblName.numberOfLines = 1
+        lblName.accessibilityIdentifier = "lblNameMentionCell"
 
         imageParticipant.translatesAutoresizingMaskIntoConstraints = false
+        imageParticipant.accessibilityIdentifier = "imageParticipantMentionCell"
 
         hStack.addArrangedSubview(imageParticipant)
         hStack.addArrangedSubview(lblName)

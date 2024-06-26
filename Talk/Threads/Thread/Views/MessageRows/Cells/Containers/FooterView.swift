@@ -42,23 +42,29 @@ final class FooterView: UIStackView {
         pinImage.translatesAutoresizingMaskIntoConstraints = false
         pinImage.tintColor = Color.App.accentUIColor
         pinImage.contentMode = .scaleAspectFit
+        pinImage.accessibilityIdentifier = "pinImageFooterView"
         addArrangedSubview(pinImage)
 
         statusImage.translatesAutoresizingMaskIntoConstraints = false
         statusImage.contentMode = .scaleAspectFit
+        statusImage.accessibilityIdentifier = "statusImageFooterView"
         addArrangedSubview(statusImage)
 
         timelabel.translatesAutoresizingMaskIntoConstraints = false
         timelabel.font = UIFont.uiiransansBoldCaption2
         timelabel.textColor = Color.App.textPrimaryUIColor?.withAlphaComponent(0.5)
+        timelabel.accessibilityIdentifier = "timelabelFooterView"
         addArrangedSubview(timelabel)
 
         editedLabel.translatesAutoresizingMaskIntoConstraints = false
         editedLabel.font = UIFont.uiiransansCaption2
         editedLabel.textColor = Color.App.textSecondaryUIColor
         editedLabel.text = FooterView.staticEditString
+        editedLabel.accessibilityIdentifier = "editedLabelFooterView"
         addArrangedSubview(editedLabel)
+        
         statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: 12)
+        statusImageWidthConstriant.identifier = "statusImageWidthConstriantFooterView"
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: 22),
             statusImage.heightAnchor.constraint(equalTo: heightAnchor),

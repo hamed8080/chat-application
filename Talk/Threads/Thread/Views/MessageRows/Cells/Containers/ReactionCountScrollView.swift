@@ -35,6 +35,7 @@ final class ReactionCountScrollView: UIScrollView {
         stack.alignment = .fill
         stack.distribution = .equalSpacing
         stack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+        stack.accessibilityIdentifier = "stackReactionCountScrollView"
         addSubview(stack)
 
         NSLayoutConstraint.activate([
@@ -43,6 +44,7 @@ final class ReactionCountScrollView: UIScrollView {
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: trailingAnchor),
             stack.topAnchor.constraint(equalTo: topAnchor),
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor),
             stack.heightAnchor.constraint(equalTo: heightAnchor),
         ])
     }
@@ -74,7 +76,7 @@ final class ReactionCountRowView: UIView {
     private let reactionCountLabel = UILabel()
     let row: ReactionRowsCalculated.Row
     weak var viewModel: MessageRowViewModel?
-    private var topConstraint: NSLayoutConstraint!
+    private var centerYConstraint: NSLayoutConstraint!
 
     init(frame: CGRect, row: ReactionRowsCalculated.Row) {
         self.row = row
@@ -96,21 +98,24 @@ final class ReactionCountRowView: UIView {
         reactionEmoji.translatesAutoresizingMaskIntoConstraints = false
         reactionEmoji.font = .systemFont(ofSize: 14)
         reactionEmoji.text = row.emoji
+        reactionEmoji.textAlignment = .center
+        reactionEmoji.accessibilityIdentifier = "reactionEmoji"
         addSubview(reactionEmoji)
 
         reactionCountLabel.translatesAutoresizingMaskIntoConstraints = false
         reactionCountLabel.font = UIFont.uiiransansBody
         reactionCountLabel.textColor = Color.App.textPrimaryUIColor
         reactionCountLabel.text = row.countText
+        reactionCountLabel.accessibilityIdentifier = "reactionCountLabel"
         addSubview(reactionCountLabel)
 
-        topConstraint = reactionEmoji.topAnchor.constraint(equalTo: topAnchor)
+        centerYConstraint = reactionEmoji.centerYAnchor.constraint(equalTo: centerYAnchor)
+        centerYConstraint.identifier = "reactionEmojicenterYConstraint"
         NSLayoutConstraint.activate([
             widthAnchor.constraint(greaterThanOrEqualToConstant: 42),
             reactionEmoji.widthAnchor.constraint(equalToConstant: 20),
             reactionEmoji.heightAnchor.constraint(equalToConstant: 20),
-            topConstraint,
-            reactionEmoji.bottomAnchor.constraint(equalTo: bottomAnchor),
+            centerYConstraint,
             reactionEmoji.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
 
             reactionCountLabel.leadingAnchor.constraint(equalTo: reactionEmoji.trailingAnchor, constant: 4),
@@ -121,7 +126,7 @@ final class ReactionCountRowView: UIView {
     }
 
     func prepareContextMenu() {
-        topConstraint.constant = 5
+        centerYConstraint.constant = 16
     }
 }
 

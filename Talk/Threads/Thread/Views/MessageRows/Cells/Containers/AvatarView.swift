@@ -38,6 +38,7 @@ final class AvatarView: UIImageView {
         label.backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
         label.layer.cornerRadius = MessageRowSizes.avatarSize / 2
         label.layer.masksToBounds = true
+        label.accessibilityIdentifier = "labelAvatarView"
         addSubview(label)
         
         NSLayoutConstraint.activate([
@@ -55,7 +56,6 @@ final class AvatarView: UIImageView {
         let avManager = viewModel.threadVM?.avatarManager
         backgroundColor = viewModel.calMessage.avatarColor
         label.setIsHidden(true) // reset
-        label.text = viewModel.calMessage.avatarSplitedCharaters
         if hiddenView(viewModel) {
             backgroundColor = nil
             setIsHidden(true)
@@ -68,6 +68,7 @@ final class AvatarView: UIImageView {
             } else {
                 image = nil
                 label.isHidden = false
+                label.text = viewModel.calMessage.avatarSplitedCharaters
             }
             isUserInteractionEnabled = true
         } else if !viewModel.calMessage.isLastMessageOfTheUser {

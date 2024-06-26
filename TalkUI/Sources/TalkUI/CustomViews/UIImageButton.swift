@@ -22,6 +22,7 @@ public final class UIImageButton: UIView {
 
     private func configureView(imagePadding: UIEdgeInsets) {
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.accessibilityIdentifier = "imageViewUIImageButton"
         addSubview(imageView)
 
         isUserInteractionEnabled = true

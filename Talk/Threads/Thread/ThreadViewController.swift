@@ -87,6 +87,7 @@ extension ThreadViewController {
         }
 
         sendContainerBottomConstraint = sendContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        sendContainerBottomConstraint?.identifier = "sendContainerBottomConstraintThreadViewController"
         NSLayoutConstraint.activate([
             moveToBottom.widthAnchor.constraint(equalToConstant: 40),
             moveToBottom.heightAnchor.constraint(equalToConstant: 40),
@@ -128,6 +129,7 @@ extension ThreadViewController {
         tableView.sectionHeaderTopPadding = 0
         ConversationHistoryCellFactory.registerCells(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.accessibilityIdentifier = "tableViewThreadViewController"
         view.addSubview(tableView)
 
         let imageView = UIImageView(image: UIImage(named: "chat_bg"))
@@ -142,7 +144,9 @@ extension ThreadViewController {
 
     private func configureSendContainer() {
         sendContainer.translatesAutoresizingMaskIntoConstraints = false
+        sendContainer.accessibilityIdentifier = "sendContainerThreadViewController"
         dimView.translatesAutoresizingMaskIntoConstraints = false
+        dimView.accessibilityIdentifier = "dimViewThreadViewController"
         dimView.viewModel = viewModel
         view.addSubview(sendContainer)
         view.addSubview(dimView)
@@ -166,13 +170,19 @@ extension ThreadViewController {
         vStackOverlayButtons.translatesAutoresizingMaskIntoConstraints = false
         vStackOverlayButtons.axis = .vertical
         vStackOverlayButtons.spacing = 24
+        vStackOverlayButtons.accessibilityIdentifier = "vStackOverlayButtonsThreadViewController"
+
+        moveToBottom.accessibilityIdentifier = "moveToBottomThreadViewController"
         vStackOverlayButtons.addArrangedSubview(moveToBottom)
+
+        unreadMentionsButton.accessibilityIdentifier = "unreadMentionsButtonThreadViewController"
         vStackOverlayButtons.addArrangedSubview(unreadMentionsButton)
         view.addSubview(vStackOverlayButtons)
     }
 
     private func configureEmptyThreadView() {
         emptyThreadView.translatesAutoresizingMaskIntoConstraints = false
+        emptyThreadView.accessibilityIdentifier = "emptyThreadViewThreadViewController"
         view.addSubview(emptyThreadView)
         emptyThreadView.setIsHidden(true)
         NSLayoutConstraint.activate([
@@ -185,10 +195,15 @@ extension ThreadViewController {
 
     private func configureLoadings() {
         topLoading.translatesAutoresizingMaskIntoConstraints = false
-        centerLoading.translatesAutoresizingMaskIntoConstraints = false
-        bottomLoading.translatesAutoresizingMaskIntoConstraints = false
+        topLoading.accessibilityIdentifier = "topLoadingThreadViewController"
         tableView.addSubview(topLoading)
+
+        centerLoading.translatesAutoresizingMaskIntoConstraints = false
+        centerLoading.accessibilityIdentifier = "centerLoadingThreadViewController"
         view.addSubview(centerLoading)
+
+        bottomLoading.translatesAutoresizingMaskIntoConstraints = false
+        bottomLoading.accessibilityIdentifier = "bottomLoadingThreadViewController"
         tableView.addSubview(bottomLoading)
 
         topLoading.animate(false)

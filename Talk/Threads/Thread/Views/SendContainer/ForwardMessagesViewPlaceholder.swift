@@ -42,14 +42,17 @@ public final class ForwardMessagePlaceholderView: UIStackView {
         vStack.axis = .vertical
         vStack.spacing = 0
         vStack.alignment = .leading
+        vStack.accessibilityIdentifier = "vStackForwardMessagePlaceholderView"
 
         staticForwardLabel.textColor = Color.App.accentUIColor
         staticForwardLabel.numberOfLines = 1
         staticForwardLabel.font = UIFont.uiiransansCaption
+        staticForwardLabel.accessibilityIdentifier = "staticForwardLabelForwardMessagePlaceholderView"
 
         messageLabel.font = UIFont.uiiransansCaption2
         messageLabel.textColor = Color.App.textPlaceholderUIColor
         messageLabel.numberOfLines = 2
+        messageLabel.accessibilityIdentifier = "messageLabelForwardMessagePlaceholderView"
 
         vStack.addArrangedSubview(staticForwardLabel)
         vStack.addArrangedSubview(messageLabel)
@@ -59,13 +62,16 @@ public final class ForwardMessagePlaceholderView: UIStackView {
         imageForward.imageView.image = UIImage(systemName: "arrow.turn.up.right")
         imageForward.imageView.tintColor = Color.App.accentUIColor
         imageForward.imageView.contentMode = .scaleAspectFit
+        imageForward.accessibilityIdentifier = "imageForwardForwardMessagePlaceholderView"
 
         let closeButton = CloseButtonView()
+        closeButton.accessibilityIdentifier = "closeButtonForwardMessagePlaceholderView"
         closeButton.action = { [weak self] in
             self?.close()
         }
 
         let spacer = UIView(frame: .init(x: 0, y: 0, width: CGFloat.greatestFiniteMagnitude, height: 0))
+        spacer.accessibilityIdentifier = "spacerForwardMessagePlaceholderView"
         addArrangedSubview(imageForward)
         addArrangedSubview(vStack)
         addArrangedSubview(spacer)

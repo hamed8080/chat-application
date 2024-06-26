@@ -46,6 +46,7 @@ public final class CircleProgressButton: UIButton {
         imgCenter.translatesAutoresizingMaskIntoConstraints = false
         imgCenter.contentMode = .scaleAspectFit
         imgCenter.tintColor = iconTint
+        imgCenter.accessibilityIdentifier = "imgCenterCircleProgressButton"
         addSubview(imgCenter)
         layer.backgroundColor = bgColor?.cgColor
         NSLayoutConstraint.activate([

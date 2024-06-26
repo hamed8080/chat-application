@@ -12,9 +12,8 @@ import TalkUI
 import TalkViewModels
 import TalkModels
 
-final class ForwardInfoView: UIStackView {
-    private let vStack = UIStackView()
-    private let forwardStaticLebel = UILabel()
+final class ForwardInfoView: UIView {
+    private let forwardStaticLabel = UILabel()
     private let participantLabel = UILabel()
     private let bar = UIView()
     private weak var viewModel: MessageRowViewModel?
@@ -30,41 +29,36 @@ final class ForwardInfoView: UIStackView {
     }
 
     private func configureView(isMe: Bool) {
-        layoutMargins = UIEdgeInsets(all: 8)
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 6
         layer.masksToBounds = true
         backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
-        axis = .horizontal
-        spacing = 4
+        forwardStaticLabel.translatesAutoresizingMaskIntoConstraints = false
+        forwardStaticLabel.font = UIFont.uiiransansCaption3
+        forwardStaticLabel.textColor = Color.App.accentUIColor
+        forwardStaticLabel.text = ForwardInfoView.forwardFromStaticText
+        forwardStaticLabel.accessibilityIdentifier = "forwardStaticLebelForwardInfoView"
+        forwardStaticLabel.textAlignment = isMe ? .right : .left
+        addSubview(forwardStaticLabel)
 
-        vStack.axis = .vertical
-        vStack.alignment = .leading
-        vStack.spacing = 0
-        vStack.layoutMargins = .init(horizontal: 4, vertical: 8)
-        vStack.isLayoutMarginsRelativeArrangement = true
-        vStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
-
-        forwardStaticLebel.font = UIFont.uiiransansCaption3
-        forwardStaticLebel.textColor = Color.App.accentUIColor
-        forwardStaticLebel.text = ForwardInfoView.forwardFromStaticText
-
+        participantLabel.translatesAutoresizingMaskIntoConstraints = false
         participantLabel.font = UIFont.uiiransansBoldCaption2
         participantLabel.textColor = Color.App.accentUIColor
         participantLabel.numberOfLines = 1
+        participantLabel.accessibilityIdentifier = "participantLabelForwardInfoView"
+        participantLabel.backgroundColor = .green
+        participantLabel.textAlignment = isMe ? .right : .left
+        addSubview(participantLabel)
 
         bar.translatesAutoresizingMaskIntoConstraints = false
         bar.backgroundColor = Color.App.accentUIColor
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
-
-        vStack.addArrangedSubview(forwardStaticLebel)
-        vStack.addArrangedSubview(participantLabel)
-
-        addArrangedSubview(bar)
-        addArrangedSubview(vStack)
+        bar.accessibilityIdentifier = "barForwardInfoView"
+        addSubview(bar)
 
         isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(onForwardTapped))
@@ -72,6 +66,17 @@ final class ForwardInfoView: UIStackView {
 
         NSLayoutConstraint.activate([
             bar.widthAnchor.constraint(equalToConstant: 1.5),
+            bar.topAnchor.constraint(equalTo: topAnchor, constant: 2),
+            bar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+            bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0.5),
+            
+            forwardStaticLabel.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: 4),
+            forwardStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: 2),
+            forwardStaticLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+
+            participantLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            participantLabel.topAnchor.constraint(equalTo: forwardStaticLabel.bottomAnchor, constant: 2),
+            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4)
         ])
     }
 
@@ -92,5 +97,9 @@ final class ForwardInfoView: UIStackView {
 
     private func reset() {
         setIsHidden(true)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
     }
 }

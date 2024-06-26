@@ -51,6 +51,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageVideoView"
         addSubview(fileSizeLabel)
 
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -59,12 +60,14 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         fileNameLabel.textColor = Color.App.textPrimaryUIColor
         fileNameLabel.numberOfLines = 1
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
+        fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageVideoView"
         addSubview(fileNameLabel)
 
         fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
+        fileTypeLabel.accessibilityIdentifier = "fileTypeLabelMessageVideoView"
         addSubview(fileTypeLabel)
 
         playIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -72,16 +75,19 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         playIcon.contentMode = .scaleAspectFit
         playIcon.image = MessageVideoView.playIcon
         playIcon.tintColor = Color.App.whiteUIColor
+        playIcon.accessibilityIdentifier = "playIconMessageVideoView"
         addSubview(playIcon)
 
         playOverlayView.translatesAutoresizingMaskIntoConstraints = false
         playOverlayView.backgroundColor = .clear
+        playOverlayView.accessibilityIdentifier = "playOverlayViewMessageVideoView"
         let tapGesture = UITapGestureRecognizer()
         tapGesture.addTarget(self, action: #selector(onTap))
         playOverlayView.addGestureRecognizer(tapGesture)
         addSubview(playOverlayView)
 
         progressButton.translatesAutoresizingMaskIntoConstraints = false
+        progressButton.accessibilityIdentifier = "progressButtonMessageVideoView"
         addSubview(progressButton)
 
         NSLayoutConstraint.activate([

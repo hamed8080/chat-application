@@ -28,7 +28,7 @@ final class GroupParticipantNameView: UILabel {
         font = UIFont.uiiransansBoldBody
         numberOfLines = 1
         heightConstraint = heightAnchor.constraint(equalToConstant: 16)
-        heightConstraint.identifier = "GroupParticipantNameViewHeightAnchor"
+        heightConstraint.identifier = "heightConstraintGroupParticipantNameView"
         NSLayoutConstraint.activate([
             heightConstraint
         ])

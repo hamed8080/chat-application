@@ -12,8 +12,7 @@ import ChatModels
 import TalkModels
 import Combine
 
-final class MessageAudioView: UIStackView {
-    private let vStack = UIStackView()
+final class MessageAudioView: UIView {
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
@@ -39,68 +38,93 @@ final class MessageAudioView: UIStackView {
     }
 
     private func configureView(isMe: Bool) {
-        layoutMargins = .init(top: 8, left: 8, bottom: 0, right: 0)
-        isLayoutMarginsRelativeArrangement = true
+        translatesAutoresizingMaskIntoConstraints = false
         layer.cornerRadius = 5
         layer.masksToBounds = true
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
-        axis = .horizontal
-        spacing = 8
-        alignment = .top
 
-        fileSizeLabel.font = UIFont.uiiransansBoldCaption2
-        fileSizeLabel.textAlignment = .left
-        fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        progressButton.translatesAutoresizingMaskIntoConstraints = false
+        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
+        progressButton.isUserInteractionEnabled = true
+        progressButton.accessibilityIdentifier = "progressButtonMessageAudioView"
+        progressButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        addSubview(progressButton)
 
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
         fileNameLabel.textColor = Color.App.textPrimaryUIColor
         fileNameLabel.numberOfLines = 1
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
+        fileNameLabel.backgroundColor = .blue
+        fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageAudioView"
+        fileNameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        addSubview(fileNameLabel)
 
+
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
+        fileTypeLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        addSubview(fileTypeLabel)
 
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.textColor = Color.App.textPrimaryUIColor
-        timeLabel.font = UIFont.uiiransansBoldCaption
-        timeLabel.numberOfLines = 1
-        timeLabel.textAlignment = .left
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileSizeLabel.font = UIFont.uiiransansBoldCaption2
+        fileSizeLabel.textAlignment = .left
+        fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageAudioView"
+        addSubview(fileSizeLabel)
 
         playerProgress.translatesAutoresizingMaskIntoConstraints = false
         playerProgress.tintColor = Color.App.textPrimaryUIColor
         playerProgress.layer.cornerRadius = 1.5
         playerProgress.layer.masksToBounds = true
         playerProgress.trackTintColor = UIColor.gray.withAlphaComponent(0.3)
+        playerProgress.accessibilityIdentifier = "playerProgressMessageAudioView"
+        addSubview(playerProgress)
 
-        let typeSizeHStack = UIStackView()
-        typeSizeHStack.axis = .horizontal
-        typeSizeHStack.spacing = 4
 
-        typeSizeHStack.addArrangedSubview(fileTypeLabel)
-        typeSizeHStack.addArrangedSubview(fileSizeLabel)
-
-        progressButton.translatesAutoresizingMaskIntoConstraints = false
-        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
-        progressButton.isUserInteractionEnabled = true
-        addArrangedSubview(progressButton)
-
-        vStack.axis = .vertical
-        vStack.alignment = .leading
-        vStack.spacing = 4
-        vStack.distribution = .fill
-        vStack.addArrangedSubview(fileNameLabel)
-        vStack.addArrangedSubview(typeSizeHStack)
-        vStack.addArrangedSubview(playerProgress)
-        vStack.addArrangedSubview(timeLabel)
-        addArrangedSubview(vStack)
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+        timeLabel.textColor = Color.App.textPrimaryUIColor
+        timeLabel.font = UIFont.uiiransansBoldCaption
+        timeLabel.numberOfLines = 1
+        timeLabel.textAlignment = .left
+        timeLabel.accessibilityIdentifier = "timeLabelMessageAudioView"
+        addSubview(timeLabel)
 
         NSLayoutConstraint.activate([
-            playerProgress.widthAnchor.constraint(greaterThanOrEqualToConstant: 128),
-            playerProgress.heightAnchor.constraint(equalToConstant: 3),
+            
             progressButton.widthAnchor.constraint(equalToConstant: 36),
             progressButton.heightAnchor.constraint(equalToConstant: 36),
+            progressButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            progressButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+
+            fileNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            fileNameLabel.heightAnchor.constraint(equalToConstant: 20),
+            fileNameLabel.leadingAnchor.constraint(equalTo: progressButton.trailingAnchor, constant: 8),
+            fileNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+
+            fileTypeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
+            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
+            fileTypeLabel.heightAnchor.constraint(equalToConstant: 20),
+
+            fileSizeLabel.leadingAnchor.constraint(equalTo: fileTypeLabel.trailingAnchor),
+            fileSizeLabel.topAnchor.constraint(equalTo: fileTypeLabel.topAnchor),
+            fileSizeLabel.heightAnchor.constraint(equalToConstant: 20),
+            fileSizeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+
+            playerProgress.widthAnchor.constraint(greaterThanOrEqualToConstant: 128),
+            playerProgress.heightAnchor.constraint(equalToConstant: 3),
+            playerProgress.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
+            playerProgress.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            playerProgress.topAnchor.constraint(equalTo: fileTypeLabel.bottomAnchor, constant: 4),
+
+            timeLabel.leadingAnchor.constraint(equalTo: playerProgress.leadingAnchor),
+            timeLabel.topAnchor.constraint(equalTo: playerProgress.bottomAnchor, constant: 4),
+            timeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            timeLabel.heightAnchor.constraint(equalToConstant: 20),
+
         ])
     }
 

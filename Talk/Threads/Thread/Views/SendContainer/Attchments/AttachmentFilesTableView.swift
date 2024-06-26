@@ -40,13 +40,16 @@ public final class AttachmentFilesTableView: UIView {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .clear
+        tableView.accessibilityIdentifier = "tableViewAttachmentFilesTableView"
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.translatesAutoresizingMaskIntoConstraints = false
+        effectView.accessibilityIdentifier = "effectViewAttachmentFilesTableView"
         tableView.backgroundView = effectView
 
         // Configure epxand view
         expandView.translatesAutoresizingMaskIntoConstraints = false
+        expandView.accessibilityIdentifier = "expandViewAttachmentFilesTableView"
         let tapGesture = UITapGestureRecognizer()
         tapGesture.addTarget(self, action: #selector(expandTapped))
         expandView.addGestureRecognizer(tapGesture)
@@ -56,7 +59,9 @@ public final class AttachmentFilesTableView: UIView {
         addSubview(tableView)
 
         heightConstraint = heightAnchor.constraint(equalToConstant: 0)
+        heightConstraint.identifier = "heightConstraintAttachmentFilesTableView"
         expandViewHeightConstraint = expandView.heightAnchor.constraint(equalToConstant: 0)
+        expandViewHeightConstraint.identifier = "expandViewHeightConstraintAttachmentFilesTableView"
         NSLayoutConstraint.activate([
             heightConstraint,
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),

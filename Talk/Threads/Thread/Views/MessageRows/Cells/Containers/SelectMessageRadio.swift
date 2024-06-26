@@ -33,6 +33,7 @@ public final class SelectMessageRadio: UIView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.image = SelectMessageRadio.staticUNSelectedImage
+        imageView.accessibilityIdentifier = "imageViewSelectMessageRadio"
         addSubview(imageView)
 
         NSLayoutConstraint.activate([

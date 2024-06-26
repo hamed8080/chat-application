@@ -38,33 +38,38 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
 
     private func configureView() {
         translatesAutoresizingMaskIntoConstraints = false
-        bar.translatesAutoresizingMaskIntoConstraints = false
-        pinImageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        textButton.translatesAutoresizingMaskIntoConstraints = false
-        unpinButton.translatesAutoresizingMaskIntoConstraints = false
 
+        bar.translatesAutoresizingMaskIntoConstraints = false
         bar.backgroundColor = Color.App.accentUIColor
         bar.layer.cornerRadius = 2
+        bar.accessibilityIdentifier = "barThreadPinMessageView"
 
+        pinImageView.translatesAutoresizingMaskIntoConstraints = false
         pinImageView.image = UIImage(systemName: "pin.fill")
         pinImageView.contentMode = .scaleAspectFit
         pinImageView.tintColor = Color.App.accentUIColor
+        pinImageView.accessibilityIdentifier = "pinImageViewThreadPinMessageView"
 
+        textButton.translatesAutoresizingMaskIntoConstraints = false
         textButton.titleLabel?.font = UIFont.uiiransansBody
         textButton.titleLabel?.numberOfLines = 1
         textButton.contentHorizontalAlignment = Language.isRTL ? .right : .left
         textButton.setTitleColor(Color.App.textPrimaryUIColor, for: .normal)
         textButton.setTitleColor(Color.App.textPrimaryUIColor?.withAlphaComponent(0.5), for: .highlighted)
+        textButton.accessibilityIdentifier = "textButtonThreadPinMessageView"
         textButton.addTarget(self, action: #selector(onPinMessageTapped), for: .touchUpInside)
 
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.layer.masksToBounds = true
+        imageView.accessibilityIdentifier = "imageViewThreadPinMessageView"
 
+        unpinButton.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(systemName: "xmark")
         unpinButton.setImage(image, for: .normal)
         unpinButton.imageView?.contentMode = .scaleAspectFit
         unpinButton.tintColor = Color.App.iconSecondaryUIColor
+        unpinButton.accessibilityIdentifier = "unpinButtonThreadPinMessageView"
         unpinButton.addTarget(self, action: #selector(onUnpinMessageTapped), for: .touchUpInside)
 
         axis = .horizontal

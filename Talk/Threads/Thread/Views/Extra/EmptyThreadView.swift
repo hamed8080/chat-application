@@ -31,10 +31,12 @@ public final class EmptyThreadView: UIView {
         vStack.isLayoutMarginsRelativeArrangement = true
         vStack.layer.masksToBounds = true
         vStack.layer.cornerRadius = 12
+        vStack.accessibilityIdentifier = "vStackEmptyThreadView"
 
         let effect = UIBlurEffect(style: .systemUltraThinMaterial)
         let effectView = UIVisualEffectView(effect: effect)
         effectView.translatesAutoresizingMaskIntoConstraints = false
+        effectView.accessibilityIdentifier = "effectViewEmptyThreadView"
         vStack.addSubview(effectView)
 
         let label = UILabel()
@@ -42,11 +44,13 @@ public final class EmptyThreadView: UIView {
         label.numberOfLines = 2
         label.textAlignment = .center
         label.font = UIFont.uiiransansSubtitle
+        label.accessibilityIdentifier = "labelEmptyThreadView"
 
         let image = UIImageView(image: nil)
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFit
         image.tintColor = Color.App.accentUIColor
+        image.accessibilityIdentifier = "imageEmptyThreadView"
 
         vStack.addArrangedSubview(label)
         vStack.addArrangedSubview(image)

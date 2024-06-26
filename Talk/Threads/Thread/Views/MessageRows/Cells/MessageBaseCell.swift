@@ -13,11 +13,11 @@ import SwiftUI
 
 public class MessageBaseCell: UITableViewCell {
     weak var viewModel: MessageRowViewModel?
-    let hStack = UIStackView()
-    private var avatar: AvatarView?
-    private let radio = SelectMessageRadio()
-    private var messageContainer: MessageContainer!
-    private var hstackBottomConstraint: NSLayoutConstraint!
+    private let container = UIView()
+//    private var avatar: AvatarView?
+//    private let radio = SelectMessageRadio()
+    private var messageContainer: MessageContainerStackView!
+    private var containerBottomConstraint: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,65 +33,76 @@ public class MessageBaseCell: UITableViewCell {
     public func configureView(isMe: Bool) {
         selectionStyle = .none // Prevent iOS selection background color view added we use direct background color on content view instead of selectedBackgroundView or backgroundView
 
-        radio.setIsHidden(true)
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+        container.accessibilityIdentifier = "containerMessageBaseCell"
+
+//        radio.translatesAutoresizingMaskIntoConstraints = false
+//        radio.accessibilityIdentifier = "radioMessageBaseCell"
+//        radio.setIsHidden(true)
+//        container.addSubview(radio)
 
         messageContainer.translatesAutoresizingMaskIntoConstraints = false
         messageContainer.cell = self
         messageContainer.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+        messageContainer.accessibilityIdentifier = "messageContainerMessageBaseCell"
+        container.addSubview(messageContainer)
 
-        hStack.translatesAutoresizingMaskIntoConstraints = false
-        hStack.axis = .horizontal
-        hStack.alignment = .bottom
-        hStack.spacing = 8
-        hStack.distribution = .fill
-        hStack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
-        if self is PartnerMessageCell {
-            let avatar = AvatarView(frame: .zero)
-            avatar.translatesAutoresizingMaskIntoConstraints = false
-            self.avatar = avatar
-            hStack.addArrangedSubview(avatar)
-        }
-        hStack.addArrangedSubview(radio)
-        hStack.addArrangedSubview(messageContainer)
+//        if self is PartnerMessageCell {
+//            let avatar = AvatarView(frame: .zero)
+//            self.avatar = avatar
+//            self.avatar?.translatesAutoresizingMaskIntoConstraints = false
+//            self.avatar?.accessibilityIdentifier = "avatarContainerMessageBaseCell"
+//            container.addSubview(avatar)
+//            avatar.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 4).isActive = true
+//            avatar.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -4).isActive = true
+//        }
 
         contentView.isUserInteractionEnabled = true
-        contentView.addSubview(hStack)
+        contentView.addSubview(container)
 
         setConstraints()
     }
 
     private func setConstraints() {
-        hstackBottomConstraint = hStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
-        NSLayoutConstraint.activate([
-            messageContainer.widthAnchor.constraint(lessThanOrEqualToConstant: ThreadViewModel.maxAllowedWidth),
-            hStack.topAnchor.constraint(equalTo: contentView.topAnchor),
-            hstackBottomConstraint,
-        ])
-
+//        containerBottomConstraint = container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+//        containerBottomConstraint.identifier = "containerBottomConstraintContainerMessageBaseCell"
         let isMe = self is MyselfMessageCell
         let isRTL = Language.isRTL
         if isRTL {
             if isMe {
-                hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+                container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
             } else {
-                hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+                container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
             }
         } else {
             if isMe {
-                hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+                container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
             } else {
-                hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+                container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
             }
         }
+        NSLayoutConstraint.activate([
+            container.widthAnchor.constraint(equalTo: messageContainer.widthAnchor),
+            container.heightAnchor.constraint(equalTo: messageContainer.heightAnchor),
+            container.topAnchor.constraint(equalTo: contentView.topAnchor),
+//            containerBottomConstraint,
+
+            messageContainer.widthAnchor.constraint(lessThanOrEqualToConstant: ThreadViewModel.maxAllowedWidth),
+            messageContainer.topAnchor.constraint(equalTo: container.topAnchor, constant: 0),
+            messageContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 0),
+//            messageContainer.leadingAnchor.constraint(equalTo: avatar?.trailingAnchor ?? contentView.leadingAnchor, constant: 8),
+//            radio.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8)
+        ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
-        avatar?.set(viewModel)
+//        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
+//        avatar?.set(viewModel)
         messageContainer.set(viewModel)
-        radio.setIsHidden(viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false)
-        radio.set(selected: viewModel.calMessage.state.isSelected, viewModel: viewModel)
+//        radio.setIsHidden(viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false)
+//        radio.set(selected: viewModel.calMessage.state.isSelected, viewModel: viewModel)
         setSelectedBackground()
     }
 
@@ -99,7 +110,7 @@ public class MessageBaseCell: UITableViewCell {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self, let viewModel = viewModel else { return }
             viewModel.calMessage.state.isSelected = false
-            radio.set(selected: false, viewModel: viewModel)
+//            radio.set(selected: false, viewModel: viewModel)
             setSelectedBackground()
             viewModel.threadVM?.delegate?.updateSelectionView()
         }
@@ -109,7 +120,7 @@ public class MessageBaseCell: UITableViewCell {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self, let viewModel = viewModel else { return }
             viewModel.calMessage.state.isSelected = true
-            radio.set(selected: true, viewModel: viewModel)
+//            radio.set(selected: true, viewModel: viewModel)
             setSelectedBackground()
             viewModel.threadVM?.delegate?.updateSelectionView()
         }
@@ -118,8 +129,8 @@ public class MessageBaseCell: UITableViewCell {
     func setInSelectionMode(_ isInSelectionMode: Bool) {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            radio.setIsHidden(!isInSelectionMode)
-            avatar?.updateSelectionMode()
+//            radio.setIsHidden(!isInSelectionMode)
+//            avatar?.updateSelectionMode()
             messageContainer.isUserInteractionEnabled = !isInSelectionMode
             if !isInSelectionMode {
                 deselect()
@@ -139,7 +150,7 @@ public class MessageBaseCell: UITableViewCell {
     }
 
     public func setImage(_ image: UIImage) {
-        avatar?.setImage(image: image)
+//        avatar?.setImage(image: image)
     }
 
     public func edited() {

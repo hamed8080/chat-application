@@ -20,7 +20,9 @@ public final class AudioRecordingView: UIStackView {
     public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
         recordedAudioView = RecordedAudioView(viewModel: viewModel)
+        recordedAudioView.accessibilityIdentifier = "recordedAudioViewAudioRecordingView"
         recordingAudioView = RecordingAudioView(viewModel: viewModel?.audioRecoderVM)
+        recordingAudioView.accessibilityIdentifier = "recordingAudioViewAudioRecordingView"
         super.init(frame: .zero)
         configureView()
     }
@@ -106,6 +108,7 @@ public final class RecordedAudioView: UIStackView {
         btnSend.imageView.contentMode = .scaleAspectFit
         btnSend.imageView.image = image
         btnSend.backgroundColor = Color.App.accentUIColor!
+        btnSend.accessibilityIdentifier = "btnSendRecordedAudioView"
         btnSend.action = { [weak self] in
             self?.onSendOrClose?()
             Task { [weak self] in
@@ -118,14 +121,18 @@ public final class RecordedAudioView: UIStackView {
         btnDelete.translatesAutoresizingMaskIntoConstraints = false
         let deleteImage = UIImage(systemName: "trash")
         btnDelete.setImage(deleteImage, for: .normal)
+        btnDelete.accessibilityIdentifier = "btnDeleteRecordedAudioView"
         btnDelete.tintColor = Color.App.textPrimaryUIColor
 
         lblTimer.textColor = Color.App.textPrimaryUIColor
         lblTimer.font = .uiiransansCaption2
+        lblTimer.accessibilityIdentifier = "lblTimerRecordedAudioView"
 
         waveImageView.translatesAutoresizingMaskIntoConstraints = false
+        waveImageView.accessibilityIdentifier = "waveImageViewRecordedAudioView"
 
         btnTogglePlayer.translatesAutoresizingMaskIntoConstraints = false
+        btnTogglePlayer.accessibilityIdentifier = "btnTogglePlayerRecordedAudioView"
 
         addArrangedSubview(btnSend)
         addArrangedSubview(lblTimer)
@@ -233,6 +240,7 @@ public final class RecordingAudioView: UIStackView {
         btnMic.imageView.tintColor = Color.App.textPrimaryUIColor!
         btnMic.imageView.contentMode = .scaleAspectFit
         btnMic.backgroundColor = Color.App.accentUIColor!
+        btnMic.accessibilityIdentifier = "btnMicRecordingAudioView"
         btnMic.action = { [weak self] in
             self?.micTapped()
         }
@@ -241,9 +249,11 @@ public final class RecordingAudioView: UIStackView {
         lblStaticRecording.text = "Thread.isVoiceRecording".localized()
         lblStaticRecording.font = .uiiransansCaption
         lblStaticRecording.textColor = Color.App.textSecondaryUIColor
+        lblStaticRecording.accessibilityIdentifier = "lblStaticRecordingRecordingAudioView"
 
         lblTimer.font = .uiiransansBody
         lblTimer.textColor = Color.App.textPrimaryUIColor
+        lblTimer.accessibilityIdentifier = "lblTimerRecordingAudioView"
         viewModel?.$timerString.sink { [weak self] newValue in
             UIView.animate(withDuration: 0.2) {
                 self?.lblTimer.text = newValue
@@ -254,6 +264,7 @@ public final class RecordingAudioView: UIStackView {
         dotRecordingIndicator.image = UIImage(systemName: "circle.fill")
         dotRecordingIndicator.tintColor = Color.App.redUIColor
         dotRecordingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        dotRecordingIndicator.accessibilityIdentifier = "dotRecordingIndicatorRecordingAudioView"
 
         addArrangedSubview(btnMic)
         addArrangedSubview(lblStaticRecording)

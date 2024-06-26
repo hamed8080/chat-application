@@ -30,33 +30,37 @@ public final class CameraViewController: UIViewController {
     }
 
     private func configureViews() {
-        btnClose.translatesAutoresizingMaskIntoConstraints = false
         btnTake.translatesAutoresizingMaskIntoConstraints = false
-        btnSwitchCamera.translatesAutoresizingMaskIntoConstraints = false
-        btnReset.translatesAutoresizingMaskIntoConstraints = false
-
+        btnTake.accessibilityIdentifier = "btnTakeCameraViewController"
         btnTake.action = { [weak self] in
             self?.takePhoto()
         }
 
+        btnSwitchCamera.translatesAutoresizingMaskIntoConstraints = false
         btnSwitchCamera.setImage(UIImage(systemName: "arrow.triangle.2.circlepath"), for: .normal)
         btnSwitchCamera.tintColor = UIColor.white
+        btnSwitchCamera.accessibilityIdentifier = "btnSwitchCameraCameraViewController"
         btnSwitchCamera.addTarget(self, action: #selector(switchTapped), for: .touchUpInside)
 
+        btnReset.translatesAutoresizingMaskIntoConstraints = false
         btnReset.setImage(UIImage(systemName: "trash"), for: .normal)
         btnReset.tintColor = UIColor.white
+        btnReset.accessibilityIdentifier = "btnResetCameraViewController"
         btnReset.addTarget(self, action: #selector(resetTapped), for: .touchUpInside)
 
+        btnClose.translatesAutoresizingMaskIntoConstraints = false
         btnClose.layer.backgroundColor = UIColor(named: "bg_icon")?.cgColor
         btnClose.layer.masksToBounds = true
         btnClose.layer.cornerRadius = 21
         btnClose.setImage(UIImage(systemName: "xmark"), for: .normal)
         btnClose.tintColor = UIColor(named: "accent")
+        btnClose.accessibilityIdentifier = "btnCloseCameraViewController"
         btnClose.addTarget(self, action: #selector(dismissVC), for: .touchUpInside)
         view.addSubview(btnClose)
 
 
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.accessibilityIdentifier = "imageViewCameraViewController"
         imageView.contentMode = .scaleAspectFit
 
         let hStack = UIStackView()
@@ -65,6 +69,7 @@ public final class CameraViewController: UIViewController {
         hStack.alignment = .center
         hStack.distribution = .fill
         hStack.spacing = 48
+        hStack.accessibilityIdentifier = "hStackCameraViewController"
 
         hStack.addArrangedSubview(btnReset)
         hStack.addArrangedSubview(btnTake)

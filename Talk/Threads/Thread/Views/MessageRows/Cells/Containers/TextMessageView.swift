@@ -34,10 +34,12 @@ final class TextMessageView: UITextView {
         linkTextAttributes = [:]
         let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
         addGestureRecognizer(tap)
-        widthConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
-        heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
-        widthConstraint.isActive = true
-        heightConstraint.isActive = true
+        setContentHuggingPriority(.required, for: .vertical)
+        setContentCompressionResistancePriority(.required, for: .vertical)
+//        widthConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
+//        heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
+//        widthConstraint.isActive = true
+//        heightConstraint.isActive = true
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
@@ -46,11 +48,11 @@ final class TextMessageView: UITextView {
         }
         self.viewModel = viewModel
         textAlignment = viewModel.calMessage.isMe || !viewModel.calMessage.isEnglish ? .right : .left
-        backgroundColor = .clear
+        backgroundColor = .red
         isUserInteractionEnabled = viewModel.calMessage.rowType.isPublicLink
         setText()
-        heightConstraint.constant = viewModel.calMessage.textRect?.width ?? 0
-        heightConstraint.constant = viewModel.calMessage.textRect?.height ?? 0
+//        heightConstraint.constant = viewModel.calMessage.textRect?.width ?? 0
+//        heightConstraint.constant = viewModel.calMessage.textRect?.height ?? 0
     }
 
     @objc func onTapJoinGroup(_ sender: UIGestureRecognizer) {

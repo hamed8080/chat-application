@@ -40,15 +40,18 @@ public final class EditMessagePlaceholderView: UIStackView {
         nameLabel.font = UIFont.uiiransansBody
         nameLabel.textColor = Color.App.accentUIColor
         nameLabel.numberOfLines = 1
+        nameLabel.accessibilityIdentifier = "nameLabelSEditMessagePlaceholderView"
 
         messageLabel.font = UIFont.uiiransansCaption2
         messageLabel.textColor = Color.App.textPlaceholderUIColor
         messageLabel.numberOfLines = 2
+        messageLabel.accessibilityIdentifier = "messageLabelEditMessagePlaceholderView"
 
         let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.spacing = 2
         vStack.alignment = .leading
+        vStack.accessibilityIdentifier = "vStackEditMessagePlaceholderView"
         vStack.addArrangedSubview(nameLabel)
         vStack.addArrangedSubview(messageLabel)
 
@@ -58,14 +61,17 @@ public final class EditMessagePlaceholderView: UIStackView {
         staticImageReply.translatesAutoresizingMaskIntoConstraints = false
         staticImageReply.imageView.tintColor = Color.App.accentUIColor
         staticImageReply.contentMode = .scaleAspectFit
+        staticImageReply.accessibilityIdentifier = "staticImageReplyEditMessagePlaceholderView"
 
         messageImageView.layer.cornerRadius = 4
         messageImageView.layer.masksToBounds = true
         messageImageView.contentMode = .scaleAspectFit
         messageImageView.translatesAutoresizingMaskIntoConstraints = true
+        messageImageView.accessibilityIdentifier = "messageImageViewEditMessagePlaceholderView"
         messageImageView.setIsHidden(true)
 
         let closeButton = CloseButtonView()
+        closeButton.accessibilityIdentifier = "closeButtonEditMessagePlaceholderView"
         closeButton.action = { [weak self] in
             self?.close()
         }

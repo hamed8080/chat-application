@@ -32,34 +32,40 @@ public final class AttachmentFileCell: UITableViewCell {
     private func configureView() {
         contentView.backgroundColor = .clear
         backgroundColor = .clear
-        hStack.translatesAutoresizingMaskIntoConstraints = false
-        imgIcon.translatesAutoresizingMaskIntoConstraints = false
-        btnRemove.translatesAutoresizingMaskIntoConstraints = false
 
+        hStack.translatesAutoresizingMaskIntoConstraints = false
         hStack.axis = .horizontal
         hStack.spacing = 8
         hStack.alignment = .center
         hStack.layoutMargins = .init(horizontal: 16, vertical: 4)
         hStack.isLayoutMarginsRelativeArrangement = true
+        hStack.accessibilityIdentifier = "hStackAttachmentFileCell"
 
         lblTitle.font = UIFont.uiiransansBoldBody
         lblTitle.textColor = Color.App.textPrimaryUIColor
+        lblTitle.accessibilityIdentifier = "lblTitleAttachmentFileCell"
 
         lblSubtitle.font = UIFont.uiiransansCaption3
         lblSubtitle.textColor = Color.App.textSecondaryUIColor
+        lblSubtitle.accessibilityIdentifier = "lblSubtitleAttachmentFileCell"
 
+        btnRemove.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(systemName: "xmark")
         btnRemove.setImage(image, for: .normal)
         btnRemove.tintColor = Color.App.textSecondaryUIColor
+        btnRemove.accessibilityIdentifier = "btnRemoveAttachmentFileCell"
         btnRemove.addTarget(self, action: #selector(removeTapped), for: .touchUpInside)
 
+        imgIcon.translatesAutoresizingMaskIntoConstraints = false
         imgIcon.layer.cornerRadius = 6
         imgIcon.layer.masksToBounds = true
+        imgIcon.accessibilityIdentifier = "imgIconAttachmentFileCell"
         imgIcon.backgroundColor = Color.App.bgInputUIColor
 
         let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.spacing = 2
+        vStack.accessibilityIdentifier = "vStackAttachmentFileCell"
 
         vStack.addArrangedSubview(lblTitle)
         vStack.addArrangedSubview(lblSubtitle)

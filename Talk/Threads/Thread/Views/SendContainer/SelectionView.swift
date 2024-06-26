@@ -40,6 +40,7 @@ public final class SelectionView: UIStackView {
         btnForward.imageView.contentMode = .scaleAspectFit
         btnForward.imageView.tintColor = Color.App.accentUIColor
         btnForward.translatesAutoresizingMaskIntoConstraints = false
+        btnForward.accessibilityIdentifier = "btnForwardSelectionView"
         btnForward.action = { [weak self] in
             self?.forwardSelectedMessageTapped()
         }
@@ -47,26 +48,31 @@ public final class SelectionView: UIStackView {
 
         lblCount.font = UIFont.uiiransansBoldBody
         lblCount.textColor = Color.App.accentUIColor
+        lblCount.accessibilityIdentifier = "lblCountSelectionView"
         addArrangedSubview(lblCount)
 
         lblStatic.text = "General.selected".localized()
         lblStatic.font = UIFont.uiiransansBody
         lblStatic.textColor = Color.App.textSecondaryUIColor
+        lblStatic.accessibilityIdentifier = "lblStaticSelectionView"
         addArrangedSubview(lblStatic)
 
         let spacer = UIView(frame: .init(x: 0, y: 0, width: CGFloat.greatestFiniteMagnitude, height: 0))
+        spacer.accessibilityIdentifier = "spacerSelectionView"
         addArrangedSubview(spacer)
 
         btnDelete.translatesAutoresizingMaskIntoConstraints = false
         btnDelete.imageView.image = UIImage(named: "ic_delete")
         btnDelete.imageView.contentMode = .scaleAspectFit
         btnDelete.imageView.tintColor = Color.App.iconSecondaryUIColor
+        btnDelete.accessibilityIdentifier = "btnDeleteSelectionView"
         btnDelete.action = { [weak self] in
             self?.deleteSelectedMessageTapped()
         }
         addArrangedSubview(btnDelete)
 
         let closeButton = CloseButtonView()
+        closeButton.accessibilityIdentifier = "closeButtonSelectionView"
         closeButton.action = { [weak self] in
             self?.onClose()
         }

@@ -183,8 +183,8 @@
 		0570CC182AAEE98F001832E9 /* ReplyInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB882AAEE98C001832E9 /* ReplyInfoView.swift */; };
 		0570CC192AAEE98F001832E9 /* ParticipantsEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB892AAEE98C001832E9 /* ParticipantsEventCell.swift */; };
 		0570CC1A2AAEE98F001832E9 /* ParticipantsEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB892AAEE98C001832E9 /* ParticipantsEventCell.swift */; };
-		0570CC1D2AAEE98F001832E9 /* MessageContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8B2AAEE98C001832E9 /* MessageContainer.swift */; };
-		0570CC1E2AAEE98F001832E9 /* MessageContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8B2AAEE98C001832E9 /* MessageContainer.swift */; };
+		0570CC1D2AAEE98F001832E9 /* MessageContainerStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8B2AAEE98C001832E9 /* MessageContainerStackView.swift */; };
+		0570CC1E2AAEE98F001832E9 /* MessageContainerStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8B2AAEE98C001832E9 /* MessageContainerStackView.swift */; };
 		0570CC1F2AAEE98F001832E9 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */; };
 		0570CC202AAEE98F001832E9 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */; };
 		0570CC212AAEE98F001832E9 /* PickerButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8D2AAEE98C001832E9 /* PickerButtonsView.swift */; };
@@ -496,7 +496,7 @@
 		0570CB872AAEE98C001832E9 /* UnreadBubbleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnreadBubbleCell.swift; sourceTree = "<group>"; };
 		0570CB882AAEE98C001832E9 /* ReplyInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplyInfoView.swift; sourceTree = "<group>"; };
 		0570CB892AAEE98C001832E9 /* ParticipantsEventCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParticipantsEventCell.swift; sourceTree = "<group>"; };
-		0570CB8B2AAEE98C001832E9 /* MessageContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageContainer.swift; sourceTree = "<group>"; };
+		0570CB8B2AAEE98C001832E9 /* MessageContainerStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageContainerStackView.swift; sourceTree = "<group>"; };
 		0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
 		0570CB8D2AAEE98C001832E9 /* PickerButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerButtonsView.swift; sourceTree = "<group>"; };
 		0570CB8E2AAEE98C001832E9 /* ThreadSheetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadSheetView.swift; sourceTree = "<group>"; };
@@ -733,7 +733,7 @@
 				0570CB822AAEE98C001832E9 /* ForwardInfoView.swift */,
 				0594FE5F2B0386580031AADF /* GroupParticipantNameView.swift */,
 				052CA3CA2BA411B800E38E19 /* MessageAudioView.swift */,
-				0570CB8B2AAEE98C001832E9 /* MessageContainer.swift */,
+				0570CB8B2AAEE98C001832E9 /* MessageContainerStackView.swift */,
 				052CA3CD2BA411B800E38E19 /* MessageFileView.swift */,
 				052CA3CE2BA411B800E38E19 /* MessageImageView.swift */,
 				0594FE652B0387370031AADF /* MessageLocationView.swift */,
@@ -1497,7 +1497,7 @@
 				05DAA4352B29BF39007427DC /* ContactListToolbar.swift in Sources */,
 				05A6A2C62B3FE2D900DA0363 /* ThreadViewController.swift in Sources */,
 				0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
-				0570CC1D2AAEE98F001832E9 /* MessageContainer.swift in Sources */,
+				0570CC1D2AAEE98F001832E9 /* MessageContainerStackView.swift in Sources */,
 				052CA3D82BA411B800E38E19 /* MessageImageView.swift in Sources */,
 				0507DB7A2C149A8200029E3F /* MentionCell.swift in Sources */,
 				0570CBE92AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,
@@ -1684,7 +1684,7 @@
 				05DAA4362B29BF39007427DC /* ContactListToolbar.swift in Sources */,
 				05A6A2C72B3FE2D900DA0363 /* ThreadViewController.swift in Sources */,
 				0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
-				0570CC1E2AAEE98F001832E9 /* MessageContainer.swift in Sources */,
+				0570CC1E2AAEE98F001832E9 /* MessageContainerStackView.swift in Sources */,
 				052CA3D92BA411B800E38E19 /* MessageImageView.swift in Sources */,
 				0507DB7B2C149A8200029E3F /* MentionCell.swift in Sources */,
 				0570CBEA2AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,

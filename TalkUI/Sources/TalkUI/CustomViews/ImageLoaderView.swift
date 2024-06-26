@@ -49,12 +49,11 @@ public struct ImageLoaderView: View {
     }
 }
 
-public final class ImageLoaderUIView: UIView {
+public final class ImageLoaderUIView: UIImageView {
     public var imageLoaderVM: ImageLoaderViewModel?
-    private let imageIconView = UIImageView()
     private var cancelable: AnyCancellable?
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
     }
@@ -64,17 +63,8 @@ public final class ImageLoaderUIView: UIView {
     }
 
     private func configureView() {
-        imageIconView.translatesAutoresizingMaskIntoConstraints = false
-        imageIconView.contentMode = .scaleAspectFill
-
-        addSubview(imageIconView)
-
-        NSLayoutConstraint.activate([
-            imageIconView.topAnchor.constraint(equalTo: topAnchor),
-            imageIconView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            imageIconView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageIconView.trailingAnchor.constraint(equalTo: trailingAnchor),
-        ])
+        translatesAutoresizingMaskIntoConstraints = false
+        contentMode = .scaleAspectFill
     }
 
     public func setValues(config: ImageLoaderConfig) {
@@ -94,7 +84,7 @@ public final class ImageLoaderUIView: UIView {
     }
 
     private func setImage() {
-        imageIconView.image = imageLoaderVM?.image
+        image = imageLoaderVM?.image
     }
 }
 
@@ -102,7 +92,7 @@ struct ImageLoaderUIViewWapper: UIViewRepresentable {
     let config: ImageLoaderConfig
 
     func makeUIView(context: Context) -> some UIView {
-        let view = ImageLoaderUIView()
+        let view = ImageLoaderUIView(frame: .zero)
         return view
     }
 

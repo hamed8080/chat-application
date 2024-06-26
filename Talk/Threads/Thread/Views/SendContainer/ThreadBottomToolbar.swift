@@ -52,19 +52,31 @@ public final class ThreadBottomToolbar: UIStackView {
     private func configureViews() {
         translatesAutoresizingMaskIntoConstraints = false
         mainSendButtons.translatesAutoresizingMaskIntoConstraints = false
+        mainSendButtons.accessibilityIdentifier = "mainSendButtonsThreadBottomToolbar"
         audioRecordingView.translatesAutoresizingMaskIntoConstraints = false
+        audioRecordingView.accessibilityIdentifier = "audioRecordingViewThreadBottomToolbar"
         pickerButtons.translatesAutoresizingMaskIntoConstraints = false
+        pickerButtons.accessibilityIdentifier = "pickerButtonsThreadBottomToolbar"
         attachmentFilesTableView.translatesAutoresizingMaskIntoConstraints = false
+        attachmentFilesTableView.accessibilityIdentifier = "attachmentFilesTableViewThreadBottomToolbar"
         replyPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
+        replyPlaceholderView.accessibilityIdentifier = "replyPlaceholderViewThreadBottomToolbar"
         forwardPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
+        forwardPlaceholderView.accessibilityIdentifier = "forwardPlaceholderViewThreadBottomToolbar"
         editMessagePlaceholderView.translatesAutoresizingMaskIntoConstraints = false
+        editMessagePlaceholderView.accessibilityIdentifier = "editMessagePlaceholderViewThreadBottomToolbar"
         selectionView.translatesAutoresizingMaskIntoConstraints = false
+        selectionView.accessibilityIdentifier = "selectionViewThreadBottomToolbar"
         muteBarView.translatesAutoresizingMaskIntoConstraints = false
+        muteBarView.accessibilityIdentifier = "muteBarViewThreadBottomToolbar"
         mentionTableView.translatesAutoresizingMaskIntoConstraints = false
+        mentionTableView.accessibilityIdentifier = "mentionTableViewThreadBottomToolbar"
 
         axis = .vertical
         alignment = .fill
         spacing = 0
+        layoutMargins = .init(all: 8)
+        isLayoutMarginsRelativeArrangement = true
 
         let blurEffect = UIBlurEffect(style: .systemThickMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
@@ -72,6 +84,7 @@ public final class ThreadBottomToolbar: UIStackView {
         effectView.layer.masksToBounds = true
         effectView.layer.cornerRadius = 0
         effectView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        effectView.accessibilityIdentifier = "effectViewThreadBottomToolbar"
         addSubview(effectView)
 
         pickerButtons.setIsHidden(true)
@@ -99,7 +112,6 @@ public final class ThreadBottomToolbar: UIStackView {
 
         replyPrivatelyPlaceholderView.set()
         NSLayoutConstraint.activate([
-            topAnchor.constraint(equalTo: pickerButtons.topAnchor, constant: -8),
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
             effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
             effectView.topAnchor.constraint(equalTo: topAnchor),

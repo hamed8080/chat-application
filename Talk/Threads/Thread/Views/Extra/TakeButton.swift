@@ -41,6 +41,7 @@ public final class TakeButton: UIView {
         innerCircle.layer.backgroundColor = UIColor.white.cgColor
         innerCircle.layer.cornerRadius = innerWidth / 2
         innerCircle.layer.masksToBounds = true
+        innerCircle.accessibilityIdentifier = "innerCircleTakeButton"
         addSubview(innerCircle)
 
         NSLayoutConstraint.activate([

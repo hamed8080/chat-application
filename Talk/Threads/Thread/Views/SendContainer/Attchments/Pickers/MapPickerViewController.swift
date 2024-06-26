@@ -30,16 +30,15 @@ public final class MapPickerViewController: UIViewController {
     }
 
     private func configureViews() {
-        mapView.translatesAutoresizingMaskIntoConstraints = false
-        btnClose.translatesAutoresizingMaskIntoConstraints = false
-        btnSubmit.translatesAutoresizingMaskIntoConstraints = false
 
+        mapView.translatesAutoresizingMaskIntoConstraints = false
         mapView.showsUserLocation = true
         mapView.showsCompass = true
         mapView.delegate = self
+        mapView.accessibilityIdentifier = "mapViewMapPickerViewController"
         view.addSubview(mapView)
 
-
+        btnClose.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(systemName: "xmark")
         btnClose.setImage(image, for: .normal)
         btnClose.imageView?.contentMode = .scaleAspectFit
@@ -49,6 +48,7 @@ public final class MapPickerViewController: UIViewController {
         btnClose.layer.masksToBounds = true
         btnClose.layer.cornerRadius = 12
         btnClose.backgroundColor = Color.App.bgSendInputUIColor
+        btnClose.accessibilityIdentifier = "btnCloseMapPickerViewController"
         if #available(iOS 15.0, *) {
             btnClose.imageEdgeInsets = .init(all: 4)
         } else {
@@ -58,6 +58,8 @@ public final class MapPickerViewController: UIViewController {
         btnClose.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         view.addSubview(btnClose)
 
+        btnSubmit.translatesAutoresizingMaskIntoConstraints = false
+        btnSubmit.accessibilityIdentifier = "btnSubmitMapPickerViewController"
         btnSubmit.action = { [weak self] in
             guard let self = self else { return }
             submitTapped()
@@ -65,6 +67,8 @@ public final class MapPickerViewController: UIViewController {
         }
         view.addSubview(btnSubmit)
 
+        toastView.translatesAutoresizingMaskIntoConstraints = false
+        toastView.accessibilityIdentifier = "toastViewMapPickerViewController"
         toastView.setIsHidden(true)
         view.addSubview(toastView)
 

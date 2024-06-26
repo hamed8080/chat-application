@@ -31,6 +31,7 @@ final class SectionHeaderView: UIView {
         label.layer.masksToBounds = true
         label.textAlignment = .center
         label.backgroundColor = .black.withAlphaComponent(0.4)
+        label.accessibilityIdentifier = "labelSectionHeaderView"
 
         addSubview(label)
 

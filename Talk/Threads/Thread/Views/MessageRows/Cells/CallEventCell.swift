@@ -32,21 +32,24 @@ final class CallEventCell: UITableViewCell {
     }
     
     private func configureView() {
+        typeLabel.translatesAutoresizingMaskIntoConstraints = false
+        typeLabel.font = UIFont.uiiransansBody
+        typeLabel.accessibilityIdentifier = "typeLabelCallEventCell"
+
+        dateLabel.translatesAutoresizingMaskIntoConstraints = false
+        dateLabel.font = UIFont.uiiransansBody
+        dateLabel.accessibilityIdentifier = "dateLabelCallEventCell"
 
         stack.translatesAutoresizingMaskIntoConstraints = false
-        typeLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        statusImage.translatesAutoresizingMaskIntoConstraints = false
-
-        typeLabel.font = UIFont.uiiransansBody
-        dateLabel.font = UIFont.uiiransansBody
-
         stack.axis = .horizontal
         stack.alignment = .center
         stack.distribution = .fill
         stack.spacing = 12
+        stack.accessibilityIdentifier = "stackCallEventCell"
 
+        statusImage.translatesAutoresizingMaskIntoConstraints = false
         statusImage.contentMode = .scaleAspectFit
+        statusImage.accessibilityIdentifier = "statusImageCallEventCell"
 
         stack.addArrangedSubview(typeLabel)
         stack.addArrangedSubview(dateLabel)
