@@ -88,6 +88,8 @@ class ThreadNavigationPlayer: UIView {
             closeButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             timerLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -4),
             timerLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            progress.leadingAnchor.constraint(equalTo: leadingAnchor),
+            progress.trailingAnchor.constraint(equalTo: trailingAnchor),
             progress.widthAnchor.constraint(equalTo: widthAnchor),
             progress.heightAnchor.constraint(equalToConstant: 1),
             progress.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1),

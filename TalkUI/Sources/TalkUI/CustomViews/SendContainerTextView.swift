@@ -27,6 +27,7 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
     }
 
     func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
         semanticContentAttribute = Locale.current.identifier.contains("fa") ? .forceRightToLeft : .forceLeftToRight
         textContainerInset = .init(top: 12, left: 0, bottom: 0, right: 0)

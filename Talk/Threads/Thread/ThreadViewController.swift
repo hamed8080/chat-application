@@ -170,6 +170,7 @@ extension ThreadViewController {
         vStackOverlayButtons.translatesAutoresizingMaskIntoConstraints = false
         vStackOverlayButtons.axis = .vertical
         vStackOverlayButtons.spacing = 24
+        vStackOverlayButtons.alignment = .leading
         vStackOverlayButtons.accessibilityIdentifier = "vStackOverlayButtonsThreadViewController"
 
         moveToBottom.accessibilityIdentifier = "moveToBottomThreadViewController"

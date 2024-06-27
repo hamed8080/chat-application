@@ -33,15 +33,18 @@ public class ExpandView: UIView {
         btnClear.titleLabel?.font = UIFont.uiiransansCaption
         btnClear.setTitleColor(Color.App.redUIColor, for: .normal)
         btnClear.accessibilityIdentifier = "btnClearExpandView"
+        btnClear.setContentHuggingPriority(.required, for: .horizontal)
         btnClear.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
 
         fileCountLabel.font = UIFont.uiiransansCaption
         fileCountLabel.translatesAutoresizingMaskIntoConstraints = false
         fileCountLabel.accessibilityIdentifier = "fileCountLabelClearExpandView"
+        fileCountLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
         expandButton.translatesAutoresizingMaskIntoConstraints = false
         expandButton.tintColor = Color.App.iconSecondaryUIColor
         expandButton.contentMode = .scaleAspectFit
+        expandButton.setContentHuggingPriority(.required, for: .horizontal)
         expandButton.accessibilityIdentifier = "expandButtonClearExpandView"
 
         addSubview(expandButton)
@@ -49,6 +52,7 @@ public class ExpandView: UIView {
         addSubview(fileCountLabel)
 
         NSLayoutConstraint.activate([
+            expandButton.widthAnchor.constraint(equalToConstant: 36),
             expandButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             expandButton.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             expandButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),

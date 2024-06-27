@@ -51,6 +51,7 @@ public final class MainSendButtons: UIStackView {
         btnToggleAttachmentButtons.layer.cornerRadius = MainSendButtons.initSize / 2
         btnToggleAttachmentButtons.backgroundColor = Color.App.bgSendInputUIColor
         btnToggleAttachmentButtons.accessibilityIdentifier = "btnToggleAttachmentButtonsMainSendButtons"
+        btnToggleAttachmentButtons.setContentHuggingPriority(.required, for: .horizontal)
 
         btnMic.translatesAutoresizingMaskIntoConstraints = false
         btnMic.imageView.contentMode = .scaleAspectFit
@@ -61,6 +62,7 @@ public final class MainSendButtons: UIStackView {
         btnCamera.imageView.contentMode = .scaleAspectFit
         btnCamera.tintColor = Color.App.textSecondaryUIColor
         btnCamera.accessibilityIdentifier = "btnCameraMainSendButtons"
+        btnCamera.setContentHuggingPriority(.required, for: .horizontal)
         btnCamera.setIsHidden(true)
 
         btnSend.translatesAutoresizingMaskIntoConstraints = false
@@ -70,6 +72,7 @@ public final class MainSendButtons: UIStackView {
         btnSend.layer.cornerRadius = (MainSendButtons.initSize - 4) / 2
         btnSend.layer.backgroundColor = Color.App.accentUIColor?.cgColor
         btnSend.accessibilityIdentifier = "btnSendMainSendButtons"
+        btnSend.setContentHuggingPriority(.required, for: .horizontal)
         btnSend.setIsHidden(true)
         btnSend.action = { [weak self] in
             self?.onBtnSendTapped()
@@ -90,6 +93,7 @@ public final class MainSendButtons: UIStackView {
         registerTextChange()
         multilineTextField.translatesAutoresizingMaskIntoConstraints = false
         multilineTextField.accessibilityIdentifier = "multilineTextFieldMainSendButtons"
+        multilineTextField.setContentHuggingPriority(.required, for: .horizontal)
         multilineTextField.setContentCompressionResistancePriority(.required, for: .horizontal)
         hStack.addArrangedSubview(multilineTextField)
 
@@ -97,6 +101,7 @@ public final class MainSendButtons: UIStackView {
         btnEmoji.imageView.tintColor = Color.App.redUIColor
         btnEmoji.accessibilityIdentifier = "btnEmojiMainSendButtons"
         btnEmoji.setIsHidden(true)
+        btnEmoji.setContentHuggingPriority(.required, for: .horizontal)
         hStack.addArrangedSubview(btnEmoji)
 
         addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera, btnSend])

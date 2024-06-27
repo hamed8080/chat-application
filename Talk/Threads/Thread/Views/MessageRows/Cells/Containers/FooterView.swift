@@ -42,6 +42,10 @@ final class FooterView: UIStackView {
         pinImage.tintColor = Color.App.accentUIColor
         pinImage.contentMode = .scaleAspectFit
         pinImage.accessibilityIdentifier = "pinImageFooterView"
+        pinImage.setContentHuggingPriority(.required, for: .vertical)
+        pinImage.setContentHuggingPriority(.required, for: .horizontal)
+        pinImage.setContentCompressionResistancePriority(.required, for: .horizontal)
+        pinImage.setContentCompressionResistancePriority(.required, for: .horizontal)
         addArrangedSubview(pinImage)
 
         statusImage.translatesAutoresizingMaskIntoConstraints = false

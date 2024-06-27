@@ -42,6 +42,7 @@ final class ForwardInfoView: UIView {
         forwardStaticLabel.text = ForwardInfoView.forwardFromStaticText
         forwardStaticLabel.accessibilityIdentifier = "forwardStaticLebelForwardInfoView"
         forwardStaticLabel.textAlignment = isMe ? .right : .left
+        forwardStaticLabel.setContentHuggingPriority(.required, for: .vertical)
         addSubview(forwardStaticLabel)
 
         participantLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -49,8 +50,8 @@ final class ForwardInfoView: UIView {
         participantLabel.textColor = Color.App.accentUIColor
         participantLabel.numberOfLines = 1
         participantLabel.accessibilityIdentifier = "participantLabelForwardInfoView"
-        participantLabel.backgroundColor = .green
         participantLabel.textAlignment = isMe ? .right : .left
+        participantLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         addSubview(participantLabel)
 
         bar.translatesAutoresizingMaskIntoConstraints = false
@@ -58,11 +59,16 @@ final class ForwardInfoView: UIView {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
         bar.accessibilityIdentifier = "barForwardInfoView"
+        bar.setContentHuggingPriority(.required, for: .horizontal)
+        bar.setContentCompressionResistancePriority(.required, for: .horizontal)
+        bar.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         addSubview(bar)
 
         isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(onForwardTapped))
         addGestureRecognizer(tap)
+
+        let padding: CGFloat = 6
 
         NSLayoutConstraint.activate([
             bar.widthAnchor.constraint(equalToConstant: 1.5),
@@ -70,13 +76,14 @@ final class ForwardInfoView: UIView {
             bar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
             bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0.5),
             
-            forwardStaticLabel.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: 4),
-            forwardStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: 2),
-            forwardStaticLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            forwardStaticLabel.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: padding),
+            forwardStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+            forwardStaticLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
 
-            participantLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            participantLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
             participantLabel.topAnchor.constraint(equalTo: forwardStaticLabel.bottomAnchor, constant: 2),
-            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4)
+            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            participantLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
         ])
     }
 

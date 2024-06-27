@@ -41,6 +41,7 @@ public final class EditMessagePlaceholderView: UIStackView {
         nameLabel.textColor = Color.App.accentUIColor
         nameLabel.numberOfLines = 1
         nameLabel.accessibilityIdentifier = "nameLabelSEditMessagePlaceholderView"
+        nameLabel.setContentHuggingPriority(.required, for: .vertical)
 
         messageLabel.font = UIFont.uiiransansCaption2
         messageLabel.textColor = Color.App.textPlaceholderUIColor

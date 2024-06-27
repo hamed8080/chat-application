@@ -58,8 +58,8 @@ final class MessageContainerStackView: UIStackView {
         spacing = 4
         alignment = .top
         distribution = .fill
-//        layoutMargins = .init(all: 4)
-//        isLayoutMarginsRelativeArrangement = true
+        layoutMargins = .init(all: 4)
+        isLayoutMarginsRelativeArrangement = true
         layer.cornerRadius = 10
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         registerGestures()
@@ -69,12 +69,10 @@ final class MessageContainerStackView: UIStackView {
 
         replyInfoMessageRow.translatesAutoresizingMaskIntoConstraints = false
         addArrangedSubview(replyInfoMessageRow)
-//        replyInfoMessageRow.heightAnchor.constraint(equalToConstant: 48).isActive = true
         replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
 
         forwardMessageRow.translatesAutoresizingMaskIntoConstraints = false
         addArrangedSubview(forwardMessageRow)
-//        forwardMessageRow.heightAnchor.constraint(equalToConstant: 48).isActive = true
         forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
 
         messageFileView.translatesAutoresizingMaskIntoConstraints = false
@@ -88,7 +86,6 @@ final class MessageContainerStackView: UIStackView {
 
         messageAudioView.translatesAutoresizingMaskIntoConstraints = false
         addArrangedSubview(messageAudioView)
-//        messageAudioView.heightAnchor.constraint(equalToConstant: 77).isActive = true
 
         locationRowView.translatesAutoresizingMaskIntoConstraints = false
         addArrangedSubview(locationRowView)

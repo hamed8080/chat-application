@@ -38,6 +38,10 @@ final class MessageImageView: UIImageView {
         layer.cornerRadius = 6
         layer.masksToBounds = true
         contentMode = .scaleAspectFit
+        setContentHuggingPriority(.required, for: .horizontal)
+        setContentHuggingPriority(.required, for: .vertical)
+        setContentCompressionResistancePriority(.required, for: .vertical)
+        setContentCompressionResistancePriority(.required, for: .horizontal)
 
         progressView.translatesAutoresizingMaskIntoConstraints = false
         progressView.accessibilityIdentifier = "progressViewMessageImageView"

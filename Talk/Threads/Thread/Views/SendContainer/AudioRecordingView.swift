@@ -241,6 +241,7 @@ public final class RecordingAudioView: UIStackView {
         btnMic.imageView.contentMode = .scaleAspectFit
         btnMic.backgroundColor = Color.App.accentUIColor!
         btnMic.accessibilityIdentifier = "btnMicRecordingAudioView"
+        btnMic.setContentHuggingPriority(.required, for: .horizontal)
         btnMic.action = { [weak self] in
             self?.micTapped()
         }
@@ -250,10 +251,12 @@ public final class RecordingAudioView: UIStackView {
         lblStaticRecording.font = .uiiransansCaption
         lblStaticRecording.textColor = Color.App.textSecondaryUIColor
         lblStaticRecording.accessibilityIdentifier = "lblStaticRecordingRecordingAudioView"
+        lblStaticRecording.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
         lblTimer.font = .uiiransansBody
         lblTimer.textColor = Color.App.textPrimaryUIColor
         lblTimer.accessibilityIdentifier = "lblTimerRecordingAudioView"
+        lblTimer.setContentHuggingPriority(.defaultLow, for: .horizontal)
         viewModel?.$timerString.sink { [weak self] newValue in
             UIView.animate(withDuration: 0.2) {
                 self?.lblTimer.text = newValue
@@ -265,6 +268,8 @@ public final class RecordingAudioView: UIStackView {
         dotRecordingIndicator.tintColor = Color.App.redUIColor
         dotRecordingIndicator.translatesAutoresizingMaskIntoConstraints = false
         dotRecordingIndicator.accessibilityIdentifier = "dotRecordingIndicatorRecordingAudioView"
+        dotRecordingIndicator.setContentHuggingPriority(.required, for: .horizontal)
+        dotRecordingIndicator.setContentHuggingPriority(.required, for: .vertical)
 
         addArrangedSubview(btnMic)
         addArrangedSubview(lblStaticRecording)

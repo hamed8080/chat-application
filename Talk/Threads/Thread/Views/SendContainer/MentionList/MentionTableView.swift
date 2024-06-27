@@ -29,20 +29,23 @@ public final class MentionTableView: UITableView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         register(MentionCell.self, forCellReuseIdentifier: cellIdentifier)
         delegate = self
         dataSource = self
         backgroundColor = .clear
         separatorStyle = .none
+        rowHeight = 48
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.accessibilityIdentifier = "effectViewMentionTableView"
         effectView.translatesAutoresizingMaskIntoConstraints = false
         backgroundView = effectView
-        translatesAutoresizingMaskIntoConstraints = false
+
         heightConstraint = heightAnchor.constraint(equalToConstant: 0)
         heightConstraint.identifier = "heightConstraintMentionTableView"
+
         NSLayoutConstraint.activate([
             heightConstraint,
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -50,6 +53,7 @@ public final class MentionTableView: UITableView {
             effectView.topAnchor.constraint(equalTo: topAnchor),
             effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+
         viewModel?.mentionListPickerViewModel.onImageParticipant = { [weak self] participant in
             guard let self = self else { return }
             if let index = mentionList.firstIndex(where: {$0.id == participant.id}) {
@@ -59,7 +63,8 @@ public final class MentionTableView: UITableView {
     }
 
     public func updateMentionList() {
-        heightConstraint.constant = min(cellHeight * 4, CGFloat(mentionList.count) * 48)
+        let maxHeight = cellHeight * 4
+        heightConstraint.constant = min(maxHeight, CGFloat(mentionList.count) * 48)
         reloadData()
     }
 }

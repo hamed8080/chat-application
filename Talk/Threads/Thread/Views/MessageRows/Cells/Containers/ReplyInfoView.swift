@@ -75,6 +75,7 @@ final class ReplyInfoView: UIView {
         replyStaticLabel.text = ReplyInfoView.repliedToStaticText
         replyStaticLabel.accessibilityIdentifier = "replyStaticLabelReplyInfoView"
         replyStaticLabel.setContentHuggingPriority(.required, for: .horizontal)
+        replyStaticLabel.setContentHuggingPriority(.required, for: .vertical)
         replyStaticLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(replyStaticLabel)
 
@@ -94,7 +95,8 @@ final class ReplyInfoView: UIView {
         bar.accessibilityIdentifier = "barReplyInfoView"
         addSubview(bar)
 
-        imageIconViewLeadingConstriant = imageIconView.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: 4)
+        let padding: CGFloat = 6
+        imageIconViewLeadingConstriant = imageIconView.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: padding)
         NSLayoutConstraint.activate([
             bar.widthAnchor.constraint(equalToConstant: 1.5),
             bar.topAnchor.constraint(equalTo: topAnchor, constant: 2),
@@ -102,24 +104,25 @@ final class ReplyInfoView: UIView {
             bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0.5),
             
             imageIconViewLeadingConstriant,
-            imageIconView.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-            imageIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
+            imageIconView.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+            imageIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding),
             imageIconView.widthAnchor.constraint(equalToConstant: 36),
 
             replyStaticLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
-            replyStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: 2),
-            
-            participantLabel.topAnchor.constraint(equalTo: topAnchor, constant: 2),
+            replyStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+
+            participantLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
             participantLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.trailingAnchor, constant: 2),
-            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
 
-            deletedLabel.topAnchor.constraint(equalTo: topAnchor, constant: 2),
-            deletedLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.leadingAnchor, constant: 0),
-            deletedLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            deletedLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+            deletedLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.leadingAnchor),
+            deletedLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
 
-            replyLabel.topAnchor.constraint(equalTo: replyStaticLabel.bottomAnchor, constant: 2),
-            replyLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.leadingAnchor, constant: 0),
-            replyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4)
+            replyLabel.topAnchor.constraint(equalTo: replyStaticLabel.bottomAnchor, constant: padding),
+            replyLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding),
+            replyLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.leadingAnchor),
+            replyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding)
         ])
     }
 
