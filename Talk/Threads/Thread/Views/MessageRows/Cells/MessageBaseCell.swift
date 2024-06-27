@@ -17,7 +17,7 @@ public class MessageBaseCell: UITableViewCell {
 //    private var avatar: AvatarView?
 //    private let radio = SelectMessageRadio()
     private var messageContainer: MessageContainerStackView!
-    private var containerBottomConstraint: NSLayoutConstraint!
+    private var messageContainerBottomConstraint: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -65,8 +65,6 @@ public class MessageBaseCell: UITableViewCell {
     }
 
     private func setConstraints() {
-        containerBottomConstraint = container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
-        containerBottomConstraint.identifier = "containerBottomConstraintContainerMessageBaseCell"
         let isMe = self is MyselfMessageCell
         let isRTL = Language.isRTL
         if isRTL {
@@ -82,14 +80,16 @@ public class MessageBaseCell: UITableViewCell {
                 container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
             }
         }
+        messageContainerBottomConstraint = messageContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -1)
+        messageContainerBottomConstraint.identifier = "messageContainerBottomConstraintMessageBaseCell"
         NSLayoutConstraint.activate([
             container.widthAnchor.constraint(equalTo: messageContainer.widthAnchor),
             container.topAnchor.constraint(equalTo: contentView.topAnchor),
-            containerBottomConstraint,
+            container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
 
+            messageContainer.topAnchor.constraint(equalTo: container.topAnchor, constant: 1),
+            messageContainerBottomConstraint,
             messageContainer.widthAnchor.constraint(lessThanOrEqualToConstant: ThreadViewModel.maxAllowedWidth),
-            messageContainer.topAnchor.constraint(equalTo: container.topAnchor, constant: 0),
-            messageContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 0),
             messageContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
 //            radio.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8)
         ])
@@ -98,7 +98,7 @@ public class MessageBaseCell: UITableViewCell {
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         messageContainer.cell = self
-//        hstackBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
+        messageContainerBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
 //        avatar?.set(viewModel)
         messageContainer.set(viewModel)
 //        radio.setIsHidden(viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false)
