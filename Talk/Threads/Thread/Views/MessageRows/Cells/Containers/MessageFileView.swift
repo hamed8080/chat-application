@@ -24,20 +24,22 @@ final class MessageFileView: UIStackView {
     private weak var viewModel: MessageRowViewModel?
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configureView() {
+    private func configureView(isMe: Bool) {
         layoutMargins = .init(top: 8, left: 8, bottom: 0, right: 0)
         isLayoutMarginsRelativeArrangement = true
         axis = .horizontal
         spacing = 8
+        backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        isOpaque = true
 
         progressButton.translatesAutoresizingMaskIntoConstraints = false
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
@@ -47,6 +49,8 @@ final class MessageFileView: UIStackView {
         progressButton.setContentHuggingPriority(.required, for: .vertical)
         progressButton.setContentCompressionResistancePriority(.required, for: .vertical)
         progressButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        progressButton.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        progressButton.isOpaque = true
         addArrangedSubview(progressButton)
 
         let typeSizeHStack = UIStackView()
@@ -54,12 +58,16 @@ final class MessageFileView: UIStackView {
         typeSizeHStack.axis = .horizontal
         typeSizeHStack.spacing = 4
         typeSizeHStack.accessibilityIdentifier = "typeSizeHStackMessageFileView"
+        typeSizeHStack.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        typeSizeHStack.isOpaque = true
 
         fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
         fileTypeLabel.accessibilityIdentifier = "fileTypeLabelMessageFileView"
+        fileTypeLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        fileTypeLabel.isOpaque = true
         typeSizeHStack.addArrangedSubview(fileTypeLabel)
 
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -67,6 +75,8 @@ final class MessageFileView: UIStackView {
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
         fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageFileView"
+        fileSizeLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        fileSizeLabel.isOpaque = true
         typeSizeHStack.addArrangedSubview(fileSizeLabel)
 
         vStack.translatesAutoresizingMaskIntoConstraints = false
@@ -74,6 +84,8 @@ final class MessageFileView: UIStackView {
         vStack.alignment = .leading
         vStack.spacing = 4
         vStack.accessibilityIdentifier = "vStackMessageFileView"
+        vStack.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        vStack.isOpaque = true
 
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
@@ -83,6 +95,8 @@ final class MessageFileView: UIStackView {
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
         fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageFileView"
         fileNameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        fileNameLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        fileNameLabel.isOpaque = true
 
         vStack.addArrangedSubview(fileNameLabel)
         vStack.addArrangedSubview(typeSizeHStack)

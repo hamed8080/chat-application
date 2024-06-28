@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import TalkModels
 import Chat
+import UIKit
 
 class MessageRowCalculators {
     typealias MessageType = any HistoryMessageProtocol
@@ -69,7 +70,7 @@ class MessageRowCalculators {
         sizes.forwardContainerWidth = await calculateForwardContainerWidth(rowType: rowType, sizes: sizes)
         calculatedMessage.isInTwoWeekPeriod = calculateIsInTwoWeekPeriod(message: message)
         calculatedMessage.textLayer = getTextLayer(markdownTitle: calculatedMessage.markdownTitle)
-        calculatedMessage.textRect = getRect(markdownTitle: calculatedMessage.markdownTitle, width: ThreadViewModel.maxAllowedWidth)
+        calculatedMessage.textRect = getRect(markdownTitle: calculatedMessage.markdownTitle, width: ThreadViewModel.maxAllowedWidth - 16)
 
         let originalPaddings = sizes.paddings
         sizes.paddings = calculateSpacingPaddings(message: message, calculatedMessage: calculatedMessage)
@@ -171,7 +172,10 @@ class MessageRowCalculators {
         let isMeDoer = "General.you".bundleLocalized()
         let doer = calculatedMessage.isMe ? isMeDoer : (message.participant?.name ?? "")
         let doerRange = NSString(string: string).range(of: doer)
-        attr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "accent") ?? .orange], range: doerRange)
+        attr.addAttributes([
+            NSAttributedString.Key.foregroundColor: UIColor(named: "accent") ?? .orange,
+            NSAttributedString.Key.font: UIFont(name: "IRANSansX", size: 14) ?? .systemFont(ofSize: 14)
+        ], range: doerRange)
         return attr
     }
 
@@ -480,9 +484,11 @@ class MessageRowCalculators {
         if calculatedMessage.rowType.cellType == .call {
             return 32
         } else if calculatedMessage.rowType.cellType == .participants {
-            let padding: CGFloat = 8
-            let height = (getRect(markdownTitle: calculatedMessage.addOrRemoveParticipantsAttr, width: ThreadViewModel.threadWidth - 32)?.height ?? 0)
-            return height + (padding * 2)
+            let padding: CGFloat = 16 // top/bottom margin constraint
+            let margin: CGFloat = 24 // top/bottom padding label
+            let drawableWidth = ThreadViewModel.threadWidth - (margin + padding)
+            let height = (getRect(markdownTitle: calculatedMessage.addOrRemoveParticipantsAttr, width: drawableWidth)?.height ?? 0)
+            return height + (padding / 2) + (margin / 2)
         }
         let containerMargin: CGFloat = 1
         var estimatedHeight: CGFloat = 0
@@ -500,7 +506,7 @@ class MessageRowCalculators {
 
         if calculatedMessage.rowType.isReply {
             estimatedHeight += spacing
-            estimatedHeight += 52.67
+            estimatedHeight += 48
             estimatedHeight += spacing
         }
 

@@ -36,8 +36,8 @@ final class MessageContainerStackView: UIStackView {
         self.groupParticipantNameView = .init(frame: frame)
         self.replyInfoMessageRow = .init(frame: frame, isMe: isMe)
         self.forwardMessageRow = .init(frame: frame, isMe: isMe)
-        self.fotterView = .init(frame: frame)
-        self.messageFileView = .init(frame: frame)
+        self.fotterView = .init(frame: frame, isMe: isMe)
+        self.messageFileView = .init(frame: frame, isMe: isMe)
         self.messageAudioView = .init(frame: frame, isMe: isMe)
         self.locationRowView = .init(frame: frame)
         self.messageImageView = .init(frame: frame)
@@ -45,6 +45,7 @@ final class MessageContainerStackView: UIStackView {
 //        self.reactionView = .init(frame: frame, isMe: isMe)
         super.init(frame: frame)
         configureView(isMe: isMe)
+
         addMenus()
     }
 
@@ -91,6 +92,7 @@ final class MessageContainerStackView: UIStackView {
         addArrangedSubview(locationRowView)
 
         textMessageView.translatesAutoresizingMaskIntoConstraints = false
+        textMessageView.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor! 
         addArrangedSubview(textMessageView)
 
         //        reactionView.translatesAutoresizingMaskIntoConstraints = false

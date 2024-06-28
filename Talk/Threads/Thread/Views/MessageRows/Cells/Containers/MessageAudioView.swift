@@ -40,11 +40,15 @@ final class MessageAudioView: UIView {
     private func configureView(isMe: Bool) {
         translatesAutoresizingMaskIntoConstraints = false
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
+        backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        isOpaque = true
 
         progressButton.translatesAutoresizingMaskIntoConstraints = false
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         progressButton.isUserInteractionEnabled = true
         progressButton.accessibilityIdentifier = "progressButtonMessageAudioView"
+        progressButton.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        progressButton.isOpaque = true
         addSubview(progressButton)
 
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -54,6 +58,8 @@ final class MessageAudioView: UIView {
         fileNameLabel.numberOfLines = 1
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
         fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageAudioView"
+        fileNameLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        fileNameLabel.isOpaque = true
         addSubview(fileNameLabel)
 
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -61,6 +67,8 @@ final class MessageAudioView: UIView {
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
         fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageAudioView"
+        fileSizeLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        fileSizeLabel.isOpaque = true
         addSubview(fileSizeLabel)
 
         fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -73,6 +81,8 @@ final class MessageAudioView: UIView {
         fileTypeLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         fileTypeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         fileTypeLabel.accessibilityIdentifier = "fileTypeLabelMessageAudioView"
+        fileTypeLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        fileTypeLabel.isOpaque = true
         addSubview(fileTypeLabel)
 
         playerProgress.translatesAutoresizingMaskIntoConstraints = false
@@ -83,6 +93,8 @@ final class MessageAudioView: UIView {
         playerProgress.accessibilityIdentifier = "playerProgressMessageAudioView"
         playerProgress.setContentHuggingPriority(.required, for: .vertical)
         playerProgress.setContentCompressionResistancePriority(.required, for: .vertical)
+        playerProgress.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        playerProgress.isOpaque = true
         addSubview(playerProgress)
 
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -93,6 +105,8 @@ final class MessageAudioView: UIView {
         timeLabel.accessibilityIdentifier = "timeLabelMessageAudioView"
         timeLabel.setContentHuggingPriority(.required, for: .vertical)
         timeLabel.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        timeLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        timeLabel.isOpaque = true
         addSubview(timeLabel)
 
         let padding: CGFloat = 6

@@ -67,18 +67,10 @@ public class MessageBaseCell: UITableViewCell {
     private func setConstraints() {
         let isMe = self is MyselfMessageCell
         let isRTL = Language.isRTL
-        if isRTL {
-            if isMe {
-                container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
-            } else {
-                container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
-            }
+        if (isRTL && isMe) || (!isRTL && !isMe) {
+            container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
         } else {
-            if isMe {
-                container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
-            } else {
-                container.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
-            }
+            container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
         }
         messageContainerBottomConstraint = messageContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -1)
         messageContainerBottomConstraint.identifier = "messageContainerBottomConstraintMessageBaseCell"

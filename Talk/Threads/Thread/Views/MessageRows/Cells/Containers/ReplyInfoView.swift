@@ -39,6 +39,7 @@ final class ReplyInfoView: UIView {
         layer.cornerRadius = 8
         layer.masksToBounds = true
         backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
+        isOpaque = true
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(onReplyTapped))
@@ -58,6 +59,8 @@ final class ReplyInfoView: UIView {
         replyLabel.textAlignment = isMe ? .right : .left
         replyLabel.accessibilityIdentifier = "replyLabelReplyInfoView"
         replyLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        replyLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
+        replyLabel.isOpaque = true
         addSubview(replyLabel)
 
         deletedLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -67,6 +70,8 @@ final class ReplyInfoView: UIView {
         deletedLabel.setIsHidden(true)
         deletedLabel.accessibilityIdentifier = "deletedLabelReplyInfoView"
         deletedLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        deletedLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
+        deletedLabel.isOpaque = true
         addSubview(deletedLabel)
 
         replyStaticLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -74,6 +79,8 @@ final class ReplyInfoView: UIView {
         replyStaticLabel.textColor = Color.App.accentUIColor
         replyStaticLabel.text = ReplyInfoView.repliedToStaticText
         replyStaticLabel.accessibilityIdentifier = "replyStaticLabelReplyInfoView"
+        replyStaticLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
+        replyStaticLabel.isOpaque = true
         replyStaticLabel.setContentHuggingPriority(.required, for: .horizontal)
         replyStaticLabel.setContentHuggingPriority(.required, for: .vertical)
         replyStaticLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -84,6 +91,8 @@ final class ReplyInfoView: UIView {
         participantLabel.textColor = Color.App.accentUIColor
         participantLabel.accessibilityIdentifier = "participantLabelReplyInfoView"
         participantLabel.textAlignment = isMe ? .right : .left
+        participantLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
+        participantLabel.isOpaque = true
         participantLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(participantLabel)
 
@@ -197,6 +206,8 @@ final class ReplyInfoView: UIView {
     }
 
     private func reset() {
+        replyLabel.text = nil
+        participantLabel.text = nil
         setIsHidden(true)
     }
 }

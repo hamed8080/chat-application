@@ -12,7 +12,7 @@ import TalkUI
 import TalkViewModels
 
 final class ParticipantsEventCell: UITableViewCell {
-    private let label = PaddingUILabel(frame: .zero, horizontal: 32, vertical: 8)
+    private let label = PaddingUILabel(frame: .zero, horizontal: 16, vertical: 8)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -38,9 +38,9 @@ final class ParticipantsEventCell: UITableViewCell {
 
         NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
-            label.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, multiplier: 1, constant: -32),
-            label.topAnchor.constraint(equalTo: contentView.topAnchor),
-            label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            label.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, multiplier: 1, constant: -24),
+            label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
         ])
 
         // Set content compression resistance priority

@@ -127,6 +127,7 @@ extension ThreadViewController {
         tableView.allowsMultipleSelection = false // Prevent the user select things when open the thread
         tableView.allowsSelection = false // Prevent the user select things when open the thread
         tableView.sectionHeaderTopPadding = 0
+        tableView.showsVerticalScrollIndicator = false
         ConversationHistoryCellFactory.registerCells(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.accessibilityIdentifier = "tableViewThreadViewController"
@@ -649,8 +650,8 @@ extension ThreadViewController: HistoryScrollDelegate {
 
         tableView.performBatchUpdates {
             // Insert the sections and rows without animation
-            tableView.insertSections(sections, with: .middle)
-            tableView.insertRows(at: rows, with: .middle)
+            tableView.insertSections(sections, with: .top)
+            tableView.insertRows(at: rows, with: .top)
             DispatchQueue.main.async {
 //                self.tableView.setContentOffset(self.tableView.contentOffset, animated: true)
                 if let scrollTo = scrollTo {

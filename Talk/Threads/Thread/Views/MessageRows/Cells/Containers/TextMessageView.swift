@@ -30,6 +30,7 @@ final class TextMessageView: UITextView {
         isEditable = false
         isSelectable = false /// Only is going to be enable when we are in context menu
         ///
+        isOpaque = true
         isUserInteractionEnabled = true
         linkTextAttributes = [:]
         let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
@@ -49,8 +50,7 @@ final class TextMessageView: UITextView {
             reset()
         }
         self.viewModel = viewModel
-        textAlignment = viewModel.calMessage.isMe || !viewModel.calMessage.isEnglish ? .right : .left
-        backgroundColor = .clear
+//        textAlignment = viewModel.calMessage.isMe || !viewModel.calMessage.isEnglish ? .right : .left
         isUserInteractionEnabled = viewModel.calMessage.rowType.isPublicLink
         setText()
 //        heightConstraint.constant = viewModel.calMessage.textRect?.width ?? 0
@@ -67,7 +67,6 @@ final class TextMessageView: UITextView {
 
     public func setText() {
         self.attributedText = self.viewModel?.calMessage.markdownTitle
-        self.font = UIFont.uiiransansBody
         setIsHidden(viewModel?.calMessage.rowType.hasText == false)
     }
 }

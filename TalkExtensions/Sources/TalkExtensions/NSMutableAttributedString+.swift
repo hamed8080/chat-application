@@ -10,9 +10,21 @@ import UIKit
 
 public extension NSMutableAttributedString {
 
+    private static let userMentionFont = UIFont(name: "IRANSansX-Bold", size: 14)
+    private static let bodyFont = UIFont(name: "IRANSansX", size: 16)
+
     func addDefaultTextColor(_ color: UIColor) {
         let allRange = NSRange(string.startIndex..., in: string)
-        addAttributes([NSAttributedString.Key.foregroundColor : color], range: allRange)
+        let style = NSMutableParagraphStyle()
+        style.alignment = .right
+        style.lineSpacing = 1
+        style.paragraphSpacing = 1
+        style.lineBreakMode = .byWordWrapping
+        addAttributes([
+            NSAttributedString.Key.paragraphStyle: style,
+            NSAttributedString.Key.foregroundColor : color,
+            NSAttributedString.Key.font: NSMutableAttributedString.bodyFont ?? .systemFont(ofSize: 14)
+        ], range: allRange)
     }
 
     func addLinkColor(_ color: UIColor = .blue) {
@@ -37,8 +49,6 @@ public extension NSMutableAttributedString {
             }
         }
     }
-
-    private static let userMentionFont = UIFont(name: "IRANSansX-Bold", size: 14)
 
     func addUserColor(_ color: UIColor = .blue) {
         if let userRegex = NSRegularExpression.userRegEx {

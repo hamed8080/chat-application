@@ -103,10 +103,7 @@ final class ForwardInfoView: UIView {
     }
 
     private func reset() {
+        participantLabel.text = nil
         setIsHidden(true)
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
     }
 }

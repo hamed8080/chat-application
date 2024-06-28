@@ -27,6 +27,8 @@ final class GroupParticipantNameView: UILabel {
         translatesAutoresizingMaskIntoConstraints = false
         font = UIFont.uiiransansBoldBody
         numberOfLines = 1
+        backgroundColor = Color.App.bgChatUserUIColor!
+        isOpaque = true
         heightConstraint = heightAnchor.constraint(equalToConstant: 16)
         heightConstraint.identifier = "heightConstraintGroupParticipantNameView"
         NSLayoutConstraint.activate([

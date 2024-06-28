@@ -24,19 +24,21 @@ final class FooterView: UIStackView {
     private var shapeLayer = CAShapeLayer()
     private var rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configureView() {
+    private func configureView(isMe: Bool) {
         spacing = 4
         axis = .horizontal
         alignment = .lastBaseline
+        backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        isOpaque = true
 
         pinImage.translatesAutoresizingMaskIntoConstraints = false
         pinImage.tintColor = Color.App.accentUIColor
@@ -46,17 +48,23 @@ final class FooterView: UIStackView {
         pinImage.setContentHuggingPriority(.required, for: .horizontal)
         pinImage.setContentCompressionResistancePriority(.required, for: .horizontal)
         pinImage.setContentCompressionResistancePriority(.required, for: .horizontal)
+        pinImage.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        pinImage.isOpaque = true
         addArrangedSubview(pinImage)
 
         statusImage.translatesAutoresizingMaskIntoConstraints = false
         statusImage.contentMode = .scaleAspectFit
         statusImage.accessibilityIdentifier = "statusImageFooterView"
+        statusImage.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        statusImage.isOpaque = true
         addArrangedSubview(statusImage)
 
         timelabel.translatesAutoresizingMaskIntoConstraints = false
         timelabel.font = UIFont.uiiransansBoldCaption2
         timelabel.textColor = Color.App.textPrimaryUIColor?.withAlphaComponent(0.5)
         timelabel.accessibilityIdentifier = "timelabelFooterView"
+        timelabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        timelabel.isOpaque = true
         addArrangedSubview(timelabel)
 
         editedLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -64,6 +72,10 @@ final class FooterView: UIStackView {
         editedLabel.textColor = Color.App.textSecondaryUIColor
         editedLabel.text = FooterView.staticEditString
         editedLabel.accessibilityIdentifier = "editedLabelFooterView"
+        editedLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        editedLabel.isOpaque = true
+        editedLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        editedLabel.isOpaque = true
         addArrangedSubview(editedLabel)
         
         statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: 12)

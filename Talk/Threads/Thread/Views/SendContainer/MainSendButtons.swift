@@ -50,6 +50,8 @@ public final class MainSendButtons: UIStackView {
         btnToggleAttachmentButtons.layer.masksToBounds = true
         btnToggleAttachmentButtons.layer.cornerRadius = MainSendButtons.initSize / 2
         btnToggleAttachmentButtons.backgroundColor = Color.App.bgSendInputUIColor
+        btnToggleAttachmentButtons.imageView.backgroundColor = Color.App.bgSendInputUIColor
+        btnToggleAttachmentButtons.imageView.isOpaque = true
         btnToggleAttachmentButtons.accessibilityIdentifier = "btnToggleAttachmentButtonsMainSendButtons"
         btnToggleAttachmentButtons.setContentHuggingPriority(.required, for: .horizontal)
 
@@ -57,12 +59,15 @@ public final class MainSendButtons: UIStackView {
         btnMic.imageView.contentMode = .scaleAspectFit
         btnMic.tintColor = Color.App.textSecondaryUIColor
         btnMic.accessibilityIdentifier = "btnMicMainSendButtons"
+        btnMic.isOpaque = true
 
         btnCamera.translatesAutoresizingMaskIntoConstraints = false
         btnCamera.imageView.contentMode = .scaleAspectFit
         btnCamera.tintColor = Color.App.textSecondaryUIColor
         btnCamera.accessibilityIdentifier = "btnCameraMainSendButtons"
         btnCamera.setContentHuggingPriority(.required, for: .horizontal)
+        btnCamera.backgroundColor = Color.App.textSecondaryUIColor
+        btnCamera.isOpaque = true
         btnCamera.setIsHidden(true)
 
         btnSend.translatesAutoresizingMaskIntoConstraints = false
@@ -71,6 +76,8 @@ public final class MainSendButtons: UIStackView {
         btnSend.layer.masksToBounds = true
         btnSend.layer.cornerRadius = (MainSendButtons.initSize - 4) / 2
         btnSend.layer.backgroundColor = Color.App.accentUIColor?.cgColor
+        btnSend.backgroundColor = Color.App.accentUIColor
+        btnSend.isOpaque = true
         btnSend.accessibilityIdentifier = "btnSendMainSendButtons"
         btnSend.setContentHuggingPriority(.required, for: .horizontal)
         btnSend.setIsHidden(true)
@@ -85,6 +92,7 @@ public final class MainSendButtons: UIStackView {
         hStack.layer.masksToBounds = true
         hStack.layer.cornerRadius = MainSendButtons.initSize / 2
         hStack.backgroundColor = Color.App.bgSendInputUIColor
+        hStack.isOpaque = true
         hStack.alignment = .bottom
         hStack.accessibilityIdentifier = "hStackMainSendButtons"
         hStack.layoutMargins = .init(top: -4, left: 8, bottom: 0, right: 8)//-4 to move textfield higher to make the cursor center in the textfield.
