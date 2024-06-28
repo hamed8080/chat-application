@@ -90,7 +90,7 @@ final class MessageLocationView: UIImageView {
                 await MainActor.run {
                     self.image = UIImage(cgImage: image)
                 }
-            }
+            } 
         }
     }
 

@@ -49,44 +49,44 @@ final class MessageFileView: UIStackView {
         progressButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         addArrangedSubview(progressButton)
 
-//        let typeSizeHStack = UIStackView()
-//        typeSizeHStack.translatesAutoresizingMaskIntoConstraints = false
-//        typeSizeHStack.axis = .horizontal
-//        typeSizeHStack.spacing = 4
-//        typeSizeHStack.accessibilityIdentifier = "typeSizeHStackMessageFileView"
+        let typeSizeHStack = UIStackView()
+        typeSizeHStack.translatesAutoresizingMaskIntoConstraints = false
+        typeSizeHStack.axis = .horizontal
+        typeSizeHStack.spacing = 4
+        typeSizeHStack.accessibilityIdentifier = "typeSizeHStackMessageFileView"
 
-//        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-//        fileTypeLabel.font = UIFont.uiiransansBoldCaption2
-//        fileTypeLabel.textAlignment = .left
-//        fileTypeLabel.textColor = Color.App.textSecondaryUIColor
-//        fileTypeLabel.accessibilityIdentifier = "fileTypeLabelMessageFileView"
-//        typeSizeHStack.addArrangedSubview(fileTypeLabel)
-//
-//        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
-//        fileSizeLabel.font = UIFont.uiiransansBoldCaption2
-//        fileSizeLabel.textAlignment = .left
-//        fileSizeLabel.textColor = Color.App.textPrimaryUIColor
-//        fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageFileView"
-//        typeSizeHStack.addArrangedSubview(fileSizeLabel)
-//
-//        vStack.translatesAutoresizingMaskIntoConstraints = false
-//        vStack.axis = .vertical
-//        vStack.alignment = .leading
-//        vStack.spacing = 4
-//        vStack.accessibilityIdentifier = "vStackMessageFileView"
-//
-//        fileNameLabel.font = UIFont.uiiransansBoldCaption2
-//        fileNameLabel.textAlignment = .left
-//        fileNameLabel.textColor = Color.App.textPrimaryUIColor
-//        fileNameLabel.numberOfLines = 1
-//        fileNameLabel.lineBreakMode = .byTruncatingMiddle
-//        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
-//        fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageFileView"
-//        fileNameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-//
-//        vStack.addArrangedSubview(fileNameLabel)
-//        vStack.addArrangedSubview(typeSizeHStack)
-//        addArrangedSubview(vStack)
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileTypeLabel.font = UIFont.uiiransansBoldCaption2
+        fileTypeLabel.textAlignment = .left
+        fileTypeLabel.textColor = Color.App.textSecondaryUIColor
+        fileTypeLabel.accessibilityIdentifier = "fileTypeLabelMessageFileView"
+        typeSizeHStack.addArrangedSubview(fileTypeLabel)
+
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileSizeLabel.font = UIFont.uiiransansBoldCaption2
+        fileSizeLabel.textAlignment = .left
+        fileSizeLabel.textColor = Color.App.textPrimaryUIColor
+        fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageFileView"
+        typeSizeHStack.addArrangedSubview(fileSizeLabel)
+
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        vStack.axis = .vertical
+        vStack.alignment = .leading
+        vStack.spacing = 4
+        vStack.accessibilityIdentifier = "vStackMessageFileView"
+
+        fileNameLabel.font = UIFont.uiiransansBoldCaption2
+        fileNameLabel.textAlignment = .left
+        fileNameLabel.textColor = Color.App.textPrimaryUIColor
+        fileNameLabel.numberOfLines = 1
+        fileNameLabel.lineBreakMode = .byTruncatingMiddle
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageFileView"
+        fileNameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        vStack.addArrangedSubview(fileNameLabel)
+        vStack.addArrangedSubview(typeSizeHStack)
+        addArrangedSubview(vStack)
 
         NSLayoutConstraint.activate([
             progressButton.widthAnchor.constraint(equalToConstant: 36),
@@ -103,9 +103,9 @@ final class MessageFileView: UIStackView {
         self.viewModel = viewModel
         setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
         updateProgress(viewModel: viewModel)
-//        fileSizeLabel.text = viewModel.calMessage.computedFileSize
-//        fileNameLabel.text = viewModel.calMessage.fileName
-//        fileTypeLabel.text = viewModel.calMessage.extName
+        fileSizeLabel.text = viewModel.calMessage.computedFileSize
+        fileNameLabel.text = viewModel.calMessage.fileName
+        fileTypeLabel.text = viewModel.calMessage.extName
     }
 
     @objc private func onTap() {

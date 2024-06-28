@@ -299,7 +299,7 @@ extension ThreadViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.textRect?.height ?? 28
+        return viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.sizes.estimatedHeight ?? 28
     }
 }
 
@@ -619,31 +619,44 @@ extension ThreadViewController: HistoryScrollDelegate {
     private func inserted(sections: IndexSet, rows: [IndexPath], scrollTo: IndexPath?) {
 
         // Save the current content offset and content height
-        let beforeOffsetY = tableView.contentOffset.y
-        let beforeContentHeight = tableView.contentSize.height
-        print("before offset y is: \(beforeOffsetY)")
-
-        // Begin table view updates
-        tableView.beginUpdates()
-
-        // Insert the sections and rows without animation
-        tableView.insertSections(sections, with: .middle)
-        tableView.insertRows(at: rows, with: .middle)
-
-        // Calculate the new content size and offset
-        let afterContentHeight = tableView.contentSize.height
-        let offsetChange = afterContentHeight - beforeContentHeight
-
-        // Update the content offset to keep the visible content stationary
-        let newOffsetY = beforeOffsetY + offsetChange
-        print("new offset y is: \(newOffsetY)")
-        tableView.contentOffset.y = newOffsetY
+//        let beforeOffsetY = tableView.contentOffset.y
+//        let beforeContentHeight = tableView.contentSize.height
+//        print("before offset y is: \(beforeOffsetY)")
+//
+//        // Begin table view updates
+//        tableView.beginUpdates()
+//
+//        // Insert the sections and rows without animation
+//        tableView.insertSections(sections, with: .middle)
+//        tableView.insertRows(at: rows, with: .middle)
+//
+//        // Calculate the new content size and offset
+//        let afterContentHeight = tableView.contentSize.height
+//        let offsetChange = afterContentHeight - beforeContentHeight
+//
+//        // Update the content offset to keep the visible content stationary
+//        let newOffsetY = beforeOffsetY + offsetChange
+//        print("new offset y is: \(newOffsetY)")
+//        tableView.contentOffset.y = newOffsetY
 //        tableView.setContentOffset(.init(x: 0, y: newOffsetY), animated: true)
 
         // End table view updates
-        tableView.endUpdates()
-        if let scrollTo = scrollTo {
-            tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
+//        tableView.endUpdates()
+//
+//        if let scrollTo = scrollTo {
+//            self.tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
+//        }
+
+        tableView.performBatchUpdates {
+            // Insert the sections and rows without animation
+            tableView.insertSections(sections, with: .middle)
+            tableView.insertRows(at: rows, with: .middle)
+            DispatchQueue.main.async {
+//                self.tableView.setContentOffset(self.tableView.contentOffset, animated: true)
+                if let scrollTo = scrollTo {
+                    self.tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
+                }
+            }
         }
     }
 

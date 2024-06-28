@@ -45,12 +45,13 @@ final class MessageImageView: UIImageView {
 
         progressView.translatesAutoresizingMaskIntoConstraints = false
         progressView.accessibilityIdentifier = "progressViewMessageImageView"
+        progressView.setContentHuggingPriority(.required, for: .horizontal)
+        progressView.setContentHuggingPriority(.required, for: .vertical)
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         effectView = UIVisualEffectView(effect: blurEffect)
         effectView.translatesAutoresizingMaskIntoConstraints = false
         effectView.frame = bounds
-        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         effectView.isUserInteractionEnabled = false
         effectView.accessibilityIdentifier = "effectViewMessageImageView"
         addSubview(effectView)
@@ -90,9 +91,7 @@ final class MessageImageView: UIImageView {
             heightConstraint,
             
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
             effectView.topAnchor.constraint(equalTo: topAnchor),
-            effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
             effectView.widthAnchor.constraint(equalTo: widthAnchor),
             effectView.heightAnchor.constraint(equalTo: heightAnchor),
 

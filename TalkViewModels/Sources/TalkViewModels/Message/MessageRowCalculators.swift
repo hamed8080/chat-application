@@ -69,7 +69,7 @@ class MessageRowCalculators {
         sizes.forwardContainerWidth = await calculateForwardContainerWidth(rowType: rowType, sizes: sizes)
         calculatedMessage.isInTwoWeekPeriod = calculateIsInTwoWeekPeriod(message: message)
         calculatedMessage.textLayer = getTextLayer(markdownTitle: calculatedMessage.markdownTitle)
-        calculatedMessage.textRect = getRect(markdownTitle: calculatedMessage.markdownTitle)
+        calculatedMessage.textRect = getRect(markdownTitle: calculatedMessage.markdownTitle, width: ThreadViewModel.maxAllowedWidth)
 
         let originalPaddings = sizes.paddings
         sizes.paddings = calculateSpacingPaddings(message: message, calculatedMessage: calculatedMessage)
@@ -82,6 +82,8 @@ class MessageRowCalculators {
         calculatedMessage.callDateText = calculateCallText(message: message)
 
         calculatedMessage.rowType = rowType
+        let estimateHeight = calculateEstimatedHeight(calculatedMessage, sizes)
+        sizes.estimatedHeight = estimateHeight
         calculatedMessage.sizes = sizes
 
         return calculatedMessage
@@ -451,7 +453,7 @@ class MessageRowCalculators {
     class func getTextLayer(markdownTitle: NSAttributedString?) -> CATextLayer? {
         if let attributedString = markdownTitle {
             let textLayer = CATextLayer()
-            textLayer.frame.size = getRect(markdownTitle: attributedString)?.size ?? .zero
+            textLayer.frame.size = getRect(markdownTitle: attributedString, width: ThreadViewModel.maxAllowedWidth)?.size ?? .zero
             textLayer.string = attributedString
             textLayer.backgroundColor = UIColor.clear.cgColor
             textLayer.alignmentMode = .right
@@ -460,10 +462,10 @@ class MessageRowCalculators {
         return nil
     }
 
-    class func getRect(markdownTitle: NSAttributedString?) -> CGRect? {
+    class func getRect(markdownTitle: NSAttributedString?, width: CGFloat) -> CGRect? {
         guard let markdownTitle = markdownTitle else { return nil }
         let ts = NSTextStorage(attributedString: markdownTitle)
-        let size = CGSize(width: 300, height: CGFloat.greatestFiniteMagnitude)
+        let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
         let tc = NSTextContainer(size: size)
         tc.lineFragmentPadding = 0.0
         let lm = NSLayoutManager()
@@ -472,5 +474,76 @@ class MessageRowCalculators {
         lm.glyphRange(forBoundingRect: CGRect(origin: .zero, size: size), in: tc)
         let rect = lm.usedRect(for: tc)
         return rect
+    }
+
+    class func calculateEstimatedHeight(_ calculatedMessage: MessageRowCalculatedData, _ sizes: MessageRowSizes) -> CGFloat {
+        if calculatedMessage.rowType.cellType == .call {
+            return 32
+        } else if calculatedMessage.rowType.cellType == .participants {
+            let padding: CGFloat = 8
+            let height = (getRect(markdownTitle: calculatedMessage.addOrRemoveParticipantsAttr, width: ThreadViewModel.threadWidth - 32)?.height ?? 0)
+            return height + (padding * 2)
+        }
+        let containerMargin: CGFloat = 1
+        var estimatedHeight: CGFloat = 0
+        let margin: CGFloat = 4 // stack margin
+        let spacing: CGFloat = 4
+
+        estimatedHeight += containerMargin
+        estimatedHeight += margin
+
+        //group participant name height
+        if calculatedMessage.isFirstMessageOfTheUser && !calculatedMessage.isMe {
+            estimatedHeight += 16
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.isReply {
+            estimatedHeight += spacing
+            estimatedHeight += 52.67
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.isForward {
+            estimatedHeight += 48
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.isImage {
+            estimatedHeight += sizes.imageHeight ?? 0
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.isVideo {
+            estimatedHeight += 196
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.isAudio {
+            estimatedHeight += 78
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.isFile {
+            estimatedHeight += 44
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.isMap {
+            estimatedHeight += sizes.mapHeight // static inside MessageRowCalculatedData
+            estimatedHeight += spacing
+        }
+
+        if calculatedMessage.rowType.hasText {
+            estimatedHeight += calculatedMessage.textRect?.height ?? 0
+            estimatedHeight += spacing
+        }
+
+        //footer height
+        estimatedHeight += 18
+        estimatedHeight += margin
+        estimatedHeight += containerMargin
+
+        return estimatedHeight
     }
 }

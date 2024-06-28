@@ -50,7 +50,7 @@ final class TextMessageView: UITextView {
         }
         self.viewModel = viewModel
         textAlignment = viewModel.calMessage.isMe || !viewModel.calMessage.isEnglish ? .right : .left
-        backgroundColor = .red
+        backgroundColor = .clear
         isUserInteractionEnabled = viewModel.calMessage.rowType.isPublicLink
         setText()
 //        heightConstraint.constant = viewModel.calMessage.textRect?.width ?? 0

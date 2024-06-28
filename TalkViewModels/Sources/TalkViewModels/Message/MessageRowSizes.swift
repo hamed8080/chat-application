@@ -12,7 +12,7 @@ public struct MessageRowSizes {
     public static let tailSize: CGSize = .init(width: 6, height: 12)
     public var paddings = MessagePaddings()
     public var width: CGFloat? = nil
-    public var height: CGFloat? = nil
+    public var estimatedHeight: CGFloat = 0
     public var replyContainerWidth: CGFloat?
     public var forwardContainerWidth: CGFloat?
     public var imageWidth: CGFloat? = nil

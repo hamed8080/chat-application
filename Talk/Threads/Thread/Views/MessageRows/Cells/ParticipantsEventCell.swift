@@ -25,12 +25,12 @@ final class ParticipantsEventCell: UITableViewCell {
 
     private func configureView() {
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.uiiransansBody
-        label.numberOfLines = 0
-        label.textColor = Color.App.textPrimaryUIColor
+        label.label.font = UIFont.uiiransansBody
+        label.label.numberOfLines = 0
+        label.label.textColor = Color.App.textPrimaryUIColor
         label.layer.cornerRadius = 14
         label.layer.masksToBounds = true
-        label.textAlignment = .center
+        label.label.textAlignment = .center
         label.backgroundColor = .black.withAlphaComponent(0.4)
         label.accessibilityIdentifier = "labelParticipantsEventCell"
 
@@ -47,10 +47,12 @@ final class ParticipantsEventCell: UITableViewCell {
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         // Set content hugging priority
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
-        label.attributedText = viewModel.calMessage.addOrRemoveParticipantsAttr
+        label.label.attributedText = viewModel.calMessage.addOrRemoveParticipantsAttr
     }
 }

@@ -98,7 +98,7 @@ public class MessageBaseCell: UITableViewCell {
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         messageContainer.cell = self
-        messageContainerBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
+//        messageContainerBottomConstraint.constant = viewModel.calMessage.isLastMessageOfTheUser ? -6 : -1
 //        avatar?.set(viewModel)
         messageContainer.set(viewModel)
 //        radio.setIsHidden(viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false)

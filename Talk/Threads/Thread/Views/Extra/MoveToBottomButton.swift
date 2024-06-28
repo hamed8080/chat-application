@@ -47,12 +47,12 @@ public final class MoveToBottomButton: UIButton {
         addSubview(imgCenter)
 
         lblUnreadCount.translatesAutoresizingMaskIntoConstraints = false
-        lblUnreadCount.textColor = Color.App.whiteUIColor
-        lblUnreadCount.font = .uiiransansBoldCaption
+        lblUnreadCount.label.textColor = Color.App.whiteUIColor
+        lblUnreadCount.label.font = .uiiransansBoldCaption
         lblUnreadCount.layer.backgroundColor = Color.App.accentUIColor?.cgColor
         lblUnreadCount.layer.cornerRadius = 12
-        lblUnreadCount.textAlignment = .center
-        lblUnreadCount.numberOfLines = 1
+        lblUnreadCount.label.textAlignment = .center
+        lblUnreadCount.label.numberOfLines = 1
         lblUnreadCount.accessibilityIdentifier = "lblUnreadCountMoveToBottomButton"
 
         addSubview(lblUnreadCount)
@@ -77,7 +77,7 @@ public final class MoveToBottomButton: UIButton {
 
     public func updateUnreadCount() {
         lblUnreadCount.isHidden = viewModel?.thread.unreadCount == 0 || viewModel?.thread.unreadCount == nil
-        lblUnreadCount.text = viewModel?.thread.unreadCountString ?? ""
+        lblUnreadCount.label.text = viewModel?.thread.unreadCountString ?? ""
     }
 
     public func setVisibility(visible: Bool) {

@@ -45,8 +45,8 @@ final class ReplyInfoView: UIView {
         addGestureRecognizer(tap)
 
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
+        imageIconView.contentMode = .scaleAspectFit
         imageIconView.accessibilityIdentifier = "imageIconViewReplyInfoView"
-        imageIconView.backgroundColor = .blue
         imageIconView.setContentHuggingPriority(.required, for: .horizontal)
         addSubview(imageIconView)
 
@@ -84,7 +84,6 @@ final class ReplyInfoView: UIView {
         participantLabel.textColor = Color.App.accentUIColor
         participantLabel.accessibilityIdentifier = "participantLabelReplyInfoView"
         participantLabel.textAlignment = isMe ? .right : .left
-        participantLabel.backgroundColor = .yellow
         participantLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(participantLabel)
 
@@ -107,6 +106,7 @@ final class ReplyInfoView: UIView {
             imageIconView.topAnchor.constraint(equalTo: topAnchor, constant: padding),
             imageIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding),
             imageIconView.widthAnchor.constraint(equalToConstant: 36),
+            imageIconView.heightAnchor.constraint(equalToConstant: 36),
 
             replyStaticLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
             replyStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),

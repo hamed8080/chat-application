@@ -25,11 +25,11 @@ final class SectionHeaderView: UIView {
 
     private func configureView() {
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.uiiransansCaption
-        label.textColor = .white
+        label.label.font = UIFont.uiiransansCaption
+        label.label.textColor = .white
         label.layer.cornerRadius = 14
         label.layer.masksToBounds = true
-        label.textAlignment = .center
+        label.label.textAlignment = .center
         label.backgroundColor = .black.withAlphaComponent(0.4)
         label.accessibilityIdentifier = "labelSectionHeaderView"
 
@@ -42,6 +42,6 @@ final class SectionHeaderView: UIView {
     }
 
     public func set(_ section: MessageSection) {
-        self.label.text = section.sectionText
+        self.label.label.text = section.sectionText
     }
 }

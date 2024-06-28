@@ -1,5 +1,5 @@
 //
-//  PaddingUILabel.swift
+//  PaddingUIImageView.swift
 //  TalkUI
 //
 //  Created by Hamed Hosseini on 5/27/21.

@@ -45,10 +45,6 @@ final class MessageAudioView: UIView {
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         progressButton.isUserInteractionEnabled = true
         progressButton.accessibilityIdentifier = "progressButtonMessageAudioView"
-        progressButton.setContentHuggingPriority(.required, for: .horizontal)
-        progressButton.setContentHuggingPriority(.required, for: .vertical)
-        progressButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-        progressButton.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(progressButton)
 
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -58,8 +54,6 @@ final class MessageAudioView: UIView {
         fileNameLabel.numberOfLines = 1
         fileNameLabel.lineBreakMode = .byTruncatingMiddle
         fileNameLabel.accessibilityIdentifier = "fileNameLabelMessageAudioView"
-        fileNameLabel.setContentHuggingPriority(.required, for: .vertical)
-        fileNameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(fileNameLabel)
 
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -78,6 +72,7 @@ final class MessageAudioView: UIView {
         fileTypeLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         fileTypeLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         fileTypeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        fileTypeLabel.accessibilityIdentifier = "fileTypeLabelMessageAudioView"
         addSubview(fileTypeLabel)
 
         playerProgress.translatesAutoresizingMaskIntoConstraints = false
@@ -86,6 +81,8 @@ final class MessageAudioView: UIView {
         playerProgress.layer.masksToBounds = true
         playerProgress.trackTintColor = UIColor.gray.withAlphaComponent(0.3)
         playerProgress.accessibilityIdentifier = "playerProgressMessageAudioView"
+        playerProgress.setContentHuggingPriority(.required, for: .vertical)
+        playerProgress.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(playerProgress)
 
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -94,6 +91,8 @@ final class MessageAudioView: UIView {
         timeLabel.numberOfLines = 1
         timeLabel.textAlignment = .left
         timeLabel.accessibilityIdentifier = "timeLabelMessageAudioView"
+        timeLabel.setContentHuggingPriority(.required, for: .vertical)
+        timeLabel.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         addSubview(timeLabel)
 
         let padding: CGFloat = 6

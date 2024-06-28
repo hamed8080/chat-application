@@ -43,12 +43,12 @@ public final class UnreadMenitonsButton: UIButton {
         addSubview(lblAtSing)
 
         lblUnreadMentionsCount.translatesAutoresizingMaskIntoConstraints = false
-        lblUnreadMentionsCount.textColor = Color.App.whiteUIColor
-        lblUnreadMentionsCount.font = .uiiransansBoldCaption
+        lblUnreadMentionsCount.label.textColor = Color.App.whiteUIColor
+        lblUnreadMentionsCount.label.font = .uiiransansBoldCaption
         lblUnreadMentionsCount.layer.backgroundColor = Color.App.accentUIColor?.cgColor
         lblUnreadMentionsCount.layer.cornerRadius = 12
-        lblUnreadMentionsCount.textAlignment = .center
-        lblUnreadMentionsCount.numberOfLines = 1
+        lblUnreadMentionsCount.label.textAlignment = .center
+        lblUnreadMentionsCount.label.numberOfLines = 1
         lblUnreadMentionsCount.accessibilityIdentifier = "lblUnreadMentionsCountUnreadMenitonsButton"
 
         addSubview(lblUnreadMentionsCount)
@@ -74,7 +74,7 @@ public final class UnreadMenitonsButton: UIButton {
         guard let viewModel = viewModel?.unreadMentionsViewModel else { return }
         let hasMention = viewModel.hasMention
         setIsHidden(!hasMention)
-        lblUnreadMentionsCount.text = "\(viewModel.unreadMentions.count)"
+        lblUnreadMentionsCount.label.text = "\(viewModel.unreadMentions.count)"
         UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
         }
