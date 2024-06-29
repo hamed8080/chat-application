@@ -10,6 +10,7 @@ import TalkViewModels
 import TalkUI
 
 public final class EmptyThreadView: UIView {
+    private let vStack = UIStackView()
 
     public init() {
         super.init(frame: .zero)
@@ -21,8 +22,6 @@ public final class EmptyThreadView: UIView {
     }
 
     private func configureView() {
-
-        let vStack = UIStackView()
         vStack.translatesAutoresizingMaskIntoConstraints = false
         vStack.axis = .vertical
         vStack.spacing = 4
@@ -80,20 +79,5 @@ public final class EmptyThreadView: UIView {
                 imageView.image = image
             }
         }
-    }
-}
-
-struct EmptyThreadViewWrapper: UIViewRepresentable {
-    func makeUIView(context: Context) -> some UIView {
-        return EmptyThreadView()
-    }
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-
-    }
-}
-struct EmptyThreadView_Previews: PreviewProvider {
-    static var previews: some View {
-        EmptyThreadViewWrapper()
     }
 }

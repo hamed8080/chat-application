@@ -22,6 +22,7 @@ class ThreadNavigationPlayer: UIView {
     private weak var viewModel: ThreadViewModel?
     private var cancellableSet = Set<AnyCancellable>()
     private var playerVM: AVAudioPlayerViewModel { AppState.shared.objectsContainer.audioPlayerVM }
+    var stack: UIStackView?
 
     init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
@@ -134,7 +135,7 @@ class ThreadNavigationPlayer: UIView {
     }
 
     public func register() {
-        isHidden = playerVM.isClosed == true
+        show(show: playerVM.isClosed != true)
         playerVM.$isPlaying.sink { [weak self] isPlaying in
             let image = isPlaying ? "pause.fill" : "play.fill"
             self?.playButton.imageView.image = UIImage(systemName: image)
@@ -157,11 +158,7 @@ class ThreadNavigationPlayer: UIView {
         .store(in: &cancellableSet)
 
         playerVM.$isClosed.sink { [weak self] closed in
-            self?.isHidden = !closed
-            UIView.animate(withDuration: 0.2) {
-                self?.isHidden = closed
-                self?.alpha = closed ? 0.0 : 1.0
-            }
+            self?.show(show: !closed)
         }
         .store(in: &cancellableSet)
     }
@@ -169,6 +166,18 @@ class ThreadNavigationPlayer: UIView {
     private func animate() {
         UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
+        }
+    }
+
+    private func show(show: Bool) {
+        if !show {
+            removeFromSuperViewWithAnimation()
+        } else if superview == nil {
+            alpha = 0.0
+            stack?.addArrangedSubview(self)
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
         }
     }
 }

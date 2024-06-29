@@ -21,6 +21,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     private let fileSizeLabel = UILabel()
     private let playOverlayView = UIView()
     private let playIcon: UIImageView = UIImageView()
+    private var widthConstraint: NSLayoutConstraint!
     private static let playIcon: UIImage = UIImage(systemName: "play.fill")!
     private let progressButton = CircleProgressButton(progressColor: Color.App.whiteUIColor,
                                                       iconTint: Color.App.whiteUIColor,
@@ -89,9 +90,9 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         progressButton.translatesAutoresizingMaskIntoConstraints = false
         progressButton.accessibilityIdentifier = "progressButtonMessageVideoView"
         addSubview(progressButton)
-
+        widthConstraint = widthAnchor.constraint(equalToConstant: viewModel?.calMessage.sizes.width ?? 320)
         NSLayoutConstraint.activate([
-            widthAnchor.constraint(equalToConstant: viewModel?.calMessage.sizes.width ?? 320),
+            widthConstraint,
             heightAnchor.constraint(equalToConstant: 196),
             playOverlayView.leadingAnchor.constraint(equalTo: leadingAnchor),
             playOverlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -116,11 +117,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        if !viewModel.calMessage.rowType.isVideo {
-            reset()
-            return
-        }
-        setIsHidden(false)
+        widthConstraint.constant = viewModel.calMessage.sizes.width ?? 320
         self.viewModel = viewModel
         if let url = viewModel.calMessage.fileURL {
             prepareUIForPlayback(url: url)
@@ -188,10 +185,6 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
             // Download file
             viewModel?.onTap()
         }
-    }
-
-    func reset() {
-        setIsHidden(true)
     }
 
     @MainActor

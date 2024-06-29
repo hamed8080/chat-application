@@ -12,14 +12,9 @@ import Combine
 import SwiftUI
 import TalkModels
 
-public protocol ThreadPinMessageViewModelDelegate: AnyObject {
-    func onUpdate()
-}
-
 public final class ThreadPinMessageViewModel {
     private weak var viewModel: ThreadViewModel?
     public weak var historyVM: ThreadHistoryViewModel?
-    public weak var delegate: ThreadPinMessageViewModelDelegate?
     public private(set) var text: String? = nil
     public private(set) var image: UIImage? = nil
     public private(set) var message: PinMessage?
@@ -62,7 +57,7 @@ public final class ThreadPinMessageViewModel {
         case let .image(chatResponse, _):
             if requestUniqueId == chatResponse.uniqueId, let data = chatResponse.result {
                 image = UIImage(data: data)
-                delegate?.onUpdate()
+                viewModel?.delegate?.onUpdatePinMessage()
             }
         default:
             break
@@ -116,7 +111,7 @@ public final class ThreadPinMessageViewModel {
             self.isEnglish = isEnglish
             self.title = title
             self.canUnpinMessage = canUnpinMessage
-            delegate?.onUpdate()
+            viewModel?.delegate?.onUpdatePinMessage()
         }
     }
 

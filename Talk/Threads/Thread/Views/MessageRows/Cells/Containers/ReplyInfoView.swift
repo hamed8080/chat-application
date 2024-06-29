@@ -14,7 +14,6 @@ import Additive
 import TalkModels
 
 final class ReplyInfoView: UIView {
-    private let replyStaticLabel = UILabel()
     private let participantLabel = UILabel()
     private let imageIconView = ImageLoaderUIView(frame: .zero)
     private let deletedLabel = UILabel()
@@ -74,18 +73,6 @@ final class ReplyInfoView: UIView {
         deletedLabel.isOpaque = true
         addSubview(deletedLabel)
 
-        replyStaticLabel.translatesAutoresizingMaskIntoConstraints = false
-        replyStaticLabel.font = UIFont.uiiransansBoldCaption2
-        replyStaticLabel.textColor = Color.App.accentUIColor
-        replyStaticLabel.text = ReplyInfoView.repliedToStaticText
-        replyStaticLabel.accessibilityIdentifier = "replyStaticLabelReplyInfoView"
-        replyStaticLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
-        replyStaticLabel.isOpaque = true
-        replyStaticLabel.setContentHuggingPriority(.required, for: .horizontal)
-        replyStaticLabel.setContentHuggingPriority(.required, for: .vertical)
-        replyStaticLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        addSubview(replyStaticLabel)
-
         participantLabel.translatesAutoresizingMaskIntoConstraints = false
         participantLabel.font = UIFont.uiiransansBoldCaption2
         participantLabel.textColor = Color.App.accentUIColor
@@ -117,33 +104,24 @@ final class ReplyInfoView: UIView {
             imageIconView.widthAnchor.constraint(equalToConstant: 36),
             imageIconView.heightAnchor.constraint(equalToConstant: 36),
 
-            replyStaticLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
-            replyStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-
             participantLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            participantLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.trailingAnchor, constant: 2),
+            participantLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
             participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
 
             deletedLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            deletedLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.leadingAnchor),
+            deletedLabel.leadingAnchor.constraint(equalTo: participantLabel.leadingAnchor),
             deletedLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
 
-            replyLabel.topAnchor.constraint(equalTo: replyStaticLabel.bottomAnchor, constant: padding),
+            replyLabel.topAnchor.constraint(equalTo: participantLabel.bottomAnchor, constant: padding),
             replyLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding),
-            replyLabel.leadingAnchor.constraint(equalTo: replyStaticLabel.leadingAnchor),
+            replyLabel.leadingAnchor.constraint(equalTo: participantLabel.leadingAnchor),
             replyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding)
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        if !viewModel.calMessage.rowType.isReply {
-            reset()
-            return
-        }
-        setIsHidden(false)
-
-        participantLabel.text = replyInfo?.participant?.name
+        participantLabel.text = "\(ReplyInfoView.repliedToStaticText)  \(replyInfo?.participant?.name ?? "")"
         participantLabel.setIsHidden(replyInfo?.participant?.name == nil)
 
         replyLabel.text = replyInfo?.message
@@ -203,11 +181,5 @@ final class ReplyInfoView: UIView {
 
     private var sourceConversationId: Int {
         replyInfo?.replyPrivatelyInfo?.threadId ?? -1
-    }
-
-    private func reset() {
-        replyLabel.text = nil
-        participantLabel.text = nil
-        setIsHidden(true)
     }
 }

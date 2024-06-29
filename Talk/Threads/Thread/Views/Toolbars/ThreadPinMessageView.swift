@@ -13,19 +13,19 @@ import TalkUI
 import TalkViewModels
 import TalkModels
 
-public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelDelegate {
+public final class ThreadPinMessageView: UIStackView {
     private let bar = UIView()
     private let pinImageView = UIImageView(frame: .zero)
     private let imageView = UIImageView(frame: .zero)
     private let textButton = UIButton(type: .system)
     private let unpinButton = UIButton(type: .system)
     private weak var viewModel: ThreadPinMessageViewModel?
+    var stack: UIStackView?
 
     public init(viewModel: ThreadPinMessageViewModel?) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureView()
-        viewModel?.delegate = self
         Task {
             viewModel?.downloadImageThumbnail()
             await viewModel?.calculate()
@@ -77,7 +77,7 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
         alignment = .center
         layoutMargins = .init(horizontal: 8)
         isLayoutMarginsRelativeArrangement = true
-        setIsHidden(!(viewModel?.hasPinMessage == true))
+        show(show: viewModel?.hasPinMessage == true)
 
         addArrangedSubview(bar)
         addArrangedSubview(pinImageView)
@@ -113,6 +113,7 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
 
     func set() {
         guard let viewModel = viewModel else { return }
+        show(show: viewModel.hasPinMessage == true)
         if let image = viewModel.image {
             imageView.image = image
             imageView.layer.cornerRadius = 4
@@ -125,9 +126,17 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
         textButton.setTitle(viewModel.title, for: .normal)
         imageView.setIsHidden(viewModel.image == nil && viewModel.icon == nil)
         unpinButton.setIsHidden(!viewModel.canUnpinMessage)
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            guard let self = self else { return }
-            setIsHidden(viewModel.hasPinMessage == false)
+    }
+
+    private func show(show: Bool) {
+        if !show {
+            removeFromSuperViewWithAnimation()
+        } else if superview == nil {
+            alpha = 0.0
+            stack?.addArrangedSubview(self)
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
         }
     }
 }

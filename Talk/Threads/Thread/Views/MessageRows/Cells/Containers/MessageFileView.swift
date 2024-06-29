@@ -109,11 +109,6 @@ final class MessageFileView: UIStackView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        if !viewModel.calMessage.rowType.isFile {
-            reset()
-            return
-        }
-        setIsHidden(false)
         self.viewModel = viewModel
         setSemanticContent(viewModel.calMessage.isMe ? .forceRightToLeft : .forceLeftToRight)
         updateProgress(viewModel: viewModel)
@@ -124,10 +119,6 @@ final class MessageFileView: UIStackView {
 
     @objc private func onTap() {
         viewModel?.onTap()
-    }
-    
-    func reset() {
-        setIsHidden(true)
     }
 
     public func updateProgress(viewModel: MessageRowViewModel) {

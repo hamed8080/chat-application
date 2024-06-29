@@ -103,11 +103,6 @@ final class MessageImageView: UIImageView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        if !viewModel.calMessage.rowType.isImage {
-            reset()
-            return
-        }
-        setIsHidden(false)
         self.viewModel = viewModel
         let state = viewModel.fileState.state
         let canShow = state != .completed
@@ -150,10 +145,6 @@ final class MessageImageView: UIImageView {
 
     @objc func onTap(_ sender: UIGestureRecognizer) {
         viewModel?.onTap()
-    }
-
-    func reset() {
-        setIsHidden(true)
     }
 
     public func updateProgress(viewModel: MessageRowViewModel) {

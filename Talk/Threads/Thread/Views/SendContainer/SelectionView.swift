@@ -100,11 +100,15 @@ public final class SelectionView: UIStackView {
         }
     }
 
-    private func set() {
+    private func set(stack: UIStackView) {
         guard let viewModel = viewModel else { return }
+        let show = viewModel.selectedMessagesViewModel.isInSelectMode
+        if show {
+            alpha = 0.0
+            stack.insertArrangedSubview(self, at: 0)
+        }
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            let show = viewModel.selectedMessagesViewModel.isInSelectMode
             setIsHidden(false)
             UIView.animate(withDuration: 0.2) {
                 self.alpha = show ? 1.0 : 0.0
@@ -112,6 +116,10 @@ public final class SelectionView: UIStackView {
             }
             btnDelete.setIsHidden(viewModel.thread.disableSend)
             updateCount()
+        } completion: { completed in
+            if completed, !show {
+                self.removeFromSuperview()
+            }
         }
     }
 
@@ -130,7 +138,7 @@ public final class SelectionView: UIStackView {
         viewModel?.selectedMessagesViewModel.clearSelection()
     }
 
-    public func update() {
-        set()
+    public func update(stack: UIStackView) {
+        set(stack: stack)
     }
 }

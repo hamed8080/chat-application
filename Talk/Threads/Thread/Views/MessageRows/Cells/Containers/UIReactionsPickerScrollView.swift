@@ -15,7 +15,6 @@ import TalkViewModels
 class UIReactionsPickerScrollView: UIView {
     private let size: CGFloat
     public weak var viewModel: MessageRowViewModel?
-    public weak var contextMenu: UIContextMenuInteraction?
 
     init(size: CGFloat) {
         self.size = size
@@ -29,10 +28,10 @@ class UIReactionsPickerScrollView: UIView {
 
     private func configure() {
         backgroundColor = .clear
-        layer.cornerRadius = 16
+        layer.cornerRadius = size / 2
         layer.masksToBounds = true
 
-        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+        let blurEffect = UIBlurEffect(style: .systemChromeMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.accessibilityIdentifier = "effectViewUIReactionsPickerScrollView"
         addSubview(effectView)
@@ -74,7 +73,7 @@ class UIReactionsPickerScrollView: UIView {
                 guard let self = self else { return }
                 if let messageId = viewModel?.message.id {
                     viewModel?.threadVM?.reactionViewModel.reaction(sticker, messageId: messageId)
-                    contextMenu?.dismissMenu()
+                    viewModel?.threadVM?.delegate?.dismissContextMenu()
                 }
             }
             hSatck.addArrangedSubview(button)

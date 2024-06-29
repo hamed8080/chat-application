@@ -31,7 +31,7 @@ final class TextMessageView: UITextView {
         isSelectable = false /// Only is going to be enable when we are in context menu
         ///
         isOpaque = true
-        isUserInteractionEnabled = true
+        isUserInteractionEnabled = false
         linkTextAttributes = [:]
         let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
         addGestureRecognizer(tap)
@@ -46,12 +46,9 @@ final class TextMessageView: UITextView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        if !viewModel.calMessage.rowType.hasText {
-            reset()
-        }
         self.viewModel = viewModel
 //        textAlignment = viewModel.calMessage.isMe || !viewModel.calMessage.isEnglish ? .right : .left
-        isUserInteractionEnabled = viewModel.calMessage.rowType.isPublicLink
+//        isUserInteractionEnabled = viewModel.calMessage.rowType.isPublicLink
         setText()
 //        heightConstraint.constant = viewModel.calMessage.textRect?.width ?? 0
 //        heightConstraint.constant = viewModel.calMessage.textRect?.height ?? 0
@@ -59,10 +56,6 @@ final class TextMessageView: UITextView {
 
     @objc func onTapJoinGroup(_ sender: UIGestureRecognizer) {
         print("tap on group link")
-    }
-
-    private func reset() {
-        setIsHidden(true)
     }
 
     public func setText() {

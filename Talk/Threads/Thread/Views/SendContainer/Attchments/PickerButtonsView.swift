@@ -103,6 +103,21 @@ public final class PickerButtonsView: UIStackView {
     public func closePickerButtons() {
         threadVM?.delegate?.showPickerButtons(false)
     }
+
+    public func show(_ show: Bool, stack: UIStackView) {
+        if show {
+            alpha = 0.0
+            stack.insertArrangedSubview(self, at: 0)
+        }
+        UIView.animate(withDuration: show ? 0.3 : 0.2, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) {
+            self.alpha = show ? 1.0 : 0.0
+            self.setIsHidden(!show)
+        } completion: { completed in
+            if completed, !show {
+                self.removeFromSuperViewWithAnimation()
+            }
+        }
+    }
 }
 
 extension PickerButtonsView  {

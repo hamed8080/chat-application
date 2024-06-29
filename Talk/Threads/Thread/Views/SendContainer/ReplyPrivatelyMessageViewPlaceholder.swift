@@ -14,6 +14,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
     private weak var viewModel: ThreadViewModel?
+    var stack: UIStackView?
 
     public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
@@ -73,8 +74,16 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     }
 
     public func set() {
-        let hasReplyPrivately = AppState.shared.appStateNavigationModel.replyPrivately != nil
-        setIsHidden(!hasReplyPrivately)
+        let show = AppState.shared.appStateNavigationModel.replyPrivately != nil
+        if !show {
+            removeFromSuperViewWithAnimation()
+        } else if superview == nil {
+            alpha = 0.0
+            stack?.insertArrangedSubview(self, at: 0)
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
+        }
         let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately
         nameLabel.text = replyMessage?.participant?.name
         nameLabel.setIsHidden(replyMessage?.participant?.name == nil)

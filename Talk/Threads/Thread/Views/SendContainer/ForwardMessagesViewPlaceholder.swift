@@ -15,6 +15,7 @@ public final class ForwardMessagePlaceholderView: UIStackView {
     private let staticForwardLabel = UILabel()
     private let messageLabel = UILabel()
     private weak var viewModel: ThreadViewModel?
+    var stack: UIStackView?
 
     private var isSingleForward: Bool {
         return AppState.shared.appStateNavigationModel.forwardMessageRequest?.messageIds.count == 1
@@ -24,7 +25,6 @@ public final class ForwardMessagePlaceholderView: UIStackView {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
-        set()
     }
 
     public required init(coder: NSCoder) {
@@ -85,7 +85,16 @@ public final class ForwardMessagePlaceholderView: UIStackView {
 
     public func set() {
         let model = AppState.shared.appStateNavigationModel
-        setIsHidden(model.forwardMessageRequest == nil)
+        let show = model.forwardMessageRequest != nil
+        if !show {
+            removeFromSuperViewWithAnimation()
+        } else if superview == nil {
+            alpha = 0.0
+            stack?.insertArrangedSubview(self, at: 0)
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
+        }
         if isSingleForward {
             staticForwardLabel.text = "Thread.forwardTheMessage".localized()
             let message = model.forwardMessages?.first?.message ?? ""

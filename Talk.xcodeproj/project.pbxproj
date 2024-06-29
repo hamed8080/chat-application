@@ -398,6 +398,8 @@
 		05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 		05FB7D6A2B8EE85D00C14ABE /* SearchFiltersMessagesDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FB7D692B8EE85D00C14ABE /* SearchFiltersMessagesDialog.swift */; };
 		05FB7D6B2B8EE85D00C14ABE /* SearchFiltersMessagesDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FB7D692B8EE85D00C14ABE /* SearchFiltersMessagesDialog.swift */; };
+		05FD07552C2EEE95006A9F4A /* ContextMenuContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FD07542C2EEE95006A9F4A /* ContextMenuContainerView.swift */; };
+		05FD07562C2EEE95006A9F4A /* ContextMenuContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FD07542C2EEE95006A9F4A /* ContextMenuContainerView.swift */; };
 		05FE15F12ADA5591009AC44A /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FE15F02ADA5591009AC44A /* SupportView.swift */; };
 		05FE15F22ADA5974009AC44A /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FE15F02ADA5591009AC44A /* SupportView.swift */; };
 		05FE15F32ADA82D9009AC44A /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
@@ -613,6 +615,7 @@
 		05F86DDA2BD54B3100A1133E /* EmptyResultViewInTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResultViewInTabs.swift; sourceTree = "<group>"; };
 		05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverlayFactory.swift; sourceTree = "<group>"; };
 		05FB7D692B8EE85D00C14ABE /* SearchFiltersMessagesDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFiltersMessagesDialog.swift; sourceTree = "<group>"; };
+		05FD07542C2EEE95006A9F4A /* ContextMenuContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuContainerView.swift; sourceTree = "<group>"; };
 		05FE15F02ADA5591009AC44A /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
 		05FF13322AF8CD8200F120DF /* SelectedContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedContact.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -906,6 +909,7 @@
 				05C27F9A2AF4BC310008FE2E /* SendContainer */,
 				05F9151F2AE63984008C070B /* Toolbars */,
 				0570CB7F2AAEE98C001832E9 /* MessageRows */,
+				05FD07542C2EEE95006A9F4A /* ContextMenuContainerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1431,6 +1435,7 @@
 				050B51B22AE7848100B8DD49 /* VerifyContentView.swift in Sources */,
 				0570CBFD2AAEE98F001832E9 /* AddParticipantsToThreadView.swift in Sources */,
 				0570CC052AAEE98F001832E9 /* MapPickerViewController.swift in Sources */,
+				05FD07552C2EEE95006A9F4A /* ContextMenuContainerView.swift in Sources */,
 				05840A742C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */,
 				05593BA52AFF560A00316E39 /* ThreadSearchView.swift in Sources */,
 				0570CC532AAEE98F001832E9 /* PictureView.swift in Sources */,
@@ -1618,6 +1623,7 @@
 				0570CC662AAEE98F001832E9 /* ContactRow.swift in Sources */,
 				050B51B32AE7848100B8DD49 /* VerifyContentView.swift in Sources */,
 				0570CBFE2AAEE98F001832E9 /* AddParticipantsToThreadView.swift in Sources */,
+				05FD07562C2EEE95006A9F4A /* ContextMenuContainerView.swift in Sources */,
 				0570CC062AAEE98F001832E9 /* MapPickerViewController.swift in Sources */,
 				05840A752C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */,
 				05593BA62AFF560A00316E39 /* ThreadSearchView.swift in Sources */,

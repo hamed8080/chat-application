@@ -90,13 +90,18 @@ public final class EditMessagePlaceholderView: UIStackView {
         ])
     }
 
-    public func set() {
+    public func set(stack: UIStackView) {
         let editMessage = sendVM.getEditMessage()
         let showEdit = editMessage != nil
         alpha = showEdit ? 0.0 : 1.0
-        UIView.animate(withDuration: 0.2) {
-            self.alpha = showEdit ? 1.0 : 0.0
-            self.setIsHidden(!showEdit)
+        if !showEdit {
+            removeFromSuperViewWithAnimation()
+        } else if superview == nil {
+            alpha = 0.0
+            stack.insertArrangedSubview(self, at: 0)
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
         }
 
         let iconName = editMessage?.iconName
@@ -116,17 +121,6 @@ public final class EditMessagePlaceholderView: UIStackView {
         } else {
             messageImageView.image = nil
             messageImageView.setIsHidden(true)
-        }
-    }
-
-    private func animateEditPlaceholderIfNeeded() {
-        let isInEditMode = viewModel?.sendContainerViewModel.isInEditMessageMode == true
-        if isInEditMode {
-            set()
-        }
-
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.setIsHidden(!isInEditMode)
         }
     }
 

@@ -91,7 +91,13 @@ public protocol TopToolbarDelegate {
     func updateTitleTo(_ title: String?)
     func updateSubtitleTo(_ subtitle: String?)
     func updateImageTo(_ image: UIImage?)
+    func onUpdatePinMessage()
 }
 
-public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate, MentionList, AvatarDelegate, BottomToolbarDelegate, TopToolbarDelegate {
+public protocol ContextMenuDelegate {
+    func showContextMenu(_ indexPath: IndexPath, contentView: UIView)
+    func dismissContextMenu()
+}
+
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate, MentionList, AvatarDelegate, BottomToolbarDelegate, TopToolbarDelegate, ContextMenuDelegate {
 }

@@ -41,6 +41,5 @@ final class GroupParticipantNameView: UILabel {
         textColor = viewModel.calMessage.participantColor
         textAlignment = .left
         text = name
-        setIsHidden(name == nil)        
     }
 }

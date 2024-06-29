@@ -47,8 +47,6 @@ final class MessageAudioView: UIView {
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         progressButton.isUserInteractionEnabled = true
         progressButton.accessibilityIdentifier = "progressButtonMessageAudioView"
-        progressButton.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
-        progressButton.isOpaque = true
         addSubview(progressButton)
 
         fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -143,11 +141,6 @@ final class MessageAudioView: UIView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        if !viewModel.calMessage.rowType.isAudio {
-            reset()
-            return
-        }
-        setIsHidden(false)
         self.viewModel = viewModel
         updateProgress(viewModel: viewModel)
 
@@ -169,10 +162,6 @@ final class MessageAudioView: UIView {
                 updateProgress(viewModel: viewModel)
             }
         }
-    }
-
-    func reset() {
-        setIsHidden(true)
     }
 
     public func updateProgress(viewModel: MessageRowViewModel) {

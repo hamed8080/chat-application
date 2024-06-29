@@ -10,10 +10,11 @@ import UIKit
 import TalkViewModels
 import SwiftUI
 import TalkModels
+import TalkUI
 
 public class ExpandView: UIView {
     private let fileCountLabel = UILabel()
-    private let expandButton = UIImageView()
+    private let expandButton = UIImageButton(imagePadding: .init(all: 8))
     weak var viewModel: ThreadViewModel?
 
     public init(viewModel: ThreadViewModel?) {
@@ -42,10 +43,13 @@ public class ExpandView: UIView {
         fileCountLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
         expandButton.translatesAutoresizingMaskIntoConstraints = false
-        expandButton.tintColor = Color.App.iconSecondaryUIColor
-        expandButton.contentMode = .scaleAspectFit
+        expandButton.imageView.tintColor = Color.App.iconSecondaryUIColor
+        expandButton.imageView.contentMode = .scaleAspectFit
         expandButton.setContentHuggingPriority(.required, for: .horizontal)
         expandButton.accessibilityIdentifier = "expandButtonClearExpandView"
+        expandButton.action = { [weak self] in
+            self?.viewModel?.attachmentsViewModel.toggleExpandMode()
+        }
 
         addSubview(expandButton)
         addSubview(btnClear)
@@ -77,6 +81,6 @@ public class ExpandView: UIView {
         let count = viewModel?.attachmentsViewModel.attachments.count ?? 0
         let value = count.localNumber(locale: Language.preferredLocale) ?? ""
         fileCountLabel.text = String(format: localized, "\(value)")
-        expandButton.image = UIImage(systemName: viewModel?.attachmentsViewModel.isExpanded  == true ? "chevron.down" : "chevron.up")
+        expandButton.imageView.image = UIImage(systemName: viewModel?.attachmentsViewModel.isExpanded  == true ? "chevron.down" : "chevron.up")
     }
 }

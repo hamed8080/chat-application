@@ -22,7 +22,7 @@ public final class TopThreadToolbar: UIStackView {
         self.viewModel = viewModel
         self.navBarView = .init(viewModel: viewModel)
         if let viewModel = viewModel {
-            self.pinMessageView = .init(viewModel: viewModel.threadPinMessageViewModel)
+            self.pinMessageView = ThreadPinMessageView(viewModel: viewModel.threadPinMessageViewModel)
             self.navigationPlayerView = ThreadNavigationPlayer(viewModel: viewModel)
         }
         super.init(frame: .zero)
@@ -69,14 +69,14 @@ public final class TopThreadToolbar: UIStackView {
     private func configurePinMessageView() {
         pinMessageView?.accessibilityIdentifier = "pinMessageViewTopThreadToolbar"
         if let pinMessageView = pinMessageView {
-            addArrangedSubview(pinMessageView)
+            pinMessageView.stack = self
         }
     }
 
     private func configurePlayerView() {
         navigationPlayerView?.accessibilityIdentifier = "navigationPlayerViewTopThreadToolbar"
         if let navigationPlayerView = navigationPlayerView {
-            addArrangedSubview(navigationPlayerView)
+            navigationPlayerView.stack = self            
         }
     }
 
@@ -90,5 +90,9 @@ public final class TopThreadToolbar: UIStackView {
 
     public func updateImageTo(_ image: UIImage?) {
         navBarView.updateImageTo(image)
+    }
+
+    public func updatePinMessage() {
+        pinMessageView?.set()
     }
 }

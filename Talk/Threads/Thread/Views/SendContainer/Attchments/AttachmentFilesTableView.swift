@@ -19,6 +19,7 @@ public final class AttachmentFilesTableView: UIView {
     private let cellHeight: CGFloat = 48
     private let expandViewHeight: CGFloat = 48
     private let expandView: ExpandView
+    var stack: UIStackView?
 
     public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel
@@ -106,6 +107,18 @@ public final class AttachmentFilesTableView: UIView {
     @objc private func expandTapped(_ sender: UIView) {
         viewModel?.attachmentsViewModel.toggleExpandMode()
     }
+
+    private func show(_ show: Bool) {
+        if !show {
+            removeFromSuperViewWithAnimation()
+        } else if superview == nil {
+            alpha = 0.0
+            stack?.insertArrangedSubview(self, at: 0)
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
+        }
+    }
 }
 
 extension AttachmentFilesTableView: UITableViewDataSource {
@@ -134,9 +147,10 @@ extension AttachmentFilesTableView: UITableViewDelegate {
 extension AttachmentFilesTableView: AttachmentDelegate {
     public func reload() {
         DispatchQueue.main.async { [weak self] in
+            let isEmpty = self?.viewModel?.attachmentsViewModel.attachments.isEmpty == true
+            self?.show(!isEmpty)
             self?.tableView.reloadData()
             guard let self = self else { return }
-            setIsHidden(viewModel?.attachmentsViewModel.attachments.isEmpty == true)
             self.setHeight()
             expandView.set()
         }

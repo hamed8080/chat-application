@@ -52,12 +52,21 @@ public final class AudioRecordingView: UIStackView {
         }
     }
 
-    public func show(_ show: Bool) {
+    public func show(_ show: Bool, stack: UIStackView) {
         recordedAudioView.setIsHidden(true)
         recordingAudioView.setIsHidden(!show)
         recordingAudioView.alpha = 1.0
         recordedAudioView.alpha = 0.0
-        if show {
+        if !show {
+            removeFromSuperViewWithAnimation()
+        } else if superview == nil {
+            alpha = 0.0
+            stack.insertArrangedSubview(self, at: 0)
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
+            // We have to be in showing mode to setup recording unless we will end up toggle isRecording inside the setupRecording method.
+            viewModel?.setupRecording()
             recordingAudioView.startCircleAnimation()
         }
     }

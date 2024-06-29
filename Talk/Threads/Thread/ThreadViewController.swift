@@ -15,12 +15,12 @@ import TalkUI
 
 final class ThreadViewController: UIViewController {
     var viewModel: ThreadViewModel?
-    private var tableView: UITableView!
+    public var tableView: UITableView!
     private let tapGetsure = UITapGestureRecognizer()
     private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
     private lazy var moveToBottom = MoveToBottomButton(viewModel: viewModel)
     private lazy var unreadMentionsButton = UnreadMenitonsButton(viewModel: viewModel)
-    private lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
+    public private(set) lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
     private var sendContainerBottomConstraint: NSLayoutConstraint?
     private var keyboardheight: CGFloat = 0
     private let emptyThreadView = EmptyThreadView()
@@ -29,6 +29,7 @@ final class ThreadViewController: UIViewController {
     private var bottomLoading = UILoadingView()
     private let vStackOverlayButtons = UIStackView()
     private lazy var dimView = DimView()
+    private var contextMenuContainer: ContextMenuContainerView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,6 +64,7 @@ final class ThreadViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel?.historyVM.setThreashold(view.bounds.height * 2.5)
+        contextMenuContainer = ContextMenuContainerView(viewController: self)
     }
 
     deinit {
@@ -75,7 +77,6 @@ extension ThreadViewController {
     func configureViews() {
         configureTableView()
         configureOverlayActionButtons()
-        configureEmptyThreadView()
         configureSendContainer()
         configureTopToolbarVStack()
         configureLoadings()
@@ -106,10 +107,6 @@ extension ThreadViewController {
             tableView.topAnchor.constraint(equalTo: topThreadToolbar.topAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            dimView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            dimView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            dimView.topAnchor.constraint(equalTo: view.topAnchor),
-            dimView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor),
         ])
     }
 
@@ -150,8 +147,6 @@ extension ThreadViewController {
         dimView.accessibilityIdentifier = "dimViewThreadViewController"
         dimView.viewModel = viewModel
         view.addSubview(sendContainer)
-        view.addSubview(dimView)
-        view.bringSubviewToFront(dimView)
         sendContainer.onUpdateHeight = { [weak self] (height: CGFloat) in
             guard let self = self else { return }
             guard let viewModel = viewModel else { return }
@@ -173,26 +168,36 @@ extension ThreadViewController {
         vStackOverlayButtons.spacing = 24
         vStackOverlayButtons.alignment = .leading
         vStackOverlayButtons.accessibilityIdentifier = "vStackOverlayButtonsThreadViewController"
-
         moveToBottom.accessibilityIdentifier = "moveToBottomThreadViewController"
         vStackOverlayButtons.addArrangedSubview(moveToBottom)
-
         unreadMentionsButton.accessibilityIdentifier = "unreadMentionsButtonThreadViewController"
         vStackOverlayButtons.addArrangedSubview(unreadMentionsButton)
         view.addSubview(vStackOverlayButtons)
     }
 
     private func configureEmptyThreadView() {
+        emptyThreadView.alpha = 0.0
+        view.addSubview(emptyThreadView)
         emptyThreadView.translatesAutoresizingMaskIntoConstraints = false
         emptyThreadView.accessibilityIdentifier = "emptyThreadViewThreadViewController"
-        view.addSubview(emptyThreadView)
-        emptyThreadView.setIsHidden(true)
         NSLayoutConstraint.activate([
             emptyThreadView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             emptyThreadView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            emptyThreadView.topAnchor.constraint(equalTo: view.topAnchor),
-            emptyThreadView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            emptyThreadView.topAnchor.constraint(equalTo: topThreadToolbar.bottomAnchor),
+            emptyThreadView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor),
         ])
+    }
+
+    private func configureDimView() {
+        if dimView.superview == nil {
+            dimView.alpha = 0.0
+            view.addSubview(dimView)
+            view.bringSubviewToFront(dimView)
+            dimView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            dimView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            dimView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            dimView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor).isActive = true
+        }
     }
 
     private func configureLoadings() {
@@ -231,7 +236,12 @@ extension ThreadViewController {
     }
 
     private func showEmptyThread(show: Bool) {
-        emptyThreadView.showWithAniamtion(show)
+        if show {
+            configureEmptyThreadView()
+            emptyThreadView.showWithAniamtion(true)
+        } else {
+            self.emptyThreadView.removeFromSuperViewWithAnimation()
+        }
         if show {
             self.unreadMentionsButton.showWithAniamtion(false)
             self.moveToBottom.showWithAniamtion(false)
@@ -451,6 +461,19 @@ extension ThreadViewController: ThreadViewDelegate {
             cell.setHighlight()
         }
     }
+
+    func showContextMenu(_ indexPath: IndexPath, contentView: UIView) {
+        contextMenuContainer.setContentView(contentView)
+        contextMenuContainer.show()
+    }
+
+    func dismissContextMenu() {
+        contextMenuContainer.hide()
+    }
+
+    func onUpdatePinMessage() {
+        topThreadToolbar.updatePinMessage()
+    }
 }
 
 extension ThreadViewController: BottomToolbarDelegate {
@@ -466,6 +489,7 @@ extension ThreadViewController: BottomToolbarDelegate {
     func showPickerButtons(_ show: Bool) {
         viewModel?.sendContainerViewModel.showPickerButtons(show)
         sendContainer.showPickerButtons(show)
+        configureDimView()
         dimView.show(show)
     }
     

@@ -33,9 +33,14 @@ class DimView: UIView {
 
     public func show(_ show: Bool) {
         UIView.animate(withDuration: 0.2) {
+            self.alpha = show ? 1.0 : 0.0
             self.isUserInteractionEnabled = show
             self.tapGesture.isEnabled = show
             self.setIsHidden(!show)
+        } completion: { completed in
+            if completed, !show {
+                self.removeFromSuperview()
+            }
         }
     }
 

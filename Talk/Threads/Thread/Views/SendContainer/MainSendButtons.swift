@@ -110,7 +110,7 @@ public final class MainSendButtons: UIStackView {
         btnEmoji.accessibilityIdentifier = "btnEmojiMainSendButtons"
         btnEmoji.setIsHidden(true)
         btnEmoji.setContentHuggingPriority(.required, for: .horizontal)
-        hStack.addArrangedSubview(btnEmoji)
+//        hStack.addArrangedSubview(btnEmoji)
 
         addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera, btnSend])
 

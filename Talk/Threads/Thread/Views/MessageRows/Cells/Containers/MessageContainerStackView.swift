@@ -14,7 +14,7 @@ import TalkModels
 import TalkExtensions
 import Photos
 
-final class MessageContainerStackView: UIStackView {
+public final class MessageContainerStackView: UIStackView {
     public weak var cell: MessageBaseCell?
     weak var viewModel: MessageRowViewModel?
     private let messageFileView: MessageFileView
@@ -66,43 +66,18 @@ final class MessageContainerStackView: UIStackView {
         registerGestures()
 
         groupParticipantNameView.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(groupParticipantNameView)
-
         replyInfoMessageRow.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(replyInfoMessageRow)
-        replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
-
         forwardMessageRow.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(forwardMessageRow)
-        forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
-
         messageFileView.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(messageFileView)
-
         messageImageView.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(messageImageView)
-
         messageVideoView.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(messageVideoView)
-
         messageAudioView.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(messageAudioView)
-
         locationRowView.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(locationRowView)
-
         textMessageView.translatesAutoresizingMaskIntoConstraints = false
-        textMessageView.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor! 
-        addArrangedSubview(textMessageView)
-
+        textMessageView.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         //        reactionView.translatesAutoresizingMaskIntoConstraints = false
-        //        addArrangedSubview(reactionView)
-
         fotterView.translatesAutoresizingMaskIntoConstraints = false
-        addArrangedSubview(fotterView)
-
 //        unsentMessageView.translatesAutoresizingMaskIntoConstraints = false
-//        addArrangedSubview(unsentMessageView)
 
         if !isMe {
             tailImageView = UIImageView(image: MessageContainerStackView.tailImage)
@@ -110,6 +85,7 @@ final class MessageContainerStackView: UIStackView {
             tailImageView.contentMode = .scaleAspectFit
             tailImageView.tintColor = Color.App.bgChatUserUIColor!
             addSubview(tailImageView)
+
             tailImageView.widthAnchor.constraint(equalToConstant: 16).isActive = true
             tailImageView.heightAnchor.constraint(equalToConstant: 32).isActive = true
             tailImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -12).isActive = true
@@ -119,20 +95,8 @@ final class MessageContainerStackView: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        groupParticipantNameView.set(viewModel)
-        replyInfoMessageRow.set(viewModel)
-        forwardMessageRow.set(viewModel)
-        messageImageView.set(viewModel)
-        locationRowView.set(viewModel)
-        messageFileView.set(viewModel)
-        messageAudioView.set(viewModel)
-        messageVideoView.set(viewModel)
-        textMessageView.set(viewModel)
-//        unsentMessageView.set(viewModel)
-//        reactionView.set(viewModel)
-        fotterView.set(viewModel)
+        reattachOrDetach(viewModel: viewModel)
         isUserInteractionEnabled = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
-
         if viewModel.calMessage.isLastMessageOfTheUser && !viewModel.calMessage.isMe {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
             tailImageView.setIsHidden(false)
@@ -142,13 +106,96 @@ final class MessageContainerStackView: UIStackView {
         }
     }
 
+    private func reattachOrDetach(viewModel: MessageRowViewModel) {
+        if viewModel.calMessage.isFirstMessageOfTheUser {
+            groupParticipantNameView.set(viewModel)
+            addArrangedSubview(groupParticipantNameView)
+        } else {
+            groupParticipantNameView.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.isReply {
+            replyInfoMessageRow.set(viewModel)
+            addArrangedSubview(replyInfoMessageRow)
+            replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
+        } else {
+            replyInfoMessageRow.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.isForward {
+            forwardMessageRow.set(viewModel)
+            addArrangedSubview(forwardMessageRow)
+            forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
+        } else {
+            forwardMessageRow.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.isImage {
+            messageImageView.set(viewModel)
+            addArrangedSubview(messageImageView)
+        } else {
+            messageImageView.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.isMap {
+            locationRowView.set(viewModel)
+            addArrangedSubview(locationRowView)
+        } else {
+            locationRowView.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.isFile {
+            messageFileView.set(viewModel)
+            addArrangedSubview(messageFileView)
+        } else {
+            messageFileView.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.isAudio {
+            messageAudioView.set(viewModel)
+            addArrangedSubview(messageAudioView)
+        } else {
+            messageAudioView.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.isVideo {
+            messageVideoView.set(viewModel)
+            addArrangedSubview(messageVideoView)
+        } else {
+            messageVideoView.removeFromSuperview()
+        }
+
+        if viewModel.calMessage.rowType.hasText {
+            textMessageView.set(viewModel)
+            addArrangedSubview(textMessageView)
+        } else {
+            textMessageView.removeFromSuperview()
+        }
+
+        //        if viewModel.calMessage.rowType.isUnSent {
+        //            unsentMessageView.set(viewModel)
+        //            addArrangedSubview(unsentMessageView)
+        //        } else {
+        //            unsentMessageView.removeFromSuperview()
+        //        }
+        //
+        //        if viewModel.reactionsModel.rows.isEmpty == false {
+        //            reactionView.set(viewModel)
+        //            addArrangedSubview(reactionView)
+        //        } else {
+        //            reactionView.removeFromSuperview()
+        //        }
+        //        reactionView.set(viewModel)
+        fotterView.set(viewModel)
+    }
+
     private func registerGestures() {
         replyInfoMessageRow.isUserInteractionEnabled = true
         forwardMessageRow.isUserInteractionEnabled = true
     }
 }
 
-struct ActionModel {
+public struct ActionModel {
     let viewModel: MessageRowViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     var message: any HistoryMessageProtocol { viewModel.message }
@@ -216,8 +263,12 @@ extension MessageContainerStackView {
     public func prepareForContextMenu(userInterfaceStyle: UIUserInterfaceStyle) {
         overrideUserInterfaceStyle = userInterfaceStyle
         let isMe = viewModel?.calMessage.isMe == true
-        isUserInteractionEnabled = false
+        isUserInteractionEnabled = true
+        forwardMessageRow.isUserInteractionEnabled = false
+        replyInfoMessageRow.isUserInteractionEnabled = false
+        textMessageView.isUserInteractionEnabled = true
         tailImageView.isHidden = true
+        textMessageView.isSelectable = true
         backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
     }

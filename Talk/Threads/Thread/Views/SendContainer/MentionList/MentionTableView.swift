@@ -62,7 +62,20 @@ public final class MentionTableView: UITableView {
         }
     }
 
-    public func updateMentionList() {
+    public func updateMentionList(stack: UIStackView) {
+        let show = mentionList.count > 0
+        if !show {
+            removeFromSuperview()
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 0.0
+            }
+        } else if superview == nil {
+            stack.insertArrangedSubview(self, at: 0)
+            alpha = 0.0
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1.0
+            }
+        }
         let maxHeight = cellHeight * 4
         heightConstraint.constant = min(maxHeight, CGFloat(mentionList.count) * 48)
         reloadData()

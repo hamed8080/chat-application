@@ -75,13 +75,20 @@ public final class ReplyMessagePlaceholderView: UIStackView {
         ])
     }
 
-    public func set() {
+    public func set(stack: UIStackView) {
         let replyMessage = viewModel?.replyMessage
         let showReply = replyMessage != nil
         alpha = showReply ? 0.0 : 1.0
+        if showReply {
+            stack.insertArrangedSubview(self, at: 0)
+        }
         UIView.animate(withDuration: 0.2) {
             self.alpha = showReply ? 1.0 : 0.0
             self.setIsHidden(!showReply)
+        } completion: { completed in
+            if completed, !showReply {
+                self.removeFromSuperview()
+            }
         }
 
         nameLabel.text = replyMessage?.participant?.name
