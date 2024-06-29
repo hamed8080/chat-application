@@ -111,6 +111,8 @@
 		054ED7F02BEB739000F9EDB3 /* OTPNumbers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054ED7EE2BEB739000F9EDB3 /* OTPNumbers.swift */; };
 		05511D6F2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */; };
 		05511D702B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */; };
+		0552E9272C307E7A00E17280 /* CustomMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0552E9262C307E7A00E17280 /* CustomMenu.swift */; };
+		0552E9282C307E7A00E17280 /* CustomMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0552E9262C307E7A00E17280 /* CustomMenu.swift */; };
 		055444532B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */; };
 		055444542B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */; };
 		05551C262AF4C631000F98B6 /* CloseButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButtonView.swift */; };
@@ -461,6 +463,7 @@
 		054ED7EB2BEB735800F9EDB3 /* OTPTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPTimerView.swift; sourceTree = "<group>"; };
 		054ED7EE2BEB739000F9EDB3 /* OTPNumbers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPNumbers.swift; sourceTree = "<group>"; };
 		05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDetailDeleteContactDialog.swift; sourceTree = "<group>"; };
+		0552E9262C307E7A00E17280 /* CustomMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMenu.swift; sourceTree = "<group>"; };
 		055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadTabDetailStickyHeaderSection.swift; sourceTree = "<group>"; };
 		05551C252AF4C631000F98B6 /* CloseButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButtonView.swift; sourceTree = "<group>"; };
 		05593BA42AFF560A00316E39 /* ThreadSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchView.swift; sourceTree = "<group>"; };
@@ -1121,6 +1124,7 @@
 				05EA779F2BBC025E00FFB9C2 /* CameraViewController.swift */,
 				05EA77A22BBC030400FFB9C2 /* TakeButton.swift */,
 				05EA77A52BBC651F00FFB9C2 /* CameraCapturer.swift */,
+				0552E9262C307E7A00E17280 /* CustomMenu.swift */,
 			);
 			path = Extra;
 			sourceTree = "<group>";
@@ -1521,6 +1525,7 @@
 				0570CC3D2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				05E869C62AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0525571E2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
+				0552E9272C307E7A00E17280 /* CustomMenu.swift in Sources */,
 				05B617622C2948900059FE0A /* MessageContainer+ContextMenu.swift in Sources */,
 				05EC8A302ACBED930016361F /* ReactionCountScrollView.swift in Sources */,
 				052C94092C11901F0061A6CF /* MyselfMessageCell.swift in Sources */,
@@ -1709,6 +1714,7 @@
 				0570CBF42AAEE98F001832E9 /* DraftView.swift in Sources */,
 				05E869C72AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0525571F2BE94D1C00DFCE54 /* DetailEditConversationButton.swift in Sources */,
+				0552E9282C307E7A00E17280 /* CustomMenu.swift in Sources */,
 				05B617632C2948900059FE0A /* MessageContainer+ContextMenu.swift in Sources */,
 				0570CC3E2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				052C940A2C11901F0061A6CF /* MyselfMessageCell.swift in Sources */,

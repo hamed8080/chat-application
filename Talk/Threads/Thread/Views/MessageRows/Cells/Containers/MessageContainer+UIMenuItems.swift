@@ -18,98 +18,109 @@ import Photos
 //MARK: Action menus
 extension MessageContainerStackView {
 
-    public func menu(model: ActionModel) -> UIMenu {
+    public func menu(model: ActionModel) -> CustomMenu {
         let message: any HistoryMessageProtocol = model.message
         let threadVM = model.threadVM
         let viewModel = model.viewModel
 
-        var menus: [UIAction] = []
-        let replyAction = UIAction(title: "Messages.ActionMenu.reply".localized(), image: UIImage(systemName: "arrowshape.turn.up.left")) { [weak self] _ in
+        let menu = CustomMenu()
+
+        let replyAction = ActionMenuItem(model: .reply) { [weak self] in
             self?.onReplyAction(model)
+            self?.closeContexMenu()
         }
-        menus.append(replyAction)
+        menu.addItem(replyAction)
 
         if threadVM?.thread.group == true, !viewModel.calMessage.isMe {
-            let replyPrivatelyAction = UIAction(title: "Messages.ActionMenu.replyPrivately".localized(), image: UIImage(systemName: "arrowshape.turn.up.left")) { [weak self] _ in
+            let replyPrivatelyAction = ActionMenuItem(model: .replyPrivately) { [weak self] in
                 self?.onReplyPrivatelyAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(replyPrivatelyAction)
+            menu.addItem(replyPrivatelyAction)
         }
 
-        let forwardAction = UIAction(title: "Messages.ActionMenu.forward".localized(), image: UIImage(systemName: "arrowshape.turn.up.right")) { [weak self] _ in
+        let forwardAction = ActionMenuItem(model: .forward) { [weak self] in
             self?.onForwardAction(model)
+            self?.closeContexMenu()
         }
-        menus.append(forwardAction)
+        menu.addItem(forwardAction)
 
         if viewModel.calMessage.canEdit {
             let emptyText = message.message == nil || message.message == ""
-            let title = emptyText ? "General.addText".localized() : "General.edit".localized()
-            let editAction = UIAction(title: title, image: UIImage(systemName: "pencil.circle")) { [weak self] _ in
+            let editAction = ActionMenuItem(model: emptyText ? .add : .edit) { [weak self] in
                 self?.onEditAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(editAction)
+            menu.addItem(editAction)
         }
 
         if let threadVM = threadVM, viewModel.message.ownerId == AppState.shared.user?.id && threadVM.thread.group == true {
-            let seenListAction = UIAction(title: "SeenParticipants.title".localized(), image: UIImage(systemName: "info.bubble")) { [weak self] _ in
+            let seenListAction = ActionMenuItem(model: .seenParticipants) { [weak self] in
                 self?.onSeenListAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(seenListAction)
+            menu.addItem(seenListAction)
         }
 
         if viewModel.message.isImage {
-            let saveImageAction = UIAction(title: "Messages.ActionMenu.saveImage".localized(), image: UIImage(systemName: "square.and.arrow.down")) { [weak self] _ in
+            let saveImageAction = ActionMenuItem(model: .saveImage) { [weak self] in
                 self?.onSaveAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(saveImageAction)
+            menu.addItem(saveImageAction)
         }
 
-
         if viewModel.calMessage.rowType.isVideo, viewModel.fileState.state == .completed {
-            let saveVideoAction = UIAction(title: "Messages.ActionMenu.saveImage".localized(), image: UIImage(systemName: "square.and.arrow.down")) { [weak self] _ in
+            let saveVideoAction = ActionMenuItem(model: .saveVideo) { [weak self] in
                 self?.onSaveVideoAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(saveVideoAction)
+            menu.addItem(saveVideoAction)
         }
 
         if !viewModel.message.isFileType || message.message?.isEmpty == false {
-            let copyAction = UIAction(title: "Messages.ActionMenu.copy".localized(), image: UIImage(systemName: "doc.on.doc")) { [weak self] _ in
+            let copyAction = ActionMenuItem(model: .copy) { [weak self] in
                 self?.onCopyAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(copyAction)
+            menu.addItem(copyAction)
         }
 
         if EnvironmentValues.isTalkTest, message.isFileType == true {
-            let deleteCacheAction = UIAction(title: "Messages.ActionMenu.deleteCache".localized(), image: UIImage(systemName: "cylinder.split.1x2")) { [weak self] _ in
+            let deleteCacheAction = ActionMenuItem(model: .deleteCache) { [weak self] in
                 self?.onDeleteCacheAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(deleteCacheAction)
+            menu.addItem(deleteCacheAction)
         }
 
         let isPinned = message.id == threadVM?.thread.pinMessage?.id && threadVM?.thread.pinMessage != nil
         if threadVM?.thread.admin == true {
-            let title = isPinned ? "Messages.ActionMenu.unpinMessage".localized() : "Messages.ActionMenu.pinMessage".localized()
-            let pinAction = UIAction(title: title, image: UIImage(systemName: "pin")) { [weak self] _ in
+            let pinAction = ActionMenuItem(model: isPinned ? .unpin : .pin) { [weak self] in
                 self?.onPinAction(model)
+                self?.closeContexMenu()
             }
-            menus.append(pinAction)
+            menu.addItem(pinAction)
         }
 
-        let selectAction = UIAction(title: "General.select".localized(), image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
+        let selectAction = ActionMenuItem(model: .select) { [weak self] in
             self?.onSelectAction(model)
+            self?.closeContexMenu()
         }
-        menus.append(selectAction)
+        menu.addItem(selectAction)
 
         if let message = message as? Message {
             let isDeletable = DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.calMessage.isMe, message: message, thread: threadVM?.thread)
             if isDeletable {
-                let deleteAction = UIAction(title: "General.delete".localized(), image: UIImage(systemName: "trash"), attributes: [.destructive]) { [weak self] _ in
+                let deleteAction = ActionMenuItem(model: .delete) { [weak self] in
                     self?.onDeleteAction(model)
+                    self?.closeContexMenu()
                 }
-                menus.append(deleteAction)
+                menu.addItem(deleteAction)
             }
         }
-        return UIMenu(children: menus)
+        menu.removeLastSeparator()
+        return menu
     }
 
     private func onReplyAction(_ model: ActionModel) {
@@ -215,5 +226,9 @@ extension MessageContainerStackView {
     private func onSelectAction(_ model: ActionModel) {
         model.threadVM?.delegate?.setSelection(true)
         cell?.select()
+    }
+
+    private func closeContexMenu() {
+        viewModel?.threadVM?.delegate?.dismissContextMenu()
     }
 }

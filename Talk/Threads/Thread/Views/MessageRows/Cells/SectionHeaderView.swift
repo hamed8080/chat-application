@@ -24,6 +24,7 @@ final class SectionHeaderView: UIView {
     }
 
     private func configureView() {
+        isUserInteractionEnabled = false
         label.translatesAutoresizingMaskIntoConstraints = false
         label.label.font = UIFont.uiiransansCaption
         label.label.textColor = .white

@@ -23,10 +23,11 @@ extension MessageContainerStackView {
     }
 
     func makeContextMenuView(_ indexPath: IndexPath) -> UIView? {
+        guard let viewModel = viewModel else { return nil }
         let reactionHeight: CGFloat = 46
         let minimumReactionWidth: CGFloat = 5 * reactionHeight
         let space: CGFloat = 8
-        let isMe = viewModel?.calMessage.isMe == true
+        let isMe = viewModel.calMessage.isMe == true
 
         let vc = delegate as? ThreadViewController
         guard let vc = vc, let tableView = vc.tableView else { return nil }
@@ -48,18 +49,34 @@ extension MessageContainerStackView {
 
         let messageContainer = MessageContainerStackView(frame: .zero, isMe: isMe)
         messageContainer.frame = .init(origin: rectInNav.origin, size: messageStack?.bounds.size ?? .zero)
-        if let viewModel = viewModel {
-            messageContainer.set(viewModel)
-            messageContainer.prepareForContextMenu(userInterfaceStyle: traitCollection.userInterfaceStyle)
-        }
+        messageContainer.set(viewModel)
+        messageContainer.prepareForContextMenu(userInterfaceStyle: traitCollection.userInterfaceStyle)
         messageContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(faketapGesture)))
         scrollViewContentView.addSubview(messageContainer)
 
+        let margin: CGFloat = 8
+        let originalX = messageContainer.frame.origin.x
+
+        let reactionWidth: CGFloat = 256
+        let reactionsRightX = navFrame.width - (reactionWidth + margin)
+        let reactionsX = messageContainer.frame.width < reactionWidth ? reactionsRightX : originalX
         let reactionsView = UIReactionsPickerScrollView(size: reactionHeight)
-        reactionsView.frame = .init(x: messageContainer.frame.origin.x, y: messageContainer.frame.origin.y - (reactionHeight + 8), width: 256, height: reactionHeight)
+        reactionsView.frame = .init(x: isMe ? reactionsRightX : originalX, y: messageContainer.frame.origin.y - (reactionHeight + 8), width: reactionWidth, height: reactionHeight)
         reactionsView.viewModel = viewModel
         reactionsView.overrideUserInterfaceStyle = traitCollection.userInterfaceStyle
         scrollViewContentView.addSubview(reactionsView)
+
+        let menu = menu(model: .init(viewModel: viewModel))
+        menu.frame.origin.y = messageContainer.frame.maxY + 8
+
+        let menuWidth: CGFloat = 256
+        let rightX = navFrame.width - (menuWidth + margin)
+        let x = messageContainer.frame.width < menuWidth ? rightX : originalX
+        menu.frame.origin.x = isMe ? x : originalX
+        menu.frame.size.width = menuWidth
+        menu.frame.size.height = menu.height()
+        scrollViewContentView.addSubview(menu)
+
         return scrollViewContentView
     }
 

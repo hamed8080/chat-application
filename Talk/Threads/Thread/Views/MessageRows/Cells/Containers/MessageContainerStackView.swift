@@ -29,14 +29,14 @@ public final class MessageContainerStackView: UIStackView {
     private static let tailImage = UIImage(named: "tail")
     private var tailImageView = UIImageView()
 //    private let reactionView: ReactionCountScrollView
-    private let fotterView: FooterView
+    private let footerView: FooterView
 //    private let unsentMessageView = UnsentMessageView()
 
     init(frame: CGRect, isMe: Bool) {
         self.groupParticipantNameView = .init(frame: frame)
         self.replyInfoMessageRow = .init(frame: frame, isMe: isMe)
         self.forwardMessageRow = .init(frame: frame, isMe: isMe)
-        self.fotterView = .init(frame: frame, isMe: isMe)
+        self.footerView = .init(frame: frame, isMe: isMe)
         self.messageFileView = .init(frame: frame, isMe: isMe)
         self.messageAudioView = .init(frame: frame, isMe: isMe)
         self.locationRowView = .init(frame: frame)
@@ -76,7 +76,7 @@ public final class MessageContainerStackView: UIStackView {
         textMessageView.translatesAutoresizingMaskIntoConstraints = false
         textMessageView.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         //        reactionView.translatesAutoresizingMaskIntoConstraints = false
-        fotterView.translatesAutoresizingMaskIntoConstraints = false
+        footerView.translatesAutoresizingMaskIntoConstraints = false
 //        unsentMessageView.translatesAutoresizingMaskIntoConstraints = false
 
         if !isMe {
@@ -107,7 +107,7 @@ public final class MessageContainerStackView: UIStackView {
     }
 
     private func reattachOrDetach(viewModel: MessageRowViewModel) {
-        if viewModel.calMessage.isFirstMessageOfTheUser {
+        if viewModel.calMessage.isFirstMessageOfTheUser && !viewModel.calMessage.isMe {
             groupParticipantNameView.set(viewModel)
             addArrangedSubview(groupParticipantNameView)
         } else {
@@ -186,7 +186,9 @@ public final class MessageContainerStackView: UIStackView {
         //            reactionView.removeFromSuperview()
         //        }
         //        reactionView.set(viewModel)
-        fotterView.set(viewModel)
+
+        footerView.set(viewModel)
+        addArrangedSubview(footerView)
     }
 
     private func registerGestures() {
@@ -206,28 +208,28 @@ extension MessageContainerStackView {
     func edited() {
         UIView.animate(withDuration: 0.2) {
             self.textMessageView.setText()
-            self.fotterView.edited()
+            self.footerView.edited()
         }
     }
 
     func pinChanged() {
         guard let viewModel = viewModel else { return }
-        fotterView.pinChanged(isPin: viewModel.message.pinned == true)
+        footerView.pinChanged(isPin: viewModel.message.pinned == true)
     }
 
     func sent() {
         guard let viewModel = viewModel else { return }
-        fotterView.sent(image: viewModel.message.uiFooterStatus.image)
+        footerView.sent(image: viewModel.message.uiFooterStatus.image)
     }
 
     func delivered() {
         guard let viewModel = viewModel else { return }
-        fotterView.delivered(image: viewModel.message.uiFooterStatus.image)
+        footerView.delivered(image: viewModel.message.uiFooterStatus.image)
     }
 
     func seen() {
         guard let viewModel = viewModel else { return }
-        fotterView.seen(image: viewModel.message.uiFooterStatus.image)
+        footerView.seen(image: viewModel.message.uiFooterStatus.image)
     }
 
     func updateProgress(viewModel: MessageRowViewModel) {
