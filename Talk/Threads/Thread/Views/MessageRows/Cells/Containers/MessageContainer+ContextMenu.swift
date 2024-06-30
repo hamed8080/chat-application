@@ -74,21 +74,20 @@ extension MessageContainerStackView {
         let vc = delegate as? ThreadViewController
         guard let vc = vc, let tableView = vc.tableView else { return nil }
 
-        let rects = calculateRects(tableView, indexPath, vc)
+        let sizes = calculateRects(tableView, indexPath, vc)
 
-        let scrollViewContainer = createScrollViewContainer(frame: rects.navFrame)
+        let scrollViewContainer = createScrollViewContainer(sizes)
 
-        let messageContainer = createCopyStackContainer(viewModel: viewModel, rectInNavOrigin: rects.rectInNav.origin, stackSize: rects.stackBounds.size)
+        let messageContainer = createCopyStackContainer(viewModel, sizes)
         scrollViewContainer.addSubview(messageContainer)
 
-        let reactionBarView = createReaction(viewModel, rects.originalX, messageContainer, rects.navFrame.width)
+        let reactionBarView = createReaction(viewModel, sizes, messageContainer)
         scrollViewContainer.addSubview(reactionBarView)
 
-        let menu = createMenu(viewModel, indexPath, messageContainer, rects.navFrame.width, rects.originalX)
+        let menu = createMenu(viewModel, indexPath, messageContainer, sizes)
         scrollViewContainer.addSubview(menu)
 
-
-        animateToRightVerticalPosition(rects.minTopVertical, rects.maxVertical, rects.navFrame.height, reactionBarView, messageContainer, menu)
+        animateToRightVerticalPosition(sizes, reactionBarView, messageContainer, menu)
 
         return scrollViewContainer
     }
@@ -116,62 +115,62 @@ extension MessageContainerStackView {
         )
     }
 
-    private func createScrollViewContainer(frame: CGRect) -> UIView {
+    private func createScrollViewContainer(_ sizes: Constants.Sizes) -> UIView {
         let view = UIView()
         view.backgroundColor = .clear
-        view.frame = frame
+        view.frame = sizes.navFrame
         return view
     }
 
-    private func createCopyStackContainer(viewModel:MessageRowViewModel, rectInNavOrigin: CGPoint, stackSize: CGSize) -> MessageContainerStackView {
+    private func createCopyStackContainer(_ viewModel: MessageRowViewModel, _ sizes: Constants.Sizes) -> MessageContainerStackView {
         let messageContainer = MessageContainerStackView(frame: .zero, isMe: viewModel.calMessage.isMe)
-        messageContainer.frame = .init(origin: rectInNavOrigin, size: stackSize)
+        messageContainer.frame = .init(origin: sizes.rectInNav.origin, size: sizes.stackBounds.size)
         messageContainer.set(viewModel)
         messageContainer.prepareForContextMenu(userInterfaceStyle: traitCollection.userInterfaceStyle)
         messageContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(faketapGesture)))
         return messageContainer
     }
 
-    private func createMenu(_ viewModel: MessageRowViewModel, _ indexPath: IndexPath, _ messageContainer: MessageContainerStackView, _ vcWidth: CGFloat, _ originalX: CGFloat) -> CustomMenu {
+    private func createMenu(_ viewModel: MessageRowViewModel, _ indexPath: IndexPath, _ messageContainer: MessageContainerStackView, _ sizes: Constants.Sizes) -> CustomMenu {
         let menu = menu(model: .init(viewModel: viewModel), indexPath: indexPath, onMenuClickedDismiss: resetOnDismiss)
         menu.frame.origin.y = messageContainer.frame.maxY + Constants.margin
 
-        let rightX = vcWidth - (Constants.menuWidth + Constants.margin)
-        let x = messageContainer.frame.width < Constants.menuWidth ? rightX : originalX
-        menu.frame.origin.x = viewModel.calMessage.isMe ? x : originalX
+        let rightX = sizes.navFrame.width - (Constants.menuWidth + Constants.margin)
+        let x = messageContainer.frame.width < Constants.menuWidth ? rightX : sizes.originalX
+        menu.frame.origin.x = viewModel.calMessage.isMe ? x : sizes.originalX
         menu.frame.size.width = Constants.menuWidth
         menu.frame.size.height = menu.height()
         return menu
     }
 
-    private func createReaction(_ viewModel: MessageRowViewModel, _ originalX:CGFloat, _ messageContainer: MessageContainerStackView, _ vcWidth: CGFloat) -> UIReactionsPickerScrollView {
+    private func createReaction(_ viewModel: MessageRowViewModel, _ sizes: Constants.Sizes, _ messageContainer: MessageContainerStackView) -> UIReactionsPickerScrollView {
 
-        let reactionsRightX = vcWidth - (Constants.reactionWidth + Constants.margin)
-        let reactionsX = messageContainer.frame.width < Constants.reactionWidth ? reactionsRightX : originalX
+        let reactionsRightX = sizes.navFrame.width - (Constants.reactionWidth + Constants.margin)
+        let reactionsX = messageContainer.frame.width < Constants.reactionWidth ? reactionsRightX : sizes.originalX
         let reactionsView = UIReactionsPickerScrollView(size: Constants.reactionHeight)
-        reactionsView.frame = .init(x: viewModel.calMessage.isMe ? reactionsX : originalX, y: messageContainer.frame.origin.y - (Constants.reactionHeight + 8), width: Constants.reactionWidth, height: Constants.reactionHeight)
+        reactionsView.frame = .init(x: viewModel.calMessage.isMe ? reactionsX : sizes.originalX, y: messageContainer.frame.origin.y - (Constants.reactionHeight + 8), width: Constants.reactionWidth, height: Constants.reactionHeight)
         reactionsView.viewModel = viewModel
         reactionsView.overrideUserInterfaceStyle = traitCollection.userInterfaceStyle
         return reactionsView
     }
 
-    private func getRightY(_ minTopVertical: CGFloat, _ maxVertical: CGFloat, _ maxVCHeight: CGFloat, _ messageContainer: MessageContainerStackView, _ menu: CustomMenu) -> CGFloat {
+    private func getRightY(_ sizes: Constants.Sizes, _ messageContainer: MessageContainerStackView, _ menu: CustomMenu) -> CGFloat {
         var calculatedY: CGFloat = 0
         let menuHeight = menu.height()
 
-        if messageContainer.frame.minY < (minTopVertical - Constants.reactionHeight) {
+        if messageContainer.frame.minY < (sizes.minTopVertical - Constants.reactionHeight) {
             calculatedY = Constants.reactionHeight
-        } else if messageContainer.frame.maxY > maxVCHeight - (menuHeight + Constants.space) {
-            calculatedY = -((messageContainer.frame.maxY + menuHeight + maxVertical) - maxVCHeight)
+        } else if messageContainer.frame.maxY > sizes.navFrame.height - (menuHeight + Constants.space) {
+            calculatedY = -((messageContainer.frame.maxY + menuHeight + sizes.maxVertical) - sizes.navFrame.height)
         }
 
         return calculatedY
     }
 
-    private func animateToRightVerticalPosition(_ minTopVertical: CGFloat, _ maxVertical: CGFloat, _ maxVCHeight: CGFloat, _ reactionView: UIReactionsPickerScrollView, _ messageContainer: MessageContainerStackView, _ menu: CustomMenu) {
+    private func animateToRightVerticalPosition(_ sizes: Constants.Sizes, _ reactionView: UIReactionsPickerScrollView, _ messageContainer: MessageContainerStackView, _ menu: CustomMenu) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             UIView.animate(withDuration: Constants.animateToRightVerticalPosition) {
-                let y = self.getRightY(minTopVertical, maxVertical, maxVCHeight, messageContainer, menu)
+                let y = self.getRightY(sizes, messageContainer, menu)
                 messageContainer.frame.origin.y += y
                 reactionView.frame.origin.y += y
                 menu.frame.origin.y += y
