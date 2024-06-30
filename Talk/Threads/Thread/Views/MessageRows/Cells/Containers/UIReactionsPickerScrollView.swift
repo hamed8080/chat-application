@@ -31,7 +31,7 @@ class UIReactionsPickerScrollView: UIView {
         layer.cornerRadius = size / 2
         layer.masksToBounds = true
 
-        let blurEffect = UIBlurEffect(style: .systemChromeMaterial)
+        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.accessibilityIdentifier = "effectViewUIReactionsPickerScrollView"
         addSubview(effectView)
@@ -71,9 +71,11 @@ class UIReactionsPickerScrollView: UIView {
             button.accessibilityIdentifier = "button\(sticker.id)UIReactionsPickerScrollView"
             button.action = { [weak self] in
                 guard let self = self else { return }
-                if let messageId = viewModel?.message.id {
-                    viewModel?.threadVM?.reactionViewModel.reaction(sticker, messageId: messageId)
-                    viewModel?.threadVM?.delegate?.dismissContextMenu()
+                if let viewModel = viewModel, let messageId = viewModel.message.id {
+                    viewModel.threadVM?.reactionViewModel.reaction(sticker, messageId: messageId)
+                    if let indexPath = viewModel.threadVM?.historyVM.sections.indexPath(for: viewModel) {
+                        viewModel.threadVM?.delegate?.dismissContextMenu(indexPath: indexPath)
+                    }
                 }
             }
             hSatck.addArrangedSubview(button)

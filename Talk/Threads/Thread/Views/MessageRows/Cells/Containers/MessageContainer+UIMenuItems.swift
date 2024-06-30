@@ -18,30 +18,31 @@ import Photos
 //MARK: Action menus
 extension MessageContainerStackView {
 
-    public func menu(model: ActionModel) -> CustomMenu {
+    public func menu(model: ActionModel, indexPath: IndexPath?, onMenuClickedDismiss: @escaping () -> Void ) -> CustomMenu {
         let message: any HistoryMessageProtocol = model.message
         let threadVM = model.threadVM
         let viewModel = model.viewModel
 
         let menu = CustomMenu()
+        menu.contexMenuContainer = (viewModel.threadVM?.delegate as? ThreadViewController)?.contextMenuContainer
 
         let replyAction = ActionMenuItem(model: .reply) { [weak self] in
             self?.onReplyAction(model)
-            self?.closeContexMenu()
+            onMenuClickedDismiss()
         }
         menu.addItem(replyAction)
 
         if threadVM?.thread.group == true, !viewModel.calMessage.isMe {
             let replyPrivatelyAction = ActionMenuItem(model: .replyPrivately) { [weak self] in
                 self?.onReplyPrivatelyAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(replyPrivatelyAction)
         }
 
         let forwardAction = ActionMenuItem(model: .forward) { [weak self] in
             self?.onForwardAction(model)
-            self?.closeContexMenu()
+            onMenuClickedDismiss()
         }
         menu.addItem(forwardAction)
 
@@ -49,7 +50,7 @@ extension MessageContainerStackView {
             let emptyText = message.message == nil || message.message == ""
             let editAction = ActionMenuItem(model: emptyText ? .add : .edit) { [weak self] in
                 self?.onEditAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(editAction)
         }
@@ -57,7 +58,7 @@ extension MessageContainerStackView {
         if let threadVM = threadVM, viewModel.message.ownerId == AppState.shared.user?.id && threadVM.thread.group == true {
             let seenListAction = ActionMenuItem(model: .seenParticipants) { [weak self] in
                 self?.onSeenListAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(seenListAction)
         }
@@ -65,7 +66,7 @@ extension MessageContainerStackView {
         if viewModel.message.isImage {
             let saveImageAction = ActionMenuItem(model: .saveImage) { [weak self] in
                 self?.onSaveAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(saveImageAction)
         }
@@ -73,7 +74,7 @@ extension MessageContainerStackView {
         if viewModel.calMessage.rowType.isVideo, viewModel.fileState.state == .completed {
             let saveVideoAction = ActionMenuItem(model: .saveVideo) { [weak self] in
                 self?.onSaveVideoAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(saveVideoAction)
         }
@@ -81,7 +82,7 @@ extension MessageContainerStackView {
         if !viewModel.message.isFileType || message.message?.isEmpty == false {
             let copyAction = ActionMenuItem(model: .copy) { [weak self] in
                 self?.onCopyAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(copyAction)
         }
@@ -89,7 +90,7 @@ extension MessageContainerStackView {
         if EnvironmentValues.isTalkTest, message.isFileType == true {
             let deleteCacheAction = ActionMenuItem(model: .deleteCache) { [weak self] in
                 self?.onDeleteCacheAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(deleteCacheAction)
         }
@@ -98,14 +99,14 @@ extension MessageContainerStackView {
         if threadVM?.thread.admin == true {
             let pinAction = ActionMenuItem(model: isPinned ? .unpin : .pin) { [weak self] in
                 self?.onPinAction(model)
-                self?.closeContexMenu()
+                onMenuClickedDismiss()
             }
             menu.addItem(pinAction)
         }
 
         let selectAction = ActionMenuItem(model: .select) { [weak self] in
             self?.onSelectAction(model)
-            self?.closeContexMenu()
+            onMenuClickedDismiss()
         }
         menu.addItem(selectAction)
 
@@ -114,7 +115,7 @@ extension MessageContainerStackView {
             if isDeletable {
                 let deleteAction = ActionMenuItem(model: .delete) { [weak self] in
                     self?.onDeleteAction(model)
-                    self?.closeContexMenu()
+                    onMenuClickedDismiss()
                 }
                 menu.addItem(deleteAction)
             }
@@ -122,22 +123,25 @@ extension MessageContainerStackView {
         menu.removeLastSeparator()
         return menu
     }
+}
 
-    private func onReplyAction(_ model: ActionModel) {
+// MARK: Taped actions
+private extension MessageContainerStackView {
+    func onReplyAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         model.threadVM?.replyMessage = message
         model.threadVM?.sendContainerViewModel.setFocusOnTextView(focus: true)
         model.threadVM?.delegate?.openReplyMode(message)
     }
 
-    private func onReplyPrivatelyAction(_ model: ActionModel) {
+    func onReplyPrivatelyAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         guard let participant = model.message.participant else { return }
         AppState.shared.appStateNavigationModel.replyPrivately = message
         AppState.shared.openThread(participant: participant)
     }
 
-    private func onForwardAction(_ model: ActionModel) {
+    func onForwardAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         model.threadVM?.forwardMessage = message
         cell?.select()
@@ -145,19 +149,19 @@ extension MessageContainerStackView {
         model.threadVM?.selectedMessagesViewModel.setInSelectionMode(true)
     }
 
-    private func onEditAction(_ model: ActionModel) {
+    func onEditAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         model.threadVM?.sendContainerViewModel.setEditMessage(message: message)
         model.threadVM?.delegate?.openEditMode(message)
     }
 
-    private func onSeenListAction(_ model: ActionModel) {
+    func onSeenListAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         let value = MessageParticipantsSeenNavigationValue(message: message, threadVM: model.threadVM!)
         AppState.shared.objectsContainer.navVM.append(value: value)
     }
 
-    private func onSaveAction(_ model: ActionModel) {
+    func onSaveAction(_ model: ActionModel) {
         if let url = model.viewModel.message.fileURL, let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
             UIImageWriteToSavedPhotosAlbum(image, model.viewModel, nil, nil)
             let icon = Image(systemName: "externaldrive.badge.checkmark")
@@ -167,7 +171,7 @@ extension MessageContainerStackView {
         }
     }
 
-    private func onSaveVideoAction(_ model: ActionModel) {
+    func onSaveVideoAction(_ model: ActionModel) {
         Task {
             guard let url = await model.viewModel.message.makeTempURL() else { return }
             PHPhotoLibrary.shared().performChanges({
@@ -188,11 +192,11 @@ extension MessageContainerStackView {
         }
     }
 
-    private func onCopyAction(_ model: ActionModel) {
+    func onCopyAction(_ model: ActionModel) {
         UIPasteboard.general.string = model.message.message
     }
 
-    private func onDeleteCacheAction(_ model: ActionModel) {
+    func onDeleteCacheAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         model.threadVM?.clearCacheFile(message: message)
         if let uniqueId = message.uniqueId, let indexPath = model.threadVM?.historyVM.sections.indicesByMessageUniqueId(uniqueId) {
@@ -200,7 +204,7 @@ extension MessageContainerStackView {
         }
     }
 
-    private func onDeleteAction(_ model: ActionModel) {
+    func onDeleteAction(_ model: ActionModel) {
         Task {
             if let threadVM = model.threadVM {
                 model.viewModel.calMessage.state.isSelected = true
@@ -212,7 +216,7 @@ extension MessageContainerStackView {
         }
     }
 
-    private func onPinAction(_ model: ActionModel) {
+    func onPinAction(_ model: ActionModel) {
         guard let message = model.message as? Message else { return }
         let isPinned = model.message.id == model.threadVM?.thread.pinMessage?.id && model.threadVM?.thread.pinMessage != nil
         if !isPinned, let threadVM = model.threadVM {
@@ -223,12 +227,8 @@ extension MessageContainerStackView {
         }
     }
 
-    private func onSelectAction(_ model: ActionModel) {
+    func onSelectAction(_ model: ActionModel) {
         model.threadVM?.delegate?.setSelection(true)
         cell?.select()
-    }
-
-    private func closeContexMenu() {
-        viewModel?.threadVM?.delegate?.dismissContextMenu()
     }
 }

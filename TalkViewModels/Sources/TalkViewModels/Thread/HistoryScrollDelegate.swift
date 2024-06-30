@@ -94,10 +94,5 @@ public protocol TopToolbarDelegate {
     func onUpdatePinMessage()
 }
 
-public protocol ContextMenuDelegate {
-    func showContextMenu(_ indexPath: IndexPath, contentView: UIView)
-    func dismissContextMenu()
-}
-
 public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate, MentionList, AvatarDelegate, BottomToolbarDelegate, TopToolbarDelegate, ContextMenuDelegate {
 }

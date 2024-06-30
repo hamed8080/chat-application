@@ -17,7 +17,7 @@ final class ThreadViewController: UIViewController {
     var viewModel: ThreadViewModel?
     public var tableView: UITableView!
     private let tapGetsure = UITapGestureRecognizer()
-    private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
+    public lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
     private lazy var moveToBottom = MoveToBottomButton(viewModel: viewModel)
     private lazy var unreadMentionsButton = UnreadMenitonsButton(viewModel: viewModel)
     public private(set) lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
@@ -29,7 +29,7 @@ final class ThreadViewController: UIViewController {
     private var bottomLoading = UILoadingView()
     private let vStackOverlayButtons = UIStackView()
     private lazy var dimView = DimView()
-    private var contextMenuContainer: ContextMenuContainerView!
+    public var contextMenuContainer: ContextMenuContainerView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,7 +64,7 @@ final class ThreadViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel?.historyVM.setThreashold(view.bounds.height * 2.5)
-        contextMenuContainer = ContextMenuContainerView(viewController: self)
+        contextMenuContainer = ContextMenuContainerView(delegate: self)
     }
 
     deinit {
@@ -463,12 +463,15 @@ extension ThreadViewController: ThreadViewDelegate {
     }
 
     func showContextMenu(_ indexPath: IndexPath, contentView: UIView) {
-        contextMenuContainer.setContentView(contentView)
+        contextMenuContainer.setContentView(contentView, indexPath: indexPath)
         contextMenuContainer.show()
     }
 
-    func dismissContextMenu() {
+    func dismissContextMenu(indexPath: IndexPath?) {
         contextMenuContainer.hide()
+        if let indexPath = indexPath, let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
+            cell.messageContainer.resetOnDismiss()
+        }
     }
 
     func onUpdatePinMessage() {
