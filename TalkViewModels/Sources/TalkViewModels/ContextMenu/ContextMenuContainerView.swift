@@ -24,7 +24,7 @@ public class ContextMenuContainerView: UIView {
     public init(delegate: ContextMenuDelegate) {
         self.delegate = delegate
         let frame = (delegate as? UIViewController)?.navigationController?.view.frame ?? .zero
-        self.scrollView = UITableView(frame: frame)
+        self.scrollView = UIScrollView(frame: frame)
         super.init(frame: frame)
         setupView()
     }
@@ -83,12 +83,12 @@ public class ContextMenuContainerView: UIView {
     public func setContentView(_ view: UIView, indexPath: IndexPath?) {
         self.indexPath = indexPath
         changeSizeIfNeeded()
-        scrollView.contentSize = .init(width: view.bounds.width, height: view.subviews.map({$0.frame.height}).reduce(0, +) + 300)
+        scrollView.contentSize = .init(width: view.bounds.width, height: view.subviews.map({$0.frame.height}).reduce(0, +))
         view.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(view)
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -48),
-            view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            view.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             view.widthAnchor.constraint(equalTo: contentView.widthAnchor)

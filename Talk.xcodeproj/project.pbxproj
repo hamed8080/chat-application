@@ -99,6 +99,8 @@
 		052CA3E82BA4167B00E38E19 /* MoveToBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E62BA4167B00E38E19 /* MoveToBottomButton.swift */; };
 		052CA3EE2BA41DF300E38E19 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3ED2BA41DF300E38E19 /* UnreadMentionsButton.swift */; };
 		052CA3EF2BA41DF300E38E19 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3ED2BA41DF300E38E19 /* UnreadMentionsButton.swift */; };
+		0537C1F32C31C5A100B6ECDB /* UIHistoryTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537C1F22C31C5A100B6ECDB /* UIHistoryTableView.swift */; };
+		0537C1F42C31C5A100B6ECDB /* UIHistoryTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537C1F22C31C5A100B6ECDB /* UIHistoryTableView.swift */; };
 		0537E6F72C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537E6F62C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift */; };
 		0537E6F82C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537E6F62C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift */; };
 		053803D02B11F879005C8FAB /* DeleteThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */; };
@@ -453,6 +455,7 @@
 		052CA3E62BA4167B00E38E19 /* MoveToBottomButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveToBottomButton.swift; sourceTree = "<group>"; };
 		052CA3ED2BA41DF300E38E19 /* UnreadMentionsButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnreadMentionsButton.swift; sourceTree = "<group>"; };
 		052F46652B21F5B400085C26 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
+		0537C1F22C31C5A100B6ECDB /* UIHistoryTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHistoryTableView.swift; sourceTree = "<group>"; };
 		0537E6F62C07B7F700EA2BF6 /* DetailViewNumberOfParticipants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewNumberOfParticipants.swift; sourceTree = "<group>"; };
 		053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadDialog.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
@@ -894,6 +897,7 @@
 				052C940F2C1192F50061A6CF /* SwiftUI */,
 				0570CB7C2AAEE98C001832E9 /* Views */,
 				05A6A2C52B3FE2D900DA0363 /* ThreadViewController.swift */,
+				0537C1F22C31C5A100B6ECDB /* UIHistoryTableView.swift */,
 				055A2B5E2BA8BA91004C68CF /* ConversationHistoryCellFactory.swift */,
 			);
 			path = Thread;
@@ -1460,6 +1464,7 @@
 				0594FE572B0347B50031AADF /* AutomaticDownloadSettings.swift in Sources */,
 				0570CC232AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC472AAEE98F001832E9 /* LogRow.swift in Sources */,
+				0537C1F32C31C5A100B6ECDB /* UIHistoryTableView.swift in Sources */,
 				0525516A2C24BC7D003171D2 /* CustomConversationNavigationBar.swift in Sources */,
 				050B51B52AE7852B00B8DD49 /* LoginView.swift in Sources */,
 				05E781F12C2062FA002262AD /* AttchmentButton.swift in Sources */,
@@ -1647,6 +1652,7 @@
 				0594FE5A2B034B050031AADF /* SettingNotificationSection.swift in Sources */,
 				0570CC242AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC482AAEE98F001832E9 /* LogRow.swift in Sources */,
+				0537C1F42C31C5A100B6ECDB /* UIHistoryTableView.swift in Sources */,
 				0525516B2C24BC7D003171D2 /* CustomConversationNavigationBar.swift in Sources */,
 				050B51B62AE7852B00B8DD49 /* LoginView.swift in Sources */,
 				05E781F22C2062FA002262AD /* AttchmentButton.swift in Sources */,

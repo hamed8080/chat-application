@@ -66,6 +66,7 @@ extension MessageContainerStackView {
             UIView.animate(withDuration: Constants.animateToHideOriginalMessageDuration) {
                 self.alpha = 0.0
             }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred(intensity: 1.0)
         }
     }
 
@@ -92,7 +93,7 @@ extension MessageContainerStackView {
         return scrollViewContainer
     }
 
-    private func calculateRects(_ tableView: UITableView, _ indexPath: IndexPath, _ vc: ThreadViewController) -> Constants.Sizes {
+    private func calculateRects(_ tableView: UIHistoryTableView, _ indexPath: IndexPath, _ vc: ThreadViewController) -> Constants.Sizes {
         let rectIntableView = tableView.rectForRow(at: indexPath)
         let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell
         let messageStack = cell?.messageContainer
@@ -124,7 +125,8 @@ extension MessageContainerStackView {
 
     private func createCopyStackContainer(_ viewModel: MessageRowViewModel, _ sizes: Constants.Sizes) -> MessageContainerStackView {
         let messageContainer = MessageContainerStackView(frame: .zero, isMe: viewModel.calMessage.isMe)
-        messageContainer.frame = .init(origin: sizes.rectInNav.origin, size: sizes.stackBounds.size)
+//        messageContainer.frame = .init(origin: sizes.rectInNav.origin, size: sizes.stackBounds.size)
+        messageContainer.frame = .init(origin: .init(x: sizes.rectInNav.origin.x, y: 0), size: sizes.stackBounds.size)
         messageContainer.set(viewModel)
         messageContainer.prepareForContextMenu(userInterfaceStyle: traitCollection.userInterfaceStyle)
         messageContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(faketapGesture)))

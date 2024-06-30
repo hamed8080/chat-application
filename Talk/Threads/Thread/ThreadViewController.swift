@@ -15,7 +15,7 @@ import TalkUI
 
 final class ThreadViewController: UIViewController {
     var viewModel: ThreadViewModel?
-    public var tableView: UITableView!
+    public var tableView: UIHistoryTableView!
     private let tapGetsure = UITapGestureRecognizer()
     public lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
     private lazy var moveToBottom = MoveToBottomButton(viewModel: viewModel)
@@ -86,7 +86,7 @@ extension ThreadViewController {
         } else {
             vStackOverlayButtonsConstraint = vStackOverlayButtons.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         }
-
+        
         sendContainerBottomConstraint = sendContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         sendContainerBottomConstraint?.identifier = "sendContainerBottomConstraintThreadViewController"
         NSLayoutConstraint.activate([
@@ -96,7 +96,7 @@ extension ThreadViewController {
             unreadMentionsButton.heightAnchor.constraint(equalToConstant: 40),
             vStackOverlayButtonsConstraint,
             vStackOverlayButtons.bottomAnchor.constraint(equalTo: sendContainer.topAnchor, constant: -16),
-
+            
             topThreadToolbar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             topThreadToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topThreadToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -109,37 +109,16 @@ extension ThreadViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
-
+    
     private func configureTableView() {
-        tableView = UITableView(frame: view.bounds, style: .plain)
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.estimatedRowHeight = 128
-        tableView.sectionHeaderHeight = 28
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.tableFooterView = UIView()
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .clear
-        tableView.prefetchDataSource = self
-        tableView.allowsMultipleSelection = false // Prevent the user select things when open the thread
-        tableView.allowsSelection = false // Prevent the user select things when open the thread
-        tableView.sectionHeaderTopPadding = 0
-        tableView.showsVerticalScrollIndicator = false
-        ConversationHistoryCellFactory.registerCells(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.accessibilityIdentifier = "tableViewThreadViewController"
+        tableView = UIHistoryTableView(viewModel: viewModel)
         view.addSubview(tableView)
-
-        let imageView = UIImageView(image: UIImage(named: "chat_bg"))
-        imageView.contentMode = .scaleAspectFill
-        tableView.backgroundView = imageView
-        tableView.backgroundColor = Color.App.bgPrimaryUIColor
     }
-
+    
     private func configureTopToolbarVStack() {
         view.addSubview(topThreadToolbar)
     }
-
+    
     private func configureSendContainer() {
         sendContainer.translatesAutoresizingMaskIntoConstraints = false
         sendContainer.accessibilityIdentifier = "sendContainerThreadViewController"
@@ -161,7 +140,7 @@ extension ThreadViewController {
             }
         }
     }
-
+    
     private func configureOverlayActionButtons() {
         vStackOverlayButtons.translatesAutoresizingMaskIntoConstraints = false
         vStackOverlayButtons.axis = .vertical
@@ -174,7 +153,7 @@ extension ThreadViewController {
         vStackOverlayButtons.addArrangedSubview(unreadMentionsButton)
         view.addSubview(vStackOverlayButtons)
     }
-
+    
     private func configureEmptyThreadView() {
         emptyThreadView.alpha = 0.0
         view.addSubview(emptyThreadView)
@@ -187,7 +166,7 @@ extension ThreadViewController {
             emptyThreadView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor),
         ])
     }
-
+    
     private func configureDimView() {
         if dimView.superview == nil {
             dimView.alpha = 0.0
@@ -199,20 +178,20 @@ extension ThreadViewController {
             dimView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor).isActive = true
         }
     }
-
+    
     private func configureLoadings() {
         topLoading.translatesAutoresizingMaskIntoConstraints = false
         topLoading.accessibilityIdentifier = "topLoadingThreadViewController"
         tableView.addSubview(topLoading)
-
+        
         centerLoading.translatesAutoresizingMaskIntoConstraints = false
         centerLoading.accessibilityIdentifier = "centerLoadingThreadViewController"
         view.addSubview(centerLoading)
-
+        
         bottomLoading.translatesAutoresizingMaskIntoConstraints = false
         bottomLoading.accessibilityIdentifier = "bottomLoadingThreadViewController"
         tableView.addSubview(bottomLoading)
-
+        
         topLoading.animate(false)
         centerLoading.animate(false)
         bottomLoading.animate(false)
@@ -222,19 +201,19 @@ extension ThreadViewController {
             topLoading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
             topLoading.widthAnchor.constraint(equalToConstant: width),
             topLoading.heightAnchor.constraint(equalToConstant: width),
-
+            
             centerLoading.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             centerLoading.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             centerLoading.widthAnchor.constraint(equalToConstant: width),
             centerLoading.heightAnchor.constraint(equalToConstant: width),
-
+            
             bottomLoading.bottomAnchor.constraint(equalTo: tableView.bottomAnchor, constant: -8),
             bottomLoading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
             bottomLoading.widthAnchor.constraint(equalToConstant: width),
             bottomLoading.heightAnchor.constraint(equalToConstant: width)
         ])
     }
-
+    
     private func showEmptyThread(show: Bool) {
         if show {
             configureEmptyThreadView()
@@ -246,97 +225,6 @@ extension ThreadViewController {
             self.unreadMentionsButton.showWithAniamtion(false)
             self.moveToBottom.showWithAniamtion(false)
         }
-    }
-}
-
-// MARK: TableView DataSource
-extension ThreadViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.historyVM.sections[section].vms.count ?? 0
-    }
-
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel?.historyVM.sections.count ?? 0
-    }
-}
-
-// MARK: TableView Delegate
-extension ThreadViewController: UITableViewDelegate {
-
-    @MainActor
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let viewModel = viewModel else { return nil }
-        let sectionVM = viewModel.historyVM.sections[section]
-        let headerView = SectionHeaderView()
-        headerView.set(sectionVM)
-        return headerView
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        ConversationHistoryCellFactory.reuse(tableView, indexPath, viewModel)
-    }
-
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.backgroundColor = UIColor.clear
-        Task { [weak self] in
-            await self?.viewModel?.historyVM.willDisplay(indexPath)
-        }
-    }
-
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        Task { [weak self] in
-            await self?.viewModel?.historyVM.didEndDisplay(indexPath)
-        }
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
-            cell.select()
-        }
-    }
-
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
-            cell.deselect()
-        }
-    }
-
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        makeReplyButton(indexPath: indexPath, isLeading: false)
-    }
-
-    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        makeReplyButton(indexPath: indexPath, isLeading: true)
-    }
-
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.sizes.estimatedHeight ?? 28
-    }
-}
-
-// MARK: Prefetch
-extension ThreadViewController: UITableViewDataSourcePrefetching {
-    // start potentially long-running data operations early.
-    // Prefetch images and long running task before the cell appears on the screen.
-    // Tip: Do all the job here on the background thread.
-    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-
-    }
-
-    // Cancel long running task if user scroll fast or to another position.
-    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-
-    }
-}
-
-// MARK: ScrollView delegate
-extension ThreadViewController {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        viewModel?.historyVM.didScrollTo(scrollView.contentOffset, scrollView.contentSize)
-    }
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        viewModel?.scrollVM.lastContentOffsetY = scrollView.contentOffset.y
     }
 }
 
@@ -783,27 +671,6 @@ extension ThreadViewController {
     }
 }
 
-// Reply leading/trailing button
-extension ThreadViewController {
-    func makeReplyButton(indexPath: IndexPath, isLeading: Bool) -> UISwipeActionsConfiguration? {
-        guard let viewModel = viewModel else { return nil }
-        let sections = viewModel.historyVM.sections
-        guard sections.indices.contains(indexPath.section), sections[indexPath.section].vms.indices.contains(indexPath.row) else { return nil }
-        let vm = sections[indexPath.section].vms[indexPath.row]
-        if !vm.message.reactionableType { return nil }
-        if isLeading && !vm.calMessage.isMe { return nil }
-        if !isLeading && vm.calMessage.isMe { return nil }
-        let replyAction = UIContextualAction(style: .normal, title: "") { [weak self] action, view, success in
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred(intensity: 1)
-            self?.openReplyMode(vm.message)
-            success(true)
-        }
-        replyAction.image = UIImage(systemName: "arrowshape.turn.up.left.circle")
-        replyAction.backgroundColor = UIColor.clear.withAlphaComponent(0.001)
-        let config = UISwipeActionsConfiguration(actions: [replyAction])
-        return config
-    }
-}
 
 // MARK: Table view cell helpers
 extension ThreadViewController {
