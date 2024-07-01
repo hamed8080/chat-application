@@ -47,7 +47,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         NotificationCenter.download.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink{ event in
-                Task { [weak self] in
+                Task { @HistoryActor [weak self] in
                     await self?.onDownloadEvent(event)
                 }
             }
@@ -107,7 +107,8 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     /// The hashCode decode FileMetaData so it needs to be done on the background thread.
     public func fetch() {
-        Task {
+        Task { @HistoryActor [weak self] in
+            guard let self = self else { return }
             let hashCode = await getHashCode()
             isFetching = true
             fileMetadata = config.metaData
@@ -128,6 +129,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         ChatManager.activeInstance?.file.get(req)
     }
 
+    @HistoryActor
     private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) async {
         guard response.uniqueId == uniqueId else { return }
         if response.uniqueId == uniqueId, !response.cache, let data = response.result {
@@ -185,6 +187,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
     }
 
+    @HistoryActor
     private func getHashCode() async -> String? {
         let parsedMetadata = await getMetaData()
         return parsedMetadata?.fileHash ?? getOldURLHash()
@@ -220,6 +223,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         return url?.host() == "core.pod.ir"
     }
 
+    @HistoryActor
     private func downloadRestImageFromPodURL() async {
         guard let url = getURL() else { return }
         var request = URLRequest(url: url)

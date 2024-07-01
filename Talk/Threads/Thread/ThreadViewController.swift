@@ -65,6 +65,7 @@ final class ThreadViewController: UIViewController {
         super.viewDidAppear(animated)
         viewModel?.historyVM.setThreashold(view.bounds.height * 2.5)
         contextMenuContainer = ContextMenuContainerView(delegate: self)
+        tableView.contentInset.top = topThreadToolbar.frame.height
     }
 
     deinit {
@@ -183,17 +184,15 @@ extension ThreadViewController {
         topLoading.translatesAutoresizingMaskIntoConstraints = false
         topLoading.accessibilityIdentifier = "topLoadingThreadViewController"
         tableView.addSubview(topLoading)
-        
+
         centerLoading.translatesAutoresizingMaskIntoConstraints = false
         centerLoading.accessibilityIdentifier = "centerLoadingThreadViewController"
-        view.addSubview(centerLoading)
-        
+
         bottomLoading.translatesAutoresizingMaskIntoConstraints = false
         bottomLoading.accessibilityIdentifier = "bottomLoadingThreadViewController"
         tableView.addSubview(bottomLoading)
         
         topLoading.animate(false)
-        centerLoading.animate(false)
         bottomLoading.animate(false)
         let width: CGFloat = 28
         NSLayoutConstraint.activate([
@@ -202,18 +201,22 @@ extension ThreadViewController {
             topLoading.widthAnchor.constraint(equalToConstant: width),
             topLoading.heightAnchor.constraint(equalToConstant: width),
             
-            centerLoading.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            centerLoading.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            centerLoading.widthAnchor.constraint(equalToConstant: width),
-            centerLoading.heightAnchor.constraint(equalToConstant: width),
-            
             bottomLoading.bottomAnchor.constraint(equalTo: tableView.bottomAnchor, constant: -8),
             bottomLoading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
             bottomLoading.widthAnchor.constraint(equalToConstant: width),
             bottomLoading.heightAnchor.constraint(equalToConstant: width)
         ])
     }
-    
+
+    private func attachCenterLoading() {
+        let width: CGFloat = 28
+        view.addSubview(centerLoading)
+        centerLoading.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        centerLoading.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        centerLoading.widthAnchor.constraint(equalToConstant: width).isActive = true
+        centerLoading.heightAnchor.constraint(equalToConstant: width).isActive = true
+    }
+
     private func showEmptyThread(show: Bool) {
         if show {
             configureEmptyThreadView()
@@ -249,6 +252,7 @@ extension ThreadViewController: ThreadViewDelegate {
         tableView.visibleCells.compactMap{$0 as? MessageBaseCell}.forEach { cell in
             cell.setInSelectionMode(value)
         }
+
         showSelectionBar(value)
         // We need a delay to show selection view to calculate height of sendContainer then update to the last Message if it is visible
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
@@ -272,7 +276,12 @@ extension ThreadViewController: ThreadViewDelegate {
 
     func startCenterAnimation(_ animate: Bool) {
         DispatchQueue.main.async {
-            self.centerLoading.animate(animate)
+            if animate {
+                self.attachCenterLoading()
+                self.centerLoading.animate(animate)
+            } else {
+                self.centerLoading.removeFromSuperViewWithAnimation()
+            }
         }
     }
 
@@ -562,7 +571,6 @@ extension ThreadViewController: HistoryScrollDelegate {
 //        if let scrollTo = scrollTo {
 //            self.tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
 //        }
-
         tableView.performBatchUpdates {
             // Insert the sections and rows without animation
             tableView.insertSections(sections, with: .top)
@@ -612,12 +620,16 @@ extension ThreadViewController: HistoryScrollDelegate {
 
     func reactionsUpdatedAt(_ indexPath: IndexPath) {
         // Delay is essential for when we get the bottom part on openning the thread for the first time to it won't lead to crash
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            if let cell = self?.baseVisibleCell(indexPath) {
-                cell.reactionsUpdated()
+        let wasAtBottom = viewModel?.scrollVM.isAtBottomOfTheList == true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            if let cell = self?.tableView.cellForRow(at: indexPath) as? MessageBaseCell, let viewModel = self?.viewModel?.historyVM.sections.viewModelWith(indexPath) {
+                cell.reactionsUpdated(viewModel: viewModel)
                 // Update geometry of table view and make cells taller
                 self?.tableView?.beginUpdates()
                 self?.tableView?.endUpdates()
+            }
+            if wasAtBottom {
+                self?.viewModel?.scrollVM.scrollToBottom()
             }
         }
     }

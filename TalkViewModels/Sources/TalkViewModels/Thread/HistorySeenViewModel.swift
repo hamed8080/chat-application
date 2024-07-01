@@ -19,8 +19,7 @@ public final class HistorySeenViewModel {
     private var seenPublisher = PassthroughSubject<Message, Never>()
     private var cancelable: Set<AnyCancellable> = []
     private var thread: Conversation { threadVM?.thread ?? Conversation(id: 0) }
-    private var isScrollingUp: Bool { threadVM?.scrollVM.scrollingUP == true }
-    private let queue = DispatchQueue(label: "SEEN_SERIAL_QUEUE")    
+    private let queue = DispatchQueue(label: "SEEN_SERIAL_QUEUE")
     private var threadId: Int { thread.id ?? 0 }
     private var threadsVM: ThreadsViewModel { threadVM?.threadsViewModel ?? .init() }
     private var lastInQueue: Int = 0
@@ -39,9 +38,10 @@ public final class HistorySeenViewModel {
         setupOnSceneBecomeActiveObserver()
     }
 
+    @HistoryActor
     internal func onAppear(_ message: any HistoryMessageProtocol) {
+        if !canReduce(for: message) { return }
         queue.sync {
-            if !canReduce(for: message) { return }
             logMessageApperance(message, appeard: true, isUp: false)
             reduceUnreadCountLocaly(message)
             if message.id ?? 0 >= lastInQueue, let message = message as? Message {
@@ -51,8 +51,9 @@ public final class HistorySeenViewModel {
         }
     }
 
+    @HistoryActor
     private func canReduce(for message: any HistoryMessageProtocol) -> Bool {
-        if isScrollingUp { return false }
+        if threadVM?.scrollVM.scrollingUP == true { return false }
         if thread.unreadCount ?? 0 == 0 { return false }
         if message.id == LocalId.unreadMessageBanner.rawValue { return false }
         return message.id ?? 0 > thread.lastSeenMessageId ?? 1

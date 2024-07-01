@@ -40,7 +40,7 @@ public final class PickerButtonsView: UIStackView {
         spacing = 8
         alignment = .center
         distribution = .equalCentering
-        layoutMargins = .init(horizontal: 8)
+        layoutMargins = .init(top: 8, left: 8, bottom: 0, right: 8)
         isLayoutMarginsRelativeArrangement = true
         let leadingSpacer = UIView()
         leadingSpacer.translatesAutoresizingMaskIntoConstraints = false

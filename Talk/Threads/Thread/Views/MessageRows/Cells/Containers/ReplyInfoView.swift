@@ -80,6 +80,7 @@ final class ReplyInfoView: UIView {
         participantLabel.textAlignment = isMe ? .right : .left
         participantLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
         participantLabel.isOpaque = true
+        participantLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         participantLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(participantLabel)
 

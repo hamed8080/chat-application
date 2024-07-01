@@ -37,7 +37,8 @@ class UIHistoryTableView: UITableView {
         allowsSelection = false // Prevent the user select things when open the thread
         sectionHeaderTopPadding = 0
         showsVerticalScrollIndicator = false
-        ConversationHistoryCellFactory.registerCells(self)
+        insetsContentViewsToSafeArea = true
+        ConversationHistoryCellFactory.registerCellsAndHeader(self)
         translatesAutoresizingMaskIntoConstraints = false
         accessibilityIdentifier = "tableViewThreadViewController"
         let imageView = UIImageView(image: UIImage(named: "chat_bg"))
@@ -64,10 +65,12 @@ extension UIHistoryTableView: UITableViewDelegate {
     @MainActor
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let viewModel = viewModel else { return nil }
-        let sectionVM = viewModel.historyVM.sections[section]
-        let headerView = SectionHeaderView()
-        headerView.set(sectionVM)
-        return headerView
+        if let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: String(describing: SectionHeaderView.self)) as? SectionHeaderView {
+            let sectionVM = viewModel.historyVM.sections[section]
+            headerView.set(sectionVM)
+            return headerView
+        }
+        return nil
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -158,5 +161,14 @@ extension UIHistoryTableView {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         viewModel?.scrollVM.lastContentOffsetY = scrollView.contentOffset.y
+        Task { @HistoryActor [weak self] in
+            await self?.viewModel?.scrollVM.isEndedDecelerating = false
+        }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        Task { @HistoryActor [weak self] in
+            await self?.viewModel?.scrollVM.isEndedDecelerating = true
+        }
     }
 }

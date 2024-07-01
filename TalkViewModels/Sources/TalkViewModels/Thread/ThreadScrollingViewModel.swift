@@ -16,11 +16,12 @@ import TalkModels
 public final class ThreadScrollingViewModel {
     var task: Task<(), Never>?
     public var isProgramaticallyScroll: Bool = false
-    public var scrollingUP = false
+    @HistoryActor public var scrollingUP = false
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1)}
     public var isAtBottomOfTheList: Bool = false
-    public var lastContentOffsetY: CGFloat = 0
+    @HistoryActor public var lastContentOffsetY: CGFloat = 0
+    @HistoryActor public var isEndedDecelerating: Bool = true
     init() {}
 
     public func setup(viewModel: ThreadViewModel) {

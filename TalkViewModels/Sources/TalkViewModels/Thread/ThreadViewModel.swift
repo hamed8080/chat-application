@@ -351,16 +351,6 @@ public final class ThreadViewModel: Identifiable, Hashable {
         }
     }
 
-    public func onDragged(translation: CGSize, startLocation: CGPoint) {
-        scrollVM.cancelTask()
-//        scrollVM.setProgramaticallyScrollingState(newState: false)
-        scrollVM.scrollingUP = translation.height > 10
-        let isSwipeEdge = Language.isRTL ? (startLocation.x > ThreadViewModel.threadWidth - 20) : startLocation.x < 20
-        if isSwipeEdge, abs(translation.width) > 48 && translation.height < 12 {
-            AppState.shared.objectsContainer.navVM.remove(threadId: threadId)
-        }
-    }
-
     public func getParticipantCount() -> String {
         let count = thread.participantCount ?? 0
         if thread.group == true, let participantsCount = count.localNumber(locale: Language.preferredLocale) {

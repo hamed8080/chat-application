@@ -42,12 +42,15 @@ public final class ConversationHistoryCellFactory {
         }
     }
 
-    public class func registerCells(_ tableView: UITableView) {
+    public class func registerCellsAndHeader(_ tableView: UITableView) {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellTypes.unknown.rawValue)
         tableView.register(PartnerMessageCell.self, forCellReuseIdentifier: CellTypes.partnerMessage.rawValue)
         tableView.register(MyselfMessageCell.self, forCellReuseIdentifier: CellTypes.meMessage.rawValue)
         tableView.register(CallEventCell.self, forCellReuseIdentifier: CellTypes.call.rawValue)
         tableView.register(ParticipantsEventCell.self, forCellReuseIdentifier: CellTypes.participants.rawValue)
         tableView.register(UnreadBubbleCell.self, forCellReuseIdentifier: CellTypes.unreadBanner.rawValue)
+
+        // HEADER
+        tableView.register(SectionHeaderView.self, forHeaderFooterViewReuseIdentifier: String(describing: SectionHeaderView.self))
     }
 }

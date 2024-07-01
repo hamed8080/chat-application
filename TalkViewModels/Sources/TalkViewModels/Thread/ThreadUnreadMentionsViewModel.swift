@@ -37,6 +37,7 @@ public final class ThreadUnreadMentionsViewModel {
             .store(in: &cancelable)
     }
 
+    @HistoryActor
     public func scrollToMentionedMessage() async {
         viewModel?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge where we have mentiond
         await viewModel?.moveToFirstUnreadMessage()

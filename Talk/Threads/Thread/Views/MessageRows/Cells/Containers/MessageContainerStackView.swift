@@ -28,7 +28,7 @@ public final class MessageContainerStackView: UIStackView {
     private let textMessageView = TextMessageView()
     private static let tailImage = UIImage(named: "tail")
     private var tailImageView = UIImageView()
-//    private let reactionView: ReactionCountScrollView
+    private let reactionView: ReactionCountScrollView
     private let footerView: FooterView
 //    private let unsentMessageView = UnsentMessageView()
 
@@ -42,7 +42,7 @@ public final class MessageContainerStackView: UIStackView {
         self.locationRowView = .init(frame: frame)
         self.messageImageView = .init(frame: frame)
         self.messageVideoView = .init(frame: frame, isMe: isMe)
-//        self.reactionView = .init(frame: frame, isMe: isMe)
+        self.reactionView = .init(frame: frame, isMe: isMe)
         super.init(frame: frame)
         configureView(isMe: isMe)
 
@@ -75,7 +75,7 @@ public final class MessageContainerStackView: UIStackView {
         locationRowView.translatesAutoresizingMaskIntoConstraints = false
         textMessageView.translatesAutoresizingMaskIntoConstraints = false
         textMessageView.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
-        //        reactionView.translatesAutoresizingMaskIntoConstraints = false
+        reactionView.translatesAutoresizingMaskIntoConstraints = false
         footerView.translatesAutoresizingMaskIntoConstraints = false
 //        unsentMessageView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -179,12 +179,9 @@ public final class MessageContainerStackView: UIStackView {
         //            unsentMessageView.removeFromSuperview()
         //        }
         //
-        //        if viewModel.reactionsModel.rows.isEmpty == false {
-        //            reactionView.set(viewModel)
-        //            addArrangedSubview(reactionView)
-        //        } else {
-        //            reactionView.removeFromSuperview()
-        //        }
+        reactionView.set(viewModel)
+        addArrangedSubview(reactionView)
+        reactionView.setIsHidden(viewModel.reactionsModel.rows.isEmpty)
         //        reactionView.set(viewModel)
 
         footerView.set(viewModel)
@@ -257,9 +254,9 @@ extension MessageContainerStackView {
         messageVideoView.uploadCompleted(viewModel: viewModel)
     }
 
-    public func reationUpdated() {
-        guard let viewModel = viewModel else { return }
-//        reactionView.set(viewModel)
+    public func reationUpdated(viewModel: MessageRowViewModel) {
+        reactionView.setIsHidden(viewModel.reactionsModel.rows.isEmpty)
+        reactionView.set(viewModel)
     }
 
     public func prepareForContextMenu(userInterfaceStyle: UIUserInterfaceStyle) {

@@ -24,7 +24,7 @@ public final class ThreadHistoryViewModel {
     public weak var delegate: HistoryScrollDelegate?
     public var sections: ContiguousArray<MessageSection> = .init()
 
-    private var threshold: CGFloat = 800
+    @HistoryActor private var threshold: CGFloat = 800
     private var created: Bool = false
     private var isInInsertionTop = false
     private var isInInsertionBottom = false
@@ -357,7 +357,10 @@ extension ThreadHistoryViewModel {
                 viewModels.append(vm)
             }
         }
-
+        while(await viewModel?.scrollVM.isEndedDecelerating == false) {
+            print("Waiting for the deceleration to be completed.")
+        }
+        print("Deceleration has been completed.")
         appendSort(viewModels)
         viewModel?.scrollVM.disableExcessiveLoading()
         isFetchedServerFirstResponse = false
@@ -403,13 +406,18 @@ extension ThreadHistoryViewModel {
                 viewModels.append(vm)
             }
         }
+
+        while(await viewModel?.scrollVM.isEndedDecelerating == false) {
+            print("Waiting for the deceleration to be completed.")
+        }
+        print("Deceleration has been completed.")
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
         await setHasMoreTop(response)
         let tuple = sections.insertedIndices(insertTop: true, beforeSectionCount: beforeSectionCount, viewModels)
 
-        let moveToMessage = viewModel?.scrollVM.lastContentOffsetY ?? 0 < 48
+        let moveToMessage = await viewModel?.scrollVM.lastContentOffsetY ?? 0 < 48
         var indexPathToScroll: IndexPath?
         if moveToMessage, let lastTopMessageVM = lastTopMessageVM {
             indexPathToScroll = sections.indexPath(for: lastTopMessageVM)
@@ -451,6 +459,10 @@ extension ThreadHistoryViewModel {
                 viewModels.append(vm)
             }
         }
+        while(await viewModel?.scrollVM.isEndedDecelerating == false) {
+            print("Waiting for the deceleration to be completed.")
+        }
+        print("Deceleration has been completed.")
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
@@ -860,7 +872,7 @@ extension ThreadHistoryViewModel {
             threadVM.scrollVM.isAtBottomOfTheList = true
             viewModel?.delegate?.lastMessageAppeared(true)
         }
-        seenVM?.onAppear(message)
+        await seenVM?.onAppear(message)
     }
 
     public func didEndDisplay(_ indexPath: IndexPath) async {
@@ -1018,7 +1030,9 @@ extension ThreadHistoryViewModel {
         let emptyThread = viewModel?.isSimulatedThared == true
         isEmptyThread = emptyThread || noMessage
         delegate?.emptyStateChanged(isEmpty: isEmptyThread)
-        viewModel?.delegate?.startCenterAnimation(false)
+        if isEmptyThread {
+            viewModel?.delegate?.startCenterAnimation(false)
+        }
     }
 
     internal func setCreated(_ created: Bool) {
@@ -1026,7 +1040,9 @@ extension ThreadHistoryViewModel {
     }
 
     public func setThreashold(_ threshold: CGFloat) {
-        self.threshold = threshold
+        Task { @HistoryActor in
+            self.threshold = threshold
+        }
     }
 }
 

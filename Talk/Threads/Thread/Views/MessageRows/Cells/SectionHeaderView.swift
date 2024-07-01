@@ -11,11 +11,11 @@ import UIKit
 import SwiftUI
 import TalkUI
 
-final class SectionHeaderView: UIView {
+final class SectionHeaderView: UITableViewHeaderFooterView {
     private var label = PaddingUILabel(frame: .zero, horizontal: 32, vertical: 8)
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
         configureView()
     }
 
@@ -25,6 +25,9 @@ final class SectionHeaderView: UIView {
 
     private func configureView() {
         isUserInteractionEnabled = false
+        backgroundView = UIView()
+        backgroundView?.backgroundColor = .clear
+
         label.translatesAutoresizingMaskIntoConstraints = false
         label.label.font = UIFont.uiiransansCaption
         label.label.textColor = .white
