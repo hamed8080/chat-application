@@ -20,7 +20,7 @@ public final class ThreadPinMessageView: UIStackView {
     private let textButton = UIButton(type: .system)
     private let unpinButton = UIButton(type: .system)
     private weak var viewModel: ThreadPinMessageViewModel?
-    var stack: UIStackView?
+    weak var stack: UIStackView?
 
     public init(viewModel: ThreadPinMessageViewModel?) {
         self.viewModel = viewModel

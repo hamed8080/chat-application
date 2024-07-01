@@ -621,7 +621,7 @@ extension ThreadViewController: HistoryScrollDelegate {
     func reactionsUpdatedAt(_ indexPath: IndexPath) {
         // Delay is essential for when we get the bottom part on openning the thread for the first time to it won't lead to crash
         let wasAtBottom = viewModel?.scrollVM.isAtBottomOfTheList == true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             if let cell = self?.tableView.cellForRow(at: indexPath) as? MessageBaseCell, let viewModel = self?.viewModel?.historyVM.sections.viewModelWith(indexPath) {
                 cell.reactionsUpdated(viewModel: viewModel)
                 // Update geometry of table view and make cells taller

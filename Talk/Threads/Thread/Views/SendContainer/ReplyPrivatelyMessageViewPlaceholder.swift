@@ -14,7 +14,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
     private weak var viewModel: ThreadViewModel?
-    var stack: UIStackView?
+    weak var stack: UIStackView?
 
     public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel

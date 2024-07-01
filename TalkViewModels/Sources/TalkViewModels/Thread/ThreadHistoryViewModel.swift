@@ -357,10 +357,8 @@ extension ThreadHistoryViewModel {
                 viewModels.append(vm)
             }
         }
-        while(await viewModel?.scrollVM.isEndedDecelerating == false) {
-            print("Waiting for the deceleration to be completed.")
-        }
-        print("Deceleration has been completed.")
+
+        await waitingToFinishDecelerating()
         appendSort(viewModels)
         viewModel?.scrollVM.disableExcessiveLoading()
         isFetchedServerFirstResponse = false
@@ -407,10 +405,7 @@ extension ThreadHistoryViewModel {
             }
         }
 
-        while(await viewModel?.scrollVM.isEndedDecelerating == false) {
-            print("Waiting for the deceleration to be completed.")
-        }
-        print("Deceleration has been completed.")
+        await waitingToFinishDecelerating()
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
@@ -459,10 +454,8 @@ extension ThreadHistoryViewModel {
                 viewModels.append(vm)
             }
         }
-        while(await viewModel?.scrollVM.isEndedDecelerating == false) {
-            print("Waiting for the deceleration to be completed.")
-        }
-        print("Deceleration has been completed.")
+
+        await waitingToFinishDecelerating()
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
@@ -1178,5 +1171,23 @@ public extension ThreadHistoryViewModel {
     @MainActor
     func getSections() async -> ContiguousArray<MessageSection> {
         return sections
+    }
+}
+
+
+extension ThreadHistoryViewModel {
+
+    @DeceleratingActor
+    func waitingToFinishDecelerating() async {
+        var isEnded = false
+        while(!isEnded) {
+            if viewModel?.scrollVM.isEndedDecelerating == true {
+                isEnded = true
+                print("Deceleration has been completed.")
+            } else {
+                print("Waiting for the deceleration to be completed.")
+                try? await Task.sleep(for: .nanoseconds(500000))
+            }
+        }
     }
 }

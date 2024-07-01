@@ -19,7 +19,7 @@ public final class AttachmentFilesTableView: UIView {
     private let cellHeight: CGFloat = 48
     private let expandViewHeight: CGFloat = 48
     private let expandView: ExpandView
-    var stack: UIStackView?
+    weak var stack: UIStackView?
 
     public init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel

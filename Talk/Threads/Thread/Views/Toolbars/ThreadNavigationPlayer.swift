@@ -22,7 +22,7 @@ class ThreadNavigationPlayer: UIView {
     private weak var viewModel: ThreadViewModel?
     private var cancellableSet = Set<AnyCancellable>()
     private var playerVM: AVAudioPlayerViewModel { AppState.shared.objectsContainer.audioPlayerVM }
-    var stack: UIStackView?
+    weak var stack: UIStackView?
 
     init(viewModel: ThreadViewModel?) {
         self.viewModel = viewModel

@@ -15,7 +15,7 @@ public final class ForwardMessagePlaceholderView: UIStackView {
     private let staticForwardLabel = UILabel()
     private let messageLabel = UILabel()
     private weak var viewModel: ThreadViewModel?
-    var stack: UIStackView?
+    weak var stack: UIStackView?
 
     private var isSingleForward: Bool {
         return AppState.shared.appStateNavigationModel.forwardMessageRequest?.messageIds.count == 1

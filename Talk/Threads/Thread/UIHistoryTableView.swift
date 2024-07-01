@@ -160,14 +160,16 @@ extension UIHistoryTableView {
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        viewModel?.scrollVM.lastContentOffsetY = scrollView.contentOffset.y
         Task { @HistoryActor [weak self] in
+            await self?.viewModel?.scrollVM.lastContentOffsetY = scrollView.contentOffset.y
+        }
+        Task(priority: .userInitiated) { @DeceleratingActor [weak self] in
             await self?.viewModel?.scrollVM.isEndedDecelerating = false
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        Task { @HistoryActor [weak self] in
+        Task(priority: .userInitiated) { @DeceleratingActor [weak self] in
             await self?.viewModel?.scrollVM.isEndedDecelerating = true
         }
     }

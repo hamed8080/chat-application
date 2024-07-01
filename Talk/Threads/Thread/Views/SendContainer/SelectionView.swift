@@ -136,9 +136,13 @@ public final class SelectionView: UIStackView {
         lblCount.text = ""
         viewModel?.delegate?.setSelection(false)
         viewModel?.selectedMessagesViewModel.clearSelection()
+        removeFromSuperview()
     }
 
     public func update(stack: UIStackView) {
-        set(stack: stack)
+        if superview == nil {
+            set(stack: stack) // attach it to the view
+        }
+        updateCount()
     }
 }
