@@ -11,7 +11,6 @@ import Chat
 
 final class MessageLocationView: UIImageView {
     private weak var viewModel: MessageRowViewModel?
-    private var mapViewWidthConstraint: NSLayoutConstraint!
     private var mapViewHeightConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
@@ -30,8 +29,6 @@ final class MessageLocationView: UIImageView {
         layer.masksToBounds = true
         contentMode = .scaleAspectFill
 
-        mapViewWidthConstraint = widthAnchor.constraint(equalToConstant: 0)
-        mapViewWidthConstraint.identifier = "mapViewWidthConstraintMessageLocationView"
         mapViewHeightConstraint = heightAnchor.constraint(equalToConstant: 0)
         mapViewHeightConstraint.identifier = "mapViewHeightConstraintMessageLocationView"
 
@@ -41,7 +38,7 @@ final class MessageLocationView: UIImageView {
         addGestureRecognizer(tapGesture)
 
         NSLayoutConstraint.activate([
-            mapViewWidthConstraint,
+            widthAnchor.constraint(greaterThanOrEqualToConstant: 340),
             mapViewHeightConstraint
         ])
     }
@@ -66,10 +63,6 @@ final class MessageLocationView: UIImageView {
 
         if viewModel.fileState.state != .completed, viewModel.fileState.state != .downloading, viewModel.fileState.state != .thumbnailDownloaing {
             viewModel.onTap() // to download automatically image of the location
-        }
-
-        if mapViewWidthConstraint.constant != viewModel.calMessage.sizes.mapWidth {
-            mapViewWidthConstraint.constant = viewModel.calMessage.sizes.mapWidth
         }
 
         if mapViewHeightConstraint.constant != viewModel.calMessage.sizes.mapHeight {

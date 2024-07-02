@@ -45,6 +45,7 @@ public final class ThreadHistoryViewModel {
     private var lastItemIdInSections = 0
     private let keys = RequestKeys()
     private var highlightTask: Task<Void, Never>?
+    private var prevhighlightedMessageId: Int?
 
     // MARK: Computed Properties
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1) }
@@ -621,6 +622,7 @@ extension ThreadHistoryViewModel {
                 vm = sections[indexPath.section].vms[indexPath.row]
                 vm.swapUploadMessageWith(message)
                 await vm.performaCalculation(appendMessages: [])
+                delegate?.reload(at: indexPath)
             } else {
                 // A new message comes from server
                 vm = MessageRowViewModel(message: message, viewModel: viewModel)
@@ -1105,6 +1107,8 @@ extension ThreadHistoryViewModel {
     }
 
     private func setHighlight(messageId: Int) {
+        // Check if prevhighlightedMessageId is equal to message id, it means that we click twice and we are currently in the middle of an highlight animation.
+        if prevhighlightedMessageId == messageId { return }
         guard let vm = sections.messageViewModel(for: messageId), let indexPath = sections.indexPath(for: vm) else { return }
         Task { @HistoryActor in
             vm.calMessage.state.isHighlited = true
@@ -1112,11 +1116,23 @@ extension ThreadHistoryViewModel {
                 delegate?.setHighlightRowAt(indexPath, highlight: true)
             }
         }
+
+        // Cancel immediately old highlighted item
+        if let prevhighlightedMessageId = prevhighlightedMessageId,
+           let vm = sections.messageViewModel(for: prevhighlightedMessageId),
+           let indexPath = sections.indexPath(for: vm)
+        {
+            Task {
+                await unHighlightTimer(vm: vm, indexPath: indexPath)
+            }
+        }
+        prevhighlightedMessageId = messageId
         highlightTask?.cancel()
         highlightTask = Task {
             try? await Task.sleep(for: .seconds(2.5))
             if !Task.isCancelled {
                 await unHighlightTimer(vm: vm, indexPath: indexPath)
+                prevhighlightedMessageId = nil
             }
         }
     }

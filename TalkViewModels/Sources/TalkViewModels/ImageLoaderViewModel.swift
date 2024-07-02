@@ -183,7 +183,7 @@ public final class ImageLoaderViewModel: ObservableObject {
     }
 
     private func getMetaData() async ->  FileMetaData? {
-        guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
+        guard let fileMetadata = (config.metaData ?? fileMetadata)?.data(using: .utf8) else { return nil }
         return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
     }
 

@@ -15,8 +15,7 @@ import TalkExtensions
 import Photos
 
 public final class MessageContainerStackView: UIStackView {
-    public weak var cell: MessageBaseCell?
-    weak var viewModel: MessageRowViewModel?
+    // Views
     private let messageFileView: MessageFileView
     private let messageImageView: MessageImageView
     private let messageVideoView: MessageVideoView
@@ -31,6 +30,15 @@ public final class MessageContainerStackView: UIStackView {
     private let reactionView: ReactionCountScrollView
     private let footerView: FooterView
 //    private let unsentMessageView = UnsentMessageView()
+
+    // Models
+    weak var viewModel: MessageRowViewModel?
+    public weak var cell: MessageBaseCell?
+
+    // Sizes
+    private let tailWidth: CGFloat = 16
+    private let tailHeight: CGFloat = 32
+    private let margin: CGFloat = 4
 
     init(frame: CGRect, isMe: Bool) {
         self.groupParticipantNameView = .init(frame: frame)
@@ -59,7 +67,7 @@ public final class MessageContainerStackView: UIStackView {
         spacing = 4
         alignment = .top
         distribution = .fill
-        layoutMargins = .init(all: 4)
+        layoutMargins = .init(all: margin)
         isLayoutMarginsRelativeArrangement = true
         layer.cornerRadius = 10
         layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
@@ -86,8 +94,8 @@ public final class MessageContainerStackView: UIStackView {
             tailImageView.tintColor = Color.App.bgChatUserUIColor!
             addSubview(tailImageView)
 
-            tailImageView.widthAnchor.constraint(equalToConstant: 16).isActive = true
-            tailImageView.heightAnchor.constraint(equalToConstant: 32).isActive = true
+            tailImageView.widthAnchor.constraint(equalToConstant: tailWidth).isActive = true
+            tailImageView.heightAnchor.constraint(equalToConstant: tailHeight).isActive = true
             tailImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -12).isActive = true
             tailImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
         }
@@ -117,7 +125,7 @@ public final class MessageContainerStackView: UIStackView {
         if viewModel.calMessage.rowType.isReply {
             replyInfoMessageRow.set(viewModel)
             addArrangedSubview(replyInfoMessageRow)
-            replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
+            replyInfoMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin).isActive = true
         } else {
             replyInfoMessageRow.removeFromSuperview()
         }
@@ -125,7 +133,7 @@ public final class MessageContainerStackView: UIStackView {
         if viewModel.calMessage.rowType.isForward {
             forwardMessageRow.set(viewModel)
             addArrangedSubview(forwardMessageRow)
-            forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
+            forwardMessageRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin).isActive = true
         } else {
             forwardMessageRow.removeFromSuperview()
         }
@@ -182,7 +190,6 @@ public final class MessageContainerStackView: UIStackView {
         reactionView.set(viewModel)
         addArrangedSubview(reactionView)
         reactionView.setIsHidden(viewModel.reactionsModel.rows.isEmpty)
-        //        reactionView.set(viewModel)
 
         footerView.set(viewModel)
         addArrangedSubview(footerView)
@@ -252,6 +259,7 @@ extension MessageContainerStackView {
         messageFileView.uploadCompleted(viewModel: viewModel)
         messageImageView.uploadCompleted(viewModel: viewModel)
         messageVideoView.uploadCompleted(viewModel: viewModel)
+        footerView.set(viewModel)
     }
 
     public func reationUpdated(viewModel: MessageRowViewModel) {

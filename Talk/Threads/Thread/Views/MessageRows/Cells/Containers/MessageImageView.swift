@@ -13,15 +13,23 @@ import TalkModels
 import Chat
 
 final class MessageImageView: UIImageView {
+    // Views
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
+    private var effectView: UIVisualEffectView!
     private let progressView = CircleProgressButton(progressColor: Color.App.whiteUIColor,
                                                     iconTint: Color.App.whiteUIColor,
                                                     margin: 2)
+
+    // Models
     private weak var viewModel: MessageRowViewModel?
-    private var effectView: UIVisualEffectView!
+
+    // Constraints
     private var widthConstraint: NSLayoutConstraint!
     private var heightConstraint: NSLayoutConstraint!
+
+    // Sizes
+    private let progessSize: CGFloat = 32
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -54,8 +62,6 @@ final class MessageImageView: UIImageView {
         effectView.frame = bounds
         effectView.isUserInteractionEnabled = false
         effectView.accessibilityIdentifier = "effectViewMessageImageView"
-        addSubview(effectView)
-        bringSubviewToFront(effectView)
 
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
@@ -79,8 +85,6 @@ final class MessageImageView: UIImageView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
         addGestureRecognizer(tapGesture)
 
-        addSubview(stack)
-
         widthConstraint = widthAnchor.constraint(equalToConstant: 0)
         widthConstraint.identifier = "widthConstraintMessageImageView"
         heightConstraint = heightAnchor.constraint(equalToConstant: 0)
@@ -89,16 +93,8 @@ final class MessageImageView: UIImageView {
         NSLayoutConstraint.activate([
             widthConstraint,
             heightConstraint,
-            
-            effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            effectView.topAnchor.constraint(equalTo: topAnchor),
-            effectView.widthAnchor.constraint(equalTo: widthAnchor),
-            effectView.heightAnchor.constraint(equalTo: heightAnchor),
-
-            stack.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: centerYAnchor),
-            progressView.widthAnchor.constraint(equalToConstant: 32),
-            progressView.heightAnchor.constraint(equalToConstant: 32),
+            progressView.widthAnchor.constraint(equalToConstant: progessSize),
+            progressView.heightAnchor.constraint(equalToConstant: progessSize),
         ])
     }
 
@@ -111,9 +107,9 @@ final class MessageImageView: UIImageView {
         } else {
             setPreloadImage(viewModel: viewModel)
         }
-        stack.setIsHidden(!canShow)
-        effectView.setIsHidden(!canShow)
 
+        attachOrDetachEffectView(canShow: canShow)
+        attachOrDetachProgressView(canShow: canShow)
         updateProgress(viewModel: viewModel)
         if viewModel.calMessage.computedFileSize != fileSizeLabel.text {
             fileSizeLabel.text = viewModel.calMessage.computedFileSize
@@ -124,6 +120,29 @@ final class MessageImageView: UIImageView {
         }
         widthConstraint.constant = (viewModel.calMessage.sizes.imageWidth ?? 128) - 8 // -8 for parent stack view margin
         heightConstraint.constant = viewModel.calMessage.sizes.imageHeight ?? 128
+    }
+
+    private func attachOrDetachEffectView(canShow: Bool) {
+        if canShow, effectView.superview == nil {
+            addSubview(effectView)
+            bringSubviewToFront(effectView)
+            effectView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+            effectView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+            effectView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+            effectView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+        } else if !canShow {
+            effectView.removeFromSuperview()
+        }
+    }
+
+    private func attachOrDetachProgressView(canShow: Bool) {
+        if canShow, stack.superview == nil {
+            addSubview(stack)
+            stack.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+            stack.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        } else if !canShow {
+            stack.removeFromSuperview()
+        }
     }
 
     private func setImage(fileURL: URL) {
@@ -160,8 +179,8 @@ final class MessageImageView: UIImageView {
     public func downloadCompleted(viewModel: MessageRowViewModel) {
         if let fileURL = viewModel.calMessage.fileURL {
             updateProgress(viewModel: viewModel)
-            stack.setIsHidden(true)
-            effectView.setIsHidden(true)
+            attachOrDetachProgressView(canShow: false)
+            attachOrDetachEffectView(canShow: false)
             setImage(fileURL: fileURL)
         }
     }
@@ -169,8 +188,8 @@ final class MessageImageView: UIImageView {
     public func uploadCompleted(viewModel: MessageRowViewModel) {
         if let fileURL = viewModel.calMessage.fileURL {
             updateProgress(viewModel: viewModel)
-            stack.setIsHidden(true)
-            effectView.setIsHidden(true)
+            attachOrDetachProgressView(canShow: false)
+            attachOrDetachEffectView(canShow: false)
             setImage(fileURL: fileURL)
         }
     }

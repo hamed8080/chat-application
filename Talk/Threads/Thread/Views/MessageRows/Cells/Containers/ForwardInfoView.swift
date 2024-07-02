@@ -13,11 +13,21 @@ import TalkViewModels
 import TalkModels
 
 final class ForwardInfoView: UIView {
+    // Views
     private let forwardStaticLabel = UILabel()
     private let participantLabel = UILabel()
     private let bar = UIView()
+
+    // Models
     private weak var viewModel: MessageRowViewModel?
     private static let forwardFromStaticText = "Message.forwardedFrom".localized()
+
+    // Sizes
+    private let margin: CGFloat = 6
+    private let imageSize: CGFloat = 36
+    private let barWidth: CGFloat = 2.5
+    private let barMargin: CGFloat = 0.5
+    private let verticalSpacing: CGFloat = 2.0
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -42,7 +52,6 @@ final class ForwardInfoView: UIView {
         forwardStaticLabel.text = ForwardInfoView.forwardFromStaticText
         forwardStaticLabel.accessibilityIdentifier = "forwardStaticLebelForwardInfoView"
         forwardStaticLabel.textAlignment = isMe ? .right : .left
-        forwardStaticLabel.setContentHuggingPriority(.required, for: .vertical)
         addSubview(forwardStaticLabel)
 
         participantLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -52,11 +61,12 @@ final class ForwardInfoView: UIView {
         participantLabel.accessibilityIdentifier = "participantLabelForwardInfoView"
         participantLabel.textAlignment = isMe ? .right : .left
         participantLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        participantLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(participantLabel)
 
         bar.translatesAutoresizingMaskIntoConstraints = false
         bar.backgroundColor = Color.App.accentUIColor
-        bar.layer.cornerRadius = 2
+        bar.layer.cornerRadius = barWidth / 2
         bar.layer.masksToBounds = true
         bar.accessibilityIdentifier = "barForwardInfoView"
         bar.setContentHuggingPriority(.required, for: .horizontal)
@@ -68,31 +78,25 @@ final class ForwardInfoView: UIView {
         let tap = UITapGestureRecognizer(target: self, action: #selector(onForwardTapped))
         addGestureRecognizer(tap)
 
-        let padding: CGFloat = 6
-
         NSLayoutConstraint.activate([
-            bar.widthAnchor.constraint(equalToConstant: 1.5),
-            bar.topAnchor.constraint(equalTo: topAnchor, constant: 2),
-            bar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
-            bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0.5),
-            
-            forwardStaticLabel.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: padding),
-            forwardStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            forwardStaticLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            bar.widthAnchor.constraint(equalToConstant: barWidth),
+            bar.topAnchor.constraint(equalTo: topAnchor, constant: margin),
+            bar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -margin),
+            bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: barMargin),
 
-            participantLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
-            participantLabel.topAnchor.constraint(equalTo: forwardStaticLabel.bottomAnchor, constant: 2),
-            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
-            participantLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+            forwardStaticLabel.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: margin),
+            forwardStaticLabel.topAnchor.constraint(equalTo: topAnchor, constant: margin),
+            forwardStaticLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
+
+            participantLabel.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: margin),
+            participantLabel.topAnchor.constraint(equalTo: forwardStaticLabel.bottomAnchor, constant: verticalSpacing),
+            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
+            participantLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -margin)
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        if !viewModel.calMessage.rowType.isForward {
-            reset()
-            return
-        }
         setIsHidden(false)
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name ?? viewModel.message.participant?.name
         participantLabel.setIsHidden(viewModel.message.forwardInfo?.participant?.name == nil)
@@ -100,10 +104,5 @@ final class ForwardInfoView: UIView {
 
     @IBAction func onForwardTapped(_ sender: UIGestureRecognizer) {
         print("on forward tapped")
-    }
-
-    private func reset() {
-        participantLabel.text = nil
-        setIsHidden(true)
     }
 }

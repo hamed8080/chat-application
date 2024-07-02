@@ -47,19 +47,6 @@ public final class SelectMessageRadio: UIView {
     }
 
     public func set(selected: Bool, viewModel: MessageRowViewModel) {
-        if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false {
-            reset()
-            return
-        }
-        setIsHidden(false)
         imageView.image = selected ? SelectMessageRadio.staticSelectedImage : SelectMessageRadio.staticUNSelectedImage
-    }
-
-    private func reset() {
-        if !isHidden {
-            isHidden = true
-        } else {
-            imageView.image = SelectMessageRadio.staticUNSelectedImage
-        }
     }
 }

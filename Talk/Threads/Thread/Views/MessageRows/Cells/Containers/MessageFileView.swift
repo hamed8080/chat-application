@@ -12,6 +12,7 @@ import ChatModels
 import TalkModels
 
 final class MessageFileView: UIStackView {
+    // Views
     private let vStack = UIStackView()
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
@@ -21,8 +22,13 @@ final class MessageFileView: UIStackView {
                                                       bgColor: Color.App.accentUIColor,
                                                       margin: 2
     )
+
+    // Models
     private weak var viewModel: MessageRowViewModel?
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
+
+    // Sizes
+    private let progressButtonSize: CGFloat = 36
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -49,7 +55,6 @@ final class MessageFileView: UIStackView {
         progressButton.setContentHuggingPriority(.required, for: .vertical)
         progressButton.setContentCompressionResistancePriority(.required, for: .vertical)
         progressButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-        progressButton.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         progressButton.isOpaque = true
         addArrangedSubview(progressButton)
 
@@ -103,8 +108,8 @@ final class MessageFileView: UIStackView {
         addArrangedSubview(vStack)
 
         NSLayoutConstraint.activate([
-            progressButton.widthAnchor.constraint(equalToConstant: 36),
-            progressButton.heightAnchor.constraint(equalToConstant: 36),
+            progressButton.widthAnchor.constraint(equalToConstant: progressButtonSize),
+            progressButton.heightAnchor.constraint(equalToConstant: progressButtonSize),
         ])
     }
 

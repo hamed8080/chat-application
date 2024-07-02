@@ -253,6 +253,16 @@ extension ThreadViewController: ThreadViewDelegate {
             cell.setInSelectionMode(value)
         }
 
+        // Assure that the previous item is in select mode or not
+        if let cell = prevouisVisibleIndexPath() {
+            cell.setInSelectionMode(value)
+        }
+
+        // Assure that the next item is in select mode or not
+        if let cell = nextVisibleIndexPath() {
+            cell.setInSelectionMode(value)
+        }
+
         showSelectionBar(value)
         // We need a delay to show selection view to calculate height of sendContainer then update to the last Message if it is visible
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
@@ -683,7 +693,6 @@ extension ThreadViewController {
     }
 }
 
-
 // MARK: Table view cell helpers
 extension ThreadViewController {
     private func baseVisibleCell(_ indexPath: IndexPath) -> MessageBaseCell? {
@@ -695,5 +704,21 @@ extension ThreadViewController {
 
     private func isVisible(_ indexPath: IndexPath) -> Bool {
         tableView.indexPathsForVisibleRows?.contains(where: {$0 == indexPath}) == true
+    }
+
+    private func prevouisVisibleIndexPath() -> MessageBaseCell? {
+        if let firstVisible = tableView.indexPathsForVisibleRows?.first, let previousIndexPath = viewModel?.historyVM.sections.previousIndexPath(firstVisible) {
+            let cell = tableView.cellForRow(at: previousIndexPath) as? MessageBaseCell
+            return cell
+        }
+        return nil
+    }
+
+    private func nextVisibleIndexPath() -> MessageBaseCell? {
+        if let lastVisible = tableView.indexPathsForVisibleRows?.last, let nextIndexPath = viewModel?.historyVM.sections.nextIndexPath(lastVisible) {
+            let cell = tableView.cellForRow(at: nextIndexPath) as? MessageBaseCell
+            return cell
+        }
+        return nil
     }
 }

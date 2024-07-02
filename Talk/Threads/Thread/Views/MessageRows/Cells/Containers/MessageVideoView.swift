@@ -14,23 +14,37 @@ import AVKit
 import Chat
 
 final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
-    private var playerVC: AVPlayerViewController?
-    @HistoryActor private var videoPlayerVM: VideoPlayerViewModel?
+    // Views
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
     private let playOverlayView = UIView()
     private let playIcon: UIImageView = UIImageView()
-    private var widthConstraint: NSLayoutConstraint!
-    private static let playIcon: UIImage = UIImage(systemName: "play.fill")!
     private let progressButton = CircleProgressButton(progressColor: Color.App.whiteUIColor,
                                                       iconTint: Color.App.whiteUIColor,
                                                       lineWidth: 1,
                                                       iconSize: .init(width: 12, height: 12),
                                                       margin: 2
     )
+
+    // Models
+    private var playerVC: AVPlayerViewController?
+    @HistoryActor private var videoPlayerVM: VideoPlayerViewModel?
     private weak var viewModel: MessageRowViewModel?
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
+    private static let playIcon: UIImage = UIImage(systemName: "play.fill")!
+
+    // Constraints
+    private var widthConstraint: NSLayoutConstraint!
+    private var fileNameLabelTrailingConstarint: NSLayoutConstraint!
+
+    // Sizes
+    private let margin: CGFloat = 4
+    private let minWidth: CGFloat = 320
+    private let height: CGFloat = 196
+    private let playIconSize: CGFloat = 36
+    private let progressButtonSize: CGFloat = 24
+    private let verticalSpacing: CGFloat = 2
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -90,34 +104,38 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         progressButton.translatesAutoresizingMaskIntoConstraints = false
         progressButton.accessibilityIdentifier = "progressButtonMessageVideoView"
         addSubview(progressButton)
-        widthConstraint = widthAnchor.constraint(equalToConstant: viewModel?.calMessage.sizes.width ?? 320)
+        widthConstraint = widthAnchor.constraint(greaterThanOrEqualToConstant: minWidth)
+
+        fileNameLabelTrailingConstarint = fileNameLabel.trailingAnchor.constraint(equalTo: progressButton.leadingAnchor, constant: -margin)
+
         NSLayoutConstraint.activate([
             widthConstraint,
-            heightAnchor.constraint(equalToConstant: 196),
+            heightAnchor.constraint(equalToConstant: height),
             playOverlayView.leadingAnchor.constraint(equalTo: leadingAnchor),
             playOverlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
             playOverlayView.topAnchor.constraint(equalTo: topAnchor),
             playOverlayView.heightAnchor.constraint(equalTo: heightAnchor),
-            progressButton.widthAnchor.constraint(equalToConstant: 24),
-            progressButton.heightAnchor.constraint(equalToConstant: 24),
-            progressButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            progressButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
-            fileNameLabel.trailingAnchor.constraint(equalTo: progressButton.leadingAnchor, constant: -4),
-            fileNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            progressButton.widthAnchor.constraint(equalToConstant: progressButtonSize),
+            progressButton.heightAnchor.constraint(equalToConstant: progressButtonSize),
+            progressButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
+            progressButton.topAnchor.constraint(equalTo: topAnchor, constant: margin),
+            
+            fileNameLabelTrailingConstarint,
+            fileNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
             fileNameLabel.centerYAnchor.constraint(equalTo: progressButton.centerYAnchor),
-            fileTypeLabel.trailingAnchor.constraint(equalTo: fileNameLabel.trailingAnchor, constant: 0),
-            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
-            fileSizeLabel.trailingAnchor.constraint(equalTo: fileTypeLabel.leadingAnchor, constant: -4),
-            fileSizeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
-            playIcon.widthAnchor.constraint(equalToConstant: 36),
-            playIcon.heightAnchor.constraint(equalToConstant: 36),
+            fileTypeLabel.trailingAnchor.constraint(equalTo: fileNameLabel.trailingAnchor),
+            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: verticalSpacing),
+            fileSizeLabel.trailingAnchor.constraint(equalTo: fileTypeLabel.leadingAnchor, constant: -margin),
+            fileSizeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: verticalSpacing),
+            playIcon.widthAnchor.constraint(equalToConstant: playIconSize),
+            playIcon.heightAnchor.constraint(equalToConstant: playIconSize),
             playIcon.centerXAnchor.constraint(equalTo: centerXAnchor),
             playIcon.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        widthConstraint.constant = viewModel.calMessage.sizes.width ?? 320
+        widthConstraint.constant = viewModel.calMessage.sizes.width ?? minWidth
         self.viewModel = viewModel
         if let url = viewModel.calMessage.fileURL {
             prepareUIForPlayback(url: url)
@@ -128,6 +146,9 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         fileSizeLabel.text = viewModel.calMessage.computedFileSize
         fileNameLabel.text = viewModel.calMessage.fileName
         fileTypeLabel.text = viewModel.calMessage.extName
+
+        // To stick to the leading if we downloaded/uploaded
+        fileNameLabelTrailingConstarint.constant = canShowProgress ? -margin : progressButtonSize
     }
 
     private func prepareUIForPlayback(url: URL) {

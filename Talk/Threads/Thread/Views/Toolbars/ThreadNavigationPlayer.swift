@@ -132,6 +132,10 @@ class ThreadNavigationPlayer: UIView {
 
     private func close() {
         playerVM.close()
+        setIsHidden(true)
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
     }
 
     public func register() {

@@ -201,4 +201,47 @@ extension ContiguousArray where Element == MessageSection {
         }
         return (indicies, nil)
     }
+
+    public func previousIndexPath(_ currentIndexPath: IndexPath) -> IndexPath? {
+        // Check for end of the list
+        if currentIndexPath.row == 0, currentIndexPath.section == 0 {
+            return nil
+        }
+
+        // Check inside current section
+        let previousIndexInSameSection = currentIndexPath.row - 1
+        if self[currentIndexPath.section].vms.indices.contains(previousIndexInSameSection) {
+            return IndexPath(row: previousIndexInSameSection, section: currentIndexPath.section)
+        }
+
+        // Check for previous section
+        let previousSectionIndex = currentIndexPath.section - 1
+        if indices.contains(previousSectionIndex) {
+            let index = self[previousSectionIndex].vms.count - 1
+            return IndexPath(row: Swift.max(0, index), section: previousSectionIndex)
+        }
+
+        return nil
+    }
+
+    public func nextIndexPath(_ currentIndexPath: IndexPath) -> IndexPath? {
+        // Check for end of the list
+        if currentIndexPath.section == count - 1 {
+            return nil
+        }
+
+        // Check inside current section
+        let nextIndexInSameSection = currentIndexPath.row + 1
+        if self[currentIndexPath.section].vms.indices.contains(nextIndexInSameSection) {
+            return IndexPath(row: nextIndexInSameSection, section: currentIndexPath.section)
+        }
+
+        // Check for previous section
+        let nextSectionIndex = currentIndexPath.section + 1
+        if indices.contains(nextSectionIndex) {
+            return IndexPath(row: 0, section: nextSectionIndex)
+        }
+
+        return nil
+    }
 }

@@ -14,7 +14,7 @@ fileprivate struct Constants {
     static let margin: CGFloat = 8
     static let menuWidth: CGFloat = 256
     static let reactionWidth: CGFloat = 256
-    static let reactionHeight: CGFloat = 46
+    static let reactionHeight: CGFloat = 52
     static let scaleDownOnTouch: CGFloat = 0.98
     static let scaleDownAnimationDuration = 0.2
     static let scaleUPAnimationDuration = 0.1
@@ -66,7 +66,7 @@ extension MessageContainerStackView {
             UIView.animate(withDuration: Constants.animateToHideOriginalMessageDuration) {
                 self.alpha = 0.0
             }
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred(intensity: 1.0)
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: 1.0)
         }
     }
 

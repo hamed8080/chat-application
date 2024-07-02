@@ -14,16 +14,28 @@ import Additive
 import TalkModels
 
 final class ReplyInfoView: UIView {
+    // Views
     private let participantLabel = UILabel()
     private let imageIconView = ImageLoaderUIView(frame: .zero)
     private let deletedLabel = UILabel()
     private let replyLabel = UILabel()
     private let bar = UIView()
+
+    // Models
     private weak var viewModel: MessageRowViewModel?
     private var imageIconViewLeadingConstriant: NSLayoutConstraint!
-//    // These two texts are used to localize and bundle which are costly to reconstruct every time.
+    /*
+     These two texts are used to localize,
+     and bundle which are costly to reconstruct every time.
+     */
     private static let deletedStaticText = "Messages.deletedMessageReply".localized()
     private static let repliedToStaticText = "Message.replyTo".localized()
+
+    // Sizes
+    private let margin: CGFloat = 6
+    private let imageSize: CGFloat = 36
+    private let barWidth: CGFloat = 2.5
+    private let barMargin: CGFloat = 0.5
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -57,6 +69,7 @@ final class ReplyInfoView: UIView {
         replyLabel.lineBreakMode = .byTruncatingTail
         replyLabel.textAlignment = isMe ? .right : .left
         replyLabel.accessibilityIdentifier = "replyLabelReplyInfoView"
+        replyLabel.setContentHuggingPriority(.required, for: .vertical)
         replyLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         replyLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
         replyLabel.isOpaque = true
@@ -80,8 +93,6 @@ final class ReplyInfoView: UIView {
         participantLabel.textAlignment = isMe ? .right : .left
         participantLabel.backgroundColor = isMe ? Color.App.bgChatMeDarkUIColor : Color.App.bgChatUserDarkUIColor
         participantLabel.isOpaque = true
-        participantLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
-        participantLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         addSubview(participantLabel)
 
         bar.translatesAutoresizingMaskIntoConstraints = false
@@ -91,32 +102,31 @@ final class ReplyInfoView: UIView {
         bar.accessibilityIdentifier = "barReplyInfoView"
         addSubview(bar)
 
-        let padding: CGFloat = 6
-        imageIconViewLeadingConstriant = imageIconView.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: padding)
+        imageIconViewLeadingConstriant = imageIconView.leadingAnchor.constraint(equalTo: bar.trailingAnchor, constant: margin)
         NSLayoutConstraint.activate([
-            bar.widthAnchor.constraint(equalToConstant: 1.5),
-            bar.topAnchor.constraint(equalTo: topAnchor, constant: 2),
-            bar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
-            bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0.5),
-            
+            bar.widthAnchor.constraint(equalToConstant: barWidth),
+            bar.topAnchor.constraint(equalTo: topAnchor, constant: margin),
+            bar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -margin),
+            bar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: barMargin),
+
             imageIconViewLeadingConstriant,
-            imageIconView.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            imageIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding),
-            imageIconView.widthAnchor.constraint(equalToConstant: 36),
-            imageIconView.heightAnchor.constraint(equalToConstant: 36),
+            imageIconView.topAnchor.constraint(equalTo: topAnchor, constant: margin),
+            imageIconView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -margin),
+            imageIconView.widthAnchor.constraint(equalToConstant: imageSize),
+            imageIconView.heightAnchor.constraint(equalToConstant: imageSize),
 
-            participantLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            participantLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
-            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            participantLabel.topAnchor.constraint(equalTo: topAnchor, constant: margin),
+            participantLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: margin),
+            participantLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
 
-            deletedLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+            deletedLabel.topAnchor.constraint(equalTo: topAnchor, constant: margin),
             deletedLabel.leadingAnchor.constraint(equalTo: participantLabel.leadingAnchor),
-            deletedLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            deletedLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
 
-            replyLabel.topAnchor.constraint(equalTo: participantLabel.bottomAnchor, constant: padding),
-            replyLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding),
+            replyLabel.topAnchor.constraint(equalTo: participantLabel.bottomAnchor, constant: margin),
+            replyLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -margin),
             replyLabel.leadingAnchor.constraint(equalTo: participantLabel.leadingAnchor),
-            replyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding)
+            replyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin)
         ])
     }
 
@@ -138,7 +148,7 @@ final class ReplyInfoView: UIView {
             imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata))
         }
         imageIconView.setIsHidden(!hasImage)
-        imageIconViewLeadingConstriant.constant = hasImage ? 0 : -36
+        imageIconViewLeadingConstriant.constant = hasImage ? margin : -imageSize
     }
 
     @objc func onReplyTapped(_ sender: UIGestureRecognizer) {

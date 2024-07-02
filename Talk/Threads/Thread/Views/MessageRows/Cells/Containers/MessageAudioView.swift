@@ -13,20 +13,30 @@ import TalkModels
 import Combine
 
 final class MessageAudioView: UIView {
+    // Views
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
     private let playerProgress = UIProgressView(progressViewStyle: .bar)
-    private var cancellable: AnyCancellable?
+    private let timeLabel = UILabel()
     private let progressButton = CircleProgressButton(progressColor: Color.App.whiteUIColor,
                                                       iconTint: Color.App.textPrimaryUIColor,
                                                       bgColor: Color.App.accentUIColor,
                                                       margin: 2
     )
-    private let timeLabel = UILabel()
+
+    // Models
+    private var cancellableSet = Set<AnyCancellable>()
     private weak var viewModel: MessageRowViewModel?
     private var message: (any HistoryMessageProtocol)? { viewModel?.message }
     private var audioVM: AVAudioPlayerViewModel { AppState.shared.objectsContainer.audioPlayerVM }
+
+    // Sizes
+    private let margin: CGFloat = 6
+    private let verticalSpacing: CGFloat = 4
+    private let progressButtonSize: CGFloat = 36
+    private let playerProgressHeight: CGFloat = 3
+    private let minPlayerProgressWidth: CGFloat = 128
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -107,36 +117,33 @@ final class MessageAudioView: UIView {
         timeLabel.isOpaque = true
         addSubview(timeLabel)
 
-        let padding: CGFloat = 6
-        let spacing: CGFloat = 4
-
         NSLayoutConstraint.activate([
-            progressButton.widthAnchor.constraint(equalToConstant: 36),
-            progressButton.heightAnchor.constraint(equalToConstant: 36),
-            progressButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
-            progressButton.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+            progressButton.widthAnchor.constraint(equalToConstant: progressButtonSize),
+            progressButton.heightAnchor.constraint(equalToConstant: progressButtonSize),
+            progressButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
+            progressButton.topAnchor.constraint(equalTo: topAnchor, constant: margin),
 
-            fileNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: padding),
-            fileNameLabel.leadingAnchor.constraint(equalTo: progressButton.trailingAnchor, constant: 8),
-            fileNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            fileNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: margin),
+            fileNameLabel.leadingAnchor.constraint(equalTo: progressButton.trailingAnchor, constant: margin),
+            fileNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
 
             fileSizeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
             fileSizeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor),
 
             fileTypeLabel.topAnchor.constraint(equalTo: fileSizeLabel.topAnchor),
-            fileTypeLabel.leadingAnchor.constraint(equalTo: fileSizeLabel.trailingAnchor, constant: padding),
-            fileTypeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            fileTypeLabel.leadingAnchor.constraint(equalTo: fileSizeLabel.trailingAnchor, constant: margin),
+            fileTypeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
 
-            playerProgress.widthAnchor.constraint(greaterThanOrEqualToConstant: 128),
-            playerProgress.heightAnchor.constraint(equalToConstant: 3),
+            playerProgress.widthAnchor.constraint(greaterThanOrEqualToConstant: minPlayerProgressWidth),
+            playerProgress.heightAnchor.constraint(equalToConstant: playerProgressHeight),
             playerProgress.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
-            playerProgress.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
-            playerProgress.topAnchor.constraint(equalTo: fileTypeLabel.bottomAnchor, constant: spacing),
+            playerProgress.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
+            playerProgress.topAnchor.constraint(equalTo: fileTypeLabel.bottomAnchor, constant: verticalSpacing),
 
             timeLabel.leadingAnchor.constraint(equalTo: playerProgress.leadingAnchor),
-            timeLabel.topAnchor.constraint(equalTo: playerProgress.bottomAnchor, constant: spacing),
-            timeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding)
+            timeLabel.topAnchor.constraint(equalTo: playerProgress.bottomAnchor, constant: verticalSpacing),
+            timeLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
+            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -margin)
         ])
     }
 
@@ -155,8 +162,6 @@ final class MessageAudioView: UIView {
         if isSameFile {
             if audioVM.isPlaying {
                 registerOnTap()
-            } else {
-                unRegisterOnTap()
             }
             if let viewModel = viewModel {
                 updateProgress(viewModel: viewModel)
@@ -193,18 +198,28 @@ final class MessageAudioView: UIView {
     }
 
     func registerOnTap() {
-        cancellable = audioVM.$currentTime.sink { [weak self] newValue in
+        audioVM.$currentTime.sink { [weak self] newValue in
             guard let self = self else { return }
             let progress = min(audioVM.currentTime / audioVM.duration, 1.0)
             let normalized = progress.isNaN ? 0.0 : Float(progress)
             playerProgress.setProgress(normalized, animated: true)
             self.timeLabel.text = audioTimerString()
         }
-    }
+        .store(in: &cancellableSet)
 
-    public func unRegisterOnTap() {
-        cancellable?.cancel()
-        cancellable = nil
+        audioVM.$isPlaying.sink { [weak self] isPlaying in
+            let image = isPlaying ? "pause.fill" : "play.fill"
+            self?.progressButton.animate(to: 1.0, systemIconName: image)
+            self?.progressButton.setProgressVisibility(visible: false)
+        }
+        .store(in: &cancellableSet)
+
+        audioVM.$isClosed.sink { [weak self] closed in
+            if closed {
+                self?.playerProgress.progress = 0.0
+            }
+        }
+        .store(in: &cancellableSet)
     }
 
     private func audioTimerString() -> String {

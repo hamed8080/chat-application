@@ -27,7 +27,6 @@ public final class MessageRowViewModel: Identifiable, Hashable {
     @MainActor public var reactionsModel: ReactionRowsCalculated = .init(rows: [], topPadding: 0)
     public weak var threadVM: ThreadViewModel?
 
-    private var highlightTimer: Timer?
     public var calMessage = MessageRowCalculatedData()
     public private(set) var fileState: MessageFileState = .init()
 

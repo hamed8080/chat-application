@@ -14,15 +14,24 @@ import TalkModels
 import UIKit
 
 final class FooterView: UIStackView {
+    // Views
     private let pinImage = UIImageView(image: UIImage(systemName: "pin.fill"))
     private let timelabel = UILabel()
     private let editedLabel = UILabel()
     private let statusImage = UIImageView()
+
+    // Models
     private static let staticEditString = "Messages.Footer.edited".localized()
     private var statusImageWidthConstriant: NSLayoutConstraint!
-
     private var shapeLayer = CAShapeLayer()
     private var rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")
+
+    // Sizes
+    private let height: CGFloat = 14
+    private let normalStatusWidth: CGFloat = 12
+    private let seenWidth: CGFloat = 22
+    private let pinWidth: CGFloat = 22
+    private let pinHeight: CGFloat = 14
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -34,9 +43,10 @@ final class FooterView: UIStackView {
     }
     
     private func configureView(isMe: Bool) {
+        translatesAutoresizingMaskIntoConstraints = false
         spacing = 4
         axis = .horizontal
-        alignment = .lastBaseline
+        alignment = .bottom
         backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         isOpaque = true
 
@@ -50,14 +60,17 @@ final class FooterView: UIStackView {
         pinImage.setContentCompressionResistancePriority(.required, for: .horizontal)
         pinImage.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         pinImage.isOpaque = true
-        addArrangedSubview(pinImage)
 
-        statusImage.translatesAutoresizingMaskIntoConstraints = false
-        statusImage.contentMode = .scaleAspectFit
-        statusImage.accessibilityIdentifier = "statusImageFooterView"
-        statusImage.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
-        statusImage.isOpaque = true
-        addArrangedSubview(statusImage)
+        if isMe {
+            statusImage.translatesAutoresizingMaskIntoConstraints = false
+            statusImage.contentMode = .scaleAspectFit
+            statusImage.accessibilityIdentifier = "statusImageFooterView"
+            addArrangedSubview(statusImage)
+            statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: normalStatusWidth)
+            statusImageWidthConstriant.isActive = true
+            statusImageWidthConstriant.identifier = "statusImageWidthConstriantFooterView"
+            statusImage.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+        }
 
         timelabel.translatesAutoresizingMaskIntoConstraints = false
         timelabel.font = UIFont.uiiransansBoldCaption2
@@ -74,54 +87,62 @@ final class FooterView: UIStackView {
         editedLabel.accessibilityIdentifier = "editedLabelFooterView"
         editedLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         editedLabel.isOpaque = true
-        editedLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
-        editedLabel.isOpaque = true
-        addArrangedSubview(editedLabel)
-        
-        statusImageWidthConstriant = statusImage.widthAnchor.constraint(equalToConstant: 12)
-        statusImageWidthConstriant.identifier = "statusImageWidthConstriantFooterView"
+
         NSLayoutConstraint.activate([
-            statusImage.heightAnchor.constraint(equalTo: heightAnchor),
-            statusImageWidthConstriant,
-            pinImage.heightAnchor.constraint(equalToConstant: 16),
-            pinImage.widthAnchor.constraint(equalToConstant: 22),
+            heightAnchor.constraint(equalToConstant: height),
             timelabel.heightAnchor.constraint(equalTo: heightAnchor),
-            editedLabel.heightAnchor.constraint(equalTo: heightAnchor),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         let message = viewModel.message
-        let thread = viewModel.threadVM?.thread
-        let isPin = message.id != nil && message.id == thread?.pinMessage?.id
-        statusImage.image = message.uiFooterStatus.image
-        statusImage.tintColor = message.uiFooterStatus.fgColor
-        statusImage.setIsHidden(!viewModel.calMessage.isMe)
-        statusImageWidthConstriant.constant = message.seen == true ? 22 : 12
-
+        setStatusImageOrUploadingAnimation(viewModel: viewModel)
         timelabel.text = viewModel.calMessage.timeString
-        editedLabel.setIsHidden(viewModel.message.edited != true)
-        pinImage.setIsHidden(!isPin)
-        let isSelfThread = thread?.type == .selfThread
-        let isDelivered = message.id != nil
-        if isDelivered, isSelfThread {
-            statusImage.setIsHidden(false)
-        } else if viewModel.calMessage.isMe, !isSelfThread {
-            statusImage.setIsHidden(false)
-        }
+        attachOrdetachEditLabel(isEdited: viewModel.message.edited == true)
+        let isPin = message.id != nil && message.id == viewModel.threadVM?.thread.pinMessage?.id
+        attachOrdetachPinImage(isPin: isPin)
+    }
 
-        if message is UploadProtocol {
-            startSendingAnimation()
-        } else {
-            stopSendingAnimation()
+    private func setStatusImageOrUploadingAnimation(viewModel: MessageRowViewModel) {
+        // Prevent crash if we don't check is me it will crash, due to the fact that only isMe has message status
+        if viewModel.calMessage.isMe {
+            statusImage.image = viewModel.message.uiFooterStatus.image
+            statusImage.tintColor = viewModel.message.uiFooterStatus.fgColor
+            statusImageWidthConstriant.constant = viewModel.message.seen == true ? seenWidth : normalStatusWidth
+
+            if viewModel.message is UploadProtocol, viewModel.fileState.isUploading {
+                startSendingAnimation()
+            } else {
+                stopSendingAnimation()
+            }
+        }
+    }
+
+    private func attachOrdetachPinImage(isPin: Bool) {
+        if isPin, pinImage.superview == nil {
+            insertArrangedSubview(pinImage, at: 0)
+            pinImage.heightAnchor.constraint(equalToConstant: pinHeight).isActive = true
+            pinImage.widthAnchor.constraint(equalToConstant: pinWidth).isActive = true
+        } else if !isPin {
+            pinImage.removeFromSuperview()
+        }
+    }
+
+    private func attachOrdetachEditLabel(isEdited: Bool) {
+        if isEdited, pinImage.superview == nil {
+            addArrangedSubview(editedLabel)
+            editedLabel.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+        } else if !isEdited {
+            editedLabel.removeFromSuperview()
         }
     }
 
     public func edited() {
-        editedLabel.setIsHidden(false)
+        attachOrdetachEditLabel(isEdited: true)
     }
 
     public func pinChanged(isPin: Bool) {
+        attachOrdetachPinImage(isPin: isPin)
         UIView.animate(withDuration: 0.2) {
             self.pinImage.alpha = isPin ? 1.0 : 0.0
             self.pinImage.setIsHidden(!isPin)
@@ -129,7 +150,7 @@ final class FooterView: UIStackView {
     }
 
     public func sent(image: UIImage?) {
-        statusImageWidthConstriant.constant = 12
+        statusImageWidthConstriant.constant = normalStatusWidth
         self.statusImage.setIsHidden(false)
         UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
@@ -147,7 +168,7 @@ final class FooterView: UIStackView {
     }
 
     public func seen(image: UIImage?) {
-        statusImageWidthConstriant.constant = 22
+        statusImageWidthConstriant.constant = seenWidth
         statusImage.setIsHidden(false)
         UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
