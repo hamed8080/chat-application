@@ -217,6 +217,6 @@ public class MessageBaseCell: UITableViewCell {
     }
 
     public func reactionsUpdated(viewModel: MessageRowViewModel) {
-        messageContainer.reationUpdated(viewModel: viewModel)
+        messageContainer.reactionsUpdated(viewModel: viewModel)
     }
 }

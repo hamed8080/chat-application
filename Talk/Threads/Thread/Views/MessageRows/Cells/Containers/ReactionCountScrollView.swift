@@ -13,8 +13,13 @@ import TalkUI
 import TalkModels
 
 final class ReactionCountScrollView: UIScrollView {
+    // Views
     private let stack = UIStackView()
-    private let maxReactionsToShow = 4
+
+    // Sizes
+    private let maxReactionsToShow: Int = 4
+    private let height: CGFloat = 28
+    private let margin: CGFloat = 28
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -27,26 +32,26 @@ final class ReactionCountScrollView: UIScrollView {
 
     private func configureView(isMe: Bool) {
         translatesAutoresizingMaskIntoConstraints = false
-        layoutMargins = .init(horizontal: 6)
+        layoutMargins = .init(horizontal: margin)
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
 
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
         stack.spacing = 4
         stack.alignment = .fill
-        stack.distribution = .equalSpacing
+        stack.distribution = .fillProportionally
         stack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         stack.accessibilityIdentifier = "stackReactionCountScrollView"
 
         for _ in (0..<maxReactionsToShow) {
-            let rowViewPlaceHolder = ReactionCountRowView()
+            let rowViewPlaceHolder = ReactionCountRowView(frame: .zero, isMe: isMe)
             stack.addArrangedSubview(rowViewPlaceHolder)
         }
 
         addSubview(stack)
 
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: 32),
+            heightAnchor.constraint(equalToConstant: height),
             stack.widthAnchor.constraint(equalTo: widthAnchor),
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -64,6 +69,7 @@ final class ReactionCountScrollView: UIScrollView {
         for (index ,row) in rows.enumerated() {
             if stack.subviews.indices.contains(where: {$0 == index}), let rowView = stack.subviews[index] as? ReactionCountRowView {
                 rowView.setIsHidden(false)
+                rowView.viewModel = viewModel
                 rowView.setValue(row: row)
             }
         }
@@ -71,26 +77,36 @@ final class ReactionCountScrollView: UIScrollView {
 }
 
 final class ReactionCountRowView: UIView {
+    // Views
     private let reactionEmoji = UILabel()
     private let reactionCountLabel = UILabel()
+
+    // Models
     var row: ReactionRowsCalculated.Row?
     weak var viewModel: MessageRowViewModel?
+
+    // Contraints
     private var centerYConstraint: NSLayoutConstraint!
 
-    override init(frame: CGRect) {
+    // Sizes
+    private let totlaWidth: CGFloat = 42
+    private let emojiWidth: CGFloat = 20
+    private let margin: CGFloat = 8
+
+    init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
-        configureView()
+        configureView(isMe: isMe)
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configureView() {
+    private func configureView(isMe: Bool) {
         translatesAutoresizingMaskIntoConstraints = false
-        layer.cornerRadius = 16
+        layer.cornerRadius = 14
         layer.masksToBounds = true
-        semanticContentAttribute = viewModel?.calMessage.isMe == true ? .forceRightToLeft : .forceLeftToRight
+        semanticContentAttribute = isMe == true ? .forceRightToLeft : .forceLeftToRight
 
         reactionEmoji.translatesAutoresizingMaskIntoConstraints = false
         reactionEmoji.font = .systemFont(ofSize: 14)
@@ -107,17 +123,20 @@ final class ReactionCountRowView: UIView {
         centerYConstraint = reactionEmoji.centerYAnchor.constraint(equalTo: centerYAnchor)
         centerYConstraint.identifier = "reactionEmojicenterYConstraint"
         NSLayoutConstraint.activate([
-            widthAnchor.constraint(greaterThanOrEqualToConstant: 42),
-            reactionEmoji.widthAnchor.constraint(equalToConstant: 20),
-            reactionEmoji.heightAnchor.constraint(equalToConstant: 20),
+            widthAnchor.constraint(greaterThanOrEqualToConstant: totlaWidth),
+            reactionEmoji.widthAnchor.constraint(equalToConstant: emojiWidth),
+            reactionEmoji.heightAnchor.constraint(equalToConstant: emojiWidth),
             centerYConstraint,
-            reactionEmoji.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            reactionEmoji.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
 
-            reactionCountLabel.leadingAnchor.constraint(equalTo: reactionEmoji.trailingAnchor, constant: 4),
+            reactionCountLabel.leadingAnchor.constraint(equalTo: reactionEmoji.trailingAnchor, constant: margin / 2),
             reactionCountLabel.centerYAnchor.constraint(equalTo: reactionEmoji.centerYAnchor),
-            reactionCountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            reactionCountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
         ])
         addContextMenu()
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapped))
+        addGestureRecognizer(tapGesture)
     }
 
     func prepareContextMenu() {
@@ -125,16 +144,46 @@ final class ReactionCountRowView: UIView {
     }
 
     func setValue(row: ReactionRowsCalculated.Row) {
+        self.row = row
         reactionEmoji.text = row.emoji
         reactionCountLabel.text = row.countText
         backgroundColor = row.isMyReaction ? Color.App.color1UIColor?.withAlphaComponent(0.9) : Color.App.accentUIColor?.withAlphaComponent(0.1)
+    }
+
+    @objc private func onTapped(_ sender: UIGestureRecognizer) {
+        if let messageId = viewModel?.message.id, let sticker = row?.sticker {
+            viewModel?.threadVM?.reactionViewModel.reaction(sticker, messageId: messageId)
+        }
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        UIView.animate(withDuration: 0.1) {
+            self.alpha = 0.7
+        }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        UIView.animate(withDuration: 0.1) {
+            self.alpha = 1.0
+        }
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        UIView.animate(withDuration: 0.1) {
+            self.alpha = 1.0
+        }
     }
 }
 
 struct SwiftUIReactionCountRowWrapper: UIViewRepresentable {
     let row: ReactionRowsCalculated.Row
+    let isMe: Bool
+
     func makeUIView(context: Context) -> some UIView {
-        let view = ReactionCountRowView(frame: .zero)
+        let view = ReactionCountRowView(frame: .zero, isMe: isMe)
         view.prepareContextMenu()
         return view
     }
@@ -170,7 +219,7 @@ extension ReactionCountRowView: UIContextMenuInteractionDelegate {
         
         let swiftUIReactionTabs = VStack(alignment: viewModel.calMessage.isMe ? .leading : .trailing) {
             if let row = row {
-                SwiftUIReactionCountRowWrapper(row: row)
+                SwiftUIReactionCountRowWrapper(row: row, isMe: viewModel.calMessage.isMe)
                     .frame(width: 42, height: 32)
                     .environment(\.colorScheme, traitCollection.userInterfaceStyle == .dark ? .dark : .light)
                     .disabled(true)

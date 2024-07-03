@@ -34,5 +34,5 @@ public extension ActionItemModel {
     static let pin = ActionItemModel(title: "Messages.ActionMenu.pinMessage", image: "pin")
     static let unpin = ActionItemModel(title: "Messages.ActionMenu.unpinMessage", image: "pin.slash")
     static let select = ActionItemModel(title: "General.select", image: "checkmark.circle")
-    static let delete = ActionItemModel(title: "General.delete", image: "trash", color: .red)
+    static let delete = ActionItemModel(title: "General.delete", image: "trash", color: .systemRed)
 }

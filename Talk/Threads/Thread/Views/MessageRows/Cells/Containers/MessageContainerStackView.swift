@@ -27,7 +27,6 @@ public final class MessageContainerStackView: UIStackView {
     private let textMessageView = TextMessageView()
     private static let tailImage = UIImage(named: "tail")
     private var tailImageView = UIImageView()
-    private let reactionView: ReactionCountScrollView
     private let footerView: FooterView
 //    private let unsentMessageView = UnsentMessageView()
 
@@ -49,8 +48,7 @@ public final class MessageContainerStackView: UIStackView {
         self.messageAudioView = .init(frame: frame, isMe: isMe)
         self.locationRowView = .init(frame: frame)
         self.messageImageView = .init(frame: frame)
-        self.messageVideoView = .init(frame: frame, isMe: isMe)
-        self.reactionView = .init(frame: frame, isMe: isMe)
+        self.messageVideoView = .init(frame: frame, isMe: isMe)        
         super.init(frame: frame)
         configureView(isMe: isMe)
 
@@ -82,8 +80,7 @@ public final class MessageContainerStackView: UIStackView {
         messageAudioView.translatesAutoresizingMaskIntoConstraints = false
         locationRowView.translatesAutoresizingMaskIntoConstraints = false
         textMessageView.translatesAutoresizingMaskIntoConstraints = false
-        textMessageView.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
-        reactionView.translatesAutoresizingMaskIntoConstraints = false
+        textMessageView.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!        
         footerView.translatesAutoresizingMaskIntoConstraints = false
 //        unsentMessageView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -187,9 +184,6 @@ public final class MessageContainerStackView: UIStackView {
         //            unsentMessageView.removeFromSuperview()
         //        }
         //
-        reactionView.set(viewModel)
-        addArrangedSubview(reactionView)
-        reactionView.setIsHidden(viewModel.reactionsModel.rows.isEmpty)
 
         footerView.set(viewModel)
         addArrangedSubview(footerView)
@@ -262,9 +256,8 @@ extension MessageContainerStackView {
         footerView.set(viewModel)
     }
 
-    public func reationUpdated(viewModel: MessageRowViewModel) {
-        reactionView.setIsHidden(viewModel.reactionsModel.rows.isEmpty)
-        reactionView.set(viewModel)
+    public func reactionsUpdated(viewModel: MessageRowViewModel) {
+        footerView.reactionsUpdated(viewModel: viewModel)        
     }
 
     public func prepareForContextMenu(userInterfaceStyle: UIUserInterfaceStyle) {
