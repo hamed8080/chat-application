@@ -79,6 +79,9 @@ extension UIHistoryTableView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.backgroundColor = UIColor.clear
+        viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.sizes.estimatedHeight = cell.bounds.height
+        print("HHHHH will dispay height: \(cell.bounds.height) indexPath section: \(indexPath.section) indePath row: \(indexPath.row)")
+        print("HHHHH message is: \(viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].message.message ?? "")")
         Task { [weak self] in
             await self?.viewModel?.historyVM.willDisplay(indexPath)
         }
@@ -111,7 +114,9 @@ extension UIHistoryTableView: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.sizes.estimatedHeight ?? 28
+        let estimate = viewModel?.historyVM.sections[indexPath.section].vms[indexPath.row].calMessage.sizes.estimatedHeight
+        print("HHHHH estimate: \(estimate ?? 0 ) indexPath section: \(indexPath.section) indePath row: \(indexPath.row)")
+        return estimate ?? 28
     }
 }
 

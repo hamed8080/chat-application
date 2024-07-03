@@ -33,7 +33,7 @@ public final class ThreadHistoryViewModel {
     private var hasNextTop = true
     private var hasNextBottom = true
     private let count: Int = 25
-    private var oldFirstMessageInFirstSection: (any HistoryMessageProtocol)?
+//    private var oldFirstMessageInFirstSection: (any HistoryMessageProtocol)?
     private var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private var hasSentHistoryRequest = false
@@ -384,7 +384,6 @@ extension ThreadHistoryViewModel {
         if !canLoadMoreTop() { return }
         topLoading = true
         viewModel?.delegate?.startTopAnimation(true)
-        oldFirstMessageInFirstSection = sections.first?.vms.first?.message
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: viewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: prepend, value: req)
         ChatManager.activeInstance?.message.history(req)

@@ -581,15 +581,24 @@ extension ThreadViewController: HistoryScrollDelegate {
 //        if let scrollTo = scrollTo {
 //            self.tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
 //        }
-        tableView.performBatchUpdates {
-            // Insert the sections and rows without animation
-            tableView.insertSections(sections, with: .top)
-            tableView.insertRows(at: rows, with: .top)
-            DispatchQueue.main.async {
-//                self.tableView.setContentOffset(self.tableView.contentOffset, animated: true)
-                if let scrollTo = scrollTo {
-                    self.tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
+
+        if let scrollTo = scrollTo {
+            UIView.performWithoutAnimation {
+                tableView.performBatchUpdates {
+                    // Insert the sections and rows without animation
+                    tableView.insertSections(sections, with: .top)
+                    tableView.insertRows(at: rows, with: .top)
+                } completion: { completed in
+                    DispatchQueue.main.async {
+                        self.tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
+                    }
                 }
+            }
+        } else {
+            tableView.performBatchUpdates {
+                // Insert the sections and rows without animation
+                tableView.insertSections(sections, with: .top)
+                tableView.insertRows(at: rows, with: .top)
             }
         }
     }

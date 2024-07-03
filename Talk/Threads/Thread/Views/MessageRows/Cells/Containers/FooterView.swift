@@ -208,6 +208,9 @@ final class FooterView: UIStackView {
             reactionView.removeFromSuperview()// reset
         } else if reactionView.superview == nil {
             addArrangedSubview(reactionView)
+        } else if viewModel.message.edited == true {
+            reactionView.removeFromSuperview()
+            addArrangedSubview(reactionView)
         }
         reactionView.set(viewModel)
         heightConstraint.constant = viewModel.reactionsModel.rows.isEmpty ? heightWithoutReaction : heightWithReaction
