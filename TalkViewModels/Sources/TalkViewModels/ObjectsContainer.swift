@@ -29,8 +29,10 @@ public final class ObjectsContainer: ObservableObject {
         loginVM = LoginViewModel(delegate: delegate)
         NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
-            .sink { [weak self] event in
-                self?.onMessageEvent(event)
+            .sink { event in
+                Task { [weak self] in
+                    await self?.onMessageEvent(event)
+                }
             }
             .store(in: &cancellableSet)
         NotificationCenter.user.publisher(for: .user)
@@ -61,16 +63,16 @@ public final class ObjectsContainer: ObservableObject {
         userProfileImageVM.clear()
     }
 
-    private func onMessageEvent(_ event: MessageEventTypes) {
+    private func onMessageEvent(_ event: MessageEventTypes) async {
         switch event {
         case .new(let chatResponse):
             if !audioPlayerVM.isPlaying {
-                onNewMessage(chatResponse)
+                await onNewMessage(chatResponse)
             }
             break
         case .sent(_):
             if !audioPlayerVM.isPlaying {
-                playMessageSound(sent: true)
+                await playMessageSound(sent: true)
             }
             break
         default:
@@ -78,7 +80,7 @@ public final class ObjectsContainer: ObservableObject {
         }
     }
 
-    private func onNewMessage(_ response: ChatResponse<Message>) {
+    private func onNewMessage(_ response: ChatResponse<Message>) async {
         let notificationSettings = AppSettingsModel.restore().notificationSettings
         if response.result?.conversation?.mute == true { return }
         guard notificationSettings.soundEnable,
@@ -86,19 +88,19 @@ public final class ObjectsContainer: ObservableObject {
               let conversation = response.result?.conversation
         else { return }
         if conversation.group == false, notificationSettings.privateChat.sound {
-            playMessageSound(sent: false)
+            await playMessageSound(sent: false)
         } else if conversation.group == true, notificationSettings.group.sound {
-            playMessageSound(sent: false)
+            await playMessageSound(sent: false)
         } else if conversation.type?.isChannelType == true, notificationSettings.channel.sound {
-            playMessageSound(sent: false)
+            await playMessageSound(sent: false)
         }
 
         if notificationSettings.vibration {
-            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+            await UIImpactFeedbackGenerator(style: .soft).impactOccurred()
         }
     }
 
-    private func playMessageSound(sent: Bool) {
+    private func playMessageSound(sent: Bool) async {
         if let fileURL = Bundle.main.url(forResource: sent ? "sent_message" : "new_message", withExtension: "mp3") {
             try? messagePlayer.setup(message: nil, fileURL: fileURL, ext: "mp3", category: .ambient)
             messagePlayer.toggle()

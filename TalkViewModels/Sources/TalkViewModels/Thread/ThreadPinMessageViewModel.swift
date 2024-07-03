@@ -140,7 +140,9 @@ public final class ThreadPinMessageViewModel {
                   let hashCode = file.file?.hashCode,
                   file.file?.mimeType == "image/jpeg" || file.file?.mimeType == "image/png"
             else {
-                image = nil
+                await MainActor.run { [weak self] in
+                    self?.image = nil
+                }
                 return
             }
 

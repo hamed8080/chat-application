@@ -107,9 +107,14 @@ public final class PickerButtonsView: UIStackView {
     public func show(_ show: Bool, stack: UIStackView) {
         if show {
             alpha = 0.0
+            isHidden = false
+            frame.origin.y += frame.size.height
             stack.insertArrangedSubview(self, at: 0)
         }
-        UIView.animate(withDuration: show ? 0.3 : 0.2, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) {
+        UIView.animate(withDuration: show ? 0.3 : 0.2, delay: show ? 0.1 : 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 2, options: .curveEaseInOut) {
+            if show {
+                self.frame.origin.y -= self.frame.size.height
+            }
             self.alpha = show ? 1.0 : 0.0
             self.setIsHidden(!show)
         } completion: { completed in

@@ -138,6 +138,11 @@ extension ThreadViewController {
                     guard let self = self else { return }
                     tableView.contentInset = .init(top: topThreadToolbar.bounds.height + 4, left: 0, bottom: height, right: 0)
                 }
+                if let message = viewModel.thread.lastMessageVO?.toMessage {
+                    Task {
+                        await viewModel.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
+                    }
+                }
             }
         }
     }

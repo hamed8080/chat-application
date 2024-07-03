@@ -543,6 +543,7 @@ class MessageRowCalculators {
         if calculatedMessage.rowType.hasText {
             estimatedHeight += calculatedMessage.textRect?.height ?? 0
             estimatedHeight += spacing
+            estimatedHeight += 15 // UITextView margin
         }
 
         //footer height

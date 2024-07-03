@@ -137,6 +137,7 @@ extension ThreadHistoryViewModel {
         }
     }
 
+    @HistoryActor
     private func onMoreTopFirstScenario(_ messages: [Message], _ response: HistoryResponse) async {
         await onMoreTop(messages, response)
 
@@ -380,6 +381,7 @@ extension ThreadHistoryViewModel {
         viewModel?.delegate?.startCenterAnimation(false)
     }
 
+    @HistoryActor
     private func moreTop(prepend: String, _ toTime: UInt?) async {
         if !canLoadMoreTop() { return }
         topLoading = true
@@ -389,6 +391,7 @@ extension ThreadHistoryViewModel {
         ChatManager.activeInstance?.message.history(req)
     }
 
+    @HistoryActor
     private func onMoreTop(_ messages: [Message], _ response: HistoryResponse) async {
         let lastTopMessageVM = sections.first?.vms.first
         let beforeSectionCount = sections.count
@@ -412,7 +415,7 @@ extension ThreadHistoryViewModel {
         await setHasMoreTop(response)
         let tuple = sections.insertedIndices(insertTop: true, beforeSectionCount: beforeSectionCount, viewModels)
 
-        let moveToMessage = await viewModel?.scrollVM.lastContentOffsetY ?? 0 < 48
+        let moveToMessage = viewModel?.scrollVM.lastContentOffsetY ?? 0 < 24
         var indexPathToScroll: IndexPath?
         if moveToMessage, let lastTopMessageVM = lastTopMessageVM {
             indexPathToScroll = sections.indexPath(for: lastTopMessageVM)
@@ -875,8 +878,10 @@ extension ThreadHistoryViewModel {
         visibleTracker.remove(message: message)
         if message.id == thread.lastMessageVO?.id {
             await MainActor.run { [viewModel] in
-                viewModel?.scrollVM.isAtBottomOfTheList = false
-                viewModel?.delegate?.lastMessageAppeared(false)
+                if viewModel?.scrollVM.isAtBottomOfTheList == true {
+                    viewModel?.scrollVM.isAtBottomOfTheList = false
+                    viewModel?.delegate?.lastMessageAppeared(false)
+                }
             }
         }
     }
