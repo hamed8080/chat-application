@@ -15,6 +15,7 @@ import Combine
 public class CustomConversationNavigationBar: UIView {
     private weak var viewModel: ThreadViewModel?
     private let backButton = UIImageButton(imagePadding: .init(all: 6))
+    private let fullScreenButton = UIImageButton(imagePadding: .init(all: 6))
     private let titlebutton = UIButton(type: .system)
     private let subtitleLabel = UILabel()
     private var threadImageButton = UIImageButton(imagePadding: .init(all: 0))
@@ -95,6 +96,16 @@ public class CustomConversationNavigationBar: UIView {
             (self?.viewModel?.delegate as? UIViewController)?.navigationController?.popViewController(animated: true)
         }
 
+        fullScreenButton.translatesAutoresizingMaskIntoConstraints = false
+        fullScreenButton.imageView.image = UIImage(systemName: "sidebar.leading")
+        fullScreenButton.imageView.tintColor = Color.App.toolbarButtonUIColor
+        fullScreenButton.imageView.contentMode = .scaleAspectFit
+        fullScreenButton.accessibilityIdentifier = "backButtonCustomConversationNavigationBar"
+        fullScreenButton.action = {
+            AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
+            NotificationCenter.closeSideBar.post(name: Notification.Name.closeSideBar, object: nil)
+        }
+
         rightTitleImageView.translatesAutoresizingMaskIntoConstraints = false
         rightTitleImageView.image = UIImage(named: "ic_approved")
         rightTitleImageView.contentMode = .scaleAspectFit
@@ -102,6 +113,7 @@ public class CustomConversationNavigationBar: UIView {
         rightTitleImageView.setIsHidden(viewModel?.thread.isTalk == false)
 
         addSubview(backButton)
+        addSubview(fullScreenButton)
         addSubview(threadImageButton)
         addSubview(threadTitleSupplementary)
         addSubview(titlebutton)
@@ -117,6 +129,11 @@ public class CustomConversationNavigationBar: UIView {
             backButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
             backButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
             backButton.widthAnchor.constraint(equalToConstant: 36),
+
+            fullScreenButton.leadingAnchor.constraint(equalTo: backButton.trailingAnchor, constant: 4),
+            fullScreenButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            fullScreenButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
+            fullScreenButton.widthAnchor.constraint(equalToConstant: 36),
 
             threadImageButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
             threadImageButton.topAnchor.constraint(equalTo: topAnchor, constant: 4),
@@ -228,5 +245,11 @@ public class CustomConversationNavigationBar: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = threadImageButton.bounds
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        let showFullScreenButton = traitCollection.horizontalSizeClass == .regular && traitCollection.userInterfaceIdiom == .pad
+        fullScreenButton.setIsHidden(!showFullScreenButton)
     }
 }

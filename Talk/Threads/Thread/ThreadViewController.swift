@@ -653,7 +653,7 @@ extension ThreadViewController: HistoryScrollDelegate {
                 self?.tableView?.endUpdates()
             }
             if wasAtBottom {
-                self?.viewModel?.scrollVM.scrollToBottom()
+                self?.moveTolastMessageIfVisible()
             }
         }
     }

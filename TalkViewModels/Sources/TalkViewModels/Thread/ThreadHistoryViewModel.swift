@@ -11,6 +11,7 @@ import OSLog
 import TalkModels
 import Combine
 import UIKit
+import CoreGraphics
 
 public typealias MessageType = any HistoryMessageProtocol
 public typealias MessageIndex = Array<MessageType>.Index
@@ -26,8 +27,6 @@ public final class ThreadHistoryViewModel {
 
     @HistoryActor private var threshold: CGFloat = 800
     private var created: Bool = false
-    private var isInInsertionTop = false
-    private var isInInsertionBottom = false
     private var topLoading = false
     private var bottomLoading = false
     private var hasNextTop = true
@@ -202,7 +201,6 @@ extension ThreadHistoryViewModel {
     }
 
     private func onMoreBottomFifthScenario(_ messages: [Message], _ response: HistoryResponse) async {
-        isInInsertionBottom = true
         /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
         if response.result?.count ?? 0 > 0 {
             removeOldBanner()
@@ -216,7 +214,6 @@ extension ThreadHistoryViewModel {
         }
         /// 4- Set whether it has more messages at the bottom or not.
         await setHasMoreBottom(response)
-        isInInsertionBottom = false
         bottomLoading = false
         viewModel?.delegate?.startBottomAnimation(false)
         viewModel?.delegate?.startCenterAnimation(false)
@@ -233,7 +230,10 @@ extension ThreadHistoryViewModel {
         } else {
             log("The message id to move to is not exist in the list")
         }
+
         viewModel?.delegate?.startCenterAnimation(true)
+        viewModel?.delegate?.startTopAnimation(true)
+
         sections.removeAll()
         delegate?.reload()
         /// 2- Fetch the top part of the message with the message itself.
@@ -242,30 +242,27 @@ extension ThreadHistoryViewModel {
         RequestsManager.shared.append(prepend: keys.TO_TIME_KEY, value: timeReqManager)
         logHistoryRequest(req: toTimeReq)
         ChatManager.activeInstance?.message.history(toTimeReq)
-        viewModel?.delegate?.startTopAnimation(true)
     }
 
     private func onMoveToTime(_ messages: [Message], _ response: HistoryResponse, request: OnMoveTime) async {
-
+        // Update the UI and fetch reactions the rows at top part.
         await onMoreTop(messages, response)
+        viewModel?.delegate?.startCenterAnimation(false)
 
         let uniqueId = messages.first(where: {$0.id == request.messageId})?.uniqueId ?? ""
         await viewModel?.scrollVM.showHighlightedAsync(uniqueId, request.messageId, highlight: request.highlight)
 
-        /// 5- Update all the views to draw for the top part.
-        /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
+//        /// 5- Update all the views to draw for the top part.
+//        /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
         let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime, offset: 0, order: "asc", readOnly: viewModel?.readOnly == true)
         let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
         RequestsManager.shared.append(prepend: keys.FROM_TIME_KEY, value: fromReqManager)
         logHistoryRequest(req: fromTimeReq)
         ChatManager.activeInstance?.message.history(fromTimeReq)
         viewModel?.delegate?.startBottomAnimation(true)
-        viewModel?.delegate?.startCenterAnimation(false)
-        await fetchReactions(messages: messages)
     }
 
     private func onMoveFromTime(_ messages: [Message], request: OnMoveTime, _ response: HistoryResponse) async {
-        isInInsertionBottom = true
         let beforeSectionCount = sections.count
         /// 8- Append and sort the array but not call to update the view.
         let sortedMessages = messages.sortedByTime()
@@ -276,7 +273,6 @@ extension ThreadHistoryViewModel {
             await vm.register()
         }
         await setHasMoreBottom(response)
-        isInInsertionBottom = false
         viewModel?.delegate?.startCenterAnimation(false)
         await fetchReactions(messages: messages)
     }
@@ -307,13 +303,11 @@ extension ThreadHistoryViewModel {
     }
 
     private func onFetchByOffset(_ messages: [Message]) async {
-        isInInsertionTop = true
         let sortedMessages = messages.sortedByTime()
         let viewModels = await createCalculateAppendSort(sortedMessages)
         isFetchedServerFirstResponse = true
         delegate?.reload()
         await viewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
-        isInInsertionTop = false
         for vm in viewModels {
             await vm.register()
         }
@@ -374,7 +368,6 @@ extension ThreadHistoryViewModel {
             await viewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
             isJumpedToLastMessage = true
         }
-        isInInsertionTop = false
         for vm in viewModels {
             await vm.register()
         }
@@ -395,7 +388,6 @@ extension ThreadHistoryViewModel {
     private func onMoreTop(_ messages: [Message], _ response: HistoryResponse) async {
         let lastTopMessageVM = sections.first?.vms.first
         let beforeSectionCount = sections.count
-        isInInsertionTop = true
         /// 3- Append and sort the array but not call to update the view.
 
         var viewModels: [MessageRowViewModel] = []
@@ -427,7 +419,6 @@ extension ThreadHistoryViewModel {
             await vm.register()
         }
         topLoading = false
-        isInInsertionTop = false
         await fetchReactions(messages: viewModels.compactMap({$0.message}))
         prepareAvatars(viewModels)
     }
@@ -444,7 +435,6 @@ extension ThreadHistoryViewModel {
 
     private func onMoreBottom(_ messages: [Message], _ response: HistoryResponse) async {
         let beforeSectionCount = sections.count
-        isInInsertionBottom = true
 
         /// 3- Append and sort the array but not call to update the view.
 
@@ -471,7 +461,6 @@ extension ThreadHistoryViewModel {
         }
 
         isFetchedServerFirstResponse = true
-        isInInsertionBottom = false
         bottomLoading = false
 
         await fetchReactions(messages: viewModels.compactMap({$0.message}))
@@ -588,7 +577,6 @@ extension ThreadHistoryViewModel {
 
     private func onNewMessage(_ response: ChatResponse<Message>) async {
         if threadId == response.subjectId, let message = response.result, let viewModel = viewModel {
-            isInInsertionTop = true
             let isMe = (response.result?.participant?.id ?? -1) == AppState.shared.user?.id
             // MARK: Update thread properites
             /*
@@ -636,7 +624,6 @@ extension ThreadHistoryViewModel {
             print("after: section count \(sections.count) rowsCount:\(sections.last?.vms.count ?? 0)")
 
             setSeenForAllOlderMessages(newMessage: message)
-            isInInsertionTop = false
             await viewModel.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
             await setIsEmptyThread()
         }
