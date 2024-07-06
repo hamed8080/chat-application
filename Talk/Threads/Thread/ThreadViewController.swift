@@ -23,6 +23,7 @@ final class ThreadViewController: UIViewController {
     public private(set) lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
     private var sendContainerBottomConstraint: NSLayoutConstraint?
     private var keyboardheight: CGFloat = 0
+    private var hasExternalKeyboard = false
     private let emptyThreadView = EmptyThreadView()
     private var topLoading = UILoadingView()
     private var centerLoading = UILoadingView()
@@ -434,7 +435,8 @@ extension ThreadViewController: BottomToolbarDelegate {
         viewModel?.replyMessage = message as? Message
         focusOnTextView(focus: message != nil)
         sendContainer.openReplyMode(message)
-        scrollTo(uniqueId: message?.uniqueId ?? "", position: .middle)
+        viewModel?.scrollVM.disableExcessiveLoading()
+        scrollTo(uniqueId: message?.uniqueId ?? "", position: hasExternalKeyboard ? .none : .middle)
     }
 
     func focusOnTextView(focus: Bool) {
@@ -677,14 +679,22 @@ struct UIKitThreadViewWrapper: UIViewControllerRepresentable {
 extension ThreadViewController {
     private func registerKeyboard() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { [weak self] notif in
+            print(notif)
+            guard let self = self else { return }
             if let rect = notif.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                if rect.size.height <= 69 {
+                    hasExternalKeyboard = true
+                } else {
+                    hasExternalKeyboard = false
+                }
+
                 UIView.animate(withDuration: 0.2) {
-                    self?.sendContainerBottomConstraint?.constant = -rect.height
-                    self?.keyboardheight = rect.height
-                    self?.view.layoutIfNeeded()
+                    self.sendContainerBottomConstraint?.constant = -rect.height
+                    self.keyboardheight = rect.height
+                    self.view.layoutIfNeeded()
                 } completion: { completed in
                     if completed {
-                        self?.moveTolastMessageIfVisible()
+                        self.moveTolastMessageIfVisible()
                     }
                 }
             }
@@ -693,6 +703,7 @@ extension ThreadViewController {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] _ in
             self?.sendContainerBottomConstraint?.constant = 0
             self?.keyboardheight = 0
+            self?.hasExternalKeyboard = false
             UIView.animate(withDuration: 0.2) {
                 self?.view.layoutIfNeeded()
             }

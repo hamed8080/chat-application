@@ -38,22 +38,24 @@ public final class TopThreadToolbar: UIStackView {
         axis = .vertical
         spacing = 0
 
-        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
+        configureBlurBackgroundView()
+        configureNavBarView()
+        configurePinMessageView()
+        configurePlayerView()
+    }
+
+    private func configureBlurBackgroundView() {
+        let blurEffect = UIBlurEffect(style: traitCollection.userInterfaceStyle == .dark ? .systemThinMaterial : .systemUltraThinMaterialDark)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.accessibilityIdentifier = "effectViewTopThreadToolbar"
         effectView.translatesAutoresizingMaskIntoConstraints = false
-
         addSubview(effectView)
-
         NSLayoutConstraint.activate([
             effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
             effectView.topAnchor.constraint(equalTo: topAnchor, constant: -100),
             effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
-        configureNavBarView()
-        configurePinMessageView()
-        configurePlayerView()
     }
 
     private func configureNavBarView() {

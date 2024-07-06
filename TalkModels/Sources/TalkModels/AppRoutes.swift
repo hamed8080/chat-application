@@ -1,6 +1,6 @@
 public final class AppRoutes {
     public static let integeration = "https://talkotp-d.fanapsoft.ir/"
-    public static let sandbox = "https://talkotp-s.fanapsoft.ir/"
+    public static let sandbox = "https://talkback.sandpod.ir/"
     public static let main = "https://talkback.pod.ir/"
     public static let joinLink = "https://talk.pod.ir/join?tn="
     public static let pckeToken = "https://accounts.pod.ir/oauth2/token"

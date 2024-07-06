@@ -12,7 +12,6 @@ public struct MessageFileState {
     public var preloadImage: UIImage?
 
     public init(progress: CGFloat = 0.0,
-                showImage: Bool = false,
                 showDownload: Bool = false,
                 isUploading: Bool = false,
                 state: DownloadFileState = .undefined,

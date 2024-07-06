@@ -12,7 +12,7 @@
         "socketAddresss": "wss://chat-sandbox.sandpod.ir/ws",
         "ssoHost": "https://accounts.pod.ir",
         "platformHost": "https://sandbox.pod.ir:8043/srv/basic-platform",
-        "fileServer": "http://sandbox.podspace.ir:8080",
+        "fileServer": "http://podspace.sandpod.ir:8080",
         "peerName": "chat-server",
         "debugToken": null,
         "server": "sandbox"

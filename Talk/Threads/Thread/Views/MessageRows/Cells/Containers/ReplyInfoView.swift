@@ -145,7 +145,7 @@ final class ReplyInfoView: UIView {
     private func setImageView(viewModel: MessageRowViewModel) {
         let hasImage = viewModel.calMessage.isReplyImage
         if viewModel.calMessage.isReplyImage, let url = viewModel.calMessage.replyLink {
-            imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata))
+            imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata, thumbnail: true))
         }
         imageIconView.setIsHidden(!hasImage)
         imageIconViewLeadingConstriant.constant = hasImage ? margin : -imageSize

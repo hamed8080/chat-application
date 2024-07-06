@@ -110,7 +110,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         Task { [weak self] in
             guard let self = self else { return }
             state = .downloading
-            let req = FileRequest(hashCode: fileHashCode)
+            let req = FileRequest(hashCode: fileHashCode, conversationId: message?.threadId ?? message?.conversation?.id)
             uniqueId = req.uniqueId
             RequestsManager.shared.append(value: req, autoCancel: false)
             ChatManager.activeInstance?.file.get(req)
@@ -123,7 +123,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         Task { [weak self] in
             guard let self = self else { return }
             state = .downloading
-            let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
+            let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL, conversationId: message?.threadId ?? message?.conversation?.id)
             uniqueId = req.uniqueId
             RequestsManager.shared.append(value: req, autoCancel: false)
             ChatManager.activeInstance?.file.get(req)
@@ -136,7 +136,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         Task { [weak self] in
             guard let self = self else { return }
             state = .thumbnailDownloaing
-            let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true)
+            let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true, conversationId: message?.threadId ?? message?.conversation?.id)
             uniqueId = req.uniqueId
             RequestsManager.shared.append(prepend: THUMBNAIL_KEY, value: req, autoCancel: false)
             ChatManager.activeInstance?.file.get(req)

@@ -158,6 +158,9 @@ final class MessageImageView: UIImageView {
 
     // Thumbnail or placeholder image
     private func setPreloadImage(viewModel: MessageRowViewModel) {
+        if viewModel.fileState.state == .undefined {
+            self.image = DownloadFileManager.emptyImage
+        }
         guard let image = viewModel.fileState.preloadImage else { return }
         self.image = image
     }

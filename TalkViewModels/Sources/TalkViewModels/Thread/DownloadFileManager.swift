@@ -117,7 +117,6 @@ public final class DownloadFileManager {
         let progress: CGFloat = CGFloat(await vm.downloadPercentValue())
         let state = MessageFileState(
             progress: min(CGFloat(progress) / 100, 1.0),
-            showImage: true,
             showDownload: vm.state != .completed,
             state: vm.state,
             iconState: getIconState(vm: vm)
@@ -160,7 +159,6 @@ public final class DownloadFileManager {
         }
         let state = MessageFileState(
             progress: min(CGFloat(progress) / 100, 1.0),
-            showImage: true,
             showDownload: showDownload,
             state: vm.state,
             iconState: iconState,
@@ -176,7 +174,6 @@ public final class DownloadFileManager {
         let progress = await vm.downloadPercentValue()
         let state = MessageFileState(
             progress: min(CGFloat(progress) / 100, 1.0),
-            showImage: true,
             showDownload: vm.state != .completed,
             state: vm.state,
             iconState: getIconState(vm: vm).replacingOccurrences(of: ".circle", with: "")
