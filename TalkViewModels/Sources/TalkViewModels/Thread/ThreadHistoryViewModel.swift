@@ -612,7 +612,7 @@ extension ThreadHistoryViewModel {
                 vm = sections[indexPath.section].vms[indexPath.row]
                 vm.swapUploadMessageWith(message)
                 await vm.performaCalculation(appendMessages: [])
-                delegate?.reload(at: indexPath)
+                delegate?.reloadData(at: indexPath) // Do not call reload(at:) the item it will lead to call endDisplay
             } else {
                 // A new message comes from server
                 vm = MessageRowViewModel(message: message, viewModel: viewModel)

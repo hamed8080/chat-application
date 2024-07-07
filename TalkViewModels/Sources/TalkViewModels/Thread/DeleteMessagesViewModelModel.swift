@@ -85,6 +85,8 @@ public final class DeleteMessagesViewModelModel {
             let selectedMessages = await getSelectedMessages()
             viewModel?.historyVM.deleteMessages(selectedMessages)
             viewModel?.selectedMessagesViewModel.setInSelectionMode(false)
+            viewModel?.delegate?.showSelectionBar(false)
+            viewModel?.delegate?.setSelection(false)
             AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
         }
     }
@@ -94,6 +96,8 @@ public final class DeleteMessagesViewModelModel {
             let selectedMessages = await getSelectedMessages()
             viewModel?.historyVM.deleteMessages(selectedMessages, forAll: true)
             viewModel?.selectedMessagesViewModel.setInSelectionMode(false)
+            viewModel?.delegate?.showSelectionBar(false)
+            viewModel?.delegate?.setSelection(false)
             AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
         }
     }
@@ -106,12 +110,16 @@ public final class DeleteMessagesViewModelModel {
             viewModel?.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
         }
         viewModel?.selectedMessagesViewModel.setInSelectionMode(false)
+        viewModel?.delegate?.showSelectionBar(false)
+        viewModel?.delegate?.setSelection(false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
     }
 
     public func cleanup() {
         viewModel?.selectedMessagesViewModel.clearSelection()
         viewModel?.selectedMessagesViewModel.setInSelectionMode(false)
+        viewModel?.delegate?.setSelection(false)
+        viewModel?.delegate?.showSelectionBar(false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
     }
 

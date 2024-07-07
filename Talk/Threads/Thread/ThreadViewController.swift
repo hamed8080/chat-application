@@ -504,6 +504,15 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
+    func reloadData(at: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let cell = tableView.cellForRow(at: at) as? MessageBaseCell, let vm = viewModel?.historyVM.sections.viewModelWith(at) {
+                cell.setValues(viewModel: vm)
+            }
+        }
+    }
+
     private func moveTolastMessageIfVisible() {
         if viewModel?.scrollVM.isAtBottomOfTheList == true, let indexPath = viewModel?.historyVM.sections.viewModelAndIndexPath(for: viewModel?.thread.lastMessageVO?.id)?.indexPath {
             scrollTo(index: indexPath, position: .bottom)

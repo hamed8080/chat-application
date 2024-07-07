@@ -140,9 +140,7 @@ public final class SelectionView: UIStackView {
     }
 
     public func update(stack: UIStackView) {
-        if superview == nil {
-            set(stack: stack) // attach it to the view
-        }
+        set(stack: stack) // attach it to the view
         updateCount()
     }
 }
