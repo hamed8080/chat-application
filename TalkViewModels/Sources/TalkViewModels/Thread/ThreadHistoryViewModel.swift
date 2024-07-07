@@ -198,20 +198,24 @@ extension ThreadHistoryViewModel {
     private func onMoreBottomFifthScenario(_ response: HistoryResponse) async {
         let messages = response.result ?? []
         /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
-        if response.result?.count ?? 0 > 0 {
+        if messages.count > 0 {
             removeOldBanner()
             await appenedUnreadMessagesBannerIfNeeed()
-            /// 3- Append and sort and calculate the array but not call to update the view.
-            let sortedMessages = messages.sortedByTime()
-            let viewModels = await createCalculateAppendSort(sortedMessages)
-            for vm in viewModels {
-                await vm.register()
-            }
         }
+
+        /// 3- Append and sort and calculate the array but not call to update the view.
+        let sortedMessages = messages.sortedByTime()
+        let viewModels = await makeCalculateViewModelsFor(sortedMessages)
+        appendSort(viewModels)
+        delegate?.reload()
+
         /// 4- Set whether it has more messages at the bottom or not.
         await setHasMoreBottom(response)
         showBottomLoading(false)
         showCenterLoading(false)
+        for vm in viewModels {
+            await vm.register()
+        }
         await fetchReactions(messages: messages)
     }
 
@@ -263,7 +267,8 @@ extension ThreadHistoryViewModel {
         let beforeSectionCount = sections.count
         /// 8- Append and sort the array but not call to update the view.
         let sortedMessages = messages.sortedByTime()
-        let viewModels = await createCalculateAppendSort(sortedMessages)
+        let viewModels = await makeCalculateViewModelsFor(sortedMessages)
+        appendSort(viewModels)
         let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
         delegate?.inserted(tuple.sections, tuple.rows, nil)
         for vm in viewModels {
@@ -302,7 +307,8 @@ extension ThreadHistoryViewModel {
     private func onFetchByOffset(_ response: HistoryResponse) async {
         let messages = response.result ?? []
         let sortedMessages = messages.sortedByTime()
-        let viewModels = await createCalculateAppendSort(sortedMessages)
+        let viewModels = await makeCalculateViewModelsFor(sortedMessages)
+        appendSort(viewModels)
         isFetchedServerFirstResponse = true
         delegate?.reload()
         await viewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
@@ -316,7 +322,11 @@ extension ThreadHistoryViewModel {
     // MARK: Scenario 8
     /// When a new thread has been built and me is added by another person and this is our first time to visit the thread.
     private func tryEightScenario() async {
-        if thread.lastSeenMessageId == 0, thread.lastSeenMessageTime == nil, let lastMSGId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
+        if thread.lastSeenMessageId == 0,
+           thread.lastSeenMessageTime == nil,
+           let lastMSGId = thread.lastMessageVO?.id,
+           let time = thread.lastMessageVO?.time
+        {
             await moveToTime(time, lastMSGId, highlight: false)
         }
     }
@@ -451,7 +461,7 @@ extension ThreadHistoryViewModel {
         }
     }
 
-    private func makeCalculateViewModelsFor(_ messages: [Message]) async -> [MessageRowViewModel] {
+    private func makeCalculateViewModelsFor(_ messages: [any HistoryMessageProtocol]) async -> [MessageRowViewModel] {
         guard let viewModel = viewModel else { return [] }
         var viewModels: [MessageRowViewModel] = []
         for message in messages {
@@ -640,8 +650,7 @@ extension ThreadHistoryViewModel {
     }
 
     private func onUNPinMessage(_ response: ChatResponse<PinMessage>) async {
-        if let messageId = response.result?.messageId, let vm = sections.messageViewModel(for: messageId) {
-            vm.unpinMessage()
+        if let messageId = response.result?.messageId, let vm = sections.messageViewModel(for: messageId) {             vm.unpinMessage()
             guard let indexPath = sections.indexPath(for: vm) else { return }
             await MainActor.run {
                 delegate?.pinChanged(indexPath)
@@ -709,18 +718,6 @@ extension ThreadHistoryViewModel {
 
 // MARK: Append/Sort/Delete
 extension ThreadHistoryViewModel {
-    
-    private func createCalculateAppendSort(_ messages: [MessageType]) async -> [MessageRowViewModel] {
-        guard let viewModel = viewModel else { return [] }
-        var viewModels: [MessageRowViewModel] = []
-        for message in messages {
-            let vm = MessageRowViewModel(message: message, viewModel: viewModel)
-            viewModels.append(vm)
-            await vm.performaCalculation()
-        }
-        appendSort(viewModels)
-        return viewModels
-    }
 
     private func appendSort(_ viewModels: [MessageRowViewModel]) {
         log("Start of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
@@ -748,7 +745,8 @@ extension ThreadHistoryViewModel {
     }
 
     public func injectMessagesAndSort(_ requests: [any HistoryMessageProtocol]) async {
-        let viewModels = await createCalculateAppendSort(requests)
+        let viewModels = await makeCalculateViewModelsFor(requests)
+        appendSort(viewModels)
         for vm in viewModels {
             await vm.register()
         }
