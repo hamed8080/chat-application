@@ -61,7 +61,7 @@ final class MessageLocationView: UIImageView {
         }
         tintColor = viewModel.fileState.state == .completed ? .clear : .gray
 
-        if viewModel.fileState.state != .completed, viewModel.fileState.state != .downloading, viewModel.fileState.state != .thumbnailDownloaing {
+        if canDownloadAutomatically(viewModel) {
             viewModel.onTap() // to download automatically image of the location
         }
 
@@ -70,13 +70,17 @@ final class MessageLocationView: UIImageView {
         }
     }
 
+    private func canDownloadAutomatically(_ viewModel: MessageRowViewModel) -> Bool {
+        let state = viewModel.fileState.state
+        let canDownload = state != .undefined && state != .completed && state != .downloading && state != .thumbnailDownloaing
+        return canDownload
+    }
 
     private func setImage(fileURL: URL?) {
         Task { @HistoryActor in
             if let scaledImage = fileURL?.imageScale(width: 300)?.image {
-                let image = scaledImage
                 await MainActor.run {
-                    self.image = UIImage(cgImage: image)
+                    self.image = UIImage(cgImage: scaledImage)
                 }
             } 
         }
