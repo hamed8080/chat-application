@@ -276,3 +276,5 @@ public extension Array where Element == Message {
         sorted(by: {$0.time ?? 0 < $1.time ?? 0})
     }
 }
+
+extension Message: HistoryMessageProtocol {}
