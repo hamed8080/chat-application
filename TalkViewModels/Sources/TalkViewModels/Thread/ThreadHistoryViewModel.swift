@@ -190,8 +190,7 @@ extension ThreadHistoryViewModel {
         /// 1- Get the bottom part of the list of what is inside the memory.
         if canGetNewMessagesAfterConnectionEstablished(status), let lastMessageInListTime = sections.last?.vms.last?.message.time {
             showBottomLoading(true)
-            let fromTime = lastMessageInListTime.advanced(by: 1)
-            let req = fromTimeRequest(fromTime)
+            let req = makeRequest(fromTime: lastMessageInListTime.advanced(by: 1))
             doRequest(req, keys.MORE_BOTTOM_FIFTH_SCENARIO_KEY)
         }
     }
@@ -241,7 +240,7 @@ extension ThreadHistoryViewModel {
         sections.removeAll()
         delegate?.reload()
         /// 2- Fetch the top part of the message with the message itself.
-        let toTimeReq = toTimeRequest(time)
+        let toTimeReq = makeRequest(toTime: time.advanced(by: 1))
         let store = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
         doRequest(toTimeReq, keys.TO_TIME_KEY, store)
     }
@@ -255,7 +254,7 @@ extension ThreadHistoryViewModel {
         let uniqueId = messages.first(where: {$0.id == request.messageId})?.uniqueId ?? ""
         await viewModel?.scrollVM.showHighlightedAsync(uniqueId, request.messageId, highlight: request.highlight)
 
-        let fromTimeRequest = fromTimeRequest(request.request.toTime)
+        let fromTimeRequest = makeRequest(fromTime: request.request.toTime)
         let store = OnMoveTime(messageId: request.messageId, request: fromTimeRequest, highlight: request.highlight)
         doRequest(fromTimeRequest, keys.FROM_TIME_KEY, store)
         showBottomLoading(true)
@@ -297,7 +296,7 @@ extension ThreadHistoryViewModel {
     }
 
     private func requestBottomPartByCountAndOffset() {
-        let req = requestByOffset()
+        let req = makeRequest()
         doRequest(req, keys.FETCH_BY_OFFSET_KEY)
     }
 
@@ -375,7 +374,7 @@ extension ThreadHistoryViewModel {
     private func moreTop(prepend: String, _ toTime: UInt?) async {
         if !canLoadMoreTop() { return }
         showTopLoading(true)
-        let req = moreTopRequst(toTime)
+        let req = makeRequest(toTime: toTime)
         doRequest(req, prepend)
     }
 
@@ -413,7 +412,7 @@ extension ThreadHistoryViewModel {
     private func moreBottom(prepend: String, _ fromTime: UInt?) async {
         if !canLoadMoreBottom() { return }
         showBottomLoading(true)
-        let req = moreBottomRequst(fromTime)
+        let req = makeRequest(fromTime: fromTime)
         doRequest(req, prepend)
     }
 
@@ -469,47 +468,13 @@ extension ThreadHistoryViewModel {
 
 // MARK: Requests
 extension ThreadHistoryViewModel {
-
-    func moreTopRequst(_ toTime: UInt?) -> GetHistoryRequest {
+    func makeRequest(fromTime: UInt? = nil, toTime: UInt? = nil, offset: Int = 0) -> GetHistoryRequest {
         GetHistoryRequest(threadId: threadId,
                           count: count,
-                          offset: 0,
-                          order: "desc",
+                          fromTime: fromTime,
+                          offset: offset,
+                          order: fromTime != nil ? "asc" : "desc",
                           toTime: toTime,
-                          readOnly: viewModel?.readOnly == true)
-    }
-
-    func moreBottomRequst(_ fromTime: UInt?) -> GetHistoryRequest {
-        GetHistoryRequest(threadId: threadId,
-                          count: count,
-                          fromTime: fromTime,
-                          offset: 0,
-                          order: "asc",
-                          readOnly: viewModel?.readOnly == true)
-    }
-
-    func toTimeRequest(_ toTime: UInt?) -> GetHistoryRequest {
-        GetHistoryRequest(threadId: threadId,
-                          count: count,
-                          offset: 0,
-                          order: "desc",
-                          toTime: toTime?.advanced(by: 1),
-                          readOnly: viewModel?.readOnly == true)
-    }
-
-    func fromTimeRequest(_ fromTime: UInt?) -> GetHistoryRequest {
-        GetHistoryRequest(threadId: threadId,
-                          count: count,
-                          fromTime: fromTime,
-                          offset: 0,
-                          order: "asc",
-                          readOnly: viewModel?.readOnly == true)
-    }
-
-    func requestByOffset() -> GetHistoryRequest {
-        GetHistoryRequest(threadId: threadId,
-                          count: count,
-                          offset: 0,
                           readOnly: viewModel?.readOnly == true)
     }
 }
