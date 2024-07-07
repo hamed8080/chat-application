@@ -41,9 +41,8 @@ class UIHistoryTableView: UITableView {
         ConversationHistoryCellFactory.registerCellsAndHeader(self)
         translatesAutoresizingMaskIntoConstraints = false
         accessibilityIdentifier = "tableViewThreadViewController"
-        let imageView = UIImageView(image: UIImage(named: "chat_bg"))
-        imageView.contentMode = .scaleAspectFill
-        backgroundView = imageView
+        let bgView = ChatBackgroundView(frame: .zero)
+        backgroundView = bgView
         backgroundColor = Color.App.bgPrimaryUIColor
     }
 }

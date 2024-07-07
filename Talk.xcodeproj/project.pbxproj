@@ -43,6 +43,8 @@
 		052191572B2F262300CC99D1 /* MutualThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052191552B2F262300CC99D1 /* MutualThreadRow.swift */; };
 		0521F85F2B5A4276001B7B7E /* MockAppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0521F85E2B5A4276001B7B7E /* MockAppConfiguration.swift */; };
 		0521F8602B5A4276001B7B7E /* MockAppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0521F85E2B5A4276001B7B7E /* MockAppConfiguration.swift */; };
+		0524744A2C3A600F006F3ECB /* ChatBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052474492C3A600F006F3ECB /* ChatBackgroundView.swift */; };
+		0524744B2C3A600F006F3ECB /* ChatBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052474492C3A600F006F3ECB /* ChatBackgroundView.swift */; };
 		0525516A2C24BC7D003171D2 /* CustomConversationNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052551692C24BC7D003171D2 /* CustomConversationNavigationBar.swift */; };
 		0525516B2C24BC7D003171D2 /* CustomConversationNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052551692C24BC7D003171D2 /* CustomConversationNavigationBar.swift */; };
 		052557072BE9487700DFCE54 /* EditContactInParticipantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052557062BE9487700DFCE54 /* EditContactInParticipantDetailView.swift */; };
@@ -426,6 +428,7 @@
 		051ED3222B4D75BC00D963A0 /* LeaveThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveThreadDialog.swift; sourceTree = "<group>"; };
 		052191552B2F262300CC99D1 /* MutualThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutualThreadRow.swift; sourceTree = "<group>"; };
 		0521F85E2B5A4276001B7B7E /* MockAppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAppConfiguration.swift; sourceTree = "<group>"; };
+		052474492C3A600F006F3ECB /* ChatBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBackgroundView.swift; sourceTree = "<group>"; };
 		052551692C24BC7D003171D2 /* CustomConversationNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomConversationNavigationBar.swift; sourceTree = "<group>"; };
 		052557062BE9487700DFCE54 /* EditContactInParticipantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactInParticipantDetailView.swift; sourceTree = "<group>"; };
 		0525570A2BE949D900DFCE54 /* DetailUserNameSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailUserNameSection.swift; sourceTree = "<group>"; };
@@ -1121,6 +1124,7 @@
 				05EA779F2BBC025E00FFB9C2 /* CameraViewController.swift */,
 				05EA77A22BBC030400FFB9C2 /* TakeButton.swift */,
 				05EA77A52BBC651F00FFB9C2 /* CameraCapturer.swift */,
+				052474492C3A600F006F3ECB /* ChatBackgroundView.swift */,
 			);
 			path = Extra;
 			sourceTree = "<group>";
@@ -1374,6 +1378,7 @@
 				0516ACF82AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,
 				05DAA42F2B29BE74007427DC /* ThreadListSearchBarFilterView.swift in Sources */,
 				052C940C2C1190630061A6CF /* PartnerMessageCell.swift in Sources */,
+				0524744A2C3A600F006F3ECB /* ChatBackgroundView.swift in Sources */,
 				0570CC6D2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				05EA77A32BBC030400FFB9C2 /* TakeButton.swift in Sources */,
 				0570CBE52AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
@@ -1562,6 +1567,7 @@
 				0516ACF92AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,
 				05DAA4302B29BE74007427DC /* ThreadListSearchBarFilterView.swift in Sources */,
 				052C940D2C1190630061A6CF /* PartnerMessageCell.swift in Sources */,
+				0524744B2C3A600F006F3ECB /* ChatBackgroundView.swift in Sources */,
 				0570CC6E2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				05EA77A42BBC030400FFB9C2 /* TakeButton.swift in Sources */,
 				0570CBE62AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
