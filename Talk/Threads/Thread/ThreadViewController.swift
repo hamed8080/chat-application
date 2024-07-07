@@ -139,10 +139,9 @@ extension ThreadViewController {
                     guard let self = self else { return }
                     tableView.contentInset = .init(top: topThreadToolbar.bounds.height + 4, left: 0, bottom: height, right: 0)
                 }
-                if let message = viewModel.thread.lastMessageVO?.toMessage {
-                    Task {
-                        await viewModel.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
-                    }
+                Task {
+                    try? await Task.sleep(for: .seconds(0.3))
+                    await viewModel.scrollVM.scrollToLastMessageOnlyIfIsAtBottom()
                 }
             }
         }
@@ -655,16 +654,12 @@ extension ThreadViewController: HistoryScrollDelegate {
 
     func reactionsUpdatedAt(_ indexPath: IndexPath) {
         // Delay is essential for when we get the bottom part on openning the thread for the first time to it won't lead to crash
-        let wasAtBottom = viewModel?.scrollVM.isAtBottomOfTheList == true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             if let cell = self?.tableView.cellForRow(at: indexPath) as? MessageBaseCell, let viewModel = self?.viewModel?.historyVM.sections.viewModelWith(indexPath) {
                 cell.reactionsUpdated(viewModel: viewModel)
                 // Update geometry of table view and make cells taller
                 self?.tableView?.beginUpdates()
                 self?.tableView?.endUpdates()
-            }
-            if wasAtBottom {
-                self?.moveTolastMessageIfVisible()
             }
         }
     }

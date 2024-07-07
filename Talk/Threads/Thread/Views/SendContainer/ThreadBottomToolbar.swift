@@ -25,7 +25,6 @@ public final class ThreadBottomToolbar: UIStackView {
     private let mentionTableView: MentionTableView
     public let selectionView: SelectionView
     private let muteBarView: MuteChannelBarView
-    private var cancellableSet = Set<AnyCancellable>()
     public var onUpdateHeight: ((CGFloat) -> Void)?
 
     public init(viewModel: ThreadViewModel?) {
@@ -128,13 +127,7 @@ public final class ThreadBottomToolbar: UIStackView {
         guard let viewModel = viewModel else { return }
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             guard let self = self else { return }
-            if viewModel.audioRecoderVM.isRecording {
-                onUpdateHeight?(audioRecordingView.frame.height)
-            } else if viewModel.sendContainerViewModel.showPickerButtons {
-                onUpdateHeight?(mainSendButtons.frame.height)
-            } else {
-                onUpdateHeight?(frame.height)
-            }
+            onUpdateHeight?(frame.height)
         }
     }
 

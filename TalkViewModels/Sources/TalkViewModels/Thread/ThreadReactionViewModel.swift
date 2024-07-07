@@ -141,12 +141,18 @@ public final class ThreadReactionViewModel {
             }
         }
         inQueueToGetReactions.removeAll()
+        let wasAtBottom = threadVM?.scrollVM.isAtBottomOfTheList == true
 
         // Update UI of each message
         for reaction in reactions {
             if let indexPath = historyVM.sections.viewModelAndIndexPath(for: reaction.messageId)?.indexPath {
                 threadVM?.delegate?.reactionsUpdatedAt(indexPath)
             }
+        }
+
+        if wasAtBottom {
+            try? await Task.sleep(for: .seconds(0.2))
+            await threadVM?.scrollVM.scrollToLastMessageOnlyIfIsAtBottom()
         }
     }
 

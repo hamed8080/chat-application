@@ -624,7 +624,7 @@ extension ThreadHistoryViewModel {
             print("after: section count \(sections.count) rowsCount:\(sections.last?.vms.count ?? 0)")
 
             setSeenForAllOlderMessages(newMessage: message)
-            await viewModel.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
+            await viewModel.scrollVM.scrollToLastMessageIfIsAtBottomOrMe(message)
             await setIsEmptyThread()
         }
     }
