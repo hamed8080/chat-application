@@ -124,6 +124,13 @@ extension ThreadHistoryViewModel {
 
 // MARK: Scenarios
 extension ThreadHistoryViewModel {
+
+    private func doRequest(_ req: GetHistoryRequest, _ prepend: String, _ store: OnMoveTime? = nil) {
+        RequestsManager.shared.append(prepend: prepend, value: store ?? req)
+        logHistoryRequest(req: req)
+        ChatManager.activeInstance?.message.history(req)
+    }
+
     // MARK: Scenario 1
     private func tryFirstScenario() {
         /// 1- Get the top part to time messages
@@ -184,10 +191,8 @@ extension ThreadHistoryViewModel {
         if canGetNewMessagesAfterConnectionEstablished(status), let lastMessageInListTime = sections.last?.vms.last?.message.time {
             showBottomLoading(true)
             let fromTime = lastMessageInListTime.advanced(by: 1)
-            let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: viewModel?.readOnly == true)
-            RequestsManager.shared.append(prepend: keys.MORE_BOTTOM_FIFTH_SCENARIO_KEY, value: req)
-            logHistoryRequest(req: req)
-            ChatManager.activeInstance?.message.history(req)
+            let req = fromTimeRequest(fromTime)
+            doRequest(req, keys.MORE_BOTTOM_FIFTH_SCENARIO_KEY)
         }
     }
 
@@ -236,11 +241,9 @@ extension ThreadHistoryViewModel {
         sections.removeAll()
         delegate?.reload()
         /// 2- Fetch the top part of the message with the message itself.
-        let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: viewModel?.readOnly == true)
-        let timeReqManager = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
-        RequestsManager.shared.append(prepend: keys.TO_TIME_KEY, value: timeReqManager)
-        logHistoryRequest(req: toTimeReq)
-        ChatManager.activeInstance?.message.history(toTimeReq)
+        let toTimeReq = toTimeRequest(time)
+        let store = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
+        doRequest(toTimeReq, keys.TO_TIME_KEY, store)
     }
 
     private func onMoveToTime(_ response: HistoryResponse, request: OnMoveTime) async {
@@ -252,13 +255,9 @@ extension ThreadHistoryViewModel {
         let uniqueId = messages.first(where: {$0.id == request.messageId})?.uniqueId ?? ""
         await viewModel?.scrollVM.showHighlightedAsync(uniqueId, request.messageId, highlight: request.highlight)
 
-//        /// 5- Update all the views to draw for the top part.
-//        /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
-        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime, offset: 0, order: "asc", readOnly: viewModel?.readOnly == true)
-        let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
-        RequestsManager.shared.append(prepend: keys.FROM_TIME_KEY, value: fromReqManager)
-        logHistoryRequest(req: fromTimeReq)
-        ChatManager.activeInstance?.message.history(fromTimeReq)
+        let fromTimeRequest = fromTimeRequest(request.request.toTime)
+        let store = OnMoveTime(messageId: request.messageId, request: fromTimeRequest, highlight: request.highlight)
+        doRequest(fromTimeRequest, keys.FROM_TIME_KEY, store)
         showBottomLoading(true)
     }
 
@@ -298,10 +297,8 @@ extension ThreadHistoryViewModel {
     }
 
     private func requestBottomPartByCountAndOffset() {
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, readOnly: viewModel?.readOnly == true)
-        RequestsManager.shared.append(prepend: keys.FETCH_BY_OFFSET_KEY, value: req)
-        logHistoryRequest(req: req)
-        ChatManager.activeInstance?.message.history(req)
+        let req = requestByOffset()
+        doRequest(req, keys.FETCH_BY_OFFSET_KEY)
     }
 
     private func onFetchByOffset(_ response: HistoryResponse) async {
@@ -378,9 +375,8 @@ extension ThreadHistoryViewModel {
     private func moreTop(prepend: String, _ toTime: UInt?) async {
         if !canLoadMoreTop() { return }
         showTopLoading(true)
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: viewModel?.readOnly == true)
-        RequestsManager.shared.append(prepend: prepend, value: req)
-        ChatManager.activeInstance?.message.history(req)
+        let req = moreTopRequst(toTime)
+        doRequest(req, prepend)
     }
 
     @HistoryActor
@@ -417,10 +413,8 @@ extension ThreadHistoryViewModel {
     private func moreBottom(prepend: String, _ fromTime: UInt?) async {
         if !canLoadMoreBottom() { return }
         showBottomLoading(true)
-        let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: viewModel?.readOnly == true)
-        RequestsManager.shared.append(prepend: prepend, value: req)
-        logHistoryRequest(req: req)
-        ChatManager.activeInstance?.message.history(req)
+        let req = moreBottomRequst(fromTime)
+        doRequest(req, prepend)
     }
 
     private func onMoreBottom(_ response: HistoryResponse) async {
@@ -470,6 +464,53 @@ extension ThreadHistoryViewModel {
             viewModels.append(vm)
         }
         return viewModels
+    }
+}
+
+// MARK: Requests
+extension ThreadHistoryViewModel {
+
+    func moreTopRequst(_ toTime: UInt?) -> GetHistoryRequest {
+        GetHistoryRequest(threadId: threadId,
+                          count: count,
+                          offset: 0,
+                          order: "desc",
+                          toTime: toTime,
+                          readOnly: viewModel?.readOnly == true)
+    }
+
+    func moreBottomRequst(_ fromTime: UInt?) -> GetHistoryRequest {
+        GetHistoryRequest(threadId: threadId,
+                          count: count,
+                          fromTime: fromTime,
+                          offset: 0,
+                          order: "asc",
+                          readOnly: viewModel?.readOnly == true)
+    }
+
+    func toTimeRequest(_ toTime: UInt?) -> GetHistoryRequest {
+        GetHistoryRequest(threadId: threadId,
+                          count: count,
+                          offset: 0,
+                          order: "desc",
+                          toTime: toTime?.advanced(by: 1),
+                          readOnly: viewModel?.readOnly == true)
+    }
+
+    func fromTimeRequest(_ fromTime: UInt?) -> GetHistoryRequest {
+        GetHistoryRequest(threadId: threadId,
+                          count: count,
+                          fromTime: fromTime,
+                          offset: 0,
+                          order: "asc",
+                          readOnly: viewModel?.readOnly == true)
+    }
+
+    func requestByOffset() -> GetHistoryRequest {
+        GetHistoryRequest(threadId: threadId,
+                          count: count,
+                          offset: 0,
+                          readOnly: viewModel?.readOnly == true)
     }
 }
 
@@ -599,28 +640,7 @@ extension ThreadHistoryViewModel {
 
     private func updateConversationPropertiesOnNewMessage(_ message: Message) async {
         let isMe = (message.participant?.id ?? -1) == AppState.shared.user?.id
-        // MARK: Update thread properites
-        /*
-         We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
-         Although in message object Message.id / Message.time / Message.timeNanos are right.
-         We only do this for ourselves, because the only person who can change these values is ourselves.
-         We do this in ThreadsViewModel too, because there is a chance of reconnect so objects are distinict
-         or if we are in forward mode the objects are different than what exist in ThreadsViewModel.
-         */
-        var updatedThread = thread
-        if isMe {
-            updatedThread.lastSeenMessageId = message.id
-            updatedThread.lastSeenMessageTime = message.time
-            updatedThread.lastSeenMessageNanos = message.timeNanos
-        }
-        updatedThread.time = message.time
-        updatedThread.lastMessageVO = message.toLastMessageVO
-        updatedThread.lastMessage = message.message
-        if message.mentioned == true {
-            updatedThread.mentioned = true
-        }
-        
-        // MARK: End Update thread properites
+        let updatedThread = thread.updateOnNewMessage(message: message, isMe: isMe)
         await MainActor.run { [updatedThread] in
             self.viewModel?.thread = updatedThread
         }

@@ -107,4 +107,30 @@ public extension Conversation {
     var isTalk: Bool {
         return inviter?.coreUserId == Conversation.talkId
     }
+
+
+    func updateOnNewMessage(message: Message, isMe: Bool) -> Conversation {
+        // MARK: Update thread properites
+        /*
+         We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
+         Although in message object Message.id / Message.time / Message.timeNanos are right.
+         We only do this for ourselves, because the only person who can change these values is ourselves.
+         We do this in ThreadsViewModel too, because there is a chance of reconnect so objects are distinict
+         or if we are in forward mode the objects are different than what exist in ThreadsViewModel.
+         */
+        var updatedThread = self
+        if isMe {
+            updatedThread.lastSeenMessageId = message.id
+            updatedThread.lastSeenMessageTime = message.time
+            updatedThread.lastSeenMessageNanos = message.timeNanos
+        }
+        updatedThread.time = message.time
+        updatedThread.lastMessageVO = message.toLastMessageVO
+        updatedThread.lastMessage = message.message
+        if message.mentioned == true {
+            updatedThread.mentioned = true
+        }
+        return updatedThread
+    }
 }
+
