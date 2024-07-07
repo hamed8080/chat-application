@@ -125,12 +125,6 @@ extension ThreadHistoryViewModel {
 // MARK: Scenarios
 extension ThreadHistoryViewModel {
 
-    private func doRequest(_ req: GetHistoryRequest, _ prepend: String, _ store: OnMoveTime? = nil) {
-        RequestsManager.shared.append(prepend: prepend, value: store ?? req)
-        logHistoryRequest(req: req)
-        ChatManager.activeInstance?.message.history(req)
-    }
-
     // MARK: Scenario 1
     private func tryFirstScenario() {
         /// 1- Get the top part to time messages
@@ -468,7 +462,14 @@ extension ThreadHistoryViewModel {
 
 // MARK: Requests
 extension ThreadHistoryViewModel {
-    func makeRequest(fromTime: UInt? = nil, toTime: UInt? = nil, offset: Int = 0) -> GetHistoryRequest {
+
+    private func doRequest(_ req: GetHistoryRequest, _ prepend: String, _ store: OnMoveTime? = nil) {
+        RequestsManager.shared.append(prepend: prepend, value: store ?? req)
+        logHistoryRequest(req: req)
+        ChatManager.activeInstance?.message.history(req)
+    }
+
+    private func makeRequest(fromTime: UInt? = nil, toTime: UInt? = nil, offset: Int = 0) -> GetHistoryRequest {
         GetHistoryRequest(threadId: threadId,
                           count: count,
                           fromTime: fromTime,
@@ -811,6 +812,7 @@ extension ThreadHistoryViewModel {
         sections[indexPath.section].vms.append(vm)
         let bannerIndexPath = IndexPath(row: sections[indexPath.section].vms.indices.last!, section: indexPath.section)
         delegate?.inserted(at: bannerIndexPath)
+        delegate?.scrollTo(index: indexPath, position: .middle, animate: true)
     }
 }
 
