@@ -115,9 +115,6 @@ final class MessageImageView: UIImageView {
             fileSizeLabel.text = viewModel.calMessage.computedFileSize
         }
 
-        if !viewModel.fileState.isUploading, state != .downloading, state != .completed && state != .thumbnailDownloaing, state != .thumbnail {
-            viewModel.onTap() // Download thumbnail
-        }
         widthConstraint.constant = (viewModel.calMessage.sizes.imageWidth ?? 128) - 8 // -8 for parent stack view margin
         heightConstraint.constant = viewModel.calMessage.sizes.imageHeight ?? 128
     }

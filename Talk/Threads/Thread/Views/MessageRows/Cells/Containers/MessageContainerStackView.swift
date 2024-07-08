@@ -250,6 +250,7 @@ extension MessageContainerStackView {
         messageFileView.downloadCompleted(viewModel: viewModel)
         messageImageView.downloadCompleted(viewModel: viewModel)
         messageVideoView.downloadCompleted(viewModel: viewModel)
+        locationRowView.downloadCompleted(viewModel: viewModel)
     }
 
     public func uploadCompleted(viewModel: MessageRowViewModel) {

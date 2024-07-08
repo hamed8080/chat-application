@@ -52,37 +52,35 @@ final class MessageLocationView: UIImageView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) {
-            if let fileURL = viewModel.calMessage.fileURL {
-                self.setImage(fileURL: fileURL)
-            } else {
-                self.image = viewModel.fileState.preloadImage ?? DownloadFileManager.mapPlaceholder
-            }
+        if let fileURL = viewModel.calMessage.fileURL {
+            self.setImage(fileURL: fileURL)
+        } else {
+            self.image = viewModel.fileState.preloadImage ?? DownloadFileManager.mapPlaceholder
         }
         tintColor = viewModel.fileState.state == .completed ? .clear : .gray
-
-        if canDownloadAutomatically(viewModel) {
-            viewModel.onTap() // to download automatically image of the location
-        }
 
         if mapViewHeightConstraint.constant != viewModel.calMessage.sizes.mapHeight {
             mapViewHeightConstraint.constant = viewModel.calMessage.sizes.mapHeight
         }
     }
 
-    private func canDownloadAutomatically(_ viewModel: MessageRowViewModel) -> Bool {
-        let state = viewModel.fileState.state
-        let canDownload = state != .undefined && state != .completed && state != .downloading && state != .thumbnailDownloaing
-        return canDownload
+    public func downloadCompleted(viewModel: MessageRowViewModel) {
+        setImage(fileURL: viewModel.calMessage.fileURL, withAnimation: true)
     }
 
-    private func setImage(fileURL: URL?) {
+    private func setImage(fileURL: URL?, withAnimation: Bool = false) {
         Task { @HistoryActor in
             if let scaledImage = fileURL?.imageScale(width: 300)?.image {
                 await MainActor.run {
+                    if withAnimation {
+                        self.alpha = 0.0
+                        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut) {
+                            self.alpha = 1.0
+                        }
+                    }
                     self.image = UIImage(cgImage: scaledImage)
                 }
-            } 
+            }
         }
     }
 }

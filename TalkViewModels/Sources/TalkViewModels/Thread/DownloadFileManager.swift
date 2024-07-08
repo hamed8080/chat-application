@@ -20,6 +20,7 @@ public final class DownloadFileManager {
     public static var emptyImage = UIImage(named: "empty_image")!
     public static var mapPlaceholder = UIImage(named: "map_placeholder")!
     private var queue = DispatchQueue(label: "DownloadFileManagerSerialQueue")
+    private typealias DownloadManagerTypes = (mtd: FileMetaData?, isImage: Bool, isVideo: Bool, isMap: Bool)
     public init() {}
 
     public func setup(viewModel: ThreadViewModel) {
@@ -38,11 +39,7 @@ public final class DownloadFileManager {
     }
 
     private func downloadImage(vm: DownloadFileViewModel, messageId: Int) async {
-        if vm.thumbnailData == nil {
-            vm.downloadBlurImage()
-        } else {
-            downloadNormalFile(vm: vm) // Download real image due to image thumbnail has been already on the screen
-        }
+        downloadNormalFile(vm: vm) // Download real image due to image thumbnail has been already on the screen
     }
 
     private func downloadNormalFile(vm: DownloadFileViewModel) {
@@ -67,34 +64,62 @@ public final class DownloadFileManager {
         }
     }
 
-    public func register(message: any HistoryMessageProtocol) {
-        if isContains(message) { return }
-        if message.isFileType && (message is UploadFileWithLocationMessage) == false, let message = message as? Message {
-            let downloadFileVM = DownloadFileViewModel(message: message)
-            let mtd = message.fileMetaData
-            let isMap = mtd?.mapLink != nil || mtd?.latitude != nil
-            let isVideo = message.isVideo
-            let isImage = message.isImage
-            registerIfReplyImage(message: message)
-            queue.sync {
-                downloadVMS.append(downloadFileVM)
-            }
-            downloadFileVM.objectWillChange.sink { [weak self] in
-                Task { [weak self] in
-                    if isVideo {
-                        await self?.onVideoChanged(message: message)
-                    } else if isImage || isMap {
-                        await self?.onImageChanged(message: message, isMap: isMap)
-                    } else {
-                        await self?.onFileChanged(message: message)
-                    }
+    private func appendToQueue(_ downloadFileVM: DownloadFileViewModel) {
+        queue.sync {
+            downloadVMS.append(downloadFileVM)
+        }
+    }
+    
+    private func observeOnViewModelChange(_ downloadFileVM: DownloadFileViewModel, _ message: Message, _ types: DownloadManagerTypes) {
+        downloadFileVM.objectWillChange.sink { [weak self] in
+            Task { [weak self] in
+                if types.isVideo {
+                    await self?.onVideoChanged(message: message)
+                } else if types.isImage || types.isMap {
+                    await self?.onImageChanged(message: message, isMap: types.isMap)
+                } else {
+                    await self?.onFileChanged(message: message)
                 }
             }
-            .store(in: &cancelableSet)
-            Task {
-                await downloadFileVM.setup()
+        }
+        .store(in: &cancelableSet)
+    }
+    
+    private func automaticDownloadIfNeeded(_ downloadFileVM: DownloadFileViewModel, _ types: DownloadManagerTypes) {
+        Task {
+            await downloadFileVM.setup()
+            if types.isImage {
+                downloadFileVM.downloadBlurImage()
+            }
+
+            if types.isMap {
+                downloadFileVM.startDownload()
             }
         }
+    }
+    
+    public func register(message: any HistoryMessageProtocol, hasReplyImage: Bool = false) {
+        if isContains(message) { return }
+        let isFileType = message.isFileType || hasReplyImage
+        let isUploading = message is UploadFileWithLocationMessage
+        if isFileType && !isUploading, let message = message as? Message {
+            let downloadFileVM = DownloadFileViewModel(message: message)
+            let types = types(message: message)
+            if hasReplyImage {
+                registerIfReplyImage(message: message)
+            }
+            appendToQueue(downloadFileVM)
+            observeOnViewModelChange(downloadFileVM, message, types)
+            automaticDownloadIfNeeded(downloadFileVM, types)
+        }
+    }
+
+    private func types(message: Message) -> DownloadManagerTypes {
+        let mtd = message.fileMetaData
+        let isMap = mtd?.mapLink != nil || mtd?.latitude != nil
+        let isVideo = message.isVideo
+        let isImage = message.isImage
+        return (mtd, isImage, isVideo, isMap)
     }
 
     private func registerIfReplyImage(message: any HistoryMessageProtocol) {
@@ -103,10 +128,7 @@ public final class DownloadFileManager {
                                   id: messageId,
                                   messageType: replyInfo.messageType,
                                   metadata: replyInfo.metadata)
-            if message.isImage {
-                register(message: message)
-                viewModel(for: messageId)?.downloadBlurImage()
-            }
+            register(message: message)
         }
     }
 
