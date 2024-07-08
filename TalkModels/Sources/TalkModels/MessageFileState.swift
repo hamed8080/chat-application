@@ -10,6 +10,7 @@ public struct MessageFileState {
     public var blurRadius: CGFloat
     // Preload Image: Either a placeholder image or a thumbnail image
     public var preloadImage: UIImage?
+    public var replyImage: UIImage?
 
     public init(progress: CGFloat = 0.0,
                 showDownload: Bool = false,

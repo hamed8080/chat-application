@@ -75,6 +75,7 @@ public final class DownloadFileManager {
             let isMap = mtd?.mapLink != nil || mtd?.latitude != nil
             let isVideo = message.isVideo
             let isImage = message.isImage
+            registerIfReplyImage(message: message)
             queue.sync {
                 downloadVMS.append(downloadFileVM)
             }
@@ -92,6 +93,19 @@ public final class DownloadFileManager {
             .store(in: &cancelableSet)
             Task {
                 await downloadFileVM.setup()
+            }
+        }
+    }
+
+    private func registerIfReplyImage(message: any HistoryMessageProtocol) {
+        if let replyInfo = message.replyInfo, let messageId = replyInfo.repliedToMessageId {
+            let message = Message(threadId: viewModel?.threadId,
+                                  id: messageId,
+                                  messageType: replyInfo.messageType,
+                                  metadata: replyInfo.metadata)
+            if message.isImage {
+                register(message: message)
+                viewModel(for: messageId)?.downloadBlurImage()
             }
         }
     }
@@ -165,6 +179,11 @@ public final class DownloadFileManager {
             blurRadius: blurRadius,
             preloadImage: preloadImage
         )
+        if state.state == .thumbnail {
+            Task {
+                await updateAllReplyMessageImages(image: state.preloadImage, messageId: messageId)
+            }
+        }
         await changeStateTo(state: state, messageId: messageId)
     }
 
@@ -210,6 +229,19 @@ public final class DownloadFileManager {
         }
         if state.state == .completed {
             unRegister(messageId: messageId)
+        }
+    }
+
+    @HistoryActor
+    private func updateAllReplyMessageImages(image: UIImage?, messageId: Int) async {
+        let sections = viewModel?.historyVM.sections ?? []
+        for (sectionIndex, section) in sections.enumerated() {
+            for (vmIndex, vm) in section.vms.enumerated() {
+                if vm.calMessage.isReplyImage, vm.message.replyInfo?.repliedToMessageId == messageId {
+                    vm.setRelyImage(image: image)
+                    viewModel?.delegate?.updateReplyImageThumbnail(at: .init(row: vmIndex, section: sectionIndex), viewModel: vm)
+                }
+            }
         }
     }
 

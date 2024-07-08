@@ -66,6 +66,10 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         }
     }
 
+    public func setRelyImage(image: UIImage?) {
+        fileState.replyImage = image
+    }
+
     func invalid() {
         isInvalid = true
     }

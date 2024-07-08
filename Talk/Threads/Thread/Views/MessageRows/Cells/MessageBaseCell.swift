@@ -202,6 +202,10 @@ public class MessageBaseCell: UITableViewCell {
         messageContainer.updateThumbnail(viewModel: viewModel)
     }
 
+    public func updateReplyImageThumbnail(viewModel: MessageRowViewModel) {
+        messageContainer.updateReplyImageThumbnail(viewModel: viewModel)
+    }
+
     public func downloadCompleted(viewModel: MessageRowViewModel) {
         messageContainer.downloadCompleted(viewModel: viewModel)
     }

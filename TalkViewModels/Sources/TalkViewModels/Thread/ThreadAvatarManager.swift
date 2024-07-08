@@ -54,7 +54,7 @@ public class ThreadAvatarManager {
     }
 
     private func create(_ viewModel: MessageRowViewModel) {
-        guard let url = viewModel.message.participant?.image else { return }
+        guard self.viewModel?.thread.group == true, !viewModel.calMessage.isMe, let url = viewModel.message.participant?.image else { return }
         if isInQueue(url) { return }
         releaseFromBottom()
         let config = ImageLoaderConfig(url: url)

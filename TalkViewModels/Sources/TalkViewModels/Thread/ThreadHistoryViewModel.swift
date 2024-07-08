@@ -190,7 +190,7 @@ extension ThreadHistoryViewModel {
     }
 
     private func canGetNewMessagesAfterConnectionEstablished(_ status: ConnectionStatus) -> Bool {
-        return status == .connected && isFetchedServerFirstResponse == true && viewModel?.isActiveThread == true
+        return !isSimulated && status == .connected && isFetchedServerFirstResponse == true && viewModel?.isActiveThread == true
     }
 
     private func onMoreBottomFifthScenario(_ response: HistoryResponse) async {
@@ -394,7 +394,7 @@ extension ThreadHistoryViewModel {
         }
         delegate?.inserted(tuple.sections, tuple.rows, indexPathToScroll)
 
-        // Register for downloading thumbnails or read a cached version
+        // Register for downloading thumbnails or read cached version
         for vm in viewModels {
             await vm.register()
         }
@@ -1058,7 +1058,7 @@ extension ThreadHistoryViewModel {
 // MARK: On Notifications actions
 extension ThreadHistoryViewModel {
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) async {
-        if !isSimulated, status == .connected, isFetchedServerFirstResponse == true, viewModel?.isActiveThread == true {
+        if canGetNewMessagesAfterConnectionEstablished(status) {
             // After connecting again get latest messages.
             tryFifthScenario(status: status)
         }
@@ -1163,6 +1163,9 @@ extension ThreadHistoryViewModel {
             if viewModel?.scrollVM.isEndedDecelerating == true {
                 isEnded = true
                 print("Deceleration has been completed.")
+            } else if viewModel == nil {
+                isEnded = true
+                print("ViewModel has been deallocated, thus, the deceleration will end.")
             } else {
                 print("Waiting for the deceleration to be completed.")
                 try? await Task.sleep(for: .nanoseconds(500000))

@@ -16,7 +16,7 @@ import TalkModels
 final class ReplyInfoView: UIView {
     // Views
     private let participantLabel = UILabel()
-    private let imageIconView = ImageLoaderUIView(frame: .zero)
+    private let imageIconView = UIImageView(frame: .zero)
     private let deletedLabel = UILabel()
     private let replyLabel = UILabel()
     private let bar = UIView()
@@ -60,6 +60,8 @@ final class ReplyInfoView: UIView {
         imageIconView.contentMode = .scaleAspectFit
         imageIconView.accessibilityIdentifier = "imageIconViewReplyInfoView"
         imageIconView.setContentHuggingPriority(.required, for: .horizontal)
+        imageIconView.layer.cornerRadius = 4
+        imageIconView.layer.masksToBounds = true
         addSubview(imageIconView)
 
         replyLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -142,11 +144,9 @@ final class ReplyInfoView: UIView {
         setImageView(viewModel: viewModel)
     }
 
-    private func setImageView(viewModel: MessageRowViewModel) {
+    func setImageView(viewModel: MessageRowViewModel) {
         let hasImage = viewModel.calMessage.isReplyImage
-        if viewModel.calMessage.isReplyImage, let url = viewModel.calMessage.replyLink {
-            imageIconView.setValues(config: .init(url: url, metaData: replyInfo?.metadata, thumbnail: true))
-        }
+        imageIconView.image = viewModel.fileState.replyImage
         imageIconView.setIsHidden(!hasImage)
         imageIconViewLeadingConstriant.constant = hasImage ? margin : -imageSize
     }

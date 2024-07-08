@@ -241,6 +241,10 @@ extension MessageContainerStackView {
         messageImageView.updateThumbnail(viewModel: viewModel)
     }
 
+    func updateReplyImageThumbnail(viewModel: MessageRowViewModel) {
+        replyInfoMessageRow.setImageView(viewModel: viewModel)
+    }
+
     public func downloadCompleted(viewModel: MessageRowViewModel) {
         messageAudioView.downloadCompleted(viewModel: viewModel)
         messageFileView.downloadCompleted(viewModel: viewModel)
