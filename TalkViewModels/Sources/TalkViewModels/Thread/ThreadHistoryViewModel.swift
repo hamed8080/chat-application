@@ -138,8 +138,12 @@ extension ThreadHistoryViewModel {
     @HistoryActor
     private func onMoreTopFirstScenario(_ response: HistoryResponse) async {
         await onMoreTop(response)
-
-        let uniqueId = sections.message(for: thread.lastSeenMessageId)?.message.uniqueId
+        /* 
+         It'd be better to go to the last message in the sections, instead of finding the item.
+         If the last message has been deleted, we can not find the message.
+         Consequently, the scroll to the last message won't work.
+        */
+        let uniqueId = sections.last?.vms.last?.message.uniqueId
         delegate?.scrollTo(uniqueId: uniqueId ?? "", position: .bottom, animate: false)
 
         /// 4- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
@@ -199,6 +203,7 @@ extension ThreadHistoryViewModel {
         if messages.count > 0 {
             removeOldBanner()
             await appenedUnreadMessagesBannerIfNeeed()
+            viewModel?.scrollVM.isAtBottomOfTheList = false
         }
 
         /// 3- Append and sort and calculate the array but not call to update the view.
@@ -228,6 +233,7 @@ extension ThreadHistoryViewModel {
             log("The message id to move to is not exist in the list")
         }
 
+        viewModel?.scrollVM.isAtBottomOfTheList = false
         showCenterLoading(true)
         showTopLoading(false)
 

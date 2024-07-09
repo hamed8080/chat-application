@@ -420,7 +420,10 @@ public final class ThreadsViewModel: ObservableObject {
                 thread.lastSeenMessageTime = response.result?.lastSeenMessageTime
                 thread.lastSeenMessageId = response.result?.lastSeenMessageId
                 thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
-                setUnreadCount(response.result?.unreadCount ?? response.contentCount, threadId: response.subjectId)
+                let newCount = response.result?.unreadCount ?? response.contentCount ?? 0
+                if newCount <= threads[index].unreadCount ?? 0 {
+                    thread.unreadCount = newCount
+                }
             }
             threads[index] = thread
             animateObjectWillChange()
@@ -467,15 +470,6 @@ public final class ThreadsViewModel: ObservableObject {
             if conversation.participants?.first?.id == AppState.shared.user?.id {
                 AppState.shared.showThread(conversation)
             }
-            animateObjectWillChange()
-        }
-    }
-
-    /// This method prevents to update unread count if the local unread count is smaller than server unread count.
-    public func setUnreadCount(_ newCount: Int?, threadId: Int?) {
-        guard let index = threads.firstIndex(where: {$0.id == threadId}) else { return }
-        if newCount ?? 0 <= threads[index].unreadCount ?? 0 {
-            threads[index].unreadCount = newCount
             animateObjectWillChange()
         }
     }
