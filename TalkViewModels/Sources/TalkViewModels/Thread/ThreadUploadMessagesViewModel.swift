@@ -40,7 +40,7 @@ public final class ThreadUploadMessagesViewModel {
             await historyVM.injectMessagesAndSort(requests)
             let tuple = historyVM.sections.indexPathsForUpload(requests: requests, beforeSectionCount: beforeSectionCount)
             if let sectionSet = tuple.sectionIndex {
-                viewModel?.delegate?.inserted(sectionSet, tuple.indices, nil)
+                viewModel?.delegate?.inserted(sectionSet, tuple.indices, .left, nil)
             } else {
                 viewModel?.delegate?.inserted(at: tuple.indices)
             }

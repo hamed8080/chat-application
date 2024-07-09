@@ -567,13 +567,13 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
-    func inserted(_ sections: IndexSet, _ rows: [IndexPath], _ scrollTo: IndexPath?) {
+    func inserted(_ sections: IndexSet, _ rows: [IndexPath], _ animate :UITableView.RowAnimation = .top, _ scrollTo: IndexPath?) {
         DispatchQueue.main.async { [weak self] in
-            self?.inserted(sections: sections, rows: rows, scrollTo: scrollTo)
+            self?.inserted(sections: sections, rows: rows, animate: animate, scrollTo: scrollTo)
         }
     }
 
-    private func inserted(sections: IndexSet, rows: [IndexPath], scrollTo: IndexPath?) {
+    private func inserted(sections: IndexSet, rows: [IndexPath], animate :UITableView.RowAnimation = .top, scrollTo: IndexPath?) {
 
         // Save the current content offset and content height
 //        let beforeOffsetY = tableView.contentOffset.y
@@ -608,8 +608,8 @@ extension ThreadViewController: HistoryScrollDelegate {
             UIView.performWithoutAnimation {
                 tableView.performBatchUpdates {
                     // Insert the sections and rows without animation
-                    tableView.insertSections(sections, with: .top)
-                    tableView.insertRows(at: rows, with: .top)
+                    tableView.insertSections(sections, with: animate)
+                    tableView.insertRows(at: rows, with: animate)
                 } completion: { completed in
                     DispatchQueue.main.async {
                         self.tableView.scrollToRow(at: scrollTo, at: .top, animated: false)
@@ -619,8 +619,8 @@ extension ThreadViewController: HistoryScrollDelegate {
         } else {
             tableView.performBatchUpdates {
                 // Insert the sections and rows without animation
-                tableView.insertSections(sections, with: .top)
-                tableView.insertRows(at: rows, with: .top)
+                tableView.insertSections(sections, with: animate)
+                tableView.insertRows(at: rows, with: animate)
             }
         }
     }

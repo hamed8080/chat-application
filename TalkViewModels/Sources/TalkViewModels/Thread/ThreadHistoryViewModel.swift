@@ -268,7 +268,7 @@ extension ThreadHistoryViewModel {
         let viewModels = await makeCalculateViewModelsFor(sortedMessages)
         appendSort(viewModels)
         let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
-        delegate?.inserted(tuple.sections, tuple.rows, nil)
+        delegate?.inserted(tuple.sections, tuple.rows, .fade, nil)
         for vm in viewModels {
             await vm.register()
         }
@@ -398,7 +398,7 @@ extension ThreadHistoryViewModel {
         if moveToMessage, let lastTopMessageVM = lastTopMessageVM {
             indexPathToScroll = sections.indexPath(for: lastTopMessageVM)
         }
-        delegate?.inserted(tuple.sections, tuple.rows, indexPathToScroll)
+        delegate?.inserted(tuple.sections, tuple.rows, .top, indexPathToScroll)
 
         // Register for downloading thumbnails or read cached version
         for vm in viewModels {
@@ -428,7 +428,7 @@ extension ThreadHistoryViewModel {
         viewModel?.scrollVM.disableExcessiveLoading()
         await setHasMoreBottom(response)
         let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
-        delegate?.inserted(tuple.sections, tuple.rows, nil)
+        delegate?.inserted(tuple.sections, tuple.rows, .left, nil)
 
         for vm in viewModels {
             await vm.register()
@@ -582,13 +582,21 @@ extension ThreadHistoryViewModel {
     }
 
     private func onNewMessage(_ response: ChatResponse<Message>) async {
-        if threadId == response.subjectId, let message = response.result, let viewModel = viewModel {
+        if threadId == response.subjectId, let message = response.result, let viewModel = viewModel, isLastMessageInsideTheSections() {
             await updateConversationPropertiesOnNewMessage(message)
             await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
             setSeenForAllOlderMessages(newMessage: message)
             await viewModel.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
             await setIsEmptyThread()
         }
+    }
+
+    /*
+     Check if we have the last message in our list,
+     It'd useful in case of onNewMessage to chekc if we have move to time or not.
+     */
+    private func isLastMessageInsideTheSections() -> Bool {
+        return sections.last?.vms.last?.message.id == thread.lastMessageVO?.id
     }
 
     private func insertOrUpdateMessageViewModelOnNewMessage(_ message: Message, _ viewModel: ThreadViewModel) async {
@@ -606,7 +614,7 @@ extension ThreadHistoryViewModel {
             await vm.performaCalculation(appendMessages: [message])
             appendSort([vm])
             let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, [vm])
-            delegate?.inserted(tuple.sections, tuple.rows, nil)
+            delegate?.inserted(tuple.sections, tuple.rows, .left, nil)
         }
     }
 
@@ -818,7 +826,10 @@ extension ThreadHistoryViewModel {
         sections[indexPath.section].vms.append(vm)
         let bannerIndexPath = IndexPath(row: sections[indexPath.section].vms.indices.last!, section: indexPath.section)
         delegate?.inserted(at: bannerIndexPath)
-        delegate?.scrollTo(index: indexPath, position: .middle, animate: true)
+        Task {
+            try? await Task.sleep(for: .seconds(0.5))
+            delegate?.scrollTo(index: indexPath, position: .middle, animate: true)
+        }
     }
 }
 
