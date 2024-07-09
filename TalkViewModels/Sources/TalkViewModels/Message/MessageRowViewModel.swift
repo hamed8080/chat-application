@@ -219,6 +219,11 @@ public extension MessageRowViewModel {
             self.reactionsModel = reactionsModel
         }
     }
+
+    func canReact() -> Bool {
+        // Two weeks
+        return Date().millisecondsSince1970 < Int64(message.time ?? 0) + (1_209_600_000)
+    }
 }
 
 // MARK: Pin/UnPin Message
