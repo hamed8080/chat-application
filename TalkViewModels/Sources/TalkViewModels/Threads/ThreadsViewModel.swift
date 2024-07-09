@@ -62,7 +62,7 @@ public final class ThreadsViewModel: ObservableObject {
             var thread = threads[index]
             let isMe = response.result?.participant?.id == AppState.shared.user?.id
             if !isMe {
-                thread.unreadCount = (threads[index].unreadCount ?? 0) + 1
+                thread.unreadCount = (thread.unreadCount ?? 0) + 1
             } else if isMe {
                 thread.unreadCount = 0
             }
@@ -92,6 +92,10 @@ public final class ThreadsViewModel: ObservableObject {
                 sort()
             }
             animateObjectWillChange()
+            let activeViewModel = AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel
+            if response.subjectId == activeViewModel?.threadId {
+                activeViewModel?.updateUnreadCount(thread.unreadCount)
+            }
         }
         getNotActiveThreads(response.result?.conversation)
     }

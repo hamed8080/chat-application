@@ -10,6 +10,7 @@ import TalkViewModels
 import TalkUI
 import ChatModels
 import TalkExtensions
+import TalkModels
 
 public final class MoveToBottomButton: UIButton {
     public weak var viewModel: ThreadViewModel?
@@ -76,8 +77,10 @@ public final class MoveToBottomButton: UIButton {
     }
 
     public func updateUnreadCount() {
-        lblUnreadCount.isHidden = viewModel?.thread.unreadCount == 0 || viewModel?.thread.unreadCount == nil
-        lblUnreadCount.label.text = viewModel?.thread.unreadCountString ?? ""
+        let thread = viewModel?.threadsViewModel?.threads.first(where: {$0.id == viewModel?.threadId})
+        let unreadCount = thread?.unreadCount
+        lblUnreadCount.setIsHidden(unreadCount == 0)
+        self.lblUnreadCount.label.addFlipAnimation(text: thread?.unreadCountString)
     }
 
     public func setVisibility(visible: Bool) {

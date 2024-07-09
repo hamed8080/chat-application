@@ -159,6 +159,12 @@ public final class ThreadViewModel: Identifiable, Hashable {
         exportMessagesViewModel.exportChats(startDate: startDate, endDate: endDate)
     }
 
+    /// It will be called only by updateUnreadCount
+    public func updateUnreadCount(_ newCount: Int?) {
+        thread.unreadCount = newCount
+        delegate?.onUnreadCountChanged()
+    }
+
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.
     private func setUnreadCount(_ newCount: Int?) {
         if newCount ?? 0 <= thread.unreadCount ?? 0 {
@@ -223,12 +229,6 @@ public final class ThreadViewModel: Identifiable, Hashable {
     private func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if response.result == threadId {
             dismiss = true
-        }
-    }
-
-    private func onUnreadCount(_ response: ChatResponse<UnreadCount>) {
-        if threadId == response.result?.threadId {
-            setUnreadCount(response.result?.unreadCount)
         }
     }
 
