@@ -173,8 +173,18 @@ extension UIHistoryTableView {
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        print("deceleration ended has been called")
         Task(priority: .userInitiated) { @DeceleratingActor [weak self] in
             await self?.viewModel?.scrollVM.isEndedDecelerating = true
+        }
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate == false {
+            print("stop immediately with no deceleration")
+            Task(priority: .userInitiated) { @DeceleratingActor [weak self] in
+                await self?.viewModel?.scrollVM.isEndedDecelerating = true
+            }
         }
     }
 }

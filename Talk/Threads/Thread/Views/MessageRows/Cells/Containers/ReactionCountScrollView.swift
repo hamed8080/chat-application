@@ -78,15 +78,11 @@ final class ReactionCountScrollView: UIScrollView {
 
 final class ReactionCountRowView: UIView {
     // Views
-    private let reactionEmoji = UILabel()
-    private let reactionCountLabel = UILabel()
+    private let reactionEmojiCount = UILabel()
 
     // Models
     var row: ReactionRowsCalculated.Row?
     weak var viewModel: MessageRowViewModel?
-
-    // Contraints
-    private var centerYConstraint: NSLayoutConstraint!
 
     // Sizes
     private let totlaWidth: CGFloat = 42
@@ -108,30 +104,18 @@ final class ReactionCountRowView: UIView {
         layer.masksToBounds = true
         semanticContentAttribute = isMe == true ? .forceRightToLeft : .forceLeftToRight
 
-        reactionEmoji.translatesAutoresizingMaskIntoConstraints = false
-        reactionEmoji.font = .systemFont(ofSize: 14)
-        reactionEmoji.textAlignment = .center
-        reactionEmoji.accessibilityIdentifier = "reactionEmoji"
-        addSubview(reactionEmoji)
+        reactionEmojiCount.translatesAutoresizingMaskIntoConstraints = false
+        reactionEmojiCount.font = UIFont.uiiransansBody
+        reactionEmojiCount.textAlignment = .center
+        reactionEmojiCount.accessibilityIdentifier = "reactionEmoji"
+        addSubview(reactionEmojiCount)
 
-        reactionCountLabel.translatesAutoresizingMaskIntoConstraints = false
-        reactionCountLabel.font = UIFont.uiiransansBody
-        reactionCountLabel.textColor = Color.App.textPrimaryUIColor
-        reactionCountLabel.accessibilityIdentifier = "reactionCountLabel"
-        addSubview(reactionCountLabel)
-
-        centerYConstraint = reactionEmoji.centerYAnchor.constraint(equalTo: centerYAnchor)
-        centerYConstraint.identifier = "reactionEmojicenterYConstraint"
         NSLayoutConstraint.activate([
             widthAnchor.constraint(greaterThanOrEqualToConstant: totlaWidth),
-            reactionEmoji.widthAnchor.constraint(equalToConstant: emojiWidth),
-            reactionEmoji.heightAnchor.constraint(equalToConstant: emojiWidth),
-            centerYConstraint,
-            reactionEmoji.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
-
-            reactionCountLabel.leadingAnchor.constraint(equalTo: reactionEmoji.trailingAnchor, constant: margin / 2),
-            reactionCountLabel.centerYAnchor.constraint(equalTo: reactionEmoji.centerYAnchor),
-            reactionCountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
+            reactionEmojiCount.heightAnchor.constraint(equalToConstant: emojiWidth),
+            reactionEmojiCount.topAnchor.constraint(equalTo: topAnchor, constant: 6),
+            reactionEmojiCount.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
+            reactionEmojiCount.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
         ])
         addContextMenu()
 
@@ -140,13 +124,12 @@ final class ReactionCountRowView: UIView {
     }
 
     func prepareContextMenu() {
-        centerYConstraint.constant = 16
+        isUserInteractionEnabled = false
     }
 
     func setValue(row: ReactionRowsCalculated.Row) {
         self.row = row
-        reactionEmoji.text = row.emoji
-        reactionCountLabel.text = row.countText
+        reactionEmojiCount.text = "\(row.emoji) \(row.countText)"
         backgroundColor = row.isMyReaction ? Color.App.color1UIColor?.withAlphaComponent(0.9) : Color.App.accentUIColor?.withAlphaComponent(0.1)
     }
 
@@ -185,6 +168,7 @@ struct SwiftUIReactionCountRowWrapper: UIViewRepresentable {
     func makeUIView(context: Context) -> some UIView {
         let view = ReactionCountRowView(frame: .zero, isMe: isMe)
         view.prepareContextMenu()
+        view.setValue(row: row)
         return view
     }
 
@@ -217,17 +201,21 @@ extension ReactionCountRowView: UIContextMenuInteractionDelegate {
 
         guard let viewModel = self.viewModel else { return nil }
         
+        let tabVm = ReactionTabParticipantsViewModel(messageId: viewModel.message.id ?? -1)
+        tabVm.viewModel = viewModel.threadVM?.reactionViewModel
+
         let swiftUIReactionTabs = VStack(alignment: viewModel.calMessage.isMe ? .leading : .trailing) {
             if let row = row {
                 SwiftUIReactionCountRowWrapper(row: row, isMe: viewModel.calMessage.isMe)
                     .frame(width: 42, height: 32)
+                    .fixedSize()
                     .environment(\.colorScheme, traitCollection.userInterfaceStyle == .dark ? .dark : .light)
                     .disabled(true)
                 MessageReactionDetailView(message: viewModel.message, row: row)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
-        .environmentObject(ReactionTabParticipantsViewModel(messageId: viewModel.message.id ?? -1))
+        .environmentObject(tabVm)
 
         let vc = UIHostingController(rootView: swiftUIReactionTabs)
         vc.view.frame = .init(origin: .zero, size: .init(width: 300, height: 400))
