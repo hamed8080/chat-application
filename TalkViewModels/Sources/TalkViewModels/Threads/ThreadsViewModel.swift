@@ -95,6 +95,9 @@ public final class ThreadsViewModel: ObservableObject {
             let activeViewModel = AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel
             if response.subjectId == activeViewModel?.threadId {
                 activeViewModel?.updateUnreadCount(thread.unreadCount)
+                Task {
+                    await activeViewModel?.historyVM.onNewMessage(message)
+                }
             }
         }
         getNotActiveThreads(response.result?.conversation)

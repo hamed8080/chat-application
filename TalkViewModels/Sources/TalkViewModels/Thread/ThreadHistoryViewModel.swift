@@ -561,8 +561,6 @@ extension ThreadHistoryViewModel {
                 await onHistoryCacheRsponse(response)
             }
             break
-        case .new(let response):
-            await onNewMessage(response)
         case .delivered(let response):
             await onDeliver(response)
         case .seen(let response):
@@ -582,8 +580,9 @@ extension ThreadHistoryViewModel {
         }
     }
 
-    private func onNewMessage(_ response: ChatResponse<Message>) async {
-        if threadId == response.subjectId, let message = response.result, let viewModel = viewModel, isLastMessageInsideTheSections() {
+    // It will be only called by ThreadsViewModel
+    public func onNewMessage(_ message: Message) async {
+        if let viewModel = viewModel, isLastMessageInsideTheSections() {
             await updateConversationPropertiesOnNewMessage(message)
             let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
             setSeenForAllOlderMessages(newMessage: message)
@@ -621,12 +620,11 @@ extension ThreadHistoryViewModel {
         return vm
     }
 
+    @MainActor
     private func updateConversationPropertiesOnNewMessage(_ message: Message) async {
         let isMe = (message.participant?.id ?? -1) == AppState.shared.user?.id
         let updatedThread = thread.updateOnNewMessage(message: message, isMe: isMe)
-        await MainActor.run { [updatedThread] in
-            self.viewModel?.thread = updatedThread
-        }
+        viewModel?.thread = updatedThread
     }
 
     private func onEdited(_ response: ChatResponse<Message>) async {
