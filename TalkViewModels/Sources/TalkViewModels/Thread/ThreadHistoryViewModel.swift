@@ -233,6 +233,7 @@ extension ThreadHistoryViewModel {
             log("The message id to move to is not exist in the list")
         }
 
+        viewModel?.delegate?.lastMessageAppeared(false)
         viewModel?.scrollVM.isAtBottomOfTheList = false
         showCenterLoading(true)
         showTopLoading(false)
@@ -584,10 +585,11 @@ extension ThreadHistoryViewModel {
     private func onNewMessage(_ response: ChatResponse<Message>) async {
         if threadId == response.subjectId, let message = response.result, let viewModel = viewModel, isLastMessageInsideTheSections() {
             await updateConversationPropertiesOnNewMessage(message)
-            await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
+            let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
             setSeenForAllOlderMessages(newMessage: message)
             await viewModel.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
             await setIsEmptyThread()
+            await vm.register()
         }
     }
 
@@ -599,7 +601,7 @@ extension ThreadHistoryViewModel {
         return sections.last?.vms.last?.message.id == thread.lastMessageVO?.id
     }
 
-    private func insertOrUpdateMessageViewModelOnNewMessage(_ message: Message, _ viewModel: ThreadViewModel) async {
+    private func insertOrUpdateMessageViewModelOnNewMessage(_ message: Message, _ viewModel: ThreadViewModel) async -> MessageRowViewModel {
         let beforeSectionCount = sections.count
         let vm: MessageRowViewModel
         if let indexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "") {
@@ -616,6 +618,7 @@ extension ThreadHistoryViewModel {
             let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, [vm])
             delegate?.inserted(tuple.sections, tuple.rows, .left, nil)
         }
+        return vm
     }
 
     private func updateConversationPropertiesOnNewMessage(_ message: Message) async {
