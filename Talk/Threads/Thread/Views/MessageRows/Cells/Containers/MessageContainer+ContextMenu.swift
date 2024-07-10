@@ -29,6 +29,8 @@ fileprivate struct Constants {
         let navFrame: CGRect
         let minTopVertical: CGFloat
         let maxVertical: CGFloat
+        let menuX: CGFloat
+        let reactionX: CGFloat
     }
 }
 
@@ -75,7 +77,7 @@ extension MessageContainerStackView {
         let vc = delegate as? ThreadViewController
         guard let vc = vc, let tableView = vc.tableView else { return nil }
 
-        let sizes = calculateRects(tableView, indexPath, vc)
+        let sizes = calculateRects(tableView, indexPath, vc, isMe: viewModel.calMessage.isMe)
 
         let scrollViewContainer = createScrollViewContainer(sizes)
 
@@ -93,7 +95,7 @@ extension MessageContainerStackView {
         return scrollViewContainer
     }
 
-    private func calculateRects(_ tableView: UIHistoryTableView, _ indexPath: IndexPath, _ vc: ThreadViewController) -> Constants.Sizes {
+    private func calculateRects(_ tableView: UIHistoryTableView, _ indexPath: IndexPath, _ vc: ThreadViewController, isMe: Bool) -> Constants.Sizes {
         let rectIntableView = tableView.rectForRow(at: indexPath)
         let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell
         let messageStack = cell?.messageContainer
@@ -107,12 +109,29 @@ extension MessageContainerStackView {
         let navFrame = viewInNav?.frame ?? .zero
         let minTopVertical = vc.topThreadToolbar.frame.height + 64
         let maxVertical = vc.sendContainer.frame.height
+
+
+        let stackWidthWithMargin = stackBounds.width + Constants.margin
+        let rightXForLargerStack = navFrame.width - stackWidthWithMargin
+
+        let isStackLargerThanReactoinPicker = stackBounds.width > Constants.reactionWidth
+        let rightXForReactionPickerLarger = navFrame.width - (Constants.reactionWidth + Constants.margin)
+        let xForReaction = isStackLargerThanReactoinPicker ? rightXForLargerStack : rightXForReactionPickerLarger
+        let reactionX: CGFloat = isMe ? xForReaction : originalX
+
+        let isStackLargerThanMenu = stackBounds.width > Constants.menuWidth
+        let rightXForMenuLarger = navFrame.width - (Constants.menuWidth + Constants.margin)
+        let xForMenu = isStackLargerThanMenu ? rightXForLargerStack : rightXForMenuLarger
+        let menuX: CGFloat = isMe ? xForMenu : originalX
+
         return Constants.Sizes(rectInNav: rectInNav,
                                stackBounds: stackBounds,
                                originalX: originalX,
                                navFrame: navFrame,
                                minTopVertical: minTopVertical,
-                               maxVertical: maxVertical
+                               maxVertical: maxVertical,
+                               menuX: menuX,
+                               reactionX: reactionX
         )
     }
 
@@ -136,10 +155,7 @@ extension MessageContainerStackView {
     private func createMenu(_ viewModel: MessageRowViewModel, _ indexPath: IndexPath, _ messageContainer: MessageContainerStackView, _ sizes: Constants.Sizes) -> CustomMenu {
         let menu = menu(model: .init(viewModel: viewModel), indexPath: indexPath, onMenuClickedDismiss: resetOnDismiss)
         menu.frame.origin.y = messageContainer.frame.maxY + Constants.margin
-
-        let rightX = sizes.navFrame.width - (Constants.menuWidth + Constants.margin)
-        let x = messageContainer.frame.width < Constants.menuWidth ? rightX : sizes.originalX
-        menu.frame.origin.x = viewModel.calMessage.isMe ? x : sizes.originalX
+        menu.frame.origin.x = sizes.menuX
         menu.frame.size.width = Constants.menuWidth
         menu.frame.size.height = menu.height()
         return menu
@@ -147,10 +163,11 @@ extension MessageContainerStackView {
 
     private func createReaction(_ viewModel: MessageRowViewModel, _ sizes: Constants.Sizes, _ messageContainer: MessageContainerStackView) -> UIReactionsPickerScrollView {
 
-        let reactionsRightX = sizes.navFrame.width - (Constants.reactionWidth + Constants.margin)
-        let reactionsX = messageContainer.frame.width < Constants.reactionWidth ? reactionsRightX : sizes.originalX
         let reactionsView = UIReactionsPickerScrollView(size: Constants.reactionHeight)
-        reactionsView.frame = .init(x: viewModel.calMessage.isMe ? reactionsX : sizes.originalX, y: messageContainer.frame.origin.y - (Constants.reactionHeight + 8), width: Constants.reactionWidth, height: Constants.reactionHeight)
+        reactionsView.frame = .init(x: sizes.reactionX,
+                                    y: messageContainer.frame.origin.y - (Constants.reactionHeight + 8),
+                                    width: Constants.reactionWidth,
+                                    height: Constants.reactionHeight)
         reactionsView.viewModel = viewModel
         reactionsView.overrideUserInterfaceStyle = traitCollection.userInterfaceStyle
 
