@@ -123,7 +123,7 @@ final class MessageFileView: UIStackView {
     }
 
     @objc private func onTap() {
-        viewModel?.onTap()
+        viewModel?.onTap(sourceView: progressButton)
     }
 
     public func updateProgress(viewModel: MessageRowViewModel) {

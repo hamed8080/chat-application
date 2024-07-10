@@ -306,9 +306,10 @@ extension ThreadViewController: ThreadViewDelegate {
         }
     }
 
-    func openShareFiles(urls: [URL], title: String?) {
+    func openShareFiles(urls: [URL], title: String?, sourceView: UIView?) {
         guard let first = urls.first else { return }
         let vc = UIActivityViewController(activityItems: [LinkMetaDataManager(url: first, title: title)], applicationActivities: nil)
+        vc.popoverPresentationController?.sourceView = sourceView
         present(vc, animated: true)
     }
 

@@ -106,9 +106,9 @@ public extension MessageRowViewModel {
 
 // MARK: Tap actions
 public extension MessageRowViewModel {
-    func onTap() {
+    func onTap(sourceView: UIView? = nil) {
         if fileState.state == .completed {
-            doAction()
+            doAction(sourceView: sourceView)
         } else if message is UploadProtocol {
             cancelUpload()
         } else {
@@ -125,7 +125,7 @@ public extension MessageRowViewModel {
         }
     }
 
-    private func doAction() {
+    private func doAction(sourceView: UIView? = nil) {
         if calMessage.rowType.isMap {
             openMap()
         } else if calMessage.rowType.isImage {
@@ -133,17 +133,17 @@ public extension MessageRowViewModel {
         } else if calMessage.rowType.isAudio {
             toggleAudio()
         } else {
-            shareFile()
+            shareFile(sourceView: sourceView)
         }
     }
 
-    private func shareFile() {
+    private func shareFile(sourceView: UIView? = nil) {
         Task { [weak self] in
             guard let self = self else { return }
             _ = await message.makeTempURL()
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
-                threadVM?.delegate?.openShareFiles(urls: [message.tempURL], title: message.fileMetaData?.file?.originalName)
+                threadVM?.delegate?.openShareFiles(urls: [message.tempURL], title: message.fileMetaData?.file?.originalName, sourceView: sourceView)
             }
         }
     }

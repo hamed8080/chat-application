@@ -58,7 +58,7 @@ public protocol LastMessageAppearedDelegate {
 
 public protocol SheetsDelegate {
     func openForwardPicker()
-    func openShareFiles(urls: [URL], title: String?)
+    func openShareFiles(urls: [URL], title: String?, sourceView: UIView?)
 }
 
 public protocol BottomToolbarDelegate {

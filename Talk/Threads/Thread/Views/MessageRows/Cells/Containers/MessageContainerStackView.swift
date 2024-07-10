@@ -102,7 +102,7 @@ public final class MessageContainerStackView: UIStackView {
         self.viewModel = viewModel
         reattachOrDetach(viewModel: viewModel)
         isUserInteractionEnabled = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
-        if viewModel.calMessage.isLastMessageOfTheUser && !viewModel.calMessage.isMe {
+        if viewModel.calMessage.isLastMessageOfTheUser && !viewModel.calMessage.isMe && viewModel.threadVM?.thread.group == true {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner]
             tailImageView.setIsHidden(false)
         } else {
