@@ -34,6 +34,7 @@ public final class MoveToBottomButton: UIButton {
         layer.cornerRadius = 20
         layer.shadowRadius = 5
         layer.shadowColor = Color.App.accentUIColor?.cgColor
+        layer.shadowPath = UIBezierPath(rect: bounds).cgPath
         layer.shadowOpacity = 0.1
         layer.masksToBounds = false
         layer.shadowOffset = .init(width: 0.0, height: 1.0)
@@ -69,6 +70,11 @@ public final class MoveToBottomButton: UIButton {
             lblUnreadCount.centerXAnchor.constraint(equalTo: centerXAnchor),
         ])
         addTarget(self, action: #selector(onTap), for: .touchUpInside)
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.shadowPath = UIBezierPath(rect: bounds).cgPath
     }
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {

@@ -105,6 +105,8 @@ public class MessageBaseCell: UITableViewCell {
             messageContainer.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 8).isActive = true
         } else if viewModel.calMessage.state.isInSelectMode {
             messageContainer.leadingAnchor.constraint(equalTo: radio.trailingAnchor, constant: 0).isActive = true
+        } else if viewModel.calMessage.isMe {
+            messageContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 0).isActive = true
         }
         messageContainer.set(viewModel)
         messageContainer.cell = self

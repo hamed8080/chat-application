@@ -33,6 +33,7 @@ public final class UnreadMenitonsButton: UIButton {
         layer.shadowColor = Color.App.accentUIColor?.cgColor
         layer.shadowOpacity = 0.1
         layer.masksToBounds = false
+        layer.shadowPath = UIBezierPath(rect: bounds).cgPath
         layer.shadowOffset = .init(width: 0.0, height: 1.0)
 
         let lblAtSing = UILabel()
@@ -62,6 +63,11 @@ public final class UnreadMenitonsButton: UIButton {
             lblUnreadMentionsCount.centerXAnchor.constraint(equalTo: centerXAnchor),
         ])
         addTarget(self, action: #selector(onTap), for: .touchUpInside)
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.shadowPath = UIBezierPath(rect: bounds).cgPath
     }
 
     @objc private func onTap(_ sender: UIGestureRecognizer) {

@@ -51,10 +51,6 @@ final class MessageFileView: UIStackView {
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
         progressButton.isUserInteractionEnabled = true
         progressButton.accessibilityIdentifier = "progressButtonMessageFileView"
-        progressButton.setContentHuggingPriority(.required, for: .horizontal)
-        progressButton.setContentHuggingPriority(.required, for: .vertical)
-        progressButton.setContentCompressionResistancePriority(.required, for: .vertical)
-        progressButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         progressButton.isOpaque = true
         addArrangedSubview(progressButton)
 

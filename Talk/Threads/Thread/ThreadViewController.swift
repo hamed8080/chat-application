@@ -31,6 +31,9 @@ final class ThreadViewController: UIViewController {
     private let vStackOverlayButtons = UIStackView()
     private lazy var dimView = DimView()
     public var contextMenuContainer: ContextMenuContainerView!
+    private static let loadingViewWidth: CGFloat = 26
+    private let topLoadingContainer = UIView(frame: .init(x: 0, y: 0, width: loadingViewWidth, height: loadingViewWidth + 2))
+    private let bottomLoadingContainer = UIView(frame: .init(x: 0, y: 0, width: loadingViewWidth, height: loadingViewWidth + 2))
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -188,28 +191,29 @@ extension ThreadViewController {
     private func configureLoadings() {
         topLoading.translatesAutoresizingMaskIntoConstraints = false
         topLoading.accessibilityIdentifier = "topLoadingThreadViewController"
-        tableView.addSubview(topLoading)
+        topLoadingContainer.addSubview(topLoading)
+        topLoading.animate(false)
+        tableView.tableHeaderView = topLoadingContainer
 
         centerLoading.translatesAutoresizingMaskIntoConstraints = false
         centerLoading.accessibilityIdentifier = "centerLoadingThreadViewController"
 
         bottomLoading.translatesAutoresizingMaskIntoConstraints = false
         bottomLoading.accessibilityIdentifier = "bottomLoadingThreadViewController"
-        tableView.addSubview(bottomLoading)
-        
-        topLoading.animate(false)
+        bottomLoadingContainer.addSubview(self.bottomLoading)
         bottomLoading.animate(false)
-        let width: CGFloat = 28
+        tableView.tableFooterView = bottomLoadingContainer
+
         NSLayoutConstraint.activate([
-            topLoading.topAnchor.constraint(equalTo: tableView.topAnchor, constant: -(width + 8)),
-            topLoading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
-            topLoading.widthAnchor.constraint(equalToConstant: width),
-            topLoading.heightAnchor.constraint(equalToConstant: width),
-            
-            bottomLoading.bottomAnchor.constraint(equalTo: tableView.bottomAnchor, constant: -8),
-            bottomLoading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
-            bottomLoading.widthAnchor.constraint(equalToConstant: width),
-            bottomLoading.heightAnchor.constraint(equalToConstant: width)
+            topLoading.centerYAnchor.constraint(equalTo: topLoadingContainer.centerYAnchor),
+            topLoading.centerXAnchor.constraint(equalTo: topLoadingContainer.centerXAnchor),
+            topLoading.widthAnchor.constraint(equalToConstant: ThreadViewController.loadingViewWidth),
+            topLoading.heightAnchor.constraint(equalToConstant: ThreadViewController.loadingViewWidth),
+
+            bottomLoading.centerYAnchor.constraint(equalTo: bottomLoadingContainer.centerYAnchor),
+            bottomLoading.centerXAnchor.constraint(equalTo: bottomLoadingContainer.centerXAnchor),
+            bottomLoading.widthAnchor.constraint(equalToConstant: ThreadViewController.loadingViewWidth),
+            bottomLoading.heightAnchor.constraint(equalToConstant: ThreadViewController.loadingViewWidth)
         ])
     }
 
@@ -280,11 +284,22 @@ extension ThreadViewController: ThreadViewDelegate {
     }
 
     func lastMessageAppeared(_ appeared: Bool) {
-        moveToBottom.setVisibility(visible: !appeared)
+        DispatchQueue.main.async {
+            self.moveToBottom.setVisibility(visible: !appeared)
+            if self.viewModel?.scrollVM.isAtBottomOfTheList == true {
+                self.tableView.tableFooterView = nil
+            } else {
+                self.tableView.tableFooterView = self.bottomLoadingContainer
+            }
+        }
     }
 
     func startTopAnimation(_ animate: Bool) {
         DispatchQueue.main.async {
+            self.tableView.tableHeaderView?.isHidden = !animate
+            UIView.animate(withDuration: 0.25) {
+                self.tableView.tableHeaderView?.layoutIfNeeded()
+            }
             self.topLoading.animate(animate)
         }
     }
@@ -302,6 +317,10 @@ extension ThreadViewController: ThreadViewDelegate {
 
     func startBottomAnimation(_ animate: Bool) {
         DispatchQueue.main.async {
+            self.tableView.tableFooterView?.isHidden = !animate
+            UIView.animate(withDuration: 0.25) {
+                self.tableView.tableFooterView?.layoutIfNeeded()
+            }
             self.bottomLoading.animate(animate)
         }
     }

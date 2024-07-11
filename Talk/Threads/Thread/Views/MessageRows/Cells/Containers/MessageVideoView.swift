@@ -22,7 +22,7 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     private let playIcon: UIImageView = UIImageView()
     private let progressButton = CircleProgressButton(progressColor: Color.App.whiteUIColor,
                                                       iconTint: Color.App.whiteUIColor,
-                                                      lineWidth: 1,
+                                                      lineWidth: 1.5,
                                                       iconSize: .init(width: 12, height: 12),
                                                       margin: 2
     )
@@ -111,22 +111,26 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
         NSLayoutConstraint.activate([
             widthConstraint,
             heightAnchor.constraint(equalToConstant: height),
-            playOverlayView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            playOverlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            playOverlayView.topAnchor.constraint(equalTo: topAnchor),
-            playOverlayView.heightAnchor.constraint(equalTo: heightAnchor),
+
+            fileNameLabelTrailingConstarint,
+            fileNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
+            fileNameLabel.centerYAnchor.constraint(equalTo: progressButton.centerYAnchor),
+
             progressButton.widthAnchor.constraint(equalToConstant: progressButtonSize),
             progressButton.heightAnchor.constraint(equalToConstant: progressButtonSize),
             progressButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -margin),
             progressButton.topAnchor.constraint(equalTo: topAnchor, constant: margin),
-            
-            fileNameLabelTrailingConstarint,
-            fileNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
-            fileNameLabel.centerYAnchor.constraint(equalTo: progressButton.centerYAnchor),
+
             fileTypeLabel.trailingAnchor.constraint(equalTo: fileNameLabel.trailingAnchor),
             fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: verticalSpacing),
             fileSizeLabel.trailingAnchor.constraint(equalTo: fileTypeLabel.leadingAnchor, constant: -margin),
             fileSizeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: verticalSpacing),
+
+            playOverlayView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            playOverlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            playOverlayView.topAnchor.constraint(equalTo: topAnchor),
+            playOverlayView.heightAnchor.constraint(equalTo: heightAnchor),
+
             playIcon.widthAnchor.constraint(equalToConstant: playIconSize),
             playIcon.heightAnchor.constraint(equalToConstant: playIconSize),
             playIcon.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -179,13 +183,17 @@ final class MessageVideoView: UIView, AVPlayerViewControllerDelegate {
     }
 
     private var canShowProgress: Bool {
-        viewModel?.fileState.state == .downloading || viewModel?.fileState.isUploading == true
+        viewModel?.fileState.state == .downloading || viewModel?.fileState.isUploading == true || viewModel?.fileState.state == .undefined
     }
 
     public func downloadCompleted(viewModel: MessageRowViewModel) {
         updateProgress(viewModel: viewModel)
+        fileNameLabelTrailingConstarint.constant = progressButtonSize
         if let fileURL = viewModel.calMessage.fileURL {
             prepareUIForPlayback(url: fileURL)
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
         }
     }
 
