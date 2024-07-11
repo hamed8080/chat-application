@@ -19,6 +19,9 @@ public class MessageBaseCell: UITableViewCell {
     public private(set) var messageContainer: MessageContainerStackView!
     private var containerWidthConstraint: NSLayoutConstraint!
     private var messageContainerBottomConstraint: NSLayoutConstraint!
+    private var messageStackLeadingToRadioTrailingConstraint: NSLayoutConstraint!
+    private var messageStackLeadingToContainerLeadingConstarint: NSLayoutConstraint!
+    private var messageStackLeadingAvatarTrailingConstarint: NSLayoutConstraint?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -46,7 +49,10 @@ public class MessageBaseCell: UITableViewCell {
         if self is PartnerMessageCell {
             avatar = AvatarView(frame: .zero)
         }
+        setupConstraints(isMe: isMe)
+    }
 
+    private func setupConstraints(isMe: Bool) {
         messageContainer.translatesAutoresizingMaskIntoConstraints = false
         messageContainer.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
         messageContainer.accessibilityIdentifier = "messageContainerMessageBaseCell"
@@ -69,6 +75,12 @@ public class MessageBaseCell: UITableViewCell {
         } else {
             container.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
         }
+
+        if let avatar = avatar {
+            messageStackLeadingAvatarTrailingConstarint = messageContainer.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 8)
+        }
+        messageStackLeadingToRadioTrailingConstraint = messageContainer.leadingAnchor.constraint(equalTo: radio.trailingAnchor, constant: 0)
+        messageStackLeadingToContainerLeadingConstarint = messageContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 0)
     }
 
     private func attachOrDetachRadio(viewModel: MessageRowViewModel) {
@@ -101,13 +113,9 @@ public class MessageBaseCell: UITableViewCell {
     }
 
     private func attachOrDetachMessageContainer(viewModel: MessageRowViewModel) {
-        if !viewModel.calMessage.state.isInSelectMode, let avatar = avatar, viewModel.threadVM?.thread.group == true {
-            messageContainer.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 8).isActive = true
-        } else if viewModel.calMessage.state.isInSelectMode {
-            messageContainer.leadingAnchor.constraint(equalTo: radio.trailingAnchor, constant: 0).isActive = true
-        } else if viewModel.calMessage.isMe {
-            messageContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 0).isActive = true
-        }
+        messageStackLeadingAvatarTrailingConstarint?.isActive = canSnapToAvatar(viewModel: viewModel)
+        messageStackLeadingToRadioTrailingConstraint.isActive = viewModel.calMessage.state.isInSelectMode
+        messageStackLeadingToContainerLeadingConstarint.isActive = canSnapToContainer(viewModel: viewModel)
         messageContainer.set(viewModel)
         messageContainer.cell = self
         if viewModel.calMessage.isMe && !viewModel.calMessage.state.isInSelectMode {
@@ -115,6 +123,14 @@ public class MessageBaseCell: UITableViewCell {
         } else {
             containerWidthConstraint.constant = 53
         }
+    }
+
+    private func canSnapToAvatar(viewModel: MessageRowViewModel) -> Bool {
+        !viewModel.calMessage.state.isInSelectMode && viewModel.threadVM?.thread.group == true && avatar != nil && !viewModel.calMessage.state.isInSelectMode
+    }
+
+    private func canSnapToContainer(viewModel: MessageRowViewModel) -> Bool {
+        viewModel.calMessage.isMe && !viewModel.calMessage.state.isInSelectMode
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
