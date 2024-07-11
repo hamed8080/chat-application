@@ -114,7 +114,7 @@ public final class MentionListPickerViewModel {
                 let vm = ImageLoaderViewModel(config: config)
                 avatarVMS[participant.id ?? 0] = vm
                 vm.fetch()
-                vm.onImage = { [weak self] image in
+                vm.onImage = { [weak self, vm] image in
                     if vm.isImageReady {
                         self?.onImageParticipant?(participant)
                     }

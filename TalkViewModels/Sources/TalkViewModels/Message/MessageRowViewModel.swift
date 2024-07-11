@@ -55,7 +55,11 @@ public final class MessageRowViewModel: Identifiable, Hashable {
             threadVM?.uploadFileManager.register(message: message, viewModelUniqueId: uniqueId)
         }
         if fileState.state != .completed {
-            threadVM?.downloadFileManager.register(message: message, hasReplyImage: calMessage.isReplyImage)
+            threadVM?.downloadFileManager.register(message: message)
+        }
+        
+        if calMessage.isReplyImage && fileState.replyImage == nil {
+            threadVM?.downloadFileManager.registerIfReplyImage(vm: self)
         }
     }
 

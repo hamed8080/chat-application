@@ -30,7 +30,9 @@ public struct MessageFileState {
 
     mutating public func update(_ newState: MessageFileState) {
         let oldImage = preloadImage
+        let oldReplyImage = replyImage
         self = newState
+        replyImage = oldReplyImage
         if newState.state == .downloading, let oldImage = oldImage {
             preloadImage = oldImage
         } else if newState.state == .completed {
