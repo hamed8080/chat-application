@@ -12,9 +12,12 @@ import TalkUI
 import TalkModels
 
 public final class SelectionView: UIStackView {
+    // Views
     private let btnDelete = UIImageButton(imagePadding: .init(all: 10))
     private let lblCount = UILabel()
     private let lblStatic = UILabel()
+
+    // Models
     private weak var viewModel: ThreadViewModel?
 
     public init(viewModel: ThreadViewModel?) {
@@ -102,45 +105,41 @@ public final class SelectionView: UIStackView {
 
     private func set(stack: UIStackView) {
         guard let viewModel = viewModel else { return }
-        let show = viewModel.selectedMessagesViewModel.isInSelectMode
-        if show {
-            alpha = 0.0
-            stack.insertArrangedSubview(self, at: 0)
+        stack.insertArrangedSubview(self, at: 0)
+        setIsHidden(false)
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
         }
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            guard let self = self else { return }
-            setIsHidden(false)
-            UIView.animate(withDuration: 0.2) {
-                self.alpha = show ? 1.0 : 0.0
-                self.setIsHidden(!show)
-            }
-            btnDelete.setIsHidden(viewModel.thread.disableSend)
-            updateCount()
-        } completion: { completed in
-            if completed, !show {
-                self.removeFromSuperview()
-            }
-        }
+        btnDelete.setIsHidden(viewModel.thread.disableSend)
+        updateCount()
     }
 
     private func updateCount() {
         guard let viewModel = viewModel else { return }
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            guard let self = self else { return }
-            let count = viewModel.selectedMessagesViewModel.getSelectedMessages().count
-            lblCount.text = count.localNumber(locale: Language.preferredLocale) ?? ""
-        }
+        let count = viewModel.selectedMessagesViewModel.getSelectedMessages().count
+        lblCount.addFlipAnimation(text: count.localNumber(locale: Language.preferredLocale) ?? "")
     }
 
     private func onClose() {
         lblCount.text = ""
         viewModel?.delegate?.setSelection(false)
         viewModel?.selectedMessagesViewModel.clearSelection()
-        removeFromSuperview()
+        removeFromSuperViewWithAnimation()
     }
 
     public func update(stack: UIStackView) {
-        set(stack: stack) // attach it to the view
+        if self.superview == nil {
+            set(stack: stack) // attach it to the view
+        }
         updateCount()
+    }
+
+    public func show(show: Bool, stack: UIStackView) {
+        if show {
+            alpha = 1.0
+            set(stack: stack)
+        } else {
+            removeFromSuperViewWithAnimation()
+        }
     }
 }

@@ -128,7 +128,7 @@ public final class RecordedAudioView: UIStackView {
         let btnDelete = UIButton(type: .system)
         btnDelete.addTarget(self, action: #selector(deleteTapped), for: .touchUpInside)
         btnDelete.translatesAutoresizingMaskIntoConstraints = false
-        let deleteImage = UIImage(systemName: "trash")
+        let deleteImage = UIImage(named: "ic_delete")
         btnDelete.setImage(deleteImage, for: .normal)
         btnDelete.accessibilityIdentifier = "btnDeleteRecordedAudioView"
         btnDelete.tintColor = Color.App.textPrimaryUIColor

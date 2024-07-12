@@ -15,13 +15,19 @@ import ChatCore
 import Combine
 
 public final class MapPickerViewController: UIViewController {
+    // Views
     private let mapView = MKMapView()
     private let btnClose = UIButton(type: .system)
     private let btnSubmit = SubmitBottomButtonUIView(text: "General.add")
+    private let toastView = ToastUIView(message: AppErrorTypes.location_access_denied.localized, disableWidthConstraint: true)
+
+    // Models
     private var cancelablleSet = Set<AnyCancellable>()
-    private let toastView = ToastUIView(message: AppErrorTypes.location_access_denied.localized)
     private var locationManager: LocationManager = .init()
     public var viewModel: ThreadViewModel?
+
+    // Constarints
+    private var heightSubmitConstraint: NSLayoutConstraint!
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,12 +36,14 @@ public final class MapPickerViewController: UIViewController {
     }
 
     private func configureViews() {
-
+        let style: UIUserInterfaceStyle = AppSettingsModel.restore().isDarkModeEnabled == true ? .dark : .light
+        overrideUserInterfaceStyle = style
         mapView.translatesAutoresizingMaskIntoConstraints = false
         mapView.showsUserLocation = true
         mapView.showsCompass = true
         mapView.delegate = self
         mapView.accessibilityIdentifier = "mapViewMapPickerViewController"
+        mapView.overrideUserInterfaceStyle = style
         view.addSubview(mapView)
 
         btnClose.translatesAutoresizingMaskIntoConstraints = false
@@ -72,6 +80,7 @@ public final class MapPickerViewController: UIViewController {
         toastView.setIsHidden(true)
         view.addSubview(toastView)
 
+        heightSubmitConstraint = btnSubmit.heightAnchor.constraint(greaterThanOrEqualToConstant: 64)
         NSLayoutConstraint.activate([
             toastView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             toastView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -87,9 +96,15 @@ public final class MapPickerViewController: UIViewController {
             mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             btnSubmit.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             btnSubmit.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            btnSubmit.heightAnchor.constraint(equalToConstant: 64),
-            btnSubmit.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24),
+            heightSubmitConstraint,
+            btnSubmit.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
         ])
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let margin: CGFloat = view.safeAreaInsets.bottom > 0 ? 16 : 0
+        heightSubmitConstraint.constant = 64 + margin
     }
 
     private func registerObservers() {

@@ -75,6 +75,7 @@ public final class ToastUIView: UIStackView {
     private let messageFont: UIFont
     private let messageColor: UIColor
     private let leadingView: UIView?
+    private let disableWidthConstraint: Bool
 
     public init(title: String? = nil,
                 titleColor: UIColor = Color.App.textPrimaryUIColor!,
@@ -82,7 +83,9 @@ public final class ToastUIView: UIStackView {
                 messageColor: UIColor = Color.App.redUIColor!,
                 titleFont: UIFont = .uiiransansBoldBody!,
                 messageFont: UIFont = .uiiransansCaption!,
-                leadingView: UIView? = nil)
+                leadingView: UIView? = nil,
+                disableWidthConstraint: Bool = false
+    )
     {
         self.title = title
         self.titleColor = titleColor
@@ -91,6 +94,7 @@ public final class ToastUIView: UIStackView {
         self.titleFont = titleFont
         self.messageFont = messageFont
         self.messageColor = messageColor
+        self.disableWidthConstraint = disableWidthConstraint
         super.init(frame: .zero)
         configureView()
     }
@@ -132,7 +136,6 @@ public final class ToastUIView: UIStackView {
         messageLabel.font = messageFont
         messageLabel.text = String(localized: .init(message))
         hStack.addArrangedSubview(messageLabel)
-
         addArrangedSubview(hStack)
 
         NSLayoutConstraint.activate([
@@ -140,8 +143,11 @@ public final class ToastUIView: UIStackView {
             effetcView.trailingAnchor.constraint(equalTo: trailingAnchor),
             effetcView.topAnchor.constraint(equalTo: topAnchor),
             effetcView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            widthAnchor.constraint(lessThanOrEqualToConstant: 380),
         ])
+
+        if !disableWidthConstraint {
+            widthAnchor.constraint(lessThanOrEqualToConstant: 380).isActive = true
+        }
     }
 }
 

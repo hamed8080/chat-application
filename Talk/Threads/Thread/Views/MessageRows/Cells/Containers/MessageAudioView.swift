@@ -173,7 +173,7 @@ final class MessageAudioView: UIView {
         let progress = viewModel.fileState.progress
         let icon = viewModel.fileState.iconState
         let canShowDownloadUpload = viewModel.fileState.state != .completed
-        progressButton.animate(to: progress, systemIconName: canShowDownloadUpload ? icon : playingIcon ?? "")
+        progressButton.animate(to: progress, systemIconName: canShowDownloadUpload ? icon : playingIcon)
         progressButton.setProgressVisibility(visible: canShowProgress)
     }
 
@@ -200,7 +200,7 @@ final class MessageAudioView: UIView {
 
     func registerOnTap() {
         audioVM.$currentTime.sink { [weak self] newValue in
-            guard let self = self else { return }
+            guard let self = self, isSameFile else { return }
             let progress = min(audioVM.currentTime / audioVM.duration, 1.0)
             let normalized = progress.isNaN ? 0.0 : Float(progress)
             playerProgress.setProgress(normalized, animated: true)
@@ -209,9 +209,10 @@ final class MessageAudioView: UIView {
         .store(in: &cancellableSet)
 
         audioVM.$isPlaying.sink { [weak self] isPlaying in
+            guard let self = self, isSameFile else { return }
             let image = isPlaying ? "pause.fill" : "play.fill"
-            self?.progressButton.animate(to: 1.0, systemIconName: image)
-            self?.progressButton.setProgressVisibility(visible: false)
+            progressButton.animate(to: 1.0, systemIconName: image)
+            progressButton.setProgressVisibility(visible: false)
         }
         .store(in: &cancellableSet)
 
@@ -227,8 +228,8 @@ final class MessageAudioView: UIView {
         isSameFile ? "\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")" : " " // We use space to prevent the text collapse
     }
 
-    var playingIcon: String? {
-        if !isSameFile { return nil }
+    var playingIcon: String {
+        if !isSameFile { return "play.fill" }
         return audioVM.isPlaying ? "pause.fill" : "play.fill"
     }
 }

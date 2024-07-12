@@ -12,11 +12,16 @@ import TalkModels
 import SwiftUI
 
 public class MessageBaseCell: UITableViewCell {
-    weak var viewModel: MessageRowViewModel?
+    // Views
     private let container = UIView()
     private var avatar: AvatarView?
     private let radio = SelectMessageRadio()
     public private(set) var messageContainer: MessageContainerStackView!
+
+    // Models
+    weak var viewModel: MessageRowViewModel?
+
+    // Constraints
     private var containerWidthConstraint: NSLayoutConstraint!
     private var messageContainerBottomConstraint: NSLayoutConstraint!
     private var messageStackLeadingToRadioTrailingConstraint: NSLayoutConstraint!
@@ -100,11 +105,7 @@ public class MessageBaseCell: UITableViewCell {
             self.avatar?.translatesAutoresizingMaskIntoConstraints = false
             self.avatar?.accessibilityIdentifier = "avatarContainerMessageBaseCell"
             container.addSubview(avatar)
-            if viewModel.calMessage.isMe {
-                avatar.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8).isActive = true
-            } else {
-                avatar.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8).isActive = true
-            }
+            avatar.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8).isActive = true
             avatar.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8).isActive = true
         } else if avatar?.superview != nil, viewModel.calMessage.state.isInSelectMode {
             avatar?.removeFromSuperview()

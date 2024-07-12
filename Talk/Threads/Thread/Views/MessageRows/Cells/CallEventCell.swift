@@ -13,12 +13,15 @@ import TalkViewModels
 import UIKit
 
 final class CallEventCell: UITableViewCell {
+    // Views
     private let stack = UIStackView()
-    private static let startCallImage = UIImage(systemName: "phone.arrow.up.right.fill")
-    private static let endCallImage = UIImage(systemName: "phone.down.fill")
     private var statusImage = UIImageView(image: CallEventCell.startCallImage)
     private let dateLabel = UILabel()
     private let typeLabel = UILabel()
+
+    // Models
+    private static let startCallImage = UIImage(systemName: "phone.arrow.up.right.fill")
+    private static let endCallImage = UIImage(systemName: "phone.down.fill")
     private static let startStaticText = "Thread.callStarted".localized()
     private static let endStaticText = "Thread.callEnded".localized()
 

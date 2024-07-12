@@ -108,7 +108,7 @@ public final class ThreadBottomToolbar: UIStackView {
     }
 
     public func showSelectionBar(_ show: Bool) {
-        selectionView.update(stack: self)
+        selectionView.show(show: show, stack: self)
     }
 
     public func updateSelectionBar() {
@@ -124,7 +124,6 @@ public final class ThreadBottomToolbar: UIStackView {
     }
 
     public func updateHeightWithDelay() {
-        guard let viewModel = viewModel else { return }
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             onUpdateHeight?(frame.height)
