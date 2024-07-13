@@ -268,6 +268,8 @@ extension MessageContainerStackView {
     public func prepareForContextMenu(userInterfaceStyle: UIUserInterfaceStyle) {
         overrideUserInterfaceStyle = userInterfaceStyle
         let isMe = viewModel?.calMessage.isMe == true
+        gestureRecognizers?.removeAll() // remove add menu gesture to prevent reopen the context menu while we are one.
+
         isUserInteractionEnabled = true
         forwardMessageRow.isUserInteractionEnabled = false
         replyInfoMessageRow.isUserInteractionEnabled = false

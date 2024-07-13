@@ -41,7 +41,6 @@ public class ContextMenuContainerView: UIView {
 
         self.isHidden = true
         alpha = 0.0
-        isUserInteractionEnabled = true
 
         scrollView.backgroundColor = .clear
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -51,6 +50,7 @@ public class ContextMenuContainerView: UIView {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideAndCall))
+        tapGesture.cancelsTouchesInView = false
         contentView.addGestureRecognizer(tapGesture)
 
         // Constraints for effectView
@@ -97,7 +97,6 @@ public class ContextMenuContainerView: UIView {
 
     public func show() {
         self.vc?.view.addSubview(self)
-        isUserInteractionEnabled = true
         self.isHidden = false
         alpha = 0.0
         disableScrollToTopForBehindScrollViews(disable: true)
@@ -114,7 +113,6 @@ public class ContextMenuContainerView: UIView {
     }
 
     @objc public func hide() {
-        isUserInteractionEnabled = false
         disableScrollToTopForBehindScrollViews(disable: false)
         UIView.animate(withDuration: 0.2) {
             self.alpha = 0.0

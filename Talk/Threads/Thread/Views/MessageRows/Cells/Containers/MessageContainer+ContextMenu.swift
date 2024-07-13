@@ -13,8 +13,8 @@ fileprivate struct Constants {
     static let space: CGFloat = 8
     static let margin: CGFloat = 8
     static let menuWidth: CGFloat = 256
-    static let reactionWidth: CGFloat = 256
-    static let reactionHeight: CGFloat = 52
+    static let reactionWidth: CGFloat = 320
+    static let reactionHeight: CGFloat = 38
     static let scaleDownOnTouch: CGFloat = 0.98
     static let scaleDownAnimationDuration = 0.2
     static let scaleUPAnimationDuration = 0.1
@@ -149,6 +149,8 @@ extension MessageContainerStackView {
         messageContainer.set(viewModel)
         messageContainer.prepareForContextMenu(userInterfaceStyle: traitCollection.userInterfaceStyle)
         messageContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(faketapGesture)))
+
+        addAnimation(messageContainer)
         return messageContainer
     }
 
@@ -158,7 +160,27 @@ extension MessageContainerStackView {
         menu.frame.origin.x = sizes.menuX
         menu.frame.size.width = Constants.menuWidth
         menu.frame.size.height = menu.height()
+
+        addAnimation(menu)
         return menu
+    }
+
+    private func addAnimation(_ view: UIView) {
+        let fadeAnim = CABasicAnimation(keyPath: "opacity")
+        fadeAnim.fromValue = 0.2
+        fadeAnim.toValue = 1.0
+        fadeAnim.duration = 0.25
+        fadeAnim.timingFunction = CAMediaTimingFunction.init(name: .easeInEaseOut)
+        view.layer.add(fadeAnim, forKey: "opacity")
+
+        let springAnim = CASpringAnimation(keyPath: "transform.scale")
+        springAnim.mass = 0.8
+        springAnim.damping = 10
+        springAnim.stiffness = 100
+        springAnim.duration = 0.25
+        springAnim.fromValue = 0
+        springAnim.toValue = 1
+        view.layer.add(springAnim, forKey: "springAnim")
     }
 
     private func createReaction(_ viewModel: MessageRowViewModel, _ sizes: Constants.Sizes, _ messageContainer: MessageContainerStackView) -> UIReactionsPickerScrollView {
@@ -175,6 +197,7 @@ extension MessageContainerStackView {
         reactionsView.isUserInteractionEnabled = canReact
         reactionsView.isHidden = !canReact
 
+        addAnimation(reactionsView)
         return reactionsView
     }
 
