@@ -24,6 +24,7 @@ class UIReactionsPickerScrollView: UIView {
     private var dataSource: UICollectionViewDiffableDataSource<Section, ExpandORStickerRow>!
     private var isInExapndMode = false
     private var rows: [ExpandORStickerRow] = []
+    private let numberOfReactionsInRow: CGFloat = 5
 
     enum Section {
         case main
@@ -88,18 +89,24 @@ class UIReactionsPickerScrollView: UIView {
     }
 
     private func createlayout() -> UICollectionViewLayout {
+        let sectionInsetLeading: CGFloat = 16
+        let sectionInsetTrailing: CGFloat = 4
+        let reactionWidth: CGFloat = 320 - (sectionInsetLeading + sectionInsetTrailing)
+        let reactionCountWithExpand = numberOfReactionsInRow + 1
+        let extraItemForSpacing: CGFloat = 1.0
+        let trailingMarging: CGFloat = (reactionWidth / (reactionCountWithExpand + extraItemForSpacing)) / (reactionCountWithExpand)
+        let fraction = 1.0 / (reactionCountWithExpand + extraItemForSpacing)
 
-        let trailingMarging: CGFloat = 8
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.10), heightDimension: .fractionalHeight(1.0))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(fraction), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.edgeSpacing = .init(leading: .fixed(0), top: .fixed(0), trailing: .fixed(trailingMarging), bottom: .fixed(0))
 
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.10))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(fraction))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         group.edgeSpacing = .init(leading: .fixed(0), top: .fixed(0), trailing: .fixed(0), bottom: .fixed(8))
 
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .init(top: 4, leading: 4, bottom: 4, trailing: 4)
+        section.contentInsets = .init(top: 4, leading: sectionInsetLeading, bottom: 4, trailing: sectionInsetTrailing)
 
         let layout = UICollectionViewCompositionalLayout(section: section)
 
@@ -136,7 +143,7 @@ class UIReactionsPickerScrollView: UIView {
             
             snapshot.appendItems(rows)
         } else {
-            let stickers = Sticker.allCases.filter({$0 != .unknown}).prefix(7).compactMap({ ExpandORStickerRow(sticker: $0, expandButton: false)})
+            let stickers = Sticker.allCases.filter({$0 != .unknown}).prefix(Int(numberOfReactionsInRow)).compactMap({ ExpandORStickerRow(sticker: $0, expandButton: false)})
             rows.append(contentsOf: stickers)
 
             let expandButtonRow = ExpandORStickerRow(sticker: nil, expandButton: true)
@@ -214,5 +221,27 @@ final class UIReactionPickerRowCell: UICollectionViewCell {
         let colorsConfig = UIImage.SymbolConfiguration(paletteColors: [.white, .gray.withAlphaComponent(0.5)])
         let config = UIImage.SymbolConfiguration(font: UIFont.systemFont(ofSize: 14))
         imageView.image = UIImage(systemName: "chevron.down.circle.fill", withConfiguration: config.applying(colorsConfig))
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        UIView.animate(withDuration: 0.2, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 2) {
+            self.imageView.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        }
+        UIImpactFeedbackGenerator(style: .rigid).impactOccurred(intensity: 1.0)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+            UIView.animate(withDuration: 0.2) {
+            self.imageView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+        }
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        UIView.animate(withDuration: 0.2) {
+            self.imageView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+        }
     }
 }

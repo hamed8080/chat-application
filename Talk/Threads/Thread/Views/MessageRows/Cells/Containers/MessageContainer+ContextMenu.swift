@@ -14,7 +14,7 @@ fileprivate struct Constants {
     static let margin: CGFloat = 8
     static let menuWidth: CGFloat = 256
     static let reactionWidth: CGFloat = 320
-    static let reactionHeight: CGFloat = 38
+    static let reactionHeight: CGFloat = 50
     static let scaleDownOnTouch: CGFloat = 0.98
     static let scaleDownAnimationDuration = 0.2
     static let scaleUPAnimationDuration = 0.1
@@ -90,6 +90,7 @@ extension MessageContainerStackView {
         let menu = createMenu(viewModel, indexPath, messageContainer, sizes)
         scrollViewContainer.addSubview(menu)
 
+        scrollViewContainer.bringSubviewToFront(reactionBarView) // Expand mode in reactions
         animateToRightVerticalPosition(sizes, reactionBarView, messageContainer, menu)
 
         return scrollViewContainer
