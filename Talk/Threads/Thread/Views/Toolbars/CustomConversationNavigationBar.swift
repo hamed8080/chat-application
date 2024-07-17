@@ -227,6 +227,10 @@ public class CustomConversationNavigationBar: UIView {
                 updateImageTo(newImage)
             }
             .store(in: &cancellableSet)
+
+            if !imageViewModel.isImageReady {
+                imageViewModel.fetch()
+            }
         } else {
             Task {
                 await setSplitedText()
