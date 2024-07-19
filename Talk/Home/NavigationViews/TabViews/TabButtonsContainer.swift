@@ -11,11 +11,34 @@ import TalkUI
 struct TabButtonsContainer: View {
     @Binding var selectedId: String
     let tabs: [TabItem]
+    let scrollable: Bool
 
     var body: some View {
+        if scrollable {
+            scrollableContainer
+        } else {
+            hSatckContainer
+                .frame(height: 36)
+                .padding(EdgeInsets(top: 16, leading: 0, bottom: 4, trailing: 0))
+                .background(MixMaterialBackground().ignoresSafeArea())
+        }
+    }
+
+    private var scrollableContainer: some View {
+        ScrollView(.horizontal) {
+            hSatckContainer
+        }
+        .frame(height: 36)
+        .padding(EdgeInsets(top: 16, leading: 0, bottom: 4, trailing: 0))
+        .background(MixMaterialBackground().ignoresSafeArea())
+    }
+
+    private var hSatckContainer: some View {
         HStack {
             ForEach(tabs) { tab in
-                Spacer()
+                if !scrollable {
+                    Spacer()
+                }
                 TabButtonItem(title: tab.title,
                               image: tab.image,
                               imageView: tab.tabImageView,
@@ -26,18 +49,16 @@ struct TabButtonsContainer: View {
                     selectedId = tab.title
                     NotificationCenter.selectTab.post(name: .selectTab, object: tab.title)
                 }
-                Spacer()
+                if !scrollable {
+                    Spacer()
+                }
             }
         }
-        .frame(minWidth: 0, maxWidth: .infinity)
-        .frame(height: 36)
-        .padding(EdgeInsets(top: 16, leading: 0, bottom: 4, trailing: 0))
-        .background(MixMaterialBackground().ignoresSafeArea())
     }
 }
 
 struct TabItems_Previews: PreviewProvider {
     static var previews: some View {
-        TabButtonsContainer(selectedId: .constant(""), tabs: [])
+        TabButtonsContainer(selectedId: .constant(""), tabs: [], scrollable: false)
     }
 }

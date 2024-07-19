@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabContainerConfig {
     let alignment: Alignment
+    let scrollable: Bool
 }
 
 struct TabItem: Identifiable {
@@ -44,8 +45,6 @@ struct TabContainerView: View {
     let iPadMaxAllowedWidth: CGFloat
     let isIpad: Bool = UIDevice.current.userInterfaceIdiom == .pad
     var maxWidth: CGFloat { sizeClass == .compact || !isIpad ? .infinity : iPadMaxAllowedWidth }
-    /// We need to get min because in if maxWidth is equal to '.infinity' it is always bigger than all views.
-    var computedWidth: CGFloat { min(maxWidth, iPadMaxAllowedWidth) }
     @State var selectedId: String
     let tabs: [TabItem]
     let config: TabContainerConfig
@@ -73,7 +72,7 @@ struct TabContainerView: View {
                 }
             }
             .safeAreaInset(edge: config.alignment == .bottom ? .bottom : .top, spacing: 0) {
-                TabButtonsContainer(selectedId: $selectedId, tabs: tabs)
+                TabButtonsContainer(selectedId: $selectedId, tabs: tabs, scrollable: config.scrollable)
                     .environment(\.layoutDirection, .leftToRight)
             }
         }
@@ -87,6 +86,6 @@ struct TabContainerView: View {
 
 struct SideBar_Previews: PreviewProvider {
     static var previews: some View {
-        TabContainerView(iPadMaxAllowedWidth: 400, selectedId: "chats", tabs: [], config: .init(alignment: .bottom))
+        TabContainerView(iPadMaxAllowedWidth: 400, selectedId: "chats", tabs: [], config: .init(alignment: .bottom, scrollable: false))
     }
 }

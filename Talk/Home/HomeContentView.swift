@@ -127,7 +127,7 @@ struct SplitViewContent: View {
                     title: "Tab.settings"
                 )
             ],
-            config: .init(alignment: .bottom), onSelectedTab: { selectedTabId in
+            config: .init(alignment: .bottom, scrollable: false), onSelectedTab: { selectedTabId in
                 if selectedTabId != "Tab.chats", !AppState.shared.objectsContainer.searchVM.searchText.isEmpty {
                     AppState.shared.objectsContainer.searchVM.searchText = ""
                     AppState.shared.objectsContainer.contactsVM.searchContactString = ""

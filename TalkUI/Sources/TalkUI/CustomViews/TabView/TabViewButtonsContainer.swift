@@ -24,40 +24,7 @@ public struct TabViewButtonsContainer: View {
             HStack {
                 HStack(spacing: 28) {
                     ForEach(tabs) { tab in
-                        let index = tabs.firstIndex(where: { $0.title == tab.title })
-                        Button {
-                            selectedTabIndex = index ?? 0
-                        } label: {
-                            VStack(spacing: 6) {
-                                HStack(spacing: 8) {
-                                    if let icon = tab.icon {
-                                        Image(systemName: icon)
-                                            .frame(width: 24, height: 24)
-                                            .foregroundColor(Color.App.textSecondary)
-                                            .fixedSize()
-                                    }
-                                    Text(tab.title)
-                                        .font(index == selectedTabIndex ? .iransansBoldCaption : .iransansCaption)
-                                        .fixedSize()
-                                        .foregroundStyle(index == selectedTabIndex ? Color.App.textPrimary : Color.App.textSecondary)
-                                }
-                                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
-
-                                if index == selectedTabIndex {
-                                    Rectangle()
-                                        .fill(Color.App.accent)
-                                        .frame(height: 3)
-                                        .cornerRadius(2, corners: [.topLeft, .topRight])
-                                        .matchedGeometryEffect(id: "DetailTabSeparator", in: id)
-                                }
-                            }
-                            .frame(height: 48)
-                            .contentShape(Rectangle())
-                            .fixedSize(horizontal: true, vertical: true)
-                        }
-                        .buttonStyle(.plain)
-                        .frame(height: 48)
-                        .contentShape(Rectangle())
+                        tabButton(for: tab)
                     }
                 }
                 .animation(.spring(), value: selectedTabIndex)
@@ -72,8 +39,62 @@ public struct TabViewButtonsContainer: View {
     private var frameReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                width = reader.size.width
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    width = reader.size.width
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private func tabButton(for tab: Tab) -> some View {
+        let index = tabs.firstIndex(where: { $0.title == tab.title })
+        Button {
+            selectedTabIndex = index ?? 0
+        } label: {
+            VStack(spacing: 6) {
+                HStack(spacing: 8) {
+                    iconView(tab: tab)
+                    titleView(tab: tab, index: index)
+                }
+                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+
+                selectedTabBar(index: index)
+            }
+            .frame(height: 48)
+            .contentShape(Rectangle())
+            .fixedSize(horizontal: true, vertical: true)
+        }
+        .buttonStyle(.plain)
+        .frame(height: 48)
+        .contentShape(Rectangle())
+    }
+
+    @ViewBuilder
+    private func selectedTabBar(index: Int?) -> some View {
+        if index == selectedTabIndex {
+            Rectangle()
+                .fill(Color.App.accent)
+                .frame(height: 3)
+                .cornerRadius(2, corners: [.topLeft, .topRight])
+                .matchedGeometryEffect(id: "DetailTabSeparator", in: id)
+        }
+    }
+
+    private func titleView(tab: Tab, index: Int?) -> some View {
+        Text(tab.title)
+            .font(index == selectedTabIndex ? .iransansBoldCaption : .iransansCaption)
+            .fixedSize()
+            .foregroundStyle(index == selectedTabIndex ? Color.App.textPrimary : Color.App.textSecondary)
+    }
+
+    @ViewBuilder
+    private func iconView(tab: Tab) -> some View {
+        if let icon = tab.icon {
+            Image(systemName: icon)
+                .frame(width: 24, height: 24)
+                .foregroundColor(Color.App.textSecondary)
+                .fixedSize()
         }
     }
 }
