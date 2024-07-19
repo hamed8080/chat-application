@@ -21,6 +21,7 @@ public protocol HistoryScrollDelegate: AnyObject, HistoryEmptyDelegate {
     func inserted(_ sections: IndexSet, _ rows: [IndexPath], _ animate :UITableView.RowAnimation, _ scrollTo: IndexPath?)
     func removed(at: IndexPath)
     func removed(at: [IndexPath])
+    func moveRow(at: IndexPath, to: IndexPath)
     func edited(_ indexPath: IndexPath)
     func pinChanged(_ indexPath: IndexPath)
     func sent(_ indexPath: IndexPath)

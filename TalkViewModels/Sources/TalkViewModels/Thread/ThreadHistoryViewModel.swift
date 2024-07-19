@@ -584,11 +584,29 @@ extension ThreadHistoryViewModel {
     public func onNewMessage(_ message: Message) async {
         if let viewModel = viewModel, isLastMessageInsideTheSections() {
             await updateConversationPropertiesOnNewMessage(message)
+            let currentIndexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "")
             let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
             setSeenForAllOlderMessages(newMessage: message)
             await viewModel.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
             await setIsEmptyThread()
             await vm.register()
+            sortAndMoveRowIfNeeded(message: message, currentIndexPath: currentIndexPath)
+        }
+    }
+
+    /*
+     We use this method in new messages due to the fact that, if we are uploading multiple files/pictures...
+     we don't know when the upload message will be completed, thus it's essential to sort them and then check if the row has been moved after sorting.
+     We use Task because it is essential for views to reload properly then sort and move them.
+    */
+    private func sortAndMoveRowIfNeeded(message: Message, currentIndexPath: IndexPath?) {
+        Task {
+            sort()
+            let newIndexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "")
+            if let currentIndexPath = currentIndexPath, let newIndexPath = newIndexPath, currentIndexPath != newIndexPath {
+                delegate?.moveRow(at: currentIndexPath, to: newIndexPath)
+                await viewModel?.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
+            }
         }
     }
 

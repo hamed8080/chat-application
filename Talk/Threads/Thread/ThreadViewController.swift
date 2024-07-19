@@ -526,6 +526,13 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
+    func moveRow(at: IndexPath, to: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            tableView.moveRow(at: at, to: to)
+        }
+    }
+
     func reloadData(at: IndexPath) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
