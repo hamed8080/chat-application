@@ -332,6 +332,8 @@ class MessageRowCalculators {
                               selectedEmojiTabId: selectedEmojiTabId))
         }
 
+        rows = rows.sorted(by: {$0.isMyReaction != $1.isMyReaction})
+
         let topPadding: CGFloat = reactions.summary.count > 0 ? 10 : 0
         let myReactionSticker = reactions.currentUserReaction?.reaction
         return ReactionRowsCalculated(rows: rows, topPadding: topPadding, myReactionSticker: myReactionSticker)

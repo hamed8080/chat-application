@@ -19,7 +19,7 @@ final class FooterView: UIStackView {
     private let timelabel = UILabel()
     private let editedLabel = UILabel()
     private let statusImage = UIImageView()
-    private let reactionView: ReactionCountScrollView
+    private let reactionView: FooterReactionsCountView
 
     // Models
     private static let staticEditString = "Messages.Footer.edited".localized()
@@ -87,6 +87,8 @@ final class FooterView: UIStackView {
         timelabel.accessibilityIdentifier = "timelabelFooterView"
         timelabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         timelabel.isOpaque = true
+        timelabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        timelabel.setContentHuggingPriority(.required, for: .horizontal)
         addArrangedSubview(timelabel)
 
         editedLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -95,6 +97,8 @@ final class FooterView: UIStackView {
         editedLabel.text = FooterView.staticEditString
         editedLabel.accessibilityIdentifier = "editedLabelFooterView"
         editedLabel.backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
+        editedLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        editedLabel.setContentHuggingPriority(.required, for: .horizontal)
         editedLabel.isOpaque = true
 
         heightConstraint = heightAnchor.constraint(equalToConstant: heightWithReaction)

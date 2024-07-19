@@ -1,5 +1,5 @@
 //
-//  ReactionCountScrollView.swift
+//  FooterReactionsCountView.swift
 //  Talk
 //
 //  Created by hamed on 8/22/23.
@@ -12,10 +12,7 @@ import Chat
 import TalkUI
 import TalkModels
 
-final class ReactionCountScrollView: UIScrollView {
-    // Views
-    private let stack = UIStackView()
-
+final class FooterReactionsCountView: UIStackView {
     // Sizes
     private let maxReactionsToShow: Int = 4
     private let height: CGFloat = 28
@@ -26,48 +23,36 @@ final class ReactionCountScrollView: UIScrollView {
         configureView(isMe: isMe)
     }
 
-    required init?(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     private func configureView(isMe: Bool) {
         translatesAutoresizingMaskIntoConstraints = false
-        layoutMargins = .init(horizontal: margin)
+        axis = .horizontal
+        spacing = 4
+        alignment = .fill
+        distribution = .fillProportionally
         semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
-
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .horizontal
-        stack.spacing = 4
-        stack.alignment = .fill
-        stack.distribution = .fillProportionally
-        stack.semanticContentAttribute = isMe ? .forceRightToLeft : .forceLeftToRight
-        stack.accessibilityIdentifier = "stackReactionCountScrollView"
+        accessibilityIdentifier = "stackReactionCountScrollView"
 
         for _ in (0..<maxReactionsToShow) {
             let rowViewPlaceHolder = ReactionCountRowView(frame: .zero, isMe: isMe)
-            stack.addArrangedSubview(rowViewPlaceHolder)
+            addArrangedSubview(rowViewPlaceHolder)
         }
-
-        addSubview(stack)
 
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: height),
-            stack.widthAnchor.constraint(equalTo: widthAnchor),
-            stack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: topAnchor),
-            stack.bottomAnchor.constraint(equalTo: bottomAnchor),
-            stack.heightAnchor.constraint(equalTo: heightAnchor),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         let rows = viewModel.reactionsModel.rows
-        stack.subviews.forEach { reaction in
+        subviews.forEach { reaction in
             reaction.setIsHidden(true)
         }
         for (index ,row) in rows.enumerated() {
-            if stack.subviews.indices.contains(where: {$0 == index}), let rowView = stack.subviews[index] as? ReactionCountRowView {
+            if subviews.indices.contains(where: {$0 == index}), let rowView = subviews[index] as? ReactionCountRowView {
                 rowView.setIsHidden(false)
                 rowView.viewModel = viewModel
                 rowView.setValue(row: row)

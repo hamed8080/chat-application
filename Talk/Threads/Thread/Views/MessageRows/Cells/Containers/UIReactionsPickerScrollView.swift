@@ -14,6 +14,7 @@ import TalkViewModels
 
 public struct ExpandORStickerRow: Hashable {
     let sticker: Sticker?
+    let isMyReaction: Bool
     let expandButton: Bool
 }
 
@@ -122,6 +123,10 @@ class UIReactionsPickerScrollView: UIView {
             } else if row.expandButton {
                 cell?.setExpendButton()
             }
+            cell?.backgroundColor = row.isMyReaction ? UIColor.gray.withAlphaComponent(0.9) : .clear
+            cell?.layer.cornerRadius = row.isMyReaction ? (cell?.frame.height ?? 20) / 2 : 0
+            cell?.layer.masksToBounds = row.isMyReaction
+
             return cell
         }
     }
@@ -138,21 +143,26 @@ class UIReactionsPickerScrollView: UIView {
 
             rows.removeAll()
 
-            let stickers = Sticker.allCases.filter({$0 != .unknown}).compactMap({ ExpandORStickerRow(sticker: $0, expandButton: false)})
+            let stickers = Sticker.allCases.filter({$0 != .unknown}).compactMap({ ExpandORStickerRow(sticker: $0, isMyReaction: isMyReaction($0), expandButton: false)})
             rows.append(contentsOf: stickers)
             
             snapshot.appendItems(rows)
         } else {
-            let stickers = Sticker.allCases.filter({$0 != .unknown}).prefix(Int(numberOfReactionsInRow)).compactMap({ ExpandORStickerRow(sticker: $0, expandButton: false)})
+            let stickers = Sticker.allCases.filter({$0 != .unknown}).prefix(Int(numberOfReactionsInRow)).compactMap({ ExpandORStickerRow(sticker: $0, isMyReaction: isMyReaction($0), expandButton: false)})
             rows.append(contentsOf: stickers)
 
-            let expandButtonRow = ExpandORStickerRow(sticker: nil, expandButton: true)
+            let expandButtonRow = ExpandORStickerRow(sticker: nil, isMyReaction: false, expandButton: true)
             rows.append(expandButtonRow)
 
             snapshot.appendItems(rows)
         }
 
         dataSource.apply(snapshot, animatingDifferences: true)
+    }
+
+    func isMyReaction(_ sticker: Sticker) -> Bool {
+        guard let myReactionStciker = viewModel?.reactionsModel.rows.first(where: {$0.isMyReaction}) else { return false }
+        return myReactionStciker.sticker?.rawValue == sticker.rawValue
     }
 
     @objc private func fakeGesture(_ sender: UIGestureRecognizer) {
@@ -177,6 +187,8 @@ extension UIReactionsPickerScrollView: UICollectionViewDelegate {
 final class UIReactionPickerRowCell: UICollectionViewCell {
     private let imageView = UIImageView()
 
+    private let margin: CGFloat = 4
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -192,10 +204,10 @@ final class UIReactionPickerRowCell: UICollectionViewCell {
         contentView.addSubview(imageView)
 
         NSLayoutConstraint.activate([
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: margin),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor , constant: -margin),
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: margin),
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -margin),
         ])
     }
 
