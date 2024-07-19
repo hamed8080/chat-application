@@ -594,12 +594,12 @@ extension ThreadHistoryViewModel {
 
     /*
      Check if we have the last message in our list,
-     It'd useful in case of onNewMessage to chekc if we have move to time or not.
+     It'd useful in case of onNewMessage to check if we have move to time or not.
      */
     private func isLastMessageInsideTheSections() -> Bool {
-        let hasUploadMessages = sections.last?.vms.compactMap({$0.message is UploadProtocol}).count ?? 0 > 0
+        let hasAnyUploadMessage = viewModel?.uploadMessagesViewModel.hasAnyUploadMessage() ?? false
         let isLastMessageExistInLastSection = sections.last?.vms.last?.message.id == thread.lastMessageVO?.id
-        return isLastMessageExistInLastSection || hasUploadMessages
+        return isLastMessageExistInLastSection || hasAnyUploadMessage
     }
 
     private func insertOrUpdateMessageViewModelOnNewMessage(_ message: Message, _ viewModel: ThreadViewModel) async -> MessageRowViewModel {

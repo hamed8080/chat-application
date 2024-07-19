@@ -71,6 +71,16 @@ public final class ThreadUploadMessagesViewModel {
         }
     }
 
+    public func hasAnyUploadMessage() -> Bool {
+        let hasUploadMessages = viewModel?.historyVM.sections.last?.vms
+            .filter{$0.message is UploadProtocol}.count ?? 0 > 0
+        return hasUploadMessages
+    }
+
+    public func lastUploadingViewModel() -> MessageRowViewModel? {
+        return viewModel?.historyVM.sections.last?.vms.last(where: {$0.message is UploadProtocol})
+    }
+
     internal func cancelAllObservers() {
         cancelable.forEach { cancelable in
             cancelable.cancel()

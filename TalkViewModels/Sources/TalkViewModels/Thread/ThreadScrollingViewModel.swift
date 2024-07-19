@@ -59,9 +59,19 @@ public final class ThreadScrollingViewModel {
     }
 
     public func scrollToLastMessageOnlyIfIsAtBottom() async {
-        if isAtBottomOfTheList, let message = viewModel?.thread.lastMessageVO?.toMessage, let uniqueId = message.uniqueId {
+        let message = lastMessageOrLastUploadingMessage()
+        if isAtBottomOfTheList, let uniqueId = message?.uniqueId {
             disableExcessiveLoading()
             scrollTo(uniqueId, animate: true)
+        }
+    }
+
+    public func lastMessageOrLastUploadingMessage() -> (any HistoryMessageProtocol)? {
+        let hasUploadMessages = viewModel?.uploadMessagesViewModel.hasAnyUploadMessage() ?? false
+        if hasUploadMessages {
+            return viewModel?.uploadMessagesViewModel.lastUploadingViewModel()?.message
+        } else {
+            return viewModel?.thread.lastMessageVO?.toMessage
         }
     }
 

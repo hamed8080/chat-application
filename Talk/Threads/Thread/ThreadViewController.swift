@@ -132,24 +132,27 @@ extension ThreadViewController {
         dimView.viewModel = viewModel
         view.addSubview(sendContainer)
         sendContainer.onUpdateHeight = { [weak self] (height: CGFloat) in
-            guard let self = self else { return }
-            guard let viewModel = viewModel else { return }
-            let isButtonsVisible = viewModel.sendContainerViewModel.showPickerButtons
-            let safeAreaHeight = (isButtonsVisible ? 0 : view.safeAreaInsets.bottom)
-            let height = (height - safeAreaHeight) + keyboardheight
-            if tableView.contentInset.bottom != height {
-                UIView.animate(withDuration: 0.1) { [weak self] in
-                    guard let self = self else { return }
-                    tableView.contentInset = .init(top: topThreadToolbar.bounds.height + 4, left: 0, bottom: height, right: 0)
-                }
-                Task {
-                    try? await Task.sleep(for: .seconds(0.3))
-                    await viewModel.scrollVM.scrollToLastMessageOnlyIfIsAtBottom()
-                }
+            self?.onSendHeightChanged(height)
+        }
+    }
+
+    private func onSendHeightChanged(_ height: CGFloat) {
+        let isButtonsVisible = viewModel?.sendContainerViewModel.showPickerButtons ?? false
+        let safeAreaHeight = (isButtonsVisible ? 0 : view.safeAreaInsets.bottom)
+        let height = (height - safeAreaHeight) + keyboardheight
+        if tableView.contentInset.bottom != height {
+            UIView.animate(withDuration: 0.1) { [weak self] in
+                guard let self = self else { return }
+                tableView.contentInset = .init(top: topThreadToolbar.bounds.height + 4, left: 0, bottom: height, right: 0)
+            }
+            Task { [weak self] in
+                guard let self = self else { return }
+                try? await Task.sleep(for: .seconds(0.3))
+                await viewModel?.scrollVM.scrollToLastMessageOnlyIfIsAtBottom()
             }
         }
     }
-    
+
     private func configureOverlayActionButtons() {
         vStackOverlayButtons.translatesAutoresizingMaskIntoConstraints = false
         vStackOverlayButtons.axis = .vertical
