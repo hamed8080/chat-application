@@ -17,7 +17,7 @@ public struct OpenURLView: View {
     public init(){}
 
     public var body: some View {
-        if appState.appStateNavigationModel.openURL != nil, let url = filteredURL {
+        if let url = appState.appStateNavigationModel.openURL {
             Rectangle()
                 .fullScreenCover(isPresented: isPresented) {
                     OpenURLViewControllerRepresentable(url: url) {
@@ -26,15 +26,6 @@ public struct OpenURLView: View {
                     }
                     .ignoresSafeArea()
                 }
-        }
-    }
-
-    private var filteredURL: URL? {
-        guard let url = AppState.shared.appStateNavigationModel.openURL else { return nil }
-        if url.scheme == nil {
-            return URL(string: "http://\(url.absoluteString)")
-        } else {
-            return url
         }
     }
 }

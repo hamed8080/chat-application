@@ -12,8 +12,8 @@ import TalkModels
 
 final class TextMessageView: UITextView {
     private weak var viewModel: MessageRowViewModel?
-    private var heightConstraint: NSLayoutConstraint!
-    private var widthConstraint: NSLayoutConstraint!
+    private var tap: UITapGestureRecognizer!
+    public var forceEnableSelection = false
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -25,42 +25,56 @@ final class TextMessageView: UITextView {
     }
 
     private func configureView() {
-        translatesAutoresizingMaskIntoConstraints = false
         isScrollEnabled = false
         isEditable = false
-        isSelectable = false /// Only is going to be enable when we are in context menu
-        ///
         isOpaque = true
-        isUserInteractionEnabled = false
+        isSelectable = true
+        isUserInteractionEnabled = true
         linkTextAttributes = [:]
-        let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
-        addGestureRecognizer(tap)
+
         setContentHuggingPriority(.required, for: .horizontal)
         setContentCompressionResistancePriority(.required, for: .horizontal)
         setContentHuggingPriority(.required, for: .vertical)
         setContentCompressionResistancePriority(.required, for: .vertical)
-//        widthConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
-//        heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 14)
-//        widthConstraint.isActive = true
-//        heightConstraint.isActive = true
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-//        textAlignment = viewModel.calMessage.isMe || !viewModel.calMessage.isEnglish ? .right : .left
-//        isUserInteractionEnabled = viewModel.calMessage.rowType.isPublicLink
         setText()
-//        heightConstraint.constant = viewModel.calMessage.textRect?.width ?? 0
-//        heightConstraint.constant = viewModel.calMessage.textRect?.height ?? 0
     }
 
     @objc func onTapJoinGroup(_ sender: UIGestureRecognizer) {
-        print("tap on group link")
+        if let message = viewModel?.message {
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
+        }
     }
 
     public func setText() {
         self.attributedText = self.viewModel?.calMessage.markdownTitle
-        setIsHidden(viewModel?.calMessage.rowType.hasText == false)
+        let hide = viewModel?.calMessage.rowType.hasText == false && viewModel?.calMessage.rowType.isPublicLink == false
+        setIsHidden(hide)
+
+        if viewModel?.calMessage.rowType.isPublicLink == true, tap == nil {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
+            addGestureRecognizer(tap)
+        } else if tap != nil {
+            removeGestureRecognizer(tap)
+            tap = nil
+        }
+    }
+
+    // Inside a UITextView subclass:
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        if forceEnableSelection { return true }
+        guard let pos = closestPosition(to: point) else { return false }
+
+        let rightLayout = tokenizer.rangeEnclosingPosition(pos, with: .character, inDirection: .layout(.right))
+        let leftLayout = tokenizer.rangeEnclosingPosition(pos, with: .character, inDirection: .layout(.left))
+        guard let range = rightLayout ?? leftLayout else { return false }
+
+        let startIndex = offset(from: beginningOfDocument, to: range.start)
+
+        return attributedText.attribute(.link, at: startIndex, effectiveRange: nil) != nil
     }
 }
 

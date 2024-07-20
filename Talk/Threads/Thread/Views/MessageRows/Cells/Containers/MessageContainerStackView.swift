@@ -170,7 +170,7 @@ public final class MessageContainerStackView: UIStackView {
             messageVideoView.removeFromSuperview()
         }
 
-        if viewModel.calMessage.rowType.hasText {
+        if viewModel.calMessage.rowType.hasText || viewModel.calMessage.rowType.isPublicLink {
             textMessageView.set(viewModel)
             addArrangedSubview(textMessageView)
         } else {
@@ -274,6 +274,7 @@ extension MessageContainerStackView {
         forwardMessageRow.isUserInteractionEnabled = false
         replyInfoMessageRow.isUserInteractionEnabled = false
         textMessageView.isUserInteractionEnabled = true
+        textMessageView.forceEnableSelection = true
         tailImageView.isHidden = true
         textMessageView.isSelectable = true
         backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
