@@ -17,6 +17,8 @@ final class FooterReactionsCountView: UIStackView {
     private let maxReactionsToShow: Int = 4
     private let height: CGFloat = 28
     private let margin: CGFloat = 28
+    private let moreReactionButton = UIImageButton(imagePadding: .init(all: 8))
+    private var viewModel: MessageRowViewModel?
 
     init(frame: CGRect, isMe: Bool) {
         super.init(frame: frame)
@@ -41,12 +43,19 @@ final class FooterReactionsCountView: UIStackView {
             addArrangedSubview(rowViewPlaceHolder)
         }
 
+        moreReactionButton.imageView.image = UIImage(systemName: "ellipsis")
+        moreReactionButton.imageView.contentMode = .scaleAspectFit
+        moreReactionButton.action = { [weak self] in
+            self?.openReactionDetail()
+        }
+
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: height),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         let rows = viewModel.reactionsModel.rows
         subviews.forEach { reaction in
             reaction.setIsHidden(true)
@@ -58,6 +67,30 @@ final class FooterReactionsCountView: UIStackView {
                 rowView.setValue(row: row)
             }
         }
+
+        if rows.count > maxReactionsToShow, moreReactionButton.superview == nil {
+            addArrangedSubview(moreReactionButton)
+        } else if rows.count <= maxReactionsToShow {
+            moreReactionButton.removeFromSuperview()
+        }
+    }
+
+    private func openReactionDetail() {
+        guard let viewModel = viewModel, let row = viewModel.reactionsModel.rows.first else { return }
+        guard let vc = viewModel.threadVM?.delegate as? UIViewController else { return }
+        let tabVm = ReactionTabParticipantsViewModel(messageId: viewModel.message.id ?? -1)
+        tabVm.viewModel = viewModel.threadVM?.reactionViewModel
+
+        let reatcionDetailView = MessageReactionDetailView(message: viewModel.message, row: row)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .environmentObject(tabVm)
+            .frame(width: 320, height: 340)
+
+        let hostVC = UIHostingController(rootView: reatcionDetailView)
+        hostVC.view.frame = .init(x: 0, y: 0, width: 320, height: 340)
+        hostVC.view.backgroundColor = .clear
+        hostVC.preferredContentSize = hostVC.view.frame.size
+        viewModel.threadVM?.delegate?.showContextMenu(nil, contentView: hostVC.view)
     }
 }
 

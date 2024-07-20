@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 public protocol ContextMenuDelegate: AnyObject {
-    func showContextMenu(_ indexPath: IndexPath, contentView: UIView)
+    func showContextMenu(_ indexPath: IndexPath?, contentView: UIView)
     func dismissContextMenu(indexPath: IndexPath?)
 }
 

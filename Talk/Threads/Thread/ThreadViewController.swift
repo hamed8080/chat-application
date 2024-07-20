@@ -350,31 +350,31 @@ extension ThreadViewController: ThreadViewDelegate {
     }
 
     func edited(_ indexPath: IndexPath) {
-        if let cell = baseVisibleCell(indexPath) {
+        if let cell = baseCell(indexPath) {
             cell.edited()
         }
     }
 
     func pinChanged(_ indexPath: IndexPath) {
-        if let cell = baseVisibleCell(indexPath) {
+        if let cell = baseCell(indexPath) {
             cell.pinChanged()
         }
     }
 
     func sent(_ indexPath: IndexPath) {
-        if let cell = baseVisibleCell(indexPath) {
+        if let cell = baseCell(indexPath) {
             cell.sent()
         }
     }
 
     func delivered(_ indexPath: IndexPath) {
-        if let cell = baseVisibleCell(indexPath) {
+        if let cell = baseCell(indexPath) {
             cell.delivered()
         }
     }
 
     func seen(_ indexPath: IndexPath) {
-        if let cell = baseVisibleCell(indexPath) {
+        if let cell = baseCell(indexPath) {
             cell.seen()
         }
     }
@@ -392,12 +392,12 @@ extension ThreadViewController: ThreadViewDelegate {
     }
 
     func setHighlightRowAt(_ indexPath: IndexPath, highlight: Bool) {
-        if let cell = baseVisibleCell(indexPath) {
+        if let cell = baseCell(indexPath) {
             cell.setHighlight()
         }
     }
 
-    func showContextMenu(_ indexPath: IndexPath, contentView: UIView) {
+    func showContextMenu(_ indexPath: IndexPath?, contentView: UIView) {
         contextMenuContainer.setContentView(contentView, indexPath: indexPath)
         contextMenuContainer.show()
     }
@@ -761,8 +761,8 @@ extension ThreadViewController {
 
 // MARK: Table view cell helpers
 extension ThreadViewController {
-    private func baseVisibleCell(_ indexPath: IndexPath) -> MessageBaseCell? {
-        if isVisible(indexPath), let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
+    private func baseCell(_ indexPath: IndexPath) -> MessageBaseCell? {
+        if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
             return cell
         }
         return nil

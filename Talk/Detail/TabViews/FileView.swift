@@ -101,6 +101,11 @@ struct FileRowView: View {
         .sheet(isPresented: $shareDownloadedFile) {
             ActivityViewControllerWrapper(activityItems: [message.tempURL], title: message.fileMetaData?.file?.originalName)
         }
+        .onAppear {
+            Task {
+                await downloadVM.setup()
+            }
+        }
         .onTapGesture {
             if downloadViewModel.state == .completed {
                 Task {

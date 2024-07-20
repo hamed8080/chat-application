@@ -118,6 +118,11 @@ struct VideoRowView: View {
                 AppState.shared.objectsContainer.audioPlayerVM.toggle()
             }
         }
+        .onAppear {
+            Task {
+                await downloadVM.setup()
+            }
+        }
         .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
             VStack {
                 ContextMenuButton(title: "General.showMessage".bundleLocalized(), image: "message.fill") {

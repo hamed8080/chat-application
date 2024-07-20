@@ -121,8 +121,9 @@ final class FooterView: UIStackView {
     private func setStatusImageOrUploadingAnimation(viewModel: MessageRowViewModel) {
         // Prevent crash if we don't check is me it will crash, due to the fact that only isMe has message status
         if viewModel.calMessage.isMe {
-            statusImage.image = viewModel.message.uiFooterStatus.image
-            statusImage.tintColor = viewModel.message.uiFooterStatus.fgColor
+            let statusTuple = viewModel.message.uiFooterStatus
+            statusImage.image = statusTuple.image
+            statusImage.tintColor = statusTuple.fgColor
             statusImageWidthConstriant.constant = viewModel.message.seen == true ? seenWidth : normalStatusWidth
 
             if viewModel.message is UploadProtocol, viewModel.fileState.isUploading {

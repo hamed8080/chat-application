@@ -90,7 +90,7 @@ public final class AttachmentFileCell: UITableViewCell {
     public func set(attachment: AttachmentFile) {
         self.attachment = attachment
         lblTitle.text = attachment.title
-        lblSubtitle.text = attachment.title
+        lblSubtitle.text = attachment.subtitle
         let imageItem = attachment.request as? ImageItem
         let isVideo = imageItem?.isVideo == true
         let icon = attachment.icon

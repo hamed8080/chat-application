@@ -32,7 +32,8 @@ class MessageRowCalculators {
         sizes.paddings.paddingEdgeInset = calculatePaddings(message: message, calculatedMessage: calculatedMessage)
         calculatedMessage.avatarSplitedCharaters = String.splitedCharacter(message.participant?.name ?? message.participant?.username ?? "")
 
-        calculatedMessage.canEdit = (message.editable == true && calculatedMessage.isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true)
+        let isEditableOrNil = (message.editable == true || message.editable == nil)
+        calculatedMessage.canEdit = ( isEditableOrNil && calculatedMessage.isMe) || (isEditableOrNil && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true)
         rowType.isMap = calculatedMessage.fileMetaData?.mapLink != nil || calculatedMessage.fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
         let isFirstMessageOfTheUser = await isFirstMessageOfTheUser(message, appended: appendMessages, viewModel: threadVM)
         calculatedMessage.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser

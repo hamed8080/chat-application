@@ -43,6 +43,7 @@ final class MessageFileView: UIStackView {
         layoutMargins = .init(top: 8, left: 8, bottom: 0, right: 0)
         isLayoutMarginsRelativeArrangement = true
         axis = .horizontal
+        alignment = .top
         spacing = 8
         backgroundColor = isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
         isOpaque = true
