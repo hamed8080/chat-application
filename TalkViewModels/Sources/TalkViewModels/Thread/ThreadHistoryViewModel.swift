@@ -586,12 +586,12 @@ extension ThreadHistoryViewModel {
             await updateConversationPropertiesOnNewMessage(message)
             let currentIndexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "")
             let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
-            setSeenForAllOlderMessages(newMessage: message)
             await viewModel.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
-            await setIsEmptyThread()
             await vm.register()
             sortAndMoveRowIfNeeded(message: message, currentIndexPath: currentIndexPath)
         }
+        setSeenForAllOlderMessages(newMessage: message)
+        await setIsEmptyThread()
     }
 
     /*

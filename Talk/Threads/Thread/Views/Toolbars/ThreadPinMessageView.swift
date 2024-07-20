@@ -18,7 +18,7 @@ public final class ThreadPinMessageView: UIStackView {
     private let pinImageView = UIImageView(frame: .zero)
     private let imageView = UIImageView(frame: .zero)
     private let textButton = UIButton(type: .system)
-    private let unpinButton = UIButton(type: .system)
+    private let unpinButton = UIImageButton(imagePadding: .init(all: 4))
     private weak var viewModel: ThreadPinMessageViewModel?
     weak var stack: UIStackView?
 
@@ -66,12 +66,13 @@ public final class ThreadPinMessageView: UIStackView {
 
         unpinButton.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(systemName: "xmark")
-        unpinButton.setImage(image, for: .normal)
-        unpinButton.imageView?.contentMode = .scaleAspectFit
-        unpinButton.tintColor = Color.App.iconSecondaryUIColor
+        unpinButton.imageView.image = image
+        unpinButton.imageView.contentMode = .scaleAspectFit
+        unpinButton.imageView.tintColor = Color.App.iconSecondaryUIColor
         unpinButton.accessibilityIdentifier = "unpinButtonThreadPinMessageView"
-        unpinButton.addTarget(self, action: #selector(onUnpinMessageTapped), for: .touchUpInside)
-
+        unpinButton.action = { [weak self] in
+            self?.onUnpinMessageTapped()
+        }
         axis = .horizontal
         spacing = 8
         alignment = .center
@@ -89,12 +90,12 @@ public final class ThreadPinMessageView: UIStackView {
             heightAnchor.constraint(equalToConstant: 40),
             bar.widthAnchor.constraint(equalToConstant: 3),
             bar.heightAnchor.constraint(equalToConstant: 24),
-            pinImageView.widthAnchor.constraint(equalToConstant: 10),
-            pinImageView.heightAnchor.constraint(equalToConstant: 10),
+            pinImageView.widthAnchor.constraint(equalToConstant: 14),
+            pinImageView.heightAnchor.constraint(equalToConstant: 14),
             imageView.widthAnchor.constraint(equalToConstant: 24),
             imageView.heightAnchor.constraint(equalToConstant: 24),
-            unpinButton.widthAnchor.constraint(equalToConstant: 24),
-            unpinButton.heightAnchor.constraint(equalToConstant: 24),
+            unpinButton.widthAnchor.constraint(equalToConstant: 28),
+            unpinButton.heightAnchor.constraint(equalToConstant: 28),
         ])
     }
 
@@ -106,7 +107,7 @@ public final class ThreadPinMessageView: UIStackView {
         viewModel?.moveToPinnedMessage()
     }
 
-    @objc func onUnpinMessageTapped(_ sender: UIGestureRecognizer) {
+    @objc func onUnpinMessageTapped() {
         guard let viewModel = viewModel else { return }
         viewModel.unpinMessage(viewModel.message?.messageId ?? -1)
     }
