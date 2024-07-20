@@ -66,7 +66,6 @@ public final class MainSendButtons: UIStackView {
         btnCamera.tintColor = Color.App.textSecondaryUIColor
         btnCamera.accessibilityIdentifier = "btnCameraMainSendButtons"
         btnCamera.setContentHuggingPriority(.required, for: .horizontal)
-        btnCamera.backgroundColor = Color.App.textSecondaryUIColor
         btnCamera.isOpaque = true
         btnCamera.setIsHidden(true)
 

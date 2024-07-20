@@ -81,6 +81,7 @@ final class ReplyInfoView: UIView {
         deletedLabel.text = ReplyInfoView.deletedStaticText
         deletedLabel.font = UIFont.uiiransansBoldCaption2
         deletedLabel.textColor = Color.App.textSecondaryUIColor
+        deletedLabel.textAlignment = isMe ? .right : .left
         deletedLabel.setIsHidden(true)
         deletedLabel.accessibilityIdentifier = "deletedLabelReplyInfoView"
         deletedLabel.setContentCompressionResistancePriority(.required, for: .vertical)

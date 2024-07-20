@@ -58,6 +58,7 @@ struct SearchInSelectConversationOrContact: View {
                 .frame(height: 48)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
+                .font(.iransansSubheadline)
         }
         .background(.ultraThinMaterial)
     }
@@ -101,6 +102,7 @@ struct SelectContactTab: View {
     @EnvironmentObject var viewModel: ThreadOrContactPickerViewModel
     var onSelect: (Conversation?, Contact?) -> Void
     @Environment(\.dismiss) var dismiss
+    @StateObject private var contactsVM = ContactsViewModel()
 
     var body: some View {
         List {
@@ -120,6 +122,7 @@ struct SelectContactTab: View {
                     }
             }
         }
+        .environmentObject(contactsVM)
         .safeAreaInset(edge: .top) {
             if viewModel.contactsLazyList.isLoading {
                 SwingLoadingIndicator()

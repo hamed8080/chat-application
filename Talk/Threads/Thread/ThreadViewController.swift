@@ -482,7 +482,7 @@ extension ThreadViewController {
         }
             .environmentObject(AppState.shared.objectsContainer.threadsVM)
             .contextMenuContainer()
-        //            .environmentObject(viewModel)
+//            .environmentObject(AppState.shared.objectsContainer.contactsVM)
             .onDisappear {
                 //closeSheet()
             }

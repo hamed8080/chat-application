@@ -63,7 +63,7 @@ extension MessageContainerStackView {
             menu.addItem(seenListAction)
         }
 
-        if viewModel.message.isImage {
+        if viewModel.message.isImage, viewModel.fileState.state == .completed {
             let saveImageAction = ActionMenuItem(model: .saveImage) { [weak self] in
                 self?.onSaveAction(model)
                 onMenuClickedDismiss()
