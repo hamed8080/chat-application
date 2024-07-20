@@ -22,7 +22,7 @@ class CameraCapturer: NSObject, UIImagePickerControllerDelegate, UINavigationCon
         vc = UIImagePickerController()
         super.init()
         vc.delegate = self
-        vc.sourceType  = .camera
+        vc.sourceType = .camera
         if isVideo {
             if #available(iOS 15.0, *) {
                 vc.mediaTypes = [UTType.movie.identifier]
@@ -31,7 +31,7 @@ class CameraCapturer: NSObject, UIImagePickerControllerDelegate, UINavigationCon
             }
         }
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

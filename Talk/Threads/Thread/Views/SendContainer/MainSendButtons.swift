@@ -24,6 +24,7 @@ public final class MainSendButtons: UIStackView {
     private var viewModel: SendContainerViewModel { threadVM?.sendContainerViewModel ?? .init() }
     private var cancellableSet = Set<AnyCancellable>()
     public static let initSize: CGFloat = 42
+    private var cameraCapturer: CameraCapturer?
 
     public init(viewModel: ThreadViewModel?) {
         self.threadVM = viewModel
@@ -295,7 +296,9 @@ public final class MainSendButtons: UIStackView {
             let fileName = "video-\(Date().fileDateString).mov"
             let item = ImageItem(id: UUID(), isVideo: true, data: data, width: 0, height: 0, originalFilename: fileName)
             threadVM?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+            self.cameraCapturer = nil
         }
+        self.cameraCapturer = captureObject
         (threadVM?.delegate as? UIViewController)?.present(captureObject.vc, animated: true)
     }
 
@@ -307,7 +310,9 @@ public final class MainSendButtons: UIStackView {
                                  height: Int(image.size.height),
                                  originalFilename: "image-\(Date().fileDateString).jpg")
             threadVM?.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+            self.cameraCapturer = nil
         }
+        self.cameraCapturer = captureObject
         (threadVM?.delegate as? UIViewController)?.present(captureObject.vc, animated: true)
     }
 
