@@ -22,7 +22,7 @@ final class FooterView: UIStackView {
     private let reactionView: FooterReactionsCountView
 
     // Models
-    private static let staticEditString = "Messages.Footer.edited".localized()
+    private static let staticEditString = "Messages.Footer.edited".bundleLocalized()
     private var statusImageWidthConstriant: NSLayoutConstraint!
     private var shapeLayer = CAShapeLayer()
     private var rotateAnimation = CABasicAnimation(keyPath: "transform.rotation.z")

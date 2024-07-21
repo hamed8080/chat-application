@@ -220,19 +220,19 @@ public final class MainSendButtons: UIStackView {
     @objc private func showPopup(_ sender: UIGestureRecognizer) {
         // Check if it is began then show the popover unless we don't call it twice.
         if sender.state != .began { return }
-        let takeVideo  = UIAlertAction(title: "MessageType.video".localized(), style: .default) { (action) in
+        let takeVideo  = UIAlertAction(title: "MessageType.video".bundleLocalized(), style: .default) { (action) in
             // Respond to user selection of the action
             self.openTakeVideoPicker()
         }
         takeVideo.setValue(UIImage(systemName: "video"), forKey: "image")
 
-        let takePhoto = UIAlertAction(title: "MessageType.picture".localized(), style: .default) { (action) in
+        let takePhoto = UIAlertAction(title: "MessageType.picture".bundleLocalized(), style: .default) { (action) in
             // Respond to user selection of the action
             self.openTakePicturePicker()
         }
         takePhoto.setValue(UIImage(systemName: "photo"), forKey: "image")
 
-        let cancel = UIAlertAction(title: "General.cancel".localized(), style: .cancel) { (action) in
+        let cancel = UIAlertAction(title: "General.cancel".bundleLocalized(), style: .cancel) { (action) in
             // Respond to user selection of the action
         }
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)

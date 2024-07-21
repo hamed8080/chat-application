@@ -204,7 +204,7 @@ public class CustomConversationNavigationBar: UIView {
         AppState.shared.$connectionStatus
             .sink { [weak self] newValue in
                 if newValue != .connected {
-                    self?.updateSubtitleTo(newValue.stringValue.localized())
+                    self?.updateSubtitleTo(newValue.stringValue.bundleLocalized())
                 } else {
                     self?.updateSubtitleTo(self?.viewModel?.getParticipantCount())
                 }

@@ -28,8 +28,8 @@ final class ReplyInfoView: UIView {
      These two texts are used to localize,
      and bundle which are costly to reconstruct every time.
      */
-    private static let deletedStaticText = "Messages.deletedMessageReply".localized()
-    private static let repliedToStaticText = "Message.replyTo".localized()
+    private static let deletedStaticText = "Messages.deletedMessageReply".bundleLocalized()
+    private static let repliedToStaticText = "Message.replyTo".bundleLocalized()
 
     // Sizes
     private let margin: CGFloat = 6

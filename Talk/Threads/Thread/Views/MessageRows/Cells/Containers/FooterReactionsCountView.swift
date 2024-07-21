@@ -203,7 +203,7 @@ extension ReactionCountRowView: UIContextMenuInteractionDelegate {
 
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         let config = UIContextMenuConfiguration(identifier: nil, previewProvider: nil)  { _ in
-            let closeAction = UIAction(title: "General.close".localized(), image: UIImage(systemName: "xmark.circle")) { _ in
+            let closeAction = UIAction(title: "General.close".bundleLocalized(), image: UIImage(systemName: "xmark.circle")) { _ in
                 interaction.dismissMenu()
             }
             return UIMenu(title: "", children: [closeAction])

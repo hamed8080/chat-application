@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import TalkViewModels
+import TalkModels
 
 class UIHistoryTableView: UITableView {
     private weak var viewModel: ThreadViewModel?
@@ -24,6 +25,9 @@ class UIHistoryTableView: UITableView {
     }
 
     private func configure() {
+        if semanticContentAttribute == .unspecified {
+            semanticContentAttribute = Language.isRTL ? .forceRightToLeft : .forceLeftToRight
+        }
         delegate = self
         dataSource = self
         estimatedRowHeight = 128

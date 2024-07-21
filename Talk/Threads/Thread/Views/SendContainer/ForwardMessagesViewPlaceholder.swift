@@ -96,7 +96,7 @@ public final class ForwardMessagePlaceholderView: UIStackView {
             }
         }
         if isSingleForward {
-            staticForwardLabel.text = "Thread.forwardTheMessage".localized()
+            staticForwardLabel.text = "Thread.forwardTheMessage".bundleLocalized()
             let message = model.forwardMessages?.first?.message ?? ""
             messageLabel.text = message
         } else {

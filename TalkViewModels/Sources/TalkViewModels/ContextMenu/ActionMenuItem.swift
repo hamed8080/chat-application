@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import TalkModels
 
 public class ActionMenuItem: UIView {
     private let label = UILabel()

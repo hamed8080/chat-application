@@ -28,7 +28,7 @@ final class UnreadBubbleCell: UITableViewCell {
         label.font = UIFont.uiiransansCaption
         label.textColor = Color.App.accentUIColor
         label.textAlignment = .center
-        label.text = "Messages.unreadMessages".localized()
+        label.text = "Messages.unreadMessages".bundleLocalized()
         label.backgroundColor = Color.App.bgPrimaryUIColor
         label.accessibilityIdentifier = "labelUnreadBubbleCell"
 

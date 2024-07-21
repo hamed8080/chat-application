@@ -92,7 +92,7 @@ public final class SubmitBottomButtonUIView: UIView {
         btnSubmit.backgroundColor = color
         btnSubmit.titleLabel?.font = UIFont.uiiransansBody
         btnSubmit.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
-        btnSubmit.setTitle(text.localized(), for: .normal)
+        btnSubmit.setTitle(text.bundleLocalized(), for: .normal)
         btnSubmit.setTitleColor(Color.App.textPrimaryUIColor, for: .normal)
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)

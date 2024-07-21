@@ -16,7 +16,7 @@ struct DetailToolbarContainer: View {
             let type = viewModel.thread?.type
             let typeKey = type == .normal ? "General.contact" : type?.isChannelType == true ? "Thread.channel" : "Thread.group"
             ToolbarView(searchId: "DetailView",
-                        title: "\("General.info".localized()) \(typeKey.localized())",
+                        title: "\("General.info".bundleLocalized()) \(typeKey.bundleLocalized())",
                         showSearchButton: false,
                         searchPlaceholder: "General.searchHere",
                         searchKeyboardType: .default,

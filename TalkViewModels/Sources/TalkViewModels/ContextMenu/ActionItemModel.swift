@@ -14,7 +14,7 @@ public struct ActionItemModel {
     let color: UIColor
 
     public init(title: String, image: String?, color: UIColor = UIColor(named: "text_primary")!) {
-        self.title = title.localized()
+        self.title = title.bundleLocalized()
         self.image = image
         self.color = color
     }

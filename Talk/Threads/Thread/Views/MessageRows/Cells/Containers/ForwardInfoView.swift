@@ -20,7 +20,7 @@ final class ForwardInfoView: UIView {
 
     // Models
     private weak var viewModel: MessageRowViewModel?
-    private static let forwardFromStaticText = "Message.forwardedFrom".localized()
+    private static let forwardFromStaticText = "Message.forwardedFrom".bundleLocalized()
 
     // Sizes
     private let margin: CGFloat = 6

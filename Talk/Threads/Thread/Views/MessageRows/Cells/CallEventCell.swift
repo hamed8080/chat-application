@@ -22,8 +22,8 @@ final class CallEventCell: UITableViewCell {
     // Models
     private static let startCallImage = UIImage(systemName: "phone.arrow.up.right.fill")
     private static let endCallImage = UIImage(systemName: "phone.down.fill")
-    private static let startStaticText = "Thread.callStarted".localized()
-    private static let endStaticText = "Thread.callEnded".localized()
+    private static let startStaticText = "Thread.callStarted".bundleLocalized()
+    private static let endStaticText = "Thread.callEnded".bundleLocalized()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

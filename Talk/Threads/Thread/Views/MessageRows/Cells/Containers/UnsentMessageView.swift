@@ -32,8 +32,8 @@ final class UnsentMessageView: UIView {
         btnCancel.accessibilityIdentifier = "btnCancelUnsentMessageView"
         btnResend.accessibilityIdentifier = "btnResendUnsentMessageView"
 
-        btnCancel.setTitle("General.cancel".localized(), for: .normal)
-        btnResend.setTitle("Messages.resend".localized(), for: .normal)
+        btnCancel.setTitle("General.cancel".bundleLocalized(), for: .normal)
+        btnResend.setTitle("Messages.resend".bundleLocalized(), for: .normal)
 
         addSubview(btnCancel)
         addSubview(btnResend)

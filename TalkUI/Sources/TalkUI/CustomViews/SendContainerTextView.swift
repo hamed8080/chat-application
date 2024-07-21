@@ -42,7 +42,7 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         returnKeyType = .done
         setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-        placeholderLabel.text = "Thread.SendContainer.typeMessageHere".localized()
+        placeholderLabel.text = "Thread.SendContainer.typeMessageHere".bundleLocalized()
         placeholderLabel.textColor = Color.App.textPrimaryUIColor?.withAlphaComponent(0.7)
         placeholderLabel.font = UIFont.uiiransansBody
         placeholderLabel.textAlignment = Language.isRTL ? .right : .left

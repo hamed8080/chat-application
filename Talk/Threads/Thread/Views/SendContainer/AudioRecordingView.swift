@@ -256,7 +256,7 @@ public final class RecordingAudioView: UIStackView {
         }
 
         let lblStaticRecording = UILabel()
-        lblStaticRecording.text = "Thread.isVoiceRecording".localized()
+        lblStaticRecording.text = "Thread.isVoiceRecording".bundleLocalized()
         lblStaticRecording.font = .uiiransansCaption
         lblStaticRecording.textColor = Color.App.textSecondaryUIColor
         lblStaticRecording.accessibilityIdentifier = "lblStaticRecordingRecordingAudioView"
