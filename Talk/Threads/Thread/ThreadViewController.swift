@@ -20,6 +20,7 @@ final class ThreadViewController: UIViewController {
     public lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
     private lazy var moveToBottom = MoveToBottomButton(viewModel: viewModel)
     private lazy var unreadMentionsButton = UnreadMenitonsButton(viewModel: viewModel)
+    private lazy var cancelAudioRecordingButton = CancelAudioRecordingButton(viewModel: viewModel)
     public private(set) lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
     private var sendContainerBottomConstraint: NSLayoutConstraint?
     private var keyboardheight: CGFloat = 0
@@ -163,6 +164,8 @@ extension ThreadViewController {
         vStackOverlayButtons.addArrangedSubview(moveToBottom)
         unreadMentionsButton.accessibilityIdentifier = "unreadMentionsButtonThreadViewController"
         vStackOverlayButtons.addArrangedSubview(unreadMentionsButton)
+        cancelAudioRecordingButton.setIsHidden(true)
+        vStackOverlayButtons.addArrangedSubview(cancelAudioRecordingButton)
         view.addSubview(vStackOverlayButtons)
     }
     
@@ -446,6 +449,7 @@ extension ThreadViewController: BottomToolbarDelegate {
 
     func showRecording(_ show: Bool) {
         sendContainer.openRecording(show)
+        cancelAudioRecordingButton.setIsHidden(!show)
     }
 
     func openEditMode(_ message: (any HistoryMessageProtocol)?) {

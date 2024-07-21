@@ -382,6 +382,12 @@
 		05E869C72AEF883000F6B200 /* DetailLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E869C52AEF883000F6B200 /* DetailLoading.swift */; };
 		05E869C92AEFA57300F6B200 /* LanguageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E869C82AEFA57300F6B200 /* LanguageView.swift */; };
 		05E869CA2AEFA57300F6B200 /* LanguageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E869C82AEFA57300F6B200 /* LanguageView.swift */; };
+		05E8F50D2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8F50C2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift */; };
+		05E8F50E2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8F50C2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift */; };
+		05E8F5102C4D3DA400E535C0 /* RecordedAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8F50F2C4D3DA400E535C0 /* RecordedAudioView.swift */; };
+		05E8F5112C4D3DA400E535C0 /* RecordedAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8F50F2C4D3DA400E535C0 /* RecordedAudioView.swift */; };
+		05E8F5132C4D3E0200E535C0 /* RecordingAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8F5122C4D3E0200E535C0 /* RecordingAudioView.swift */; };
+		05E8F5142C4D3E0200E535C0 /* RecordingAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8F5122C4D3E0200E535C0 /* RecordingAudioView.swift */; };
 		05E9C08D2B1EFBCE00E782BD /* ThreadListRowBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E9C08C2B1EFBCE00E782BD /* ThreadListRowBackground.swift */; };
 		05E9C08E2B1EFBCE00E782BD /* ThreadListRowBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E9C08C2B1EFBCE00E782BD /* ThreadListRowBackground.swift */; };
 		05EA77A02BBC025E00FFB9C2 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EA779F2BBC025E00FFB9C2 /* CameraViewController.swift */; };
@@ -609,6 +615,9 @@
 		05E825CC2AF6542B00F3CBB2 /* LogoutDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutDialogView.swift; sourceTree = "<group>"; };
 		05E869C52AEF883000F6B200 /* DetailLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailLoading.swift; sourceTree = "<group>"; };
 		05E869C82AEFA57300F6B200 /* LanguageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageView.swift; sourceTree = "<group>"; };
+		05E8F50C2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelAudioRecordingButton.swift; sourceTree = "<group>"; };
+		05E8F50F2C4D3DA400E535C0 /* RecordedAudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordedAudioView.swift; sourceTree = "<group>"; };
+		05E8F5122C4D3E0200E535C0 /* RecordingAudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingAudioView.swift; sourceTree = "<group>"; };
 		05E9C08C2B1EFBCE00E782BD /* ThreadListRowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadListRowBackground.swift; sourceTree = "<group>"; };
 		05EA779F2BBC025E00FFB9C2 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		05EA77A22BBC030400FFB9C2 /* TakeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TakeButton.swift; sourceTree = "<group>"; };
@@ -1167,12 +1176,12 @@
 		05C27F9A2AF4BC310008FE2E /* SendContainer */ = {
 			isa = PBXGroup;
 			children = (
+				05E8F50B2C4D3D5100E535C0 /* AudioRecording */,
 				0507DB752C147CCC00029E3F /* MentionList */,
 				05903B5B2BBD07FD0098F382 /* Attchments */,
 				05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */,
 				05C27F9B2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift */,
 				05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */,
-				05EEADC12C188AA2000562EE /* AudioRecordingView.swift */,
 				05C27F9E2AF4BC910008FE2E /* MuteChannelBarView.swift */,
 				05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */,
 				05C27FA42AF4BD010008FE2E /* SelectionView.swift */,
@@ -1192,6 +1201,17 @@
 				05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */,
 			);
 			path = ConversationBuilders;
+			sourceTree = "<group>";
+		};
+		05E8F50B2C4D3D5100E535C0 /* AudioRecording */ = {
+			isa = PBXGroup;
+			children = (
+				05E8F50C2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift */,
+				05E8F50F2C4D3DA400E535C0 /* RecordedAudioView.swift */,
+				05E8F5122C4D3E0200E535C0 /* RecordingAudioView.swift */,
+				05EEADC12C188AA2000562EE /* AudioRecordingView.swift */,
+			);
+			path = AudioRecording;
 			sourceTree = "<group>";
 		};
 		05ECF7D72C1591140058DD12 /* Pickers */ = {
@@ -1392,6 +1412,7 @@
 				0506DE1F2AD42AF00009701E /* Talk.docc in Sources */,
 				05DCC0652AE183EA0025B3B7 /* ConversationBuilder.swift in Sources */,
 				0521F85F2B5A4276001B7B7E /* MockAppConfiguration.swift in Sources */,
+				05E8F50D2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift in Sources */,
 				0570CC4F2AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC932AAEE98F001832E9 /* AppDelegate.swift in Sources */,
 				0594FE662B0387370031AADF /* MessageLocationView.swift in Sources */,
@@ -1470,6 +1491,7 @@
 				0570CC232AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC472AAEE98F001832E9 /* LogRow.swift in Sources */,
 				0537C1F32C31C5A100B6ECDB /* UIHistoryTableView.swift in Sources */,
+				05E8F5102C4D3DA400E535C0 /* RecordedAudioView.swift in Sources */,
 				0525516A2C24BC7D003171D2 /* CustomConversationNavigationBar.swift in Sources */,
 				050B51B52AE7852B00B8DD49 /* LoginView.swift in Sources */,
 				05E781F12C2062FA002262AD /* AttchmentButton.swift in Sources */,
@@ -1501,6 +1523,7 @@
 				050260782B15C408005F3E64 /* ManuallyConnectionManagerView.swift in Sources */,
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */,
+				05E8F5132C4D3E0200E535C0 /* RecordingAudioView.swift in Sources */,
 				052CA3D02BA411B800E38E19 /* MessageAudioView.swift in Sources */,
 				05903B5D2BBD08100098F382 /* AttachmentFilesTableView.swift in Sources */,
 				0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
@@ -1581,6 +1604,7 @@
 				0506DE202AD42AF00009701E /* Talk.docc in Sources */,
 				05DCC0662AE187D80025B3B7 /* ConversationBuilder.swift in Sources */,
 				0521F8602B5A4276001B7B7E /* MockAppConfiguration.swift in Sources */,
+				05E8F50E2C4D3D6600E535C0 /* CancelAudioRecordingButton.swift in Sources */,
 				0570CC502AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC942AAEE98F001832E9 /* AppDelegate.swift in Sources */,
 				0594FE672B0387370031AADF /* MessageLocationView.swift in Sources */,
@@ -1659,6 +1683,7 @@
 				0570CC242AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC482AAEE98F001832E9 /* LogRow.swift in Sources */,
 				0537C1F42C31C5A100B6ECDB /* UIHistoryTableView.swift in Sources */,
+				05E8F5112C4D3DA400E535C0 /* RecordedAudioView.swift in Sources */,
 				0525516B2C24BC7D003171D2 /* CustomConversationNavigationBar.swift in Sources */,
 				050B51B62AE7852B00B8DD49 /* LoginView.swift in Sources */,
 				05E781F22C2062FA002262AD /* AttchmentButton.swift in Sources */,
@@ -1690,6 +1715,7 @@
 				050260792B15C408005F3E64 /* ManuallyConnectionManagerView.swift in Sources */,
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */,
+				05E8F5142C4D3E0200E535C0 /* RecordingAudioView.swift in Sources */,
 				052CA3D12BA411B800E38E19 /* MessageAudioView.swift in Sources */,
 				05903B5E2BBD08100098F382 /* AttachmentFilesTableView.swift in Sources */,
 				0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
