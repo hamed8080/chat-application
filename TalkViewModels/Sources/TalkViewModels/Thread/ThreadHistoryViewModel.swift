@@ -18,6 +18,11 @@ public typealias MessageIndex = Array<MessageType>.Index
 public typealias SectionIndex = Array<MessageSection>.Index
 public typealias HistoryResponse = ChatResponse<[Message]>
 
+enum JoinPoint {
+    case bottom(bottomVMBeforeJoin: MessageRowViewModel?)
+    case top(topVMBeforeJoin: MessageRowViewModel?)
+}
+
 //@HistoryActor
 public final class ThreadHistoryViewModel {
     // MARK: Stored Properties
@@ -198,6 +203,7 @@ extension ThreadHistoryViewModel {
     }
 
     private func onMoreBottomFifthScenario(_ response: HistoryResponse) async {
+        let bottomVMBeforeJoin = sections.last?.vms.last
         let messages = response.result ?? []
         /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
         if messages.count > 0 {
@@ -211,6 +217,7 @@ extension ThreadHistoryViewModel {
         let viewModels = await makeCalculateViewModelsFor(sortedMessages)
         appendSort(viewModels)
         delegate?.reload()
+        updateIsLastMessageAndIsFirstMessageFor(viewModels, at: .bottom(bottomVMBeforeJoin: bottomVMBeforeJoin))
 
         /// 4- Set whether it has more messages at the bottom or not.
         await setHasMoreBottom(response)
@@ -253,7 +260,7 @@ extension ThreadHistoryViewModel {
         showCenterLoading(false)
 
         let uniqueId = messages.first(where: {$0.id == request.messageId})?.uniqueId ?? ""
-        await viewModel?.scrollVM.showHighlightedAsync(uniqueId, request.messageId, highlight: request.highlight)
+        await viewModel?.scrollVM.showHighlightedAsync(uniqueId, request.messageId, highlight: request.highlight, position: .middle)
 
         let fromTimeRequest = makeRequest(fromTime: request.request.toTime)
         let store = OnMoveTime(messageId: request.messageId, request: fromTimeRequest, highlight: request.highlight)
@@ -262,6 +269,7 @@ extension ThreadHistoryViewModel {
     }
 
     private func onMoveFromTime(request: OnMoveTime, _ response: HistoryResponse) async {
+        let bottomVMBeforeJoin = sections.last?.vms.last
         let messages = response.result ?? []
         let beforeSectionCount = sections.count
         /// 8- Append and sort the array but not call to update the view.
@@ -270,6 +278,7 @@ extension ThreadHistoryViewModel {
         appendSort(viewModels)
         let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
         delegate?.inserted(tuple.sections, tuple.rows, .fade, nil)
+        updateIsLastMessageAndIsFirstMessageFor(viewModels, at: .bottom(bottomVMBeforeJoin: bottomVMBeforeJoin))
         for vm in viewModels {
             await vm.register()
         }
@@ -302,12 +311,14 @@ extension ThreadHistoryViewModel {
     }
 
     private func onFetchByOffset(_ response: HistoryResponse) async {
+        let bottomVMBeforeJoin = sections.last?.vms.last
         let messages = response.result ?? []
         let sortedMessages = messages.sortedByTime()
         let viewModels = await makeCalculateViewModelsFor(sortedMessages)
         appendSort(viewModels)
         isFetchedServerFirstResponse = true
         delegate?.reload()
+        updateIsLastMessageAndIsFirstMessageFor(viewModels, at: .bottom(bottomVMBeforeJoin: bottomVMBeforeJoin))
         await viewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
         for vm in viewModels {
             await vm.register()
@@ -347,6 +358,7 @@ extension ThreadHistoryViewModel {
 
     // MARK: On Cache History Response
     private func onHistoryCacheRsponse(_ response: HistoryResponse) async {
+        let bottomVMBeforeJoin = sections.last?.vms.last
         let messages = response.result ?? []
         let sortedMessages = messages.sortedByTime()
         let viewModels = await makeCalculateViewModelsFor(sortedMessages)
@@ -361,6 +373,7 @@ extension ThreadHistoryViewModel {
         showBottomLoading(true)
         showTopLoading(false)
         delegate?.reload()
+        updateIsLastMessageAndIsFirstMessageFor(viewModels, at: .bottom(bottomVMBeforeJoin: bottomVMBeforeJoin))
         if !isJumpedToLastMessage {
             await viewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
             isJumpedToLastMessage = true
@@ -381,6 +394,7 @@ extension ThreadHistoryViewModel {
 
     @HistoryActor
     private func onMoreTop(_ response: HistoryResponse) async {
+        let topVMBeforeJoin = sections.first?.vms.first
         let messages = response.result ?? []
         let lastTopMessageVM = sections.first?.vms.first
         let beforeSectionCount = sections.count
@@ -400,6 +414,7 @@ extension ThreadHistoryViewModel {
             indexPathToScroll = sections.indexPath(for: lastTopMessageVM)
         }
         delegate?.inserted(tuple.sections, tuple.rows, .top, indexPathToScroll)
+        updateIsLastMessageAndIsFirstMessageFor(viewModels, at: .top(topVMBeforeJoin: topVMBeforeJoin))
 
         // Register for downloading thumbnails or read cached version
         for vm in viewModels {
@@ -418,6 +433,7 @@ extension ThreadHistoryViewModel {
     }
 
     private func onMoreBottom(_ response: HistoryResponse) async {
+        let bottomVMBeforeJoin = sections.last?.vms.last
         let messages = response.result ?? []
         let beforeSectionCount = sections.count
         let sortedMessages = messages.sortedByTime()
@@ -430,6 +446,7 @@ extension ThreadHistoryViewModel {
         await setHasMoreBottom(response)
         let tuple = sections.insertedIndices(insertTop: false, beforeSectionCount: beforeSectionCount, viewModels)
         delegate?.inserted(tuple.sections, tuple.rows, .left, nil)
+        updateIsLastMessageAndIsFirstMessageFor(viewModels, at: .bottom(bottomVMBeforeJoin: bottomVMBeforeJoin))
 
         for vm in viewModels {
             await vm.register()
@@ -464,6 +481,52 @@ extension ThreadHistoryViewModel {
             viewModels.append(vm)
         }
         return viewModels
+    }
+}
+
+extension ThreadHistoryViewModel {
+    func updateIsLastMessageAndIsFirstMessageFor(_ viewModels: [MessageRowViewModel], at joinPoint: JoinPoint) {
+
+        switch joinPoint {
+        case .bottom(let bottomVMBeforeJoin):
+            // bottom join point
+            let firstMessageInMoreBottom = viewModels.first
+            let sameUserOnJoinPoint = bottomVMBeforeJoin?.message.participant?.id == firstMessageInMoreBottom?.message.participant?.id
+            if sameUserOnJoinPoint {
+                // 1- Set Sections last message isLastMessage to false, if they are the same participant.
+                if bottomVMBeforeJoin?.message.id != bottomVMBeforeJoin?.message.id {
+                    bottomVMBeforeJoin?.calMessage.isLastMessageOfTheUser = false
+                    if let indexPath = sections.viewModelAndIndexPath(viewModelUniqueId: bottomVMBeforeJoin?.uniqueId ?? "")?.indexPath {
+                        delegate?.reloadData(at: indexPath)
+                    }
+                }
+                // 2- Set More bottom first message isFirstMessage to false, if they are the same participant.
+                if let indexPath = sections.viewModelAndIndexPath(viewModelUniqueId: firstMessageInMoreBottom?.uniqueId ?? "")?.indexPath {
+                    delegate?.reloadData(at: indexPath)
+                    firstMessageInMoreBottom?.calMessage.isFirstMessageOfTheUser = false
+                }
+            }
+        case .top(let topVMBeforeJoin):
+            let lastMessageInMoreTop = viewModels.last
+            let sameUserOnJoinPoint = topVMBeforeJoin?.message.participant?.id == lastMessageInMoreTop?.message.participant?.id
+
+            if sameUserOnJoinPoint {
+                // 1- Set Sections first message isFirstMessage to false, if they are the same participant.
+                topVMBeforeJoin?.calMessage.isFirstMessageOfTheUser = false
+                if let indexPath = sections.viewModelAndIndexPath(viewModelUniqueId: topVMBeforeJoin?.uniqueId ?? "")?.indexPath {
+                    delegate?.reloadData(at: indexPath)
+                }
+                // 2- Set More top last message isLastMessage to false, if they are the same participant.
+                // We only set this value to false if lastMessageInMoreTop is not equal to the last messaege of the thread,
+                // to prevent make it false when we open the thread for the first time.
+                if lastMessageInMoreTop?.message.id ?? 0 != thread.lastMessageVO?.id ?? 0 {
+                    lastMessageInMoreTop?.calMessage.isLastMessageOfTheUser = false
+                    if let indexPath = sections.viewModelAndIndexPath(viewModelUniqueId: lastMessageInMoreTop?.uniqueId ?? "")?.indexPath {
+                        delegate?.reloadData(at: indexPath)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -583,12 +646,14 @@ extension ThreadHistoryViewModel {
     // It will be only called by ThreadsViewModel
     public func onNewMessage(_ message: Message, _ oldConversation: Conversation?) async {
         if let viewModel = viewModel, isLastMessageInsideTheSections(oldConversation) {
+            let bottomVMBeforeJoin = sections.last?.vms.last
             self.viewModel?.thread = thread
             let currentIndexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "")
             let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
             await viewModel.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
             await vm.register()
             sortAndMoveRowIfNeeded(message: message, currentIndexPath: currentIndexPath)
+            await updateAvatarAndGroupuserNameForLastUserMessageIfNeeded(message, bottomVMBeforeJoin)
         }
         setSeenForAllOlderMessages(newMessage: message)
         await setIsEmptyThread()
@@ -630,7 +695,7 @@ extension ThreadHistoryViewModel {
             // Update a message sent by Me
             vm = sections[indexPath.section].vms[indexPath.row]
             vm.swapUploadMessageWith(message)
-            await vm.performaCalculation(appendMessages: [])
+            await vm.performaCalculation()
             delegate?.reloadData(at: indexPath) // Do not call reload(at:) the item it will lead to call endDisplay
         } else {
             // A new message comes from server
@@ -641,6 +706,18 @@ extension ThreadHistoryViewModel {
             delegate?.inserted(tuple.sections, tuple.rows, .left, nil)
         }
         return vm
+    }
+
+    private func updateAvatarAndGroupuserNameForLastUserMessageIfNeeded(_ message: Message, _ bottomVMBeforeJoin: MessageRowViewModel?) async {
+        let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        if thread.group == true, !isMe, let vm = sections.messageViewModel(for: message.uniqueId ?? "") {
+            updateIsLastMessageAndIsFirstMessageFor([vm], at: .bottom(bottomVMBeforeJoin: bottomVMBeforeJoin))
+
+            if let prevIndexPath = sections.sameUserPrevIndex(message) {
+                sections[prevIndexPath.section].vms[prevIndexPath.row].calMessage.isLastMessageOfTheUser = false
+                delegate?.reload(at: prevIndexPath)
+            }
+        }
     }
 
     private func onEdited(_ response: ChatResponse<Message>) async {

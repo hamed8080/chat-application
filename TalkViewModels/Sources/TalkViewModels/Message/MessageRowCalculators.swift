@@ -35,9 +35,9 @@ class MessageRowCalculators {
         let isEditableOrNil = (message.editable == true || message.editable == nil)
         calculatedMessage.canEdit = ( isEditableOrNil && calculatedMessage.isMe) || (isEditableOrNil && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true)
         rowType.isMap = calculatedMessage.fileMetaData?.mapLink != nil || calculatedMessage.fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
-        let isFirstMessageOfTheUser = await isFirstMessageOfTheUser(message, appended: appendMessages, viewModel: threadVM)
+        let isFirstMessageOfTheUser = await isFirstMessageOfTheUserInsideAppending(message, appended: appendMessages, viewModel: threadVM)
         calculatedMessage.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
-        calculatedMessage.isLastMessageOfTheUser = await isLastMessageOfTheUser(message: message, appended: appendMessages, viewModel: threadVM)
+        calculatedMessage.isLastMessageOfTheUser = await isLastMessageOfTheUserInsideAppending(message, appended: appendMessages, viewModel: threadVM)
         calculatedMessage.isEnglish = message.message?.naturalTextAlignment == .leading
         calculatedMessage.markdownTitle = calculateAttributeedString(message: message)
         rowType.isPublicLink = message.isPublicLink
@@ -419,34 +419,26 @@ class MessageRowCalculators {
         }
     }
 
-    class func isLastMessageOfTheUser(message: MessageType, appended: [MessageType], viewModel: ThreadViewModel?) async -> Bool {
-        let sections = viewModel?.historyVM.sections
+    class func isLastMessageOfTheUserInsideAppending(_ message: MessageType, appended: [any HistoryMessageProtocol], viewModel: ThreadViewModel?) async -> Bool {
         let index = appended.firstIndex(where: {$0.id == message.id}) ?? -2
         let nextIndex = index + 1
         let isNextExist = appended.indices.contains(nextIndex)
         if appended.count > 0, isNextExist {
             let isSameParticipant = appended[nextIndex].participant?.id == message.participant?.id
             return !isSameParticipant
-        } else if sections?.first?.vms.first?.message.participant?.id == message.participant?.id {
-            return false
-        } else {
-            return true
         }
+        return true
     }
 
-    class func isFirstMessageOfTheUser(_ message: MessageType, appended: [MessageType], viewModel: ThreadViewModel?) async -> Bool {
-        let sections = viewModel?.historyVM.sections
+    class func isFirstMessageOfTheUserInsideAppending(_ message: MessageType, appended: [any HistoryMessageProtocol], viewModel: ThreadViewModel?) async -> Bool {
         let index = appended.firstIndex(where: {$0.id == message.id}) ?? -2
-        let nextIndex = index - 1
-        let isNextExist = appended.indices.contains(nextIndex)
-        if appended.count > 0, isNextExist {
-            let isSameParticipant = appended[nextIndex].participant?.id == message.participant?.id
+        let prevIndex = index - 1
+        let isPrevExist = appended.indices.contains(prevIndex)
+        if appended.count > 0, isPrevExist {
+            let isSameParticipant = appended[prevIndex].participant?.id == message.participant?.id
             return !isSameParticipant
-        } else if sections?.first?.vms.first?.message.participant?.id == message.participant?.id {
-            return false
-        } else {
-            return true
         }
+        return true
     }
 
     class func calculateCallText(message: MessageType) -> String? {

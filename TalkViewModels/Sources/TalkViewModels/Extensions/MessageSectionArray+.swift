@@ -244,4 +244,14 @@ extension ContiguousArray where Element == MessageSection {
 
         return nil
     }
+
+    public func sameUserPrevIndex(_ message: Message) -> IndexPath? {
+        guard
+            let uniqueId = message.uniqueId,
+            let indexPath = indexPathBy(messageUniqueId: uniqueId),
+            let prevIndexPath = previousIndexPath(indexPath)
+        else { return nil }
+        let isSame = self[prevIndexPath.section].vms[prevIndexPath.row].message.participant?.id == message.participant?.id
+        return isSame ? prevIndexPath : nil
+    }
 }
