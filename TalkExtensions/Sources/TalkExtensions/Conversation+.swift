@@ -108,29 +108,38 @@ public extension Conversation {
         return inviter?.coreUserId == Conversation.talkId
     }
 
+    func updateOnNewMessage(_ response: ChatResponse<Message>, meId: Int?) -> Conversation {
+        let message = response.result
+        var thread = self
+        let isMe = response.result?.participant?.id == meId
+        if !isMe {
+            thread.unreadCount = (thread.unreadCount ?? 0) + 1
+        } else if isMe {
+            thread.unreadCount = 0
+        }
+        thread.time = message?.time
+        thread.lastMessageVO = message?.toLastMessageVO
 
-    func updateOnNewMessage(message: Message, isMe: Bool) -> Conversation {
-        // MARK: Update thread properites
         /*
          We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
          Although in message object Message.id / Message.time / Message.timeNanos are right.
          We only do this for ourselves, because the only person who can change these values is ourselves.
-         We do this in ThreadsViewModel too, because there is a chance of reconnect so objects are distinict
-         or if we are in forward mode the objects are different than what exist in ThreadsViewModel.
          */
-        var updatedThread = self
         if isMe {
-            updatedThread.lastSeenMessageId = message.id
-            updatedThread.lastSeenMessageTime = message.time
-            updatedThread.lastSeenMessageNanos = message.timeNanos
+            thread.lastSeenMessageId = message?.id
+            thread.lastSeenMessageTime = message?.time
+            thread.lastSeenMessageNanos = message?.timeNanos
         }
-        updatedThread.time = message.time
-        updatedThread.lastMessageVO = message.toLastMessageVO
-        updatedThread.lastMessage = message.message
-        if message.mentioned == true {
-            updatedThread.mentioned = true
+        thread.lastMessage = response.result?.message
+        /* We only set the mentioned to "true" because if the user sends multiple
+         messages inside a thread but one message has been mentioned.
+         The list will set it to false which is wrong.
+         */
+        if response.result?.mentioned == true {
+            thread.mentioned = true
         }
-        return updatedThread
+
+        return thread
     }
 }
 

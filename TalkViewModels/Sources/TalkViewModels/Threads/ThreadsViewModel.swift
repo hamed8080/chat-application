@@ -60,7 +60,9 @@ public final class ThreadsViewModel: ObservableObject {
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if let message = response.result, let index = firstIndex(message.conversation?.id) {
             let old = threads[index]
-            let updated = updateConversationOnNewMessage(response, index)
+            let updated = old.updateOnNewMessage(response, meId: AppState.shared.user?.id)
+            threads[index] = updated
+
             if updated.pin == false {
                 sort()
             }
@@ -68,41 +70,6 @@ public final class ThreadsViewModel: ObservableObject {
             updateActiveConversationOnNewMessage(response, updated, old)
         }
         getNotActiveThreads(response.result?.conversation)
-    }
-
-    private func updateConversationOnNewMessage(_ response: ChatResponse<Message>, _ index: Array<Conversation>.Index) -> Conversation {
-        let message = response.result
-        var thread = threads[index]
-        let isMe = response.result?.participant?.id == AppState.shared.user?.id
-        if !isMe {
-            thread.unreadCount = (thread.unreadCount ?? 0) + 1
-        } else if isMe {
-            thread.unreadCount = 0
-        }
-        thread.time = message?.time
-        thread.lastMessageVO = message?.toLastMessageVO
-
-        /*
-         We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
-         Although in message object Message.id / Message.time / Message.timeNanos are right.
-         We only do this for ourselves, because the only person who can change these values is ourselves.
-         */
-        if isMe {
-            thread.lastSeenMessageId = message?.id
-            thread.lastSeenMessageTime = message?.time
-            thread.lastSeenMessageNanos = message?.timeNanos
-        }
-        thread.lastMessage = response.result?.message
-        /* We only set the mentioned to "true" because if the user sends multiple
-         messages inside a thread but one message has been mentioned.
-         The list will set it to false which is wrong.
-         */
-        if response.result?.mentioned == true {
-            thread.mentioned = true
-        }
-        threads[index] = thread
-
-        return thread
     }
 
     private func updateActiveConversationOnNewMessage(_ response: ChatResponse<Message>, _ updatedConversation: Conversation, _ oldConversation: Conversation?) {

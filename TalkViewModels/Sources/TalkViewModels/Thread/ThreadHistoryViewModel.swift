@@ -583,7 +583,7 @@ extension ThreadHistoryViewModel {
     // It will be only called by ThreadsViewModel
     public func onNewMessage(_ message: Message, _ oldConversation: Conversation?) async {
         if let viewModel = viewModel, isLastMessageInsideTheSections(oldConversation) {
-            await updateConversationPropertiesOnNewMessage(message)
+            self.viewModel?.thread = thread
             let currentIndexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "")
             let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
             await viewModel.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
@@ -613,10 +613,13 @@ extension ThreadHistoryViewModel {
     /*
      Check if we have the last message in our list,
      It'd useful in case of onNewMessage to check if we have move to time or not.
+     We also check greater messages in the last section, owing to
+     when I send a message it will append to the list immediately, and then it will be updated by the sent/deliver method.
+     Therefore, the id is greater than the id of the previous conversation.lastMessageVO.id
      */
     private func isLastMessageInsideTheSections(_ oldConversation: Conversation?) -> Bool {
         let hasAnyUploadMessage = viewModel?.uploadMessagesViewModel.hasAnyUploadMessage() ?? false
-        let isLastMessageExistInLastSection = sections.last?.vms.last?.message.id == oldConversation?.lastMessageVO?.id
+        let isLastMessageExistInLastSection = sections.last?.vms.last?.message.id ?? 0 >= oldConversation?.lastMessageVO?.id ?? 0
         return isLastMessageExistInLastSection || hasAnyUploadMessage
     }
 
@@ -638,13 +641,6 @@ extension ThreadHistoryViewModel {
             delegate?.inserted(tuple.sections, tuple.rows, .left, nil)
         }
         return vm
-    }
-
-    @MainActor
-    private func updateConversationPropertiesOnNewMessage(_ message: Message) async {
-        let isMe = (message.participant?.id ?? -1) == AppState.shared.user?.id
-        let updatedThread = thread.updateOnNewMessage(message: message, isMe: isMe)
-        viewModel?.thread = updatedThread
     }
 
     private func onEdited(_ response: ChatResponse<Message>) async {
