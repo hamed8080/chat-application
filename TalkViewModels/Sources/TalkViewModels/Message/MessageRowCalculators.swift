@@ -261,7 +261,7 @@ class MessageRowCalculators {
             if originalWidth < designerWidth && originalHeight < designerHeight && !hasText {
                 let leadingMargin: CGFloat = 4
                 let trailingMargin: CGFloat = 4
-                let minWidth: CGFloat = 96 // 96 to draw image downloading label and progress button over image view
+                let minWidth: CGFloat = 128 // 96 to draw image downloading label and progress button over image view
                 newSizes.width = max(leadingMargin + minWidth + trailingMargin, originalWidth)
                 newSizes.height = originalHeight
             } else if hasText {

@@ -19,7 +19,7 @@ final class MessageImageView: UIImageView {
     private var effectView: UIVisualEffectView!
     private let progressView = CircleProgressButton(progressColor: Color.App.whiteUIColor,
                                                     iconTint: Color.App.whiteUIColor,
-                                                    iconSize: .init(width: 12, height: 12),
+                                                    iconSize: .init(width: 14, height: 14),
                                                     margin: 2)
 
     // Models
@@ -30,7 +30,7 @@ final class MessageImageView: UIImageView {
     private var heightConstraint: NSLayoutConstraint!
 
     // Sizes
-    private let progessSize: CGFloat = 20
+    private let progessSize: CGFloat = 32
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -65,7 +65,7 @@ final class MessageImageView: UIImageView {
         effectView.accessibilityIdentifier = "effectViewMessageImageView"
 
         fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
-        fileSizeLabel.font = UIFont.uiiransansFootnote
+        fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
         fileSizeLabel.accessibilityIdentifier = "fileSizeLabelMessageImageView"
@@ -78,7 +78,7 @@ final class MessageImageView: UIImageView {
         stack.backgroundColor = .white.withAlphaComponent(0.2)
         stack.layoutMargins = .init(horizontal: 4, vertical: 4)
         stack.isLayoutMarginsRelativeArrangement = true
-        stack.layer.cornerRadius = 14
+        stack.layer.cornerRadius = 18
         stack.isUserInteractionEnabled = false
         stack.accessibilityIdentifier = "stackMessageImageView"
 

@@ -59,48 +59,60 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if let message = response.result, let index = firstIndex(message.conversation?.id) {
-            var thread = threads[index]
-            let isMe = response.result?.participant?.id == AppState.shared.user?.id
-            if !isMe {
-                thread.unreadCount = (thread.unreadCount ?? 0) + 1
-            } else if isMe {
-                thread.unreadCount = 0
-            }
-            thread.time = message.time
-            thread.lastMessageVO = message.toLastMessageVO
-
-            /*
-             We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
-             Although in message object Message.id / Message.time / Message.timeNanos are right.
-             We only do this for ourselves, because the only person who can change these values is ourselves.
-            */
-            if isMe {
-                thread.lastSeenMessageId = message.id
-                thread.lastSeenMessageTime = message.time
-                thread.lastSeenMessageNanos = message.timeNanos
-            }
-            thread.lastMessage = response.result?.message
-            /* We only set the mentioned to "true" because if the user sends multiple
-             messages inside a thread but one message has been mentioned.
-             The list will set it to false which is wrong.
-             */
-            if response.result?.mentioned == true {
-                thread.mentioned = true
-            }
-            threads[index] = thread
-            if thread.pin == false {
+            let old = threads[index]
+            let updated = updateConversationOnNewMessage(response, index)
+            if updated.pin == false {
                 sort()
             }
             animateObjectWillChange()
-            let activeViewModel = AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel
-            if response.subjectId == activeViewModel?.threadId {
-                activeViewModel?.updateUnreadCount(thread.unreadCount)
-                Task {
-                    await activeViewModel?.historyVM.onNewMessage(message)
-                }
-            }
+            updateActiveConversationOnNewMessage(response, updated, old)
         }
         getNotActiveThreads(response.result?.conversation)
+    }
+
+    private func updateConversationOnNewMessage(_ response: ChatResponse<Message>, _ index: Array<Conversation>.Index) -> Conversation {
+        let message = response.result
+        var thread = threads[index]
+        let isMe = response.result?.participant?.id == AppState.shared.user?.id
+        if !isMe {
+            thread.unreadCount = (thread.unreadCount ?? 0) + 1
+        } else if isMe {
+            thread.unreadCount = 0
+        }
+        thread.time = message?.time
+        thread.lastMessageVO = message?.toLastMessageVO
+
+        /*
+         We have to set it, because in server chat response when we send a message Message.Conversation.lastSeenMessageId / Message.Conversation.lastSeenMessageTime / Message.Conversation.lastSeenMessageNanos are wrong.
+         Although in message object Message.id / Message.time / Message.timeNanos are right.
+         We only do this for ourselves, because the only person who can change these values is ourselves.
+         */
+        if isMe {
+            thread.lastSeenMessageId = message?.id
+            thread.lastSeenMessageTime = message?.time
+            thread.lastSeenMessageNanos = message?.timeNanos
+        }
+        thread.lastMessage = response.result?.message
+        /* We only set the mentioned to "true" because if the user sends multiple
+         messages inside a thread but one message has been mentioned.
+         The list will set it to false which is wrong.
+         */
+        if response.result?.mentioned == true {
+            thread.mentioned = true
+        }
+        threads[index] = thread
+
+        return thread
+    }
+
+    private func updateActiveConversationOnNewMessage(_ response: ChatResponse<Message>, _ updatedConversation: Conversation, _ oldConversation: Conversation?) {
+        let activeViewModel = AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel
+        if response.subjectId == activeViewModel?.threadId, let message = response.result {
+            activeViewModel?.updateUnreadCount(updatedConversation.unreadCount)
+            Task {
+                await activeViewModel?.historyVM.onNewMessage(message, oldConversation)
+            }
+        }
     }
 
     func onChangedType(_ response: ChatResponse<Conversation>) {
@@ -530,12 +542,14 @@ public final class ThreadsViewModel: ObservableObject {
     public func onPinMessage(_ response: ChatResponse<PinMessage>) {
         if response.result != nil, let threadIndex = firstIndex(response.subjectId) {
             threads[threadIndex].pinMessage = response.result
+            animateObjectWillChange()
         }
     }
 
     public func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
         if response.result != nil, let threadIndex = firstIndex(response.subjectId) {
             threads[threadIndex].pinMessage = nil
+            animateObjectWillChange()
         }
     }
 

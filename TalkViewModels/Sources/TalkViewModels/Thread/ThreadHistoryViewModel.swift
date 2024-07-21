@@ -581,8 +581,8 @@ extension ThreadHistoryViewModel {
     }
 
     // It will be only called by ThreadsViewModel
-    public func onNewMessage(_ message: Message) async {
-        if let viewModel = viewModel, isLastMessageInsideTheSections() {
+    public func onNewMessage(_ message: Message, _ oldConversation: Conversation?) async {
+        if let viewModel = viewModel, isLastMessageInsideTheSections(oldConversation) {
             await updateConversationPropertiesOnNewMessage(message)
             let currentIndexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "")
             let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
@@ -614,9 +614,9 @@ extension ThreadHistoryViewModel {
      Check if we have the last message in our list,
      It'd useful in case of onNewMessage to check if we have move to time or not.
      */
-    private func isLastMessageInsideTheSections() -> Bool {
+    private func isLastMessageInsideTheSections(_ oldConversation: Conversation?) -> Bool {
         let hasAnyUploadMessage = viewModel?.uploadMessagesViewModel.hasAnyUploadMessage() ?? false
-        let isLastMessageExistInLastSection = sections.last?.vms.last?.message.id == thread.lastMessageVO?.id
+        let isLastMessageExistInLastSection = sections.last?.vms.last?.message.id == oldConversation?.lastMessageVO?.id
         return isLastMessageExistInLastSection || hasAnyUploadMessage
     }
 
