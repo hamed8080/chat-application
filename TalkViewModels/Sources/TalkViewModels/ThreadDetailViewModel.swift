@@ -58,11 +58,13 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         case .userRemoveFormThread(let response):
             onUserRemovedByAdmin(response)
         case .updatedInfo(let response):
-            let replacedEmoji = response.result?.title?.replacingOccurrences(of: NSRegularExpression.emojiRegEx, with: "\\\\u{$1}", options: .regularExpression)
-            thread?.title = replacedEmoji
-            thread?.image = response.result?.image
-            thread?.description = response.result?.description
-            animateObjectWillChange()
+            if response.subjectId == thread?.id {
+                let replacedEmoji = response.result?.title?.replacingOccurrences(of: NSRegularExpression.emojiRegEx, with: "\\\\u{$1}", options: .regularExpression)
+                thread?.title = replacedEmoji
+                thread?.image = response.result?.image
+                thread?.description = response.result?.description
+                animateObjectWillChange()
+            }
         default:
             break
         }

@@ -95,6 +95,7 @@ public protocol TopToolbarDelegate {
     func updateTitleTo(_ title: String?)
     func updateSubtitleTo(_ subtitle: String?)
     func updateImageTo(_ image: UIImage?)
+    func refetchImageOnUpdateInfo()
     func onUpdatePinMessage()
 }
 

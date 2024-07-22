@@ -94,6 +94,10 @@ public final class TopThreadToolbar: UIStackView {
         navBarView.updateImageTo(image)
     }
 
+    public func refetchImageOnUpdateInfo() {
+        navBarView.refetchImageOnUpdateInfo()
+    }
+
     public func updatePinMessage() {
         pinMessageView?.set()
     }

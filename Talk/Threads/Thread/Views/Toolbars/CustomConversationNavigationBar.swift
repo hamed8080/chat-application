@@ -191,6 +191,32 @@ public class CustomConversationNavigationBar: UIView {
         }
     }
 
+    public func refetchImageOnUpdateInfo() {
+        fetchImageOnUpdateInfo()
+    }
+
+    public func fetchImageOnUpdateInfo() {
+        guard let image = viewModel?.thread.image else { return }
+        if let imageViewModel = viewModel?.threadsViewModel?.avatars(for: image, metaData: nil, userName: nil) {
+            self.imageLoader = imageViewModel
+
+            // Set first time opening the thread image from cahced version inside avatarVMS
+            let image = imageViewModel.image
+            updateImageTo(image)
+
+            // Observe for new changes
+            self.imageLoader?.$image.sink { [weak self] newImage in
+                guard let self = self else { return }
+                updateImageTo(newImage)
+            }
+            .store(in: &cancellableSet)
+
+            if !imageViewModel.isImageReady {
+                imageViewModel.fetch()
+            }
+        }
+    }
+
     private func setSplitedText() async {
         let splitedText = String.splitedCharacter(self.viewModel?.thread.title ?? "")
         let bg = String.getMaterialColorByCharCode(str: self.viewModel?.thread.computedTitle ?? "")
@@ -215,22 +241,7 @@ public class CustomConversationNavigationBar: UIView {
         // Initial image from avatarVMS inside the thread
         let image = viewModel?.thread.image
         if let image = image, let imageViewModel = viewModel?.threadsViewModel?.avatars(for: image, metaData: nil, userName: nil) {
-            self.imageLoader = imageViewModel
-
-            // Set first time opening the thread image from cahced version inside avatarVMS
-            let image = imageViewModel.image
-            updateImageTo(image)
-
-            // Observe for new changes
-            self.imageLoader?.$image.sink { [weak self] newImage in
-                guard let self = self else { return }
-                updateImageTo(newImage)
-            }
-            .store(in: &cancellableSet)
-
-            if !imageViewModel.isImageReady {
-                imageViewModel.fetch()
-            }
+            fetchImageOnUpdateInfo()
         } else {
             Task {
                 await setSplitedText()

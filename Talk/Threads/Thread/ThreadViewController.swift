@@ -397,6 +397,10 @@ extension ThreadViewController: ThreadViewDelegate {
         topThreadToolbar.updateImageTo(image)
     }
 
+    public func refetchImageOnUpdateInfo() {
+        topThreadToolbar.refetchImageOnUpdateInfo()
+    }
+
     func setHighlightRowAt(_ indexPath: IndexPath, highlight: Bool) {
         if let cell = baseCell(indexPath) {
             cell.setHighlight()

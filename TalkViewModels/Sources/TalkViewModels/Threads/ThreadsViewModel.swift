@@ -376,6 +376,7 @@ public final class ThreadsViewModel: ObservableObject {
             let activeThread = AppState.shared.objectsContainer.navVM.viewModel(for: threadId)
             activeThread?.thread = threads[index]
             activeThread?.delegate?.updateTitleTo(replacedEmoji)
+            activeThread?.delegate?.refetchImageOnUpdateInfo()
             animateObjectWillChange()
         }
     }
