@@ -703,16 +703,16 @@ extension ThreadViewController: HistoryScrollDelegate {
             tableView.endUpdates()
         }
     }
-
-    func reactionsUpdatedAt(_ indexPath: IndexPath) {
-        // Delay is essential for when we get the bottom part on openning the thread for the first time to it won't lead to crash
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            if let cell = self?.tableView.cellForRow(at: indexPath) as? MessageBaseCell, let viewModel = self?.viewModel?.historyVM.sections.viewModelWith(indexPath) {
-                cell.reactionsUpdated(viewModel: viewModel)
-                // Update geometry of table view and make cells taller
-                self?.tableView?.beginUpdates()
-                self?.tableView?.endUpdates()
+    func performBatchUpdateForReactions(_ indexPaths: [IndexPath]) {
+        tableView.performBatchUpdates {
+            for indexPath in indexPaths {
+                let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell
+                if let cell = cell, let viewModel = viewModel?.historyVM.sections.viewModelWith(indexPath) {
+                    cell.reactionsUpdated(viewModel: viewModel)
+                }
             }
+        } completion: { completed in
+
         }
     }
 }

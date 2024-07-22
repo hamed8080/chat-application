@@ -98,9 +98,9 @@ public final class ThreadReactionViewModel {
     }
 
     func scrollToLastMessageIfLastMessageReacionChanged(_ response: ChatResponse<ReactionMessageResponse>) {
-        if response.result?.messageId == thread?.lastMessageVO?.id {
+        if response.subjectId == threadId, response.result?.messageId == thread?.lastMessageVO?.id {
             Task {
-//                await threadVM?.scrollVM.scrollToBottomIfIsAtBottom()
+                await threadVM?.scrollVM.scrollToLastMessageOnlyIfIsAtBottom()
             }
         }
     }
@@ -144,10 +144,9 @@ public final class ThreadReactionViewModel {
         let wasAtBottom = threadVM?.scrollVM.isAtBottomOfTheList == true
 
         // Update UI of each message
-        for reaction in reactions {
-            if let indexPath = historyVM.sections.viewModelAndIndexPath(for: reaction.messageId)?.indexPath {
-                threadVM?.delegate?.reactionsUpdatedAt(indexPath)
-            }
+        let indexPaths: [IndexPath] = reactions.compactMap({ historyVM.sections.viewModelAndIndexPath(for: $0.messageId)?.indexPath })
+        await MainActor.run { [weak self, indexPaths] in
+            self?.threadVM?.delegate?.performBatchUpdateForReactions(indexPaths)
         }
 
         if wasAtBottom {

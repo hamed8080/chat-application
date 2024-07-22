@@ -115,7 +115,7 @@ final class FooterView: UIStackView {
         attachOrdetachEditLabel(isEdited: viewModel.message.edited == true)
         let isPin = message.id != nil && message.id == viewModel.threadVM?.thread.pinMessage?.id
         attachOrdetachPinImage(isPin: isPin)
-        attachOrDetachReactions(viewModel: viewModel)
+        attachOrDetachReactions(viewModel: viewModel, animation: false)
     }
 
     private func setStatusImageOrUploadingAnimation(viewModel: MessageRowViewModel) {
@@ -208,20 +208,31 @@ final class FooterView: UIStackView {
         statusImage.layer.removeAllAnimations()
     }
 
-    private func attachOrDetachReactions(viewModel: MessageRowViewModel) {
+    private func attachOrDetachReactions(viewModel: MessageRowViewModel, animation: Bool) {
         if viewModel.reactionsModel.rows.isEmpty {
             reactionView.removeFromSuperview()// reset
         } else if reactionView.superview == nil {
             addArrangedSubview(reactionView)
+            fadeAnimateReactions(animation)
         } else if viewModel.message.edited == true {
             reactionView.removeFromSuperview()
             addArrangedSubview(reactionView)
+            fadeAnimateReactions(animation)
         }
         reactionView.set(viewModel)
         heightConstraint.constant = viewModel.reactionsModel.rows.isEmpty ? heightWithoutReaction : heightWithReaction
     }
 
+    // Prevent animation in reuse call method, yet has animation when updateReaction called
+    private func fadeAnimateReactions(_ animation: Bool) {
+        if !animation { return }
+        reactionView.alpha = 0.0
+        UIView.animate(withDuration: 0.2, delay: 0.2) {
+            self.reactionView.alpha = 1.0
+        }
+    }
+
     public func reactionsUpdated(viewModel: MessageRowViewModel){
-        attachOrDetachReactions(viewModel: viewModel)
+        attachOrDetachReactions(viewModel: viewModel, animation: true)
     }
 }
