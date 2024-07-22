@@ -36,11 +36,14 @@ public struct GalleryView: View {
 
     private var progress: some View {
         CircularProgressView(percent: $viewModel.percent, config: .normal)
-            .padding(viewModel.state == .downloading ? 0 : 8)
             .frame(maxWidth: 128)
-            .frame(height: viewModel.state == .downloading ? nil : 0)
-            .clipped()
+            .frame(height: canShowDownloaingProgress ? 96 : 0)
+            .padding(canShowDownloaingProgress ? 0 : 8)
             .environment(\.layoutDirection, .leftToRight)
+    }
+
+    private var canShowDownloaingProgress: Bool {
+        viewModel.state == .downloading || viewModel.state == .undefined
     }
 
     @ViewBuilder

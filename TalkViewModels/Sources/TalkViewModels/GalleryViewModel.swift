@@ -16,6 +16,7 @@ public final class GalleryViewModel: ObservableObject {
     public var state: DownloadFileState = .undefined
     private var cancelable: Set<AnyCancellable> = []
     private var objectId = UUID().uuidString
+    private var uniqueId: String = ""
     private let FETCH_GALLERY_VIEW_KEY: String
     public var currentData: Data? {
         guard let hashCode = currentImageMessage?.fileMetaData?.fileHash else { return nil }
@@ -83,7 +84,7 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if let progress = progress, RequestsManager.shared.contains(key: FETCH_GALLERY_VIEW_KEY) {
+        if uniqueId == self.uniqueId, let progress = progress {
             state = .downloading
             percent = progress.percent
             animateObjectWillChange()
@@ -108,6 +109,7 @@ public final class GalleryViewModel: ObservableObject {
         animateObjectWillChange()
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
         let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
+        self.uniqueId = req.uniqueId
         RequestsManager.shared.append(prepend: FETCH_GALLERY_VIEW_KEY, value: req)
         ChatManager.activeInstance?.file.get(req)
     }
