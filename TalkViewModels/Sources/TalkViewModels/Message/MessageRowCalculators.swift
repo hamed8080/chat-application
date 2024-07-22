@@ -336,7 +336,12 @@ class MessageRowCalculators {
                               selectedEmojiTabId: selectedEmojiTabId))
         }
 
-        rows = rows.sorted(by: {$0.isMyReaction != $1.isMyReaction})
+        // Move my reaction to the first item without sorting reactions
+        let myReaction = rows.first{$0.isMyReaction}
+        if let myReaction = myReaction {
+            rows.removeAll(where: {$0.isMyReaction})
+            rows.insert(myReaction, at: 0)
+        }
 
         let topPadding: CGFloat = reactions.summary.count > 0 ? 10 : 0
         let myReactionSticker = reactions.currentUserReaction?.reaction

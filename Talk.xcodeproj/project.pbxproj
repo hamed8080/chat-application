@@ -19,6 +19,14 @@
 		0507DB7B2C149A8200029E3F /* MentionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0507DB792C149A8200029E3F /* MentionCell.swift */; };
 		0507DB7D2C14B25B00029E3F /* MentionParticipantImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0507DB7C2C14B25B00029E3F /* MentionParticipantImageView.swift */; };
 		0507DB7E2C14B25B00029E3F /* MentionParticipantImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0507DB7C2C14B25B00029E3F /* MentionParticipantImageView.swift */; };
+		0509BE7D2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE7C2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift */; };
+		0509BE7E2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE7C2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift */; };
+		0509BE802C4E7292005C35B7 /* MoreReactionButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE7F2C4E7292005C35B7 /* MoreReactionButtonRow.swift */; };
+		0509BE812C4E7292005C35B7 /* MoreReactionButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE7F2C4E7292005C35B7 /* MoreReactionButtonRow.swift */; };
+		0509BE832C4E72C1005C35B7 /* ReactionCountRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE822C4E72C1005C35B7 /* ReactionCountRowView.swift */; };
+		0509BE842C4E72C1005C35B7 /* ReactionCountRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE822C4E72C1005C35B7 /* ReactionCountRowView.swift */; };
+		0509BE862C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE852C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift */; };
+		0509BE872C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0509BE852C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift */; };
 		050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
 		050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
 		050B29182AB40DC20072706C /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290E2AB40DC20072706C /* ToolbarView.swift */; };
@@ -422,6 +430,10 @@
 		0507DB722C14549100029E3F /* DimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimView.swift; sourceTree = "<group>"; };
 		0507DB792C149A8200029E3F /* MentionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionCell.swift; sourceTree = "<group>"; };
 		0507DB7C2C14B25B00029E3F /* MentionParticipantImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionParticipantImageView.swift; sourceTree = "<group>"; };
+		0509BE7C2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIReactionCountRowWrapper.swift; sourceTree = "<group>"; };
+		0509BE7F2C4E7292005C35B7 /* MoreReactionButtonRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreReactionButtonRow.swift; sourceTree = "<group>"; };
+		0509BE822C4E72C1005C35B7 /* ReactionCountRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionCountRowView.swift; sourceTree = "<group>"; };
+		0509BE852C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionRowContextMenuCofiguration.swift; sourceTree = "<group>"; };
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
 		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NothingHasBeenSelectedView.swift; sourceTree = "<group>"; };
@@ -674,6 +686,18 @@
 			path = MentionList;
 			sourceTree = "<group>";
 		};
+		0509BE7B2C4E7237005C35B7 /* FooterReactions */ = {
+			isa = PBXGroup;
+			children = (
+				05EC8A2D2ACBED930016361F /* FooterReactionsCountView.swift */,
+				0509BE7C2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift */,
+				0509BE852C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift */,
+				0509BE7F2C4E7292005C35B7 /* MoreReactionButtonRow.swift */,
+				0509BE822C4E72C1005C35B7 /* ReactionCountRowView.swift */,
+			);
+			path = FooterReactions;
+			sourceTree = "<group>";
+		};
 		050B29082AB40DC20072706C /* NavigationViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -743,6 +767,7 @@
 		052C940E2C1190F00061A6CF /* Containers */ = {
 			isa = PBXGroup;
 			children = (
+				0509BE7B2C4E7237005C35B7 /* FooterReactions */,
 				0570CB862AAEE98C001832E9 /* AvatarView.swift */,
 				0570CB842AAEE98C001832E9 /* FooterView.swift */,
 				0570CB822AAEE98C001832E9 /* ForwardInfoView.swift */,
@@ -753,7 +778,6 @@
 				052CA3CE2BA411B800E38E19 /* MessageImageView.swift */,
 				0594FE652B0387370031AADF /* MessageLocationView.swift */,
 				052CA3CF2BA411B800E38E19 /* MessageVideoView.swift */,
-				05EC8A2D2ACBED930016361F /* FooterReactionsCountView.swift */,
 				0570CB882AAEE98C001832E9 /* ReplyInfoView.swift */,
 				051D1BFE2BA0369100676CBD /* SelectMessageRadio.swift */,
 				0594FE622B0386F00031AADF /* TextMessageView.swift */,
@@ -1432,6 +1456,7 @@
 				0570CBDF2AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */,
 				05511D6F2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift in Sources */,
 				0570CC372AAEE98F001832E9 /* AddThreadToTagsView.swift in Sources */,
+				0509BE862C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift in Sources */,
 				0560C3602AB77B0B009F6A58 /* TabButtonsContainer.swift in Sources */,
 				0594FE592B034B050031AADF /* SettingNotificationSection.swift in Sources */,
 				0570CBEF2AAEE98F001832E9 /* ThreadImageView.swift in Sources */,
@@ -1478,6 +1503,7 @@
 				05C27FA82AF4BD330008FE2E /* MainSendButtons.swift in Sources */,
 				05FE15F12ADA5591009AC44A /* SupportView.swift in Sources */,
 				0594FE602B0386580031AADF /* GroupParticipantNameView.swift in Sources */,
+				0509BE832C4E72C1005C35B7 /* ReactionCountRowView.swift in Sources */,
 				0570CC572AAEE98F001832E9 /* MusicView.swift in Sources */,
 				052CA3D62BA411B800E38E19 /* MessageFileView.swift in Sources */,
 				05A0CD712B19314100F13EE5 /* DeleteContactView.swift in Sources */,
@@ -1485,6 +1511,7 @@
 				050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CBFF2AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
 				052557302BE9513500DFCE54 /* DetailSectionContainer.swift in Sources */,
+				0509BE802C4E7292005C35B7 /* MoreReactionButtonRow.swift in Sources */,
 				05C27F9C2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift in Sources */,
 				0570CC012AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0594FE572B0347B50031AADF /* AutomaticDownloadSettings.swift in Sources */,
@@ -1515,6 +1542,7 @@
 				052CA3D42BA411B800E38E19 /* JoinPublicLink.swift in Sources */,
 				0570CBEB2AAEE98F001832E9 /* ConversationCallMessageType.swift in Sources */,
 				0525572D2BE9500100DFCE54 /* DetailInfoViewSection.swift in Sources */,
+				0509BE7D2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift in Sources */,
 				052557072BE9487700DFCE54 /* EditContactInParticipantDetailView.swift in Sources */,
 				0570CC172AAEE98F001832E9 /* ReplyInfoView.swift in Sources */,
 				0570CC612AAEE98F001832E9 /* ThreadDetailView.swift in Sources */,
@@ -1624,6 +1652,7 @@
 				0570CBE02AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */,
 				05511D702B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift in Sources */,
 				0570CC382AAEE98F001832E9 /* AddThreadToTagsView.swift in Sources */,
+				0509BE872C4E74A1005C35B7 /* ReactionRowContextMenuCofiguration.swift in Sources */,
 				0560C3612AB77B0B009F6A58 /* TabButtonsContainer.swift in Sources */,
 				0570CBF02AAEE98F001832E9 /* ThreadImageView.swift in Sources */,
 				0560C3632AB77B0B009F6A58 /* TabButtonItem.swift in Sources */,
@@ -1670,6 +1699,7 @@
 				05C27FA92AF4BD330008FE2E /* MainSendButtons.swift in Sources */,
 				0570CC562AAEE98F001832E9 /* VoiceView.swift in Sources */,
 				0594FE612B0386580031AADF /* GroupParticipantNameView.swift in Sources */,
+				0509BE842C4E72C1005C35B7 /* ReactionCountRowView.swift in Sources */,
 				0570CC582AAEE98F001832E9 /* MusicView.swift in Sources */,
 				052CA3D72BA411B800E38E19 /* MessageFileView.swift in Sources */,
 				05A0CD722B19314100F13EE5 /* DeleteContactView.swift in Sources */,
@@ -1677,6 +1707,7 @@
 				050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CC002AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
 				052557312BE9513500DFCE54 /* DetailSectionContainer.swift in Sources */,
+				0509BE812C4E7292005C35B7 /* MoreReactionButtonRow.swift in Sources */,
 				05C27F9D2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift in Sources */,
 				0570CC022AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0594FE5A2B034B050031AADF /* SettingNotificationSection.swift in Sources */,
@@ -1707,6 +1738,7 @@
 				052CA3D52BA411B800E38E19 /* JoinPublicLink.swift in Sources */,
 				0570CBEC2AAEE98F001832E9 /* ConversationCallMessageType.swift in Sources */,
 				0525572E2BE9500100DFCE54 /* DetailInfoViewSection.swift in Sources */,
+				0509BE7E2C4E7256005C35B7 /* SwiftUIReactionCountRowWrapper.swift in Sources */,
 				052557082BE9487700DFCE54 /* EditContactInParticipantDetailView.swift in Sources */,
 				0570CC182AAEE98F001832E9 /* ReplyInfoView.swift in Sources */,
 				0570CC622AAEE98F001832E9 /* ThreadDetailView.swift in Sources */,
