@@ -54,7 +54,7 @@ public final class ThreadBottomToolbar: UIStackView {
         spacing = 0
         isLayoutMarginsRelativeArrangement = true
 
-        let blurEffect = UIBlurEffect(style: .systemThickMaterial)
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.translatesAutoresizingMaskIntoConstraints = false
         effectView.layer.masksToBounds = true

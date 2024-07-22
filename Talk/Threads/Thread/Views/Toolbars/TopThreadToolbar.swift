@@ -45,7 +45,7 @@ public final class TopThreadToolbar: UIStackView {
     }
 
     private func configureBlurBackgroundView() {
-        let blurEffect = UIBlurEffect(style: traitCollection.userInterfaceStyle == .dark ? .systemThinMaterial : .systemUltraThinMaterialDark)
+        let blurEffect = UIBlurEffect(style: .systemThickMaterial)
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.accessibilityIdentifier = "effectViewTopThreadToolbar"
         effectView.translatesAutoresizingMaskIntoConstraints = false

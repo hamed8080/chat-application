@@ -43,14 +43,14 @@ public class CustomConversationNavigationBar: UIView {
         titlebutton.translatesAutoresizingMaskIntoConstraints = false
         titlebutton.setTitle(viewModel?.thread.titleRTLString, for: .normal)
         titlebutton.titleLabel?.font = UIFont.uiiransansBoldBody
-        titlebutton.setTitleColor(Color.App.whiteUIColor, for: .normal)
+        titlebutton.setTitleColor(Color.App.textPrimaryUIColor, for: .normal)
         titlebutton.accessibilityIdentifier = "titlebuttonCustomConversationNavigationBar"
         titlebutton.addTarget(self, action: #selector(navigateToDetailView), for: .touchUpInside)
 
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         let subtitle = viewModel?.getParticipantCount()
         subtitleLabel.text = subtitle
-        subtitleLabel.textColor = Color.App.toolbarSecondaryTextUIColor
+        subtitleLabel.textColor = Color.App.textSecondaryUIColor
         subtitleLabel.font = UIFont.uiiransansFootnote
         subtitleLabel.accessibilityIdentifier = "subtitleLabelCustomConversationNavigationBar"
         subtitleLabel.setIsHidden(subtitle == nil || subtitle?.isEmpty == true)
@@ -89,7 +89,7 @@ public class CustomConversationNavigationBar: UIView {
 
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.imageView.image = UIImage(systemName: "chevron.backward")
-        backButton.imageView.tintColor = Color.App.toolbarButtonUIColor
+        backButton.imageView.tintColor = Color.App.accentUIColor
         backButton.imageView.contentMode = .scaleAspectFit
         backButton.accessibilityIdentifier = "backButtonCustomConversationNavigationBar"
         backButton.action = { [weak self] in
@@ -98,7 +98,7 @@ public class CustomConversationNavigationBar: UIView {
 
         fullScreenButton.translatesAutoresizingMaskIntoConstraints = false
         fullScreenButton.imageView.image = UIImage(systemName: "sidebar.leading")
-        fullScreenButton.imageView.tintColor = Color.App.toolbarButtonUIColor
+        fullScreenButton.imageView.tintColor = Color.App.accentUIColor
         fullScreenButton.imageView.contentMode = .scaleAspectFit
         fullScreenButton.accessibilityIdentifier = "backButtonCustomConversationNavigationBar"
         fullScreenButton.action = {
