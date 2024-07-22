@@ -286,6 +286,10 @@ extension ThreadViewController: ThreadViewDelegate {
         Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
             self?.moveTolastMessageIfVisible()
         }
+
+        if !value {
+            tableView.resetSelection()
+        }
     }
 
     func updateSelectionView() {
