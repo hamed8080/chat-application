@@ -35,6 +35,7 @@ final class ThreadViewController: UIViewController {
     private static let loadingViewWidth: CGFloat = 26
     private let topLoadingContainer = UIView(frame: .init(x: 0, y: 0, width: loadingViewWidth, height: loadingViewWidth + 2))
     private let bottomLoadingContainer = UIView(frame: .init(x: 0, y: 0, width: loadingViewWidth, height: loadingViewWidth + 2))
+    private var isVisible: Bool = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +48,7 @@ final class ThreadViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        isVisible = true
         ThreadViewModel.threadWidth = view.frame.width
         viewModel?.historyVM.start()
     }
@@ -54,6 +56,7 @@ final class ThreadViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         var hasAnyInstanceInStack = false
+        isVisible = false
         navigationController?.viewControllers.forEach({ hostVC in
             hostVC.children.forEach { vc in
                 if vc == self {
@@ -724,6 +727,7 @@ struct UIKitThreadViewWrapper: UIViewControllerRepresentable {
 extension ThreadViewController {
     private func registerKeyboard() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { [weak self] notif in
+            if self?.isVisible == false { return }
             print(notif)
             guard let self = self else { return }
             if let rect = notif.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
@@ -746,6 +750,7 @@ extension ThreadViewController {
         }
 
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] _ in
+            if self?.isVisible == false { return }
             self?.sendContainerBottomConstraint?.constant = 0
             self?.keyboardheight = 0
             self?.hasExternalKeyboard = false
