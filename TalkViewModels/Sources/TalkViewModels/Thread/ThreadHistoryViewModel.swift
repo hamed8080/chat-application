@@ -240,8 +240,7 @@ extension ThreadHistoryViewModel {
             log("The message id to move to is not exist in the list")
         }
 
-        viewModel?.delegate?.lastMessageAppeared(false)
-        viewModel?.scrollVM.isAtBottomOfTheList = false
+        await setIsAtBottom(newValue: false)
         showCenterLoading(true)
         showTopLoading(false)
 
@@ -644,10 +643,10 @@ extension ThreadHistoryViewModel {
     }
 
     // It will be only called by ThreadsViewModel
-    public func onNewMessage(_ message: Message, _ oldConversation: Conversation?) async {
+    public func onNewMessage(_ message: Message, _ oldConversation: Conversation?, _ updatedConversation: Conversation) async {
         if let viewModel = viewModel, isLastMessageInsideTheSections(oldConversation) {
             let bottomVMBeforeJoin = sections.last?.vms.last
-            self.viewModel?.thread = thread
+            self.viewModel?.thread = updatedConversation
             let currentIndexPath = sections.indicesByMessageUniqueId(message.uniqueId ?? "")
             let vm = await insertOrUpdateMessageViewModelOnNewMessage(message, viewModel)
             await viewModel.scrollVM.scrollToNewMessageIfIsAtBottomOrMe(message)
@@ -933,11 +932,8 @@ extension ThreadHistoryViewModel {
         guard let message = sections.viewModelWith(indexPath)?.message else { return }
         visibleTracker.append(message: message)
         log("Message appear id: \(message.id ?? 0) uniqueId: \(message.uniqueId ?? "") text: \(message.message ?? "")")
-        guard let threadVM = viewModel else { return }
-        let lastThreadMessageId = thread.lastMessageVO?.id
-        if message.id == lastThreadMessageId {
-            threadVM.scrollVM.isAtBottomOfTheList = true
-            viewModel?.delegate?.lastMessageAppeared(true)
+        if message.id == thread.lastMessageVO?.id {
+            await setIsAtBottom(newValue: true)
         }
         await seenVM?.onAppear(message)
     }
@@ -947,12 +943,15 @@ extension ThreadHistoryViewModel {
         log("Message disappeared id: \(message.id ?? 0) uniqueId: \(message.uniqueId ?? "") text: \(message.message ?? "")")
         visibleTracker.remove(message: message)
         if message.id == thread.lastMessageVO?.id {
-            await MainActor.run { [viewModel] in
-                if viewModel?.scrollVM.isAtBottomOfTheList == true {
-                    viewModel?.scrollVM.isAtBottomOfTheList = false
-                    viewModel?.delegate?.lastMessageAppeared(false)
-                }
-            }
+            await setIsAtBottom(newValue: false)
+        }
+    }
+
+    @MainActor
+    private func setIsAtBottom(newValue: Bool) {
+        if viewModel?.scrollVM.isAtBottomOfTheList != newValue {
+            viewModel?.scrollVM.isAtBottomOfTheList = newValue
+            viewModel?.delegate?.lastMessageAppeared(newValue)
         }
     }
 

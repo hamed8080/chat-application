@@ -297,13 +297,11 @@ extension ThreadViewController: ThreadViewDelegate {
     }
 
     func lastMessageAppeared(_ appeared: Bool) {
-        DispatchQueue.main.async {
-            self.moveToBottom.setVisibility(visible: !appeared)
-            if self.viewModel?.scrollVM.isAtBottomOfTheList == true {
-                self.tableView.tableFooterView = nil
-            } else {
-                self.tableView.tableFooterView = self.bottomLoadingContainer
-            }
+        self.moveToBottom.setVisibility(visible: !appeared)
+        if self.viewModel?.scrollVM.isAtBottomOfTheList == true {
+            self.tableView.tableFooterView = nil
+        } else {
+            self.tableView.tableFooterView = self.bottomLoadingContainer
         }
     }
 

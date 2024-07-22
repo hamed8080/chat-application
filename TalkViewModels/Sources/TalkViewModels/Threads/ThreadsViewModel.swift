@@ -77,7 +77,7 @@ public final class ThreadsViewModel: ObservableObject {
         if response.subjectId == activeViewModel?.threadId, let message = response.result {
             activeViewModel?.updateUnreadCount(updatedConversation.unreadCount)
             Task {
-                await activeViewModel?.historyVM.onNewMessage(message, oldConversation)
+                await activeViewModel?.historyVM.onNewMessage(message, oldConversation, updatedConversation)
             }
         }
     }
