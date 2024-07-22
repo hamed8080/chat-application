@@ -341,6 +341,8 @@ public final class ThreadSendMessageViewModel {
         self.viewModel?.updateConversation(conversation)
         DraftManager.shared.clear(contactId: navModel.userToCreateThread?.contactId ?? -1)
         navModel.userToCreateThread = nil
+        // It is essential to fill it again if we create a new conversation, if we don't do that it will send the wrong threadId.
+        model.threadId = conversation.id ?? -1
     }
 
     func makeModel(_ uploadFileIndex: Int? = nil) -> SendMessageModel {
