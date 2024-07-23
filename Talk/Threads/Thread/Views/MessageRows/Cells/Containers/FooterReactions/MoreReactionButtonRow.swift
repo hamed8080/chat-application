@@ -51,7 +51,6 @@ class MoreReactionButtonRow: UIView, UIContextMenuInteractionDelegate {
 
         NSLayoutConstraint.activate([
             widthAnchor.constraint(equalToConstant: totlaWidth),
-            heightAnchor.constraint(equalToConstant: 20),
             imgCenter.heightAnchor.constraint(equalToConstant: emojiWidth),
             imgCenter.topAnchor.constraint(equalTo: topAnchor, constant: 6),
             imgCenter.leadingAnchor.constraint(equalTo: leadingAnchor, constant: margin),
