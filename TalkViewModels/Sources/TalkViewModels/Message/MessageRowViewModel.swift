@@ -201,11 +201,11 @@ public extension MessageRowViewModel {
                 audioVM.toggle()
             } catch {
 #if canImport(MobileVLCKit)
-                audioVM.setupWithVLC(message: message,
+                audioVM.setupWithVLC(message: message as? Message,
                                      fileURL: fileURL,
-                                     ext: file?.mimeType?.ext,
-                                     title: title,
-                                     subtitle: subtitle)
+                                     ext: mtd?.file?.mimeType?.ext,
+                                     title: mtd?.file?.originalName ?? mtd?.name ?? "",
+                                     subtitle: mtd?.file?.originalName ?? "")
                 audioVM.playWithVLC()
 #endif
             }
