@@ -192,12 +192,23 @@ public extension MessageRowViewModel {
     private func togglePlaying() {
         if let fileURL = calMessage.fileURL {
             let mtd = calMessage.fileMetaData
-            try? audioVM.setup(message: message as? Message,
-                               fileURL: fileURL,
-                               ext: mtd?.file?.mimeType?.ext,
-                               title: mtd?.file?.originalName ?? mtd?.name ?? "",
-                               subtitle: mtd?.file?.originalName ?? "")
-            audioVM.toggle()
+            do {
+                try audioVM.setup(message: message as? Message,
+                                  fileURL: fileURL,
+                                  ext: mtd?.file?.mimeType?.ext,
+                                  title: mtd?.file?.originalName ?? mtd?.name ?? "",
+                                  subtitle: mtd?.file?.originalName ?? "")
+                audioVM.toggle()
+            } catch {
+#if canImport(MobileVLCKit)
+                audioVM.setupWithVLC(message: message,
+                                     fileURL: fileURL,
+                                     ext: file?.mimeType?.ext,
+                                     title: title,
+                                     subtitle: subtitle)
+                audioVM.playWithVLC()
+#endif
+            }
         }
     }
 }

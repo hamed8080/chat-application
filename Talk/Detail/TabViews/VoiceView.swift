@@ -160,6 +160,14 @@ struct DownloadedVoicePlayer: View {
                 viewModel.toggle()
             } catch {
                 failed = true
+#if canImport(MobileVLCKit)
+                viewModel.setupWithVLC(message: message,
+                                       fileURL: fileURL,
+                                       ext: message.fileMetaData?.file?.mimeType?.ext,
+                                       title: message.fileMetaData?.name,
+                                       subtitle: message.fileMetaData?.file?.originalName ?? "")
+                viewModel.playWithVLC()
+#endif
             }
         } label: {
             ZStack {

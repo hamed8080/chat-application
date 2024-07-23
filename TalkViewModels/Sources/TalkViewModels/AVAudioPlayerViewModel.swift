@@ -5,6 +5,10 @@ import OSLog
 import SwiftUI
 import Chat
 
+#if canImport(MobileVLCKit)
+import MobileVLCKit
+#endif
+
 public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published public var isPlaying: Bool = false
     @Published public var isClosed: Bool = true
@@ -16,6 +20,11 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     public var fileURL: URL?
     public var message: Message?
     @Published public var failed: Bool = false
+    private var isVLC = false
+
+#if canImport(MobileVLCKit)
+    private let vlcPlayer = VLCMediaPlayer()
+#endif
 
     private var timer: Timer?
     public override init() {}
@@ -26,6 +35,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         self.subtitle = subtitle
         self.fileURL = fileURL
         self.currentTime = 0
+        isVLC = false
         do {
             let audioData = try Data(contentsOf: fileURL, options: NSData.ReadingOptions.mappedIfSafe)
             try AVAudioSession.sharedInstance().setCategory(category)
@@ -42,7 +52,15 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         }
     }
 
+    public func setupWithVLC(message: Message? = nil, fileURL: URL, ext: String?, category: AVAudioSession.Category = .playback, title: String? = nil, subtitle: String = "") {
+        self.message = message
+        self.title = title ?? fileURL.lastPathComponent
+        self.subtitle = subtitle
+        self.fileURL = fileURL
+    }
+
     public func play() {
+        if isVLC { return }
         isClosed = false
         isPlaying = true
         try? AVAudioSession.sharedInstance().setActive(true)
@@ -66,6 +84,9 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         isPlaying = false
         try? AVAudioSession.sharedInstance().setActive(false)
         player?.pause()
+#if canImport(MobileVLCKit)
+        vlcPlayer.pause()
+#endif
         stopTimer()
     }
 
@@ -81,6 +102,9 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         stopTimer()
         isClosed = true
         currentTime = 0
+#if canImport(MobileVLCKit)
+        vlcPlayer.stop()
+#endif
         pause()
         fileURL = nil
     }
@@ -102,6 +126,48 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         timer?.invalidate()
         timer = nil
         isPlaying = false
+        isVLC = false
+#if canImport(MobileVLCKit)
+        vlcPlayer.stop()
+#endif
         animateObjectWillChange()
     }
 }
+
+#if canImport(MobileVLCKit)
+extension AVAudioPlayerViewModel: VLCMediaPlayerDelegate {
+    public func playWithVLC() {
+        if isPlaying {
+            close()
+            return
+        }
+        guard let fileURL = fileURL else { return }
+        vlcPlayer.media = VLCMedia(url: fileURL)
+        let duration = Double(vlcPlayer.media.length.intValue)
+        vlcPlayer.delegate = self
+        vlcPlayer.play()
+        isClosed = false
+        isPlaying = true
+        isVLC = true
+        self.duration = duration <= 0 ? 60 : duration
+    }
+
+    public func mediaPlayerStateChanged(_ aNotification: Notification!) {
+        let state = vlcPlayer.state
+        if state == .ended {
+            isPlaying = false
+            close()
+        } else if state == .buffering {
+            isPlaying = true
+        } else if state == .error {
+            isPlaying = false
+        }
+    }
+
+    public func mediaPlayerTimeChanged(_ aNotification: Notification!) {
+        let time = vlcPlayer.time.intValue / 1000
+        isPlaying = true
+        currentTime = Double(time)
+    }
+}
+#endif
