@@ -359,7 +359,9 @@ extension ThreadViewController: ThreadViewDelegate {
 
     func edited(_ indexPath: IndexPath) {
         if let cell = baseCell(indexPath) {
-            cell.edited()
+            tableView.performBatchUpdates {
+                cell.edited()
+            }
         }
     }
 

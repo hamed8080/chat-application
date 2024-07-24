@@ -204,8 +204,14 @@ public struct ActionModel {
 // MARK: Upadate methods
 extension MessageContainerStackView {
     func edited() {
+        guard let viewModel = viewModel else { return }
+        if viewModel.calMessage.rowType.hasText, textMessageView.superview == nil {
+            footerView.removeFromSuperview()
+            addArrangedSubview(textMessageView)
+            addArrangedSubview(footerView)
+        }
         UIView.animate(withDuration: 0.2) {
-            self.textMessageView.setText()
+            self.textMessageView.setText(viewModel: viewModel)
             self.footerView.edited()
         }
     }

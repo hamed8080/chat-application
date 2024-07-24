@@ -40,7 +40,7 @@ final class TextMessageView: UITextView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        setText()
+        setText(viewModel: viewModel)
     }
 
     @objc func onTapJoinGroup(_ sender: UIGestureRecognizer) {
@@ -49,12 +49,12 @@ final class TextMessageView: UITextView {
         }
     }
 
-    public func setText() {
-        self.attributedText = self.viewModel?.calMessage.markdownTitle
-        let hide = viewModel?.calMessage.rowType.hasText == false && viewModel?.calMessage.rowType.isPublicLink == false
+    public func setText(viewModel: MessageRowViewModel) {
+        self.attributedText = viewModel.calMessage.markdownTitle
+        let hide = viewModel.calMessage.rowType.hasText == false && viewModel.calMessage.rowType.isPublicLink == false
         setIsHidden(hide)
 
-        if viewModel?.calMessage.rowType.isPublicLink == true, tap == nil {
+        if viewModel.calMessage.rowType.isPublicLink == true, tap == nil {
             let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
             addGestureRecognizer(tap)
         } else if tap != nil {
