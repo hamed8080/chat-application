@@ -133,7 +133,7 @@ extension ThreadHistoryViewModel {
     // MARK: Scenario 1
     private func tryFirstScenario() {
         /// 1- Get the top part to time messages
-        if thread.lastMessageVO?.id ?? 0 > thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
+        if hasUnreadMessage(), let toTime = thread.lastSeenMessageTime {
             Task {
                 await moreTop(prepend: keys.MORE_TOP_FIRST_SCENARIO_KEY, toTime.advanced(by: 1))
             }
@@ -167,7 +167,7 @@ extension ThreadHistoryViewModel {
     // MARK: Scenario 2
     private func trySecondScenario() {
         /// 1- Get the top part to time messages
-        if thread.lastMessageVO?.id ?? 0 == thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
+        if isLastMessageEqualToLastSeen(), let toTime = thread.lastSeenMessageTime {
             Task {
                 hasNextBottom = false
                 await moreTop(prepend: keys.MORE_TOP_SECOND_SCENARIO_KEY, toTime.advanced(by: 1))
@@ -234,7 +234,8 @@ extension ThreadHistoryViewModel {
         /// 1- Move to a message locally if it exists.
         if moveToBottom, !sections.isLastSeenMessageExist(thread: thread) {
             sections.removeAll()
-        } else if await moveToMessageLocally(messageId, highlight: highlight, animate: true) {
+        } else if let uniqueId = canMoveToMessageLocally(messageId) {
+            await moveToMessageLocally(uniqueId, messageId, highlight, true)
             return
         } else {
             log("The message id to move to is not exist in the list")
@@ -288,12 +289,8 @@ extension ThreadHistoryViewModel {
 
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
     /// - Returns: Indicate that it moved loclally or not.
-    private func moveToMessageLocally(_ messageId: Int, highlight: Bool, animate: Bool = false) async -> Bool {
-        if let uniqueId = sections.message(for: messageId)?.message.uniqueId {
-            await viewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: highlight, position: .top, animate: animate)
-            return true
-        }
-        return false
+    private func moveToMessageLocally(_ uniqueId: String, _ messageId: Int, _ highlight: Bool, _ animate: Bool = false) async {
+        await viewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: highlight, position: .top, animate: animate)
     }
 
     // MARK: Scenario 7
@@ -329,19 +326,15 @@ extension ThreadHistoryViewModel {
     // MARK: Scenario 8
     /// When a new thread has been built and me is added by another person and this is our first time to visit the thread.
     private func tryEightScenario() async {
-        if thread.lastSeenMessageId == 0,
-           thread.lastSeenMessageTime == nil,
-           let lastMSGId = thread.lastMessageVO?.id,
-           let time = thread.lastMessageVO?.time
-        {
-            await moveToTime(time, lastMSGId, highlight: false)
+        if let tuple = newThreadLastMessageTimeId() {
+            await moveToTime(tuple.time, tuple.lastMSGId, highlight: false)
         }
     }
 
     // MARK: Scenario 9
     /// When a new thread has been built and there is no message inside the thread yet.
     private func tryNinthScenario() {
-        if (thread.lastSeenMessageId == 0 || thread.lastSeenMessageId == nil) && thread.lastMessageVO == nil {
+        if hasThreadNeverOpened() && thread.lastMessageVO == nil {
             requestBottomPartByCountAndOffset()
         }
     }
@@ -393,6 +386,8 @@ extension ThreadHistoryViewModel {
 
     @HistoryActor
     private func onMoreTop(_ response: HistoryResponse) async {
+        // If the last message of the thread deleted and we have seen all the messages we move to top of the thread which is wrong
+        let wasEmpty = sections.isEmpty
         let topVMBeforeJoin = sections.first?.vms.first
         let messages = response.result ?? []
         let lastTopMessageVM = sections.first?.vms.first
@@ -415,6 +410,8 @@ extension ThreadHistoryViewModel {
         delegate?.inserted(tuple.sections, tuple.rows, .top, indexPathToScroll)
         updateIsLastMessageAndIsFirstMessageFor(viewModels, at: .top(topVMBeforeJoin: topVMBeforeJoin))
 
+        await detectLastMessageDeleted(wasEmptyBeforeInsert: wasEmpty, sortedMessages: sortedMessages)
+
         // Register for downloading thumbnails or read cached version
         for vm in viewModels {
             await vm.register()
@@ -422,6 +419,17 @@ extension ThreadHistoryViewModel {
         showTopLoading(false)
         await fetchReactions(messages: viewModels.compactMap({$0.message}))
         prepareAvatars(viewModels)
+    }
+
+    private func detectLastMessageDeleted(wasEmptyBeforeInsert: Bool, sortedMessages: [any HistoryMessageProtocol]) async {
+        if wasEmptyBeforeInsert, isLastMessageEqualToLastSeen(), !isLastMessageExistInSortedMessages(sortedMessages) {
+            let lastSortedMessage = sortedMessages.last
+            viewModel?.thread.lastMessageVO = (lastSortedMessage as? Message)?.toLastMessageVO
+            await setIsAtBottom(newValue: true)
+            viewModel?.scrollVM.showHighlighted(lastSortedMessage?.uniqueId ?? "",
+                                                lastSortedMessage?.id ?? -1,
+                                                highlight: false)
+        }
     }
 
     private func moreBottom(prepend: String, _ fromTime: UInt?) async {
@@ -743,7 +751,8 @@ extension ThreadHistoryViewModel {
     }
 
     private func onUNPinMessage(_ response: ChatResponse<PinMessage>) async {
-        if let messageId = response.result?.messageId, let vm = sections.messageViewModel(for: messageId) {             vm.unpinMessage()
+        if let messageId = response.result?.messageId, let vm = sections.messageViewModel(for: messageId) {
+            vm.unpinMessage()
             guard let indexPath = sections.indexPath(for: vm) else { return }
             await MainActor.run {
                 delegate?.pinChanged(indexPath)
@@ -1191,10 +1200,7 @@ extension ThreadHistoryViewModel {
         }
 
         // Cancel immediately old highlighted item
-        if let prevhighlightedMessageId = prevhighlightedMessageId,
-           let vm = sections.messageViewModel(for: prevhighlightedMessageId),
-           let indexPath = sections.indexPath(for: vm)
-        {
+        if let indexPath = cancelOldHighlighingIndexPath(vm: vm) {
             Task {
                 await unHighlightTimer(vm: vm, indexPath: indexPath)
             }
@@ -1299,5 +1305,46 @@ extension ThreadHistoryViewModel {
     private func showBottomLoading(_ show: Bool) {
         bottomLoading = show
         viewModel?.delegate?.startBottomAnimation(show)
+    }
+}
+
+// MARK: Conditions and common functions
+extension ThreadHistoryViewModel {
+    private func isLastMessageEqualToLastSeen() -> Bool {
+        viewModel?.thread.lastMessageVO?.id ?? 0 == viewModel?.thread.lastSeenMessageId ?? 0
+    }
+
+    private func isLastMessageExistInSortedMessages(_ sortedMessages: [any HistoryMessageProtocol]) -> Bool {
+        sortedMessages.contains(where: {$0.id == viewModel?.thread.lastMessageVO?.id})
+    }
+
+    private func cancelOldHighlighingIndexPath(vm: MessageRowViewModel) -> IndexPath? {
+        guard
+            let prevhighlightedMessageId = prevhighlightedMessageId,
+            let vm = sections.messageViewModel(for: prevhighlightedMessageId),
+            let indexPath = sections.indexPath(for: vm)
+        else { return nil }
+        return indexPath
+    }
+
+    private func hasUnreadMessage() -> Bool {
+        thread.lastMessageVO?.id ?? 0 > thread.lastSeenMessageId ?? 0
+    }
+
+    private func canMoveToMessageLocally(_ messageId: Int) -> String? {
+        sections.message(for: messageId)?.message.uniqueId
+    }
+
+    private func hasThreadNeverOpened() -> Bool {
+        (thread.lastSeenMessageId ?? 0 == 0) && thread.lastSeenMessageTime == nil
+    }
+
+    private func newThreadLastMessageTimeId() -> (time: UInt, lastMSGId: Int)? {
+        guard
+            hasThreadNeverOpened(),
+            let lastMSGId = thread.lastMessageVO?.id,
+            let time = thread.lastMessageVO?.time
+        else { return nil }
+        return (time, lastMSGId)
     }
 }
