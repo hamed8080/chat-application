@@ -50,6 +50,8 @@ public final class ThreadHistoryViewModel {
     private let keys = RequestKeys()
     private var highlightTask: Task<Void, Never>?
     private var prevhighlightedMessageId: Int?
+    @MainActor
+    public var isUpdating = false
 
     // MARK: Computed Properties
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1) }
@@ -396,6 +398,7 @@ extension ThreadHistoryViewModel {
         let viewModels = await makeCalculateViewModelsFor(sortedMessages)
 
         await waitingToFinishDecelerating()
+        await waitingToFinishUpdating()
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
@@ -447,6 +450,7 @@ extension ThreadHistoryViewModel {
         let viewModels = await makeCalculateViewModelsFor(sortedMessages)
 
         await waitingToFinishDecelerating()
+        await waitingToFinishUpdating()
         appendSort(viewModels)
         /// 4- Disable excessive loading on the top part.
         viewModel?.scrollVM.disableExcessiveLoading()
@@ -1287,6 +1291,10 @@ extension ThreadHistoryViewModel {
                 try? await Task.sleep(for: .nanoseconds(500000))
             }
         }
+    }
+
+    func waitingToFinishUpdating() async {
+        while await isUpdating{}
     }
 }
 
