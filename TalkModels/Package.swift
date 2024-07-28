@@ -18,20 +18,20 @@ let package = Package(
             targets: ["TalkModels"]),
     ],
     dependencies: [
-        .package(path: "../../Chat"),
+        .package(url: "https://pubgi.sandpod.ir/chat/ios/chat.git", from: "2.1.2"),
     ],
     targets: [
         .target(
             name: "TalkModels",
             dependencies: [
-                .product(name: "Chat", package: "Chat"),
+                .product(name: "Chat", package: "chat"),
             ]
         ),
         .testTarget(
             name: "TalkModelsTests",
             dependencies: [
                 "TalkModels",
-                .product(name: "Chat", package: "Chat"),
+                .product(name: "Chat", package: "chat"),
             ],
             resources: [
                 .copy("Resources/icon.png")
