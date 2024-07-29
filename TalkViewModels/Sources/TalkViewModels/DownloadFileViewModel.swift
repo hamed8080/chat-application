@@ -241,6 +241,10 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         }
     }
 
+    public func downloadPercentValueNoLock() -> Int64 {
+        return downloadPercent
+    }
+
     deinit {
         cancellableSet.forEach { cancellable in
             cancellable.cancel()

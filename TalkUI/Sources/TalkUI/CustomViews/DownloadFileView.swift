@@ -59,7 +59,7 @@ struct MutableDownloadViews: View {
 struct DownloadFileButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     let message: Message?
-    var percent: Int64 { viewModel.downloadPercentValue() }
+    var percent: Int64 { viewModel.downloadPercentValueNoLock() }
     var stateIcon: String {
         if viewModel.state == .downloading {
             return "pause.fill"

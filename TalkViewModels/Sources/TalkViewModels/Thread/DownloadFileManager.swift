@@ -156,7 +156,7 @@ public final class DownloadFileManager {
 
     private func onVideoChanged(message: Message) async {
         guard let messageId = message.id, let vm = viewModel(for: messageId) else { return }
-        let progress: CGFloat = CGFloat(await vm.downloadPercentValue())
+        let progress: CGFloat = CGFloat(vm.downloadPercentValue())
         let state = MessageFileState(
             progress: min(CGFloat(progress) / 100, 1.0),
             showDownload: vm.state != .completed,
@@ -172,7 +172,7 @@ public final class DownloadFileManager {
         var showDownload = true
         var blurRadius: CGFloat = 16
         var preloadImage: UIImage? = nil
-        let progress: CGFloat = CGFloat(await vm.downloadPercentValue())
+        let progress: CGFloat = CGFloat(vm.downloadPercentValue())
         let iconState = getIconState(vm: vm)
         if vm.state == .completed {
             preloadImage = nil
@@ -227,7 +227,7 @@ public final class DownloadFileManager {
     private func onFileChanged(message: Message) async {
         guard let messageId = message.id, !message.isImage else { return }
         guard let vm = viewModel(for: messageId) else { return }
-        let progress = await vm.downloadPercentValue()
+        let progress = vm.downloadPercentValue()
         let state = MessageFileState(
             progress: min(CGFloat(progress) / 100, 1.0),
             showDownload: vm.state != .completed,
