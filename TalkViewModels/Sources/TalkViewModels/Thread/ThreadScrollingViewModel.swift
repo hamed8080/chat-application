@@ -58,6 +58,7 @@ public final class ThreadScrollingViewModel {
         }
     }
 
+    @HistoryActor
     public func scrollToLastMessageOnlyIfIsAtBottom() async {
         let message = lastMessageOrLastUploadingMessage()
         if isAtBottomOfTheList, let uniqueId = message?.uniqueId {

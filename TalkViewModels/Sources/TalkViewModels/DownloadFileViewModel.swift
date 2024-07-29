@@ -235,9 +235,10 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         RequestsManager.shared.contains(key: self.uniqueId) && uniqueId == self.uniqueId
     }
 
-    @MainActor
     public func downloadPercentValue() -> Int64 {
-        return downloadPercent
+        queue.sync {
+            return downloadPercent
+        }
     }
 
     deinit {

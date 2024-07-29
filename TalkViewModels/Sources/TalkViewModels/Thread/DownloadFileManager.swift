@@ -99,6 +99,7 @@ public final class DownloadFileManager {
         }
     }
     
+    @HistoryActor
     public func register(message: any HistoryMessageProtocol) {
         if isContains(message) { return }
         let isFileType = message.isFileType
@@ -120,6 +121,7 @@ public final class DownloadFileManager {
         return (mtd, isImage, isVideo, isMap)
     }
 
+    @HistoryActor
     public func registerIfReplyImage(vm: MessageRowViewModel) {
         if let replyInfo = vm.message.replyInfo, let replyMessageId = replyInfo.repliedToMessageId {
             if messagesWithReplyImage[replyMessageId] == nil {

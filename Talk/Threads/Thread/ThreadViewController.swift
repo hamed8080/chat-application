@@ -703,6 +703,7 @@ extension ThreadViewController: HistoryScrollDelegate {
             tableView.endUpdates()
         }
     }
+    
     func performBatchUpdateForReactions(_ indexPaths: [IndexPath]) {
         viewModel?.historyVM.isUpdating = true
         tableView.performBatchUpdates {
