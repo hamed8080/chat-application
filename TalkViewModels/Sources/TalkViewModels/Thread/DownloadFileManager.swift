@@ -249,6 +249,7 @@ public final class DownloadFileManager {
         }
     }
 
+    @HistoryActor
     private func changeStateTo(state: MessageFileState, messageId: Int) async {
         guard let result = viewModel?.historyVM.sections.viewModelAndIndexPath(for: messageId) else {
             log("Index path could not be found for message id:\(messageId)")
@@ -272,8 +273,8 @@ public final class DownloadFileManager {
     @HistoryActor
     private func updateAllReplyMessageImages(image: UIImage?, messageId: Int) async {
         if let replyMessagesWithSameSourceImage = messagesWithReplyImage[messageId] {
-            replyMessagesWithSameSourceImage.forEach { vm in
-                vm.setRelyImage(image: image)
+            for vm in replyMessagesWithSameSourceImage {
+                await vm.setRelyImage(image: image)
                 if let indexPath = viewModel?.historyVM.sections.indexPath(for: vm) {
                     viewModel?.delegate?.updateReplyImageThumbnail(at: indexPath, viewModel: vm)
                 }

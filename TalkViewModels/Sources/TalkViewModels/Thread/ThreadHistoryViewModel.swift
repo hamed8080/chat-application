@@ -978,8 +978,11 @@ extension ThreadHistoryViewModel {
     }
 
     public func didScrollTo(_ contentOffset: CGPoint, _ contentSize: CGSize) {
-        if isInProcessingScroll() { return }
         Task { @HistoryActor in
+            if isInProcessingScroll() {
+                viewModel?.scrollVM.lastContentOffsetY = contentOffset.y
+                return
+            }
             guard let scrollVM = viewModel?.scrollVM else { return }
             if contentOffset.y > scrollVM.lastContentOffsetY {
                 // scroll down
@@ -995,7 +998,7 @@ extension ThreadHistoryViewModel {
                     await loadMoreTop(message: message)
                 }
             }
-            scrollVM.lastContentOffsetY = contentOffset.y
+            viewModel?.scrollVM.lastContentOffsetY = contentOffset.y
         }
     }
 

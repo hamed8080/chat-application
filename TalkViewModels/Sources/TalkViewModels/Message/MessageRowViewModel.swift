@@ -67,6 +67,7 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         }
     }
 
+    @MainActor
     public func setFileState(_ state: MessageFileState) {
         fileState.update(state)
         if state.state == .completed {
@@ -74,6 +75,7 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         }
     }
 
+    @MainActor
     public func setRelyImage(image: UIImage?) {
         fileState.replyImage = image
     }
