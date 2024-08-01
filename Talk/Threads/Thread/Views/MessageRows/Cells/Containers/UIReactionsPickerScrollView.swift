@@ -20,7 +20,7 @@ public struct ExpandORStickerRow: Hashable {
 
 class UIReactionsPickerScrollView: UIView {
     private let size: CGFloat
-    public weak var viewModel: MessageRowViewModel?
+    private weak var viewModel: MessageRowViewModel?
     private var cv: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, ExpandORStickerRow>!
     private var isInExapndMode = false
@@ -57,7 +57,10 @@ class UIReactionsPickerScrollView: UIView {
         backgroundColor = .clear
         layer.cornerRadius = size / 2
         layer.masksToBounds = true
+    }
 
+    public func setup(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         configureCollectionView()
         setupDataSource()
         applySnapshot(expandMode: false)
@@ -93,7 +96,7 @@ class UIReactionsPickerScrollView: UIView {
         let sectionInsetLeading: CGFloat = 16
         let sectionInsetTrailing: CGFloat = 4
         let reactionWidth: CGFloat = 320 - (sectionInsetLeading + sectionInsetTrailing)
-        let reactionCountWithExpand = numberOfReactionsInRow + 1
+        let reactionCountWithExpand = numberOfReactionsInRow + (canShowMoreButton() ? 1 : 0)
         let extraItemForSpacing: CGFloat = 1.0
         let trailingMarging: CGFloat = (reactionWidth / (reactionCountWithExpand + extraItemForSpacing)) / (reactionCountWithExpand)
         let fraction = 1.0 / (reactionCountWithExpand + extraItemForSpacing)
@@ -143,15 +146,15 @@ class UIReactionsPickerScrollView: UIView {
 
             rows.removeAll()
 
-            let stickers = Sticker.allCases.filter({$0 != .unknown}).compactMap({ ExpandORStickerRow(sticker: $0, isMyReaction: isMyReaction($0), expandButton: false)})
+            let stickers = allowedReactions().filter({$0 != .unknown}).compactMap({ ExpandORStickerRow(sticker: $0, isMyReaction: isMyReaction($0), expandButton: false)})
             rows.append(contentsOf: stickers)
             
             snapshot.appendItems(rows)
         } else {
-            let stickers = Sticker.allCases.filter({$0 != .unknown}).prefix(Int(numberOfReactionsInRow)).compactMap({ ExpandORStickerRow(sticker: $0, isMyReaction: isMyReaction($0), expandButton: false)})
+            let stickers = allowedReactions().filter({$0 != .unknown}).prefix(Int(numberOfReactionsInRow)).compactMap({ ExpandORStickerRow(sticker: $0, isMyReaction: isMyReaction($0), expandButton: false)})
             rows.append(contentsOf: stickers)
 
-            let expandButtonRow = ExpandORStickerRow(sticker: nil, isMyReaction: false, expandButton: true)
+            let expandButtonRow = ExpandORStickerRow(sticker: nil, isMyReaction: false, expandButton: canShowMoreButton())
             rows.append(expandButtonRow)
 
             snapshot.appendItems(rows)
@@ -167,6 +170,14 @@ class UIReactionsPickerScrollView: UIView {
 
     @objc private func fakeGesture(_ sender: UIGestureRecognizer) {
 
+    }
+
+    private func allowedReactions() -> [Sticker] {
+        return viewModel?.threadVM?.reactionViewModel.allowedReactions ?? []
+    }
+
+    private func canShowMoreButton() -> Bool {
+        allowedReactions().count > Int(numberOfReactionsInRow)
     }
 }
 

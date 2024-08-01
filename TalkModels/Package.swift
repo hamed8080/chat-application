@@ -18,23 +18,23 @@ let package = Package(
             targets: ["TalkModels"]),
     ],
     dependencies: [
-        .package(url: "https://pubgi.sandpod.ir/chat/ios/chat.git", from: "2.1.3"),
-//        .package(path: "../../Chat"),
+//        .package(url: "https://pubgi.sandpod.ir/chat/ios/chat.git", from: "2.1.3"),
+        .package(path: "../../Chat"),
     ],
     targets: [
         .target(
             name: "TalkModels",
             dependencies: [
-                .product(name: "Chat", package: "chat"),
-//                .product(name: "Chat", package: "Chat"),
+//                .product(name: "Chat", package: "chat"),
+                .product(name: "Chat", package: "Chat"),
             ]
         ),
         .testTarget(
             name: "TalkModelsTests",
             dependencies: [
                 "TalkModels",
-                .product(name: "Chat", package: "chat"),
-//                .product(name: "Chat", package: "Chat"),
+//                .product(name: "Chat", package: "chat"),
+                .product(name: "Chat", package: "Chat"),
             ],
             resources: [
                 .copy("Resources/icon.png")

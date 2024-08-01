@@ -191,7 +191,7 @@ extension MessageContainerStackView {
                                     y: messageContainer.frame.origin.y - (Constants.reactionHeight + 8),
                                     width: Constants.reactionWidth,
                                     height: Constants.reactionHeight)
-        reactionsView.viewModel = viewModel
+        reactionsView.setup(viewModel)
         reactionsView.overrideUserInterfaceStyle = traitCollection.userInterfaceStyle
 
         let canReact = viewModel.canReact()
