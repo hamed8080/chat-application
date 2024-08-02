@@ -61,9 +61,7 @@ public final class ThreadHistoryViewModel {
     private var isSimulated: Bool { viewModel?.isSimulatedThared == true }
 
     // MARK: Initializer
-    nonisolated public init() {
-        highlightVM.setup(self)
-    }
+    nonisolated public init() {}
 }
 
 extension ThreadHistoryViewModel: StabledVisibleMessageDelegate {
@@ -95,6 +93,7 @@ extension ThreadHistoryViewModel {
 extension ThreadHistoryViewModel {
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
+        highlightVM.setup(self)
         visibleTracker.delegate = self
         setupNotificationObservers()
     }
@@ -492,13 +491,21 @@ extension ThreadHistoryViewModel {
 
     private func makeCalculateViewModelsFor(_ messages: [any HistoryMessageProtocol]) async -> [MessageRowViewModel] {
         guard let viewModel = viewModel else { return [] }
-        var viewModels: [MessageRowViewModel] = []
-        for message in messages {
-            let vm = MessageRowViewModel(message: message, viewModel: viewModel)
-            await vm.performaCalculation(appendMessages: messages)
-            viewModels.append(vm)
+        return await withTaskGroup(of: MessageRowViewModel.self) { group in
+            for message in messages {
+                group.addTask {
+                    let vm = MessageRowViewModel(message: message, viewModel: viewModel)
+                    await vm.performaCalculation(appendMessages: messages)
+                    return vm
+                }
+            }
+
+            var viewModels: [MessageRowViewModel] = []
+            for await vm in group {
+                viewModels.append(vm)
+            }
+            return viewModels
         }
-        return viewModels
     }
 }
 
@@ -598,58 +605,7 @@ extension ThreadHistoryViewModel {
     private func onMessageEvent(_ event: MessageEventTypes?) async {
         switch event {
         case .history(let response):
-            if !response.cache, response.subjectId == threadId {
-                log("Start on history:\(Date().millisecondsSince1970)")
-                /// For the first scenario.
-                if response.pop(prepend: keys.MORE_TOP_FIRST_SCENARIO_KEY) != nil {
-                    await onMoreTopFirstScenario(response)
-                }
-
-                if response.pop(prepend: keys.MORE_BOTTOM_FIRST_SCENARIO_KEY) != nil {
-                    await onMoreBottomFirstScenario(response)
-                }
-
-                /// For the second scenario.
-                if response.pop(prepend: keys.MORE_TOP_SECOND_SCENARIO_KEY) != nil {
-                    await onMoreTopSecondScenario(response)
-                }
-
-                /// For the scenario three and four.
-                if response.pop(prepend: keys.MORE_TOP_KEY) != nil {
-                    await onMoreTop(response)
-                }
-
-                /// For the scenario three and four.
-                if response.pop(prepend: keys.MORE_BOTTOM_KEY) != nil {
-                    await onMoreBottom(response)
-                }
-
-                /// For the fifth scenario.
-                if response.pop(prepend: keys.MORE_BOTTOM_FIFTH_SCENARIO_KEY) != nil {
-                    await onMoreBottomFifthScenario(response)
-                }
-
-                /// For the seventh scenario.
-                if response.pop(prepend: keys.FETCH_BY_OFFSET_KEY) != nil {
-                    await onFetchByOffset(response)
-                }
-
-                /// For the sixth scenario.
-                if let request = response.pop(prepend: keys.TO_TIME_KEY) as? OnMoveTime {
-                    await onMoveToTime(response, request: request)
-                }
-
-                if let request = response.pop(prepend: keys.FROM_TIME_KEY) as? OnMoveTime {
-                    await onMoveFromTime(request: request, response)
-                }
-
-                await setIsEmptyThread()
-
-                log("End on history:\(Date().millisecondsSince1970)")
-            } else if response.cache && AppState.shared.connectionStatus != .connected {
-                await onHistoryCacheRsponse(response)
-            }
-            break
+            await onHistory(response)
         case .delivered(let response):
             await onDeliver(response)
         case .seen(let response):
@@ -666,6 +622,60 @@ extension ThreadHistoryViewModel {
             await onEdited(response)
         default:
             break
+        }
+    }
+
+    private func onHistory(_ response: ChatResponse<[Message]>) async {
+        if !response.cache, response.subjectId == threadId {
+            log("Start on history:\(Date().millisecondsSince1970)")
+            /// For the first scenario.
+            if response.pop(prepend: keys.MORE_TOP_FIRST_SCENARIO_KEY) != nil {
+                await onMoreTopFirstScenario(response)
+            }
+
+            if response.pop(prepend: keys.MORE_BOTTOM_FIRST_SCENARIO_KEY) != nil {
+                await onMoreBottomFirstScenario(response)
+            }
+
+            /// For the second scenario.
+            if response.pop(prepend: keys.MORE_TOP_SECOND_SCENARIO_KEY) != nil {
+                await onMoreTopSecondScenario(response)
+            }
+
+            /// For the scenario three and four.
+            if response.pop(prepend: keys.MORE_TOP_KEY) != nil {
+                await onMoreTop(response)
+            }
+
+            /// For the scenario three and four.
+            if response.pop(prepend: keys.MORE_BOTTOM_KEY) != nil {
+                await onMoreBottom(response)
+            }
+
+            /// For the fifth scenario.
+            if response.pop(prepend: keys.MORE_BOTTOM_FIFTH_SCENARIO_KEY) != nil {
+                await onMoreBottomFifthScenario(response)
+            }
+
+            /// For the seventh scenario.
+            if response.pop(prepend: keys.FETCH_BY_OFFSET_KEY) != nil {
+                await onFetchByOffset(response)
+            }
+
+            /// For the sixth scenario.
+            if let request = response.pop(prepend: keys.TO_TIME_KEY) as? OnMoveTime {
+                await onMoveToTime(response, request: request)
+            }
+
+            if let request = response.pop(prepend: keys.FROM_TIME_KEY) as? OnMoveTime {
+                await onMoveFromTime(request: request, response)
+            }
+
+            await setIsEmptyThread()
+
+            log("End on history:\(Date().millisecondsSince1970)")
+        } else if response.cache && AppState.shared.connectionStatus != .connected {
+            await onHistoryCacheRsponse(response)
         }
     }
 
