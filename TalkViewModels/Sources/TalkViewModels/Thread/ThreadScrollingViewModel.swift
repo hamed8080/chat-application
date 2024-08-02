@@ -81,27 +81,6 @@ public final class ThreadScrollingViewModel {
         viewModel?.delegate?.scrollTo(index: indexPath, position: .top, animate: true)
     }
 
-    public func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom) {
-       task = Task {
-            if Task.isCancelled { return }
-            await MainActor.run {
-                if highlight {
-                    NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
-                }
-            }
-           scrollTo(uniqueId, position: position, animate: false)
-        }
-    }
-
-    @MainActor
-    public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom, animate: Bool = false) async {
-        if Task.isCancelled { return }
-        if highlight {
-            NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
-        }
-        scrollTo(uniqueId, position: position, animate: animate)
-    }
-
     public func disableExcessiveLoading() {
         task = Task { [weak self] in
             await MainActor.run { [weak self] in
