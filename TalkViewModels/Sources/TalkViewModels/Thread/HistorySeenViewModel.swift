@@ -51,9 +51,11 @@ public final class HistorySeenViewModel {
         }
     }
 
+    /// We use isProgramaticallyScroll false to only not sending scrolling up when the user really scrolling
+    /// If we don't do that it will result in not sending seen for threads with messages lower than 10, on opening the thread.
     @HistoryActor
     private func canReduce(for message: any HistoryMessageProtocol) -> Bool {
-        if threadVM?.scrollVM.scrollingUP == true { return false }
+        if threadVM?.scrollVM.scrollingUP == true && threadVM?.scrollVM.isProgramaticallyScroll == false { return false }
         if thread.unreadCount ?? 0 == 0 { return false }
         if message.id == LocalId.unreadMessageBanner.rawValue { return false }
         return message.id ?? 0 > thread.lastSeenMessageId ?? 1
