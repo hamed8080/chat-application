@@ -2,6 +2,19 @@
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+import Foundation
+
+let useLocalDependency = true
+
+let local: [Package.Dependency] = [
+    .package(path: "../../Chat"),
+    .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
+]
+
+let remote: [Package.Dependency] = [
+    .package(url: "https://pubgi.sandpod.ir/chat/ios/chat.git", from: "2.1.3"),
+    .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
+]
 
 let package = Package(
     name: "TalkModels",
@@ -17,24 +30,19 @@ let package = Package(
             name: "TalkModels",
             targets: ["TalkModels"]),
     ],
-    dependencies: [
-        .package(url: "https://pubgi.sandpod.ir/chat/ios/chat.git", from: "2.1.3"),
-//        .package(path: "../../Chat"),
-    ],
+    dependencies: useLocalDependency ? local : remote,
     targets: [
         .target(
             name: "TalkModels",
             dependencies: [
-                .product(name: "Chat", package: "chat"),
-//                .product(name: "Chat", package: "Chat"),
+                .product(name: "Chat", package: useLocalDependency ? "Chat" : "chat"),
             ]
         ),
         .testTarget(
             name: "TalkModelsTests",
             dependencies: [
                 "TalkModels",
-                .product(name: "Chat", package: "chat"),
-//                .product(name: "Chat", package: "Chat"),
+                .product(name: "Chat", package: useLocalDependency ? "Chat" : "chat"),
             ],
             resources: [
                 .copy("Resources/icon.png")
