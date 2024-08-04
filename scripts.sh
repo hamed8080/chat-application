@@ -1,217 +1,153 @@
 #!/bin/bash
+
 root=$(pwd)
-sub="$root/../sub-modules"
+sdk="$root/submodules/SDK"
+appModules="$root/submodules/Talk"
+baseURL="https://pubgi.sandpod.ir/chat/ios"
+declare -a PACKEGE_PATHS=("Chat" "Async" "Logger" "Additive" "AdditiveUI" "ChatModels" "ChatDTO" "ChatCore" "ChatCache" "ChatTransceiver" "ChatExtensions" "Mocks")
+declare -a PACKEGE_URLS=("chat" "async" "logger" "additive" "additive-ui" "chat-models" "chat-dto" "chat-core" "chat-cache" "chat-transceiver" "chat-extensions" "mocks")
 
-talkDir="$root"
+executeInAll() {
+    local cmd="$1"
+    shift
+    local args=("$@")
 
-ch="Chat"
-async="Async"
-logger="Logger"
-additive="Additive"
-additiveui="AdditiveUI"
-models="ChatModels"
-dto="ChatDTO"
-core="ChatCore"
-cache="ChatCache"  
-trans="ChatTransceiver"
-ext="ChatExtensions"
-mocks="Mocks"
-
-PACKEGE_PATHS=("$ch" "$async" "$logger" "$additive" "$additiveui" "$models" "$mocks" "$dto" "$core" "$cache" "$ext" "$trans" "$talkDir")
-
-chch() {
-    # Checkout to a specific branch
     for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
+        cd "$sdk/$packagePath" || continue
         printDirectory
-        chk "$1"
+        eval "$cmd" "${args[@]}"
     done
-    cd $root
 
-    return 0
-}
+    # Talk is another directory than sdk packages so we have to run it's commanads outside of the sdk directory
+    cd "$root"
+    printDirectory
+    eval "$cmd" "${args[@]}"
 
-pushall() {
-    # Push
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git push "$1" "$2"
-    done
-    cd $root
-
-    return 0
-}
-
-switchAll() {
-    #Create branch
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git switch -c "$1"
-    done
-    cd $root
-
-    return 0
-}
-
-mergeAll() {
-    #Checkout to a branch then merge with another branch
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git checkout $1
-        git merge $2
-    done
-    cd $root
-
-    return 0
-}
-
-mergeContinue() {
-    #Continue merging all branches
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git add .
-        git merge --continue
-    done
-    cd $root
-
-    return 0
-}
-
-commitAll() {
-    #Checkout add all files to satge then commit to a branch
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git checkout $1
-        git add .
-        git commit -am $2
-    done
-    cd $root
-
-    return 0
-}
-
-statusAll() {
-    #Get status of all packages
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git status
-    done
-    cd $root
-
-    return 0
-}
-
-undoAll() {
-    #Undo all staged/unstaged changes
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git restore --staged .
-        git restore .
-    done
-    cd $root
-
-    return 0
-}
-
-ammendNoEdit() {
-    #Ammend and no edit commit message
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git add .
-        git commit --amend --no-edit
-    done
-    cd $root
-
-    return 0
+    # After executing the jobs we should back to the root.
+    cd "$root"
 }
 
 printDirectory() {
-    dir=$(pwd)
-    echo "Changed dirctory to $dir"
+    echo "Changed directory to $(pwd)"
+}
+
+chch() {
+    executeInAll "git checkout" "$1"
+}
+
+pushall() {
+    executeInAll "git push" "$1" "$2"
+}
+
+switchAll() {
+    executeInAll "git switch -c" "$1"
+}
+
+mergeAll() {
+    executeInAll "git checkout" "$1"
+    executeInAll "git merge" "$2"
+}
+
+mergeContinue() {
+    executeInAll "git add ."
+    executeInAll "git merge --continue"
+}
+
+commitAll() {
+    executeInAll "git checkout" "$1"
+    executeInAll "git add ."
+    executeInAll "git commit -am" "$2"
+}
+
+statusAll() {
+    executeInAll "git status"
+}
+
+undoAll() {
+    executeInAll "git restore --staged ."
+    executeInAll "git restore ."
+}
+
+amendNoEdit() {
+    executeInAll "git add ."
+    executeInAll "git commit --amend --no-edit"
 }
 
 pushBoth() {
-    pushall origin $1 &
+    pushall "origin" "$1" &
     pid1=$!
 
-    pushall origin-private $1 &
+    pushall "origin-private" "$1" &
     pid2=$!
 
-    wait $pid1
-    wait $pid2
+    wait $pid1 $pid2
 }
 
 pushTags() {
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        git push --tags "$1"
-    done
-    cd $root
-
-    return 0
+    executeInAll "git push --tags" "$1"
 }
 
 pushBothTags() {
-    echo "pushing origin tags"
-    pushTags origin &
+    echo "Pushing origin tags"
+    pushTags "origin" &
     pid1=$!
 
-    echo "pushing origin-private tags"
-    pushTags origin-private &
+    echo "Pushing origin-private tags"
+    pushTags "origin-private" &
     pid2=$!
 
-    wait $pid1
-    wait $pid2
-
+    wait $pid1 $pid2
     echo "Both pushes are done."
 }
 
 pkg() {
-    cd $sub
     CONFIG=$1
-    for packagePath in "${PACKEGE_PATHS[@]}"; do
-        cd $sub
-        cd "$packagePath"
-        printDirectory
-        changePackage $CONFIG
-        cd $sub
-    done
-
-    cd $root
-    cd TalkModels
+    executeInAll "changePackage" "$CONFIG"
+    
+    # Change the package for TalkModels which is the starter package for the Talk application.
+    cd "$appModules/TalkModels"
     printDirectory
-    changePackage $CONFIG
-    cd $root
+    changePackage "$CONFIG"
+
+    # Change the package for TalkUI which is a packge for the Talk app where it depends on AdditiveUI.
+    cd "$appModules/TalkUI"
+    printDirectory
+    changePackage "$CONFIG"
+
+    cd "$root"
 }
 
 changePackage() {
-    PACKAGE_FILE="Package.swift"
-    if [[ "$1" == "local" ]]; then
+    local PACKAGE_FILE="Package.swift"
+    local CONFIG="$1"
+
+    if [[ "$CONFIG" == "local" ]]; then
         sed -i '' 's|let useLocalDependency = false|let useLocalDependency = true|' "$PACKAGE_FILE" && echo "Set to use local dependency."
-    elif [[ "$1" == "remote" ]]; then
+    elif [[ "$CONFIG" == "remote" ]]; then
         sed -i '' 's|let useLocalDependency = true|let useLocalDependency = false|' "$PACKAGE_FILE" && echo "Set to use remote dependency."
     fi
 }
 
-downloadSubModules() {
+setup() {
+    makeSDKDirectory
+    cd "$sdk"
+    downloadSubmodules
+}
 
+makeSDKDirectory() {
+    # Create SDK folder if it is not exist.
+    if [[ -d "$sdk" ]]; then
+        echo "Directory $sdk already exists."
+    else
+        echo "Creating SDK directory..."
+        mkdir -p "$sdk"
+    fi
+}
+
+downloadSubmodules() {
+    # Clone one by one and
+    for path in "${PACKEGE_URLS[@]}"; do
+        echo "clone $path"
+        git clone "$baseURL/$path"
+    done
 }

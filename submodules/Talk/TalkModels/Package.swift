@@ -7,7 +7,7 @@ import Foundation
 let useLocalDependency = true
 
 let local: [Package.Dependency] = [
-    .package(path: "../../Chat"),
+    .package(path: "../../SDK/Chat"),
     .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
 ]
 
