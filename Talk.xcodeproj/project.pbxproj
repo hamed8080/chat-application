@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -287,10 +287,6 @@
 		0570CC922AAEE98F001832E9 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		0570CC932AAEE98F001832E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBDE2AAEE98E001832E9 /* AppDelegate.swift */; };
 		0570CC942AAEE98F001832E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBDE2AAEE98E001832E9 /* AppDelegate.swift */; };
-		0570CCAB2AAEEE22001832E9 /* TalkExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCAA2AAEEE22001832E9 /* TalkExtensions */; };
-		0570CCAD2AAEEE22001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCAC2AAEEE22001832E9 /* TalkModels */; };
-		0570CCAF2AAEEE22001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCAE2AAEEE22001832E9 /* TalkUI */; };
-		0570CCB12AAEEE22001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB02AAEEE22001832E9 /* TalkViewModels */; };
 		0570CCB82AAEEE78001832E9 /* TalkExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB72AAEEE78001832E9 /* TalkExtensions */; };
 		0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB92AAEEE78001832E9 /* TalkModels */; };
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
@@ -305,6 +301,11 @@
 		057A18E02B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */; };
 		05840A742C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05840A732C0843E0003CE45B /* MutableMessageStatusView.swift */; };
 		05840A752C0843E0003CE45B /* MutableMessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05840A732C0843E0003CE45B /* MutableMessageStatusView.swift */; };
+		05853A772C5F416D00720FB3 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 05853A762C5F416D00720FB3 /* TalkModels */; };
+		05853A792C5F416D00720FB3 /* TalkExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 05853A782C5F416D00720FB3 /* TalkExtensions */; };
+		05853A7B2C5F416D00720FB3 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 05853A7A2C5F416D00720FB3 /* TalkUI */; };
+		05853A7D2C5F416D00720FB3 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 05853A7C2C5F416D00720FB3 /* TalkViewModels */; };
+		05853A7F2C5F419400720FB3 /* ActionableContextMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 05853A7E2C5F419400720FB3 /* ActionableContextMenu */; };
 		058ACC2C2BA32CE60076BDA5 /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058ACC2B2BA32CE60076BDA5 /* SectionHeaderView.swift */; };
 		058ACC2D2BA32CE60076BDA5 /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058ACC2B2BA32CE60076BDA5 /* SectionHeaderView.swift */; };
 		05903B5D2BBD08100098F382 /* AttachmentFilesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05903B5C2BBD08100098F382 /* AttachmentFilesTableView.swift */; };
@@ -391,7 +392,6 @@
 		05DCC0652AE183EA0025B3B7 /* ConversationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */; };
 		05DCC0662AE187D80025B3B7 /* ConversationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */; };
 		05DDC8482AEC240D009F9942 /* ActionableContextMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 05DDC8472AEC240D009F9942 /* ActionableContextMenu */; };
-		05DDC84A2AEC2412009F9942 /* ActionableContextMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 05DDC8492AEC2412009F9942 /* ActionableContextMenu */; };
 		05E781EE2C2060CA002262AD /* GallleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E781ED2C2060CA002262AD /* GallleryViewController.swift */; };
 		05E781EF2C2060CA002262AD /* GallleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E781ED2C2060CA002262AD /* GallleryViewController.swift */; };
 		05E781F12C2062FA002262AD /* AttchmentButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E781F02C2062FA002262AD /* AttchmentButton.swift */; };
@@ -593,10 +593,6 @@
 		0570CBDE2AAEE98E001832E9 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0570CC952AAEE9B2001832E9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0570CC962AAEE9B2001832E9 /* Info-Test.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Test.plist"; sourceTree = "<group>"; };
-		0570CCA52AAEED33001832E9 /* TalkUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkUI; sourceTree = "<group>"; };
-		0570CCA62AAEED33001832E9 /* TalkModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkModels; sourceTree = "<group>"; };
-		0570CCA72AAEED33001832E9 /* TalkViewModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkViewModels; sourceTree = "<group>"; };
-		0570CCA82AAEED33001832E9 /* TalkExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkExtensions; sourceTree = "<group>"; };
 		05729A552B8DACDA00D62D69 /* DeleteParticipantDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteParticipantDialog.swift; sourceTree = "<group>"; };
 		05745AEF2AF2626B00102193 /* UserActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserActionMenu.swift; sourceTree = "<group>"; };
 		05745AF22AF2B1B100102193 /* SettingProfileButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingProfileButton.swift; sourceTree = "<group>"; };
@@ -645,7 +641,6 @@
 		05DAA4312B29BEBC007427DC /* ContactListSearchBarFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListSearchBarFilterView.swift; sourceTree = "<group>"; };
 		05DAA4342B29BF39007427DC /* ContactListToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListToolbar.swift; sourceTree = "<group>"; };
 		05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationBuilder.swift; sourceTree = "<group>"; };
-		05DDC8462AEC23DF009F9942 /* ActionableContextMenu */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ActionableContextMenu; sourceTree = "<group>"; };
 		05E781ED2C2060CA002262AD /* GallleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallleryViewController.swift; sourceTree = "<group>"; };
 		05E781F02C2062FA002262AD /* AttchmentButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttchmentButton.swift; sourceTree = "<group>"; };
 		05E781F32C2064C4002262AD /* DocumnetPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumnetPickerViewController.swift; sourceTree = "<group>"; };
@@ -690,13 +685,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05853A7F2C5F419400720FB3 /* ActionableContextMenu in Frameworks */,
+				05853A7B2C5F416D00720FB3 /* TalkUI in Frameworks */,
 				056ACA4F2B286F6000C7E9FF /* DSWaveformImage in Frameworks */,
-				0570CCAF2AAEEE22001832E9 /* TalkUI in Frameworks */,
-				0570CCB12AAEEE22001832E9 /* TalkViewModels in Frameworks */,
-				0570CCAD2AAEEE22001832E9 /* TalkModels in Frameworks */,
-				0570CCAB2AAEEE22001832E9 /* TalkExtensions in Frameworks */,
 				05D493922B21FF3100508472 /* PhotosUI.framework in Frameworks */,
-				05DDC84A2AEC2412009F9942 /* ActionableContextMenu in Frameworks */,
+				05853A792C5F416D00720FB3 /* TalkExtensions in Frameworks */,
+				05853A772C5F416D00720FB3 /* TalkModels in Frameworks */,
+				05853A7D2C5F416D00720FB3 /* TalkViewModels in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -847,7 +842,6 @@
 		0570CB0E2AAEE02A001832E9 = {
 			isa = PBXGroup;
 			children = (
-				0570CCA32AAEECF5001832E9 /* Packages */,
 				0570CB192AAEE02A001832E9 /* Talk */,
 				0570CB182AAEE02A001832E9 /* Products */,
 				0570CCA92AAEEE22001832E9 /* Frameworks */,
@@ -1124,18 +1118,6 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		0570CCA32AAEECF5001832E9 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				0570CCA82AAEED33001832E9 /* TalkExtensions */,
-				0570CCA62AAEED33001832E9 /* TalkModels */,
-				0570CCA52AAEED33001832E9 /* TalkUI */,
-				0570CCA72AAEED33001832E9 /* TalkViewModels */,
-				05DDC8462AEC23DF009F9942 /* ActionableContextMenu */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		0570CCA92AAEEE22001832E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1345,12 +1327,12 @@
 			);
 			name = "Talk-Test";
 			packageProductDependencies = (
-				0570CCAA2AAEEE22001832E9 /* TalkExtensions */,
-				0570CCAC2AAEEE22001832E9 /* TalkModels */,
-				0570CCAE2AAEEE22001832E9 /* TalkUI */,
-				0570CCB02AAEEE22001832E9 /* TalkViewModels */,
-				05DDC8492AEC2412009F9942 /* ActionableContextMenu */,
 				056ACA4E2B286F6000C7E9FF /* DSWaveformImage */,
+				05853A762C5F416D00720FB3 /* TalkModels */,
+				05853A782C5F416D00720FB3 /* TalkExtensions */,
+				05853A7A2C5F416D00720FB3 /* TalkUI */,
+				05853A7C2C5F416D00720FB3 /* TalkViewModels */,
+				05853A7E2C5F419400720FB3 /* ActionableContextMenu */,
 			);
 			productName = Talk;
 			productReference = 0570CB332AAEE04B001832E9 /* Talk-Test.app */;
@@ -1391,6 +1373,11 @@
 			mainGroup = 0570CB0E2AAEE02A001832E9;
 			packageReferences = (
 				056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
+				05853A712C5F3E6700720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkModels" */,
+				05853A722C5F3E8C00720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkExtensions" */,
+				05853A732C5F3ED300720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/ActionableContextMenu" */,
+				05853A742C5F3EE400720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkUI" */,
+				05853A752C5F3EF200720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkViewModels" */,
 			);
 			productRefGroup = 0570CB182AAEE02A001832E9 /* Products */;
 			projectDirPath = "";
@@ -2173,6 +2160,29 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		05853A712C5F3E6700720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkModels" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = submodules/Talk/TalkModels;
+		};
+		05853A722C5F3E8C00720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkExtensions" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = submodules/Talk/TalkExtensions;
+		};
+		05853A732C5F3ED300720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/ActionableContextMenu" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = submodules/Talk/ActionableContextMenu;
+		};
+		05853A742C5F3EE400720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = submodules/Talk/TalkUI;
+		};
+		05853A752C5F3EF200720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkViewModels" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = submodules/Talk/TalkViewModels;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -2195,22 +2205,6 @@
 			package = 056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
 			productName = DSWaveformImage;
 		};
-		0570CCAA2AAEEE22001832E9 /* TalkExtensions */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TalkExtensions;
-		};
-		0570CCAC2AAEEE22001832E9 /* TalkModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TalkModels;
-		};
-		0570CCAE2AAEEE22001832E9 /* TalkUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TalkUI;
-		};
-		0570CCB02AAEEE22001832E9 /* TalkViewModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TalkViewModels;
-		};
 		0570CCB72AAEEE78001832E9 /* TalkExtensions */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TalkExtensions;
@@ -2227,11 +2221,32 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = TalkViewModels;
 		};
-		05DDC8472AEC240D009F9942 /* ActionableContextMenu */ = {
+		05853A762C5F416D00720FB3 /* TalkModels */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 05853A712C5F3E6700720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkModels" */;
+			productName = TalkModels;
+		};
+		05853A782C5F416D00720FB3 /* TalkExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05853A722C5F3E8C00720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkExtensions" */;
+			productName = TalkExtensions;
+		};
+		05853A7A2C5F416D00720FB3 /* TalkUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05853A742C5F3EE400720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkUI" */;
+			productName = TalkUI;
+		};
+		05853A7C2C5F416D00720FB3 /* TalkViewModels */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05853A752C5F3EF200720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/TalkViewModels" */;
+			productName = TalkViewModels;
+		};
+		05853A7E2C5F419400720FB3 /* ActionableContextMenu */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05853A732C5F3ED300720FB3 /* XCLocalSwiftPackageReference "submodules/Talk/ActionableContextMenu" */;
 			productName = ActionableContextMenu;
 		};
-		05DDC8492AEC2412009F9942 /* ActionableContextMenu */ = {
+		05DDC8472AEC240D009F9942 /* ActionableContextMenu */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ActionableContextMenu;
 		};

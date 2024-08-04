@@ -1,14 +1,6 @@
 {
+  "originHash" : "495b90470d07c23fa5ab47816c2ba7cff2178df5094a93eb3826b2fd1defc6e5",
   "pins" : [
-    {
-      "identity" : "additive-ui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://pubgi.sandpod.ir/chat/ios/additive-ui",
-      "state" : {
-        "revision" : "2bf288bad4df0754c33b3ad585602925addb6c4c",
-        "version" : "1.2.2"
-      }
-    },
     {
       "identity" : "dswaveformimage",
       "kind" : "remoteSourceControl",
@@ -28,5 +20,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
