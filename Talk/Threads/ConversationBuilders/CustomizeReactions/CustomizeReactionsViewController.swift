@@ -50,8 +50,9 @@ final class CustomizeReactionsViewController: UIViewController {
         configureBtnSumbit()
         configureToolbar()
         setConstraints()
+        disableSubmitButtonIfNeeded()
     }
-    
+
     private func configureBtnSumbit() {
         btnSubmit.translatesAutoresizingMaskIntoConstraints = false
         btnSubmit.accessibilityIdentifier = "btnSubmitCustomizeReactionsViewController"
@@ -248,17 +249,36 @@ final class CustomizeReactionsViewController: UIViewController {
             updateLayout()
         }
     }
+
+    private func isValidToChange() -> Bool {
+        let selectedCount = sections.first?.rows.count ?? 0
+        let unSelectedCount = sections.last?.rows.count ?? 0
+        let isBetween = selectedCount >= 1 && unSelectedCount > 1
+        return isBetween
+    }
+
+    private func disableSubmitButtonIfNeeded() {
+        let isValidToChange = isValidToChange()
+        UIView.animate(withDuration: 0.2) {
+            self.btnSubmit.isUserInteractionEnabled = isValidToChange
+            self.btnSubmit.alpha = isValidToChange ? 1.0 : 0.4
+        }
+    }
 }
 
 extension CustomizeReactionsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let row = sections[indexPath.section].rows[indexPath.row]
         let isSelected = sections[indexPath.section].type == .selected
+        if !canMove(isSelected: isSelected) { return }
+
         // Determine source and destination sections
         let fromSection = isSelected ? CustomizeSectionType.selected : CustomizeSectionType.unselected
         let toSection = isSelected ? CustomizeSectionType.unselected : CustomizeSectionType.selected
         moveSticker(row, from: fromSection, to: toSection, isSelected: !isSelected)
         reapplySnapshot(item: row, toSection: toSection)
+
+        disableSubmitButtonIfNeeded()
     }
 
     private func moveSticker(_ item: Item, from oldSectionType: CustomizeSectionType, to newSectionType: CustomizeSectionType, isSelected: Bool) {
@@ -272,5 +292,15 @@ extension CustomizeReactionsViewController: UICollectionViewDelegate {
         if let toSectionIndex = sections.firstIndex(where: { $0.type == newSectionType }) {
             self.sections[toSectionIndex].rows.append(item)
         }
+    }
+
+    private func canMove(isSelected: Bool) -> Bool {
+        let selectedsCount = sections.first?.rows.count ?? 0
+        let unselectedsCount = sections.last?.rows.count ?? 0
+
+        let canMoveToSelected = !isSelected && unselectedsCount > 1
+        let canMoveToUNSelected = isSelected && selectedsCount > 1
+
+        return canMoveToSelected || canMoveToUNSelected
     }
 }

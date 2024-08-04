@@ -200,6 +200,7 @@ extension ThreadsViewModel {
         if case let .customizeReactions(response) = event {
             if let index = threads.firstIndex(where: {$0.id == response.subjectId}) {
                 threads[index].reactionStatus = response.result?.reactionStatus
+                animateObjectWillChange()
 
                 // Update Active view model
                 let activeVM = AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel

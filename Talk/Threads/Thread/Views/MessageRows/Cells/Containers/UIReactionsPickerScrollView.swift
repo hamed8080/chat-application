@@ -173,6 +173,7 @@ class UIReactionsPickerScrollView: UIView {
     }
 
     private func allowedReactions() -> [Sticker] {
+        if viewModel?.threadVM?.thread.reactionStatus == .enable { return Sticker.allCases }
         return viewModel?.threadVM?.reactionViewModel.allowedReactions ?? []
     }
 
