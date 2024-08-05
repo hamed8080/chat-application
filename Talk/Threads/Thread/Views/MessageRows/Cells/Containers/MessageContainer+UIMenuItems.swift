@@ -199,7 +199,15 @@ private extension MessageContainerStackView {
         guard let message = model.message as? Message else { return }
         model.threadVM?.clearCacheFile(message: message)
         if let uniqueId = message.uniqueId, let indexPath = model.threadVM?.historyVM.sections.indicesByMessageUniqueId(uniqueId) {
-            //            model.threadVM?.delegate?.reconfig(at: indexPath)
+            Task.detached {
+                try? await Task.sleep(for: .milliseconds(500))
+                if let threadVM = model.threadVM {
+                    let newVM = MessageRowViewModel(message: message, viewModel: threadVM)
+                    await newVM.performaCalculation()
+                    model.threadVM?.historyVM.sections[indexPath.section].vms[indexPath.row] = newVM
+                    model.threadVM?.delegate?.reloadData(at: indexPath)
+                }
+            }
         }
     }
 
