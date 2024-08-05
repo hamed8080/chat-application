@@ -13,8 +13,10 @@
 
 ## Building And Running
 open the terminal:
+
 ```bash
 cd talk
+chmod +x scripts.sh
 ./scripts.sh setup
 ```
 
@@ -41,7 +43,7 @@ source path_to/scripts.sh
 <br />
 Go to [link](https://accounts.pod.ir/) and register then login only with your phone number.
 
-## Dependency Graph of whole application and SDKs
+## Dependency Graph of the whole application and SDKs
 <img src="https://github.com/hamed8080/Talk/raw/main/images/dependencies.jpg"  width="256" height="480">
 <br />
 
