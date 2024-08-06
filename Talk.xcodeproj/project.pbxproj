@@ -837,7 +837,6 @@
 				0570CBBC2AAEE98E001832E9 /* Assistant */,
 				0570CBB52AAEE98E001832E9 /* Contacts */,
 				0570CBA92AAEE98D001832E9 /* Detail */,
-				05932B172C60C54E0066C505 /* ThreadDetailView.swift */,
 				0570CB642AAEE98C001832E9 /* Home */,
 				0570CBA22AAEE98D001832E9 /* Log */,
 				0570CBA52AAEE98D001832E9 /* Login */,
@@ -1016,6 +1015,7 @@
 				052557092BE949B800DFCE54 /* Sections */,
 				05A6A2C82B40167700DA0363 /* Search */,
 				0570CBAA2AAEE98D001832E9 /* TabViews */,
+				05932B172C60C54E0066C505 /* ThreadDetailView.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
