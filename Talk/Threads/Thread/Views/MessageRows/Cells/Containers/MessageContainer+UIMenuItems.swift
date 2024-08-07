@@ -26,18 +26,23 @@ extension MessageContainerStackView {
         let menu = CustomMenu()
         menu.contexMenuContainer = (viewModel.threadVM?.delegate as? ThreadViewController)?.contextMenuContainer
 
-        let replyAction = ActionMenuItem(model: .reply) { [weak self] in
-            self?.onReplyAction(model)
-            onMenuClickedDismiss()
-        }
-        menu.addItem(replyAction)
 
-        if threadVM?.thread.group == true, !viewModel.calMessage.isMe {
-            let replyPrivatelyAction = ActionMenuItem(model: .replyPrivately) { [weak self] in
-                self?.onReplyPrivatelyAction(model)
+        let isChannel = threadVM?.thread.type?.isChannelType == true
+        let admin = threadVM?.thread.admin == true
+        if (isChannel && admin) || (!isChannel) {
+            let replyAction = ActionMenuItem(model: .reply) { [weak self] in
+                self?.onReplyAction(model)
                 onMenuClickedDismiss()
             }
-            menu.addItem(replyPrivatelyAction)
+            menu.addItem(replyAction)
+            
+            if threadVM?.thread.group == true, !viewModel.calMessage.isMe {
+                let replyPrivatelyAction = ActionMenuItem(model: .replyPrivately) { [weak self] in
+                    self?.onReplyPrivatelyAction(model)
+                    onMenuClickedDismiss()
+                }
+                menu.addItem(replyPrivatelyAction)
+            }
         }
 
         let forwardAction = ActionMenuItem(model: .forward) { [weak self] in
